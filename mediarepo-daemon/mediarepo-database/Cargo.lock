@@ -533,6 +533,7 @@ name = "mediarepo-core"
 version = "0.1.0"
 dependencies = [
  "sea-orm",
+ "sqlx",
  "thiserror",
 ]
 
@@ -542,6 +543,7 @@ version = "0.1.0"
 dependencies = [
  "mediarepo-core",
  "sea-orm",
+ "sqlx",
 ]
 
 [[package]]

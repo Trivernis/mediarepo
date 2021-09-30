@@ -10,3 +10,7 @@ thiserror = "1.0.29"
 
 [dependencies.sea-orm]
 default-features = false
+
+[dependencies.sqlx]
+default-features = false
+features = ["migrate"]
