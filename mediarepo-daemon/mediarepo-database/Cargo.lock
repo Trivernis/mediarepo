@@ -541,6 +541,7 @@ dependencies = [
 name = "mediarepo-database"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "mediarepo-core",
  "sea-orm",
  "sqlx",

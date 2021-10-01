@@ -17,7 +17,11 @@ pub enum Relation {
 
 impl Related<super::namespace::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Namespace.def()
+        super::hash_tag::Relation::Hash.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(super::hash_tag::Relation::Tag.def().rev())
     }
 }
 
