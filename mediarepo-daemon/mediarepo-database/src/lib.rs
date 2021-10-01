@@ -1,13 +1,16 @@
 use mediarepo_core::error::{RepoDatabaseResult};
 use crate::database::RepoDatabase;
+use sea_orm::{DatabaseConnection, Database};
 
-pub mod database;
+
 pub mod entities;
 
 /// Connects to the database, runs migrations and returns the RepoDatabase wrapper type
-pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<RepoDatabase> {
+pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<DatabaseConnection> {
     migrate(uri.as_ref()).await?;
-    RepoDatabase::connect(uri).await
+    let conn = Database::connect(uri).await?;
+
+    Ok(conn)
 }
 
 async fn migrate(uri: &str) -> RepoDatabaseResult<()> {
