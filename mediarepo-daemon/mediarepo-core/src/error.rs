@@ -11,6 +11,9 @@ pub enum RepoError {
 
     #[error(transparent)]
     Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Multibase(#[from] multibase::Error),
 }
 
 #[derive(Error, Debug)]

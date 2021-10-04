@@ -7,6 +7,9 @@ edition = "2018"
 
 [dependencies]
 thiserror = "1.0.29"
+multihash = "0.15.0"
+multibase = "0.9.1"
+base64 = "0.13.0"
 
 [dependencies.sea-orm]
 default-features = false
@@ -14,3 +17,7 @@ default-features = false
 [dependencies.sqlx]
 default-features = false
 features = ["migrate"]
+
+[dependencies.tokio]
+version = "1.12.0"
+features = ["fs", "io-util", "io-std"]

@@ -9,7 +9,6 @@ use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash::Model as HashModel;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
-use tokio::fs;
 
 pub struct File {
     db: DatabaseConnection,
