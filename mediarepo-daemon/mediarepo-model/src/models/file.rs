@@ -9,6 +9,7 @@ use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash::Model as HashModel;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
+use tokio::io::BufReader;
 
 pub struct File {
     db: DatabaseConnection,
@@ -25,6 +26,24 @@ impl File {
     pub async fn by_id(db: DatabaseConnection, id: u64) -> RepoResult<Option<Self>> {
         if let Some((model, Some(hash))) = file::Entity::find_by_id(id)
             .find_also_related(hash::Entity)
+            .one(&db)
+            .await?
+        {
+            let file = File::new(db, model, hash);
+            Ok(Some(file))
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Finds the file by hash
+    pub async fn by_hash<S: AsRef<str>>(
+        db: DatabaseConnection,
+        hash: S,
+    ) -> RepoResult<Option<Self>> {
+        if let Some((hash, Some(model))) = hash::Entity::find()
+            .filter(hash::Column::Value.eq(hash.as_ref()))
+            .find_also_related(file::Entity)
             .one(&db)
             .await?
         {
@@ -117,6 +136,13 @@ impl File {
         self.model.file_type = active_file.file_type.unwrap();
 
         Ok(())
+    }
+
+    /// Returns the reader for the file
+    pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
+        let storage = self.storage().await?;
+
+        storage.get_file_reader(&self.hash.value).await
     }
 
     /// Returns the active model of the file with only the id set
