@@ -6,3 +6,16 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[dependencies.mediarepo-core]
+path = "./mediarepo-core"
+
+[dependencies.mediarepo-database]
+path = "./mediarepo-database"
+
+[dependencies.mediarepo-socket]
+path = "./mediarepo-socket"
+
+[dependencies.tokio]
+version = "1.12.0"
+features = ["macros", "rt-multi-thread"]

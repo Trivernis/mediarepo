@@ -12,9 +12,11 @@ multibase = "0.9.1"
 base64 = "0.13.0"
 
 [dependencies.sea-orm]
+version = "0.2.4"
 default-features = false
 
 [dependencies.sqlx]
+version = "0.5.9"
 default-features = false
 features = ["migrate"]
 
