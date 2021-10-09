@@ -4,8 +4,8 @@ use sea_orm::prelude::*;
 #[sea_orm(table_name = "namespaces")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
-    pub name: String
+    pub id: i64,
+    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

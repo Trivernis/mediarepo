@@ -1,5 +1,5 @@
-use crate::models::file_type::FileType;
-use crate::models::storage::Storage;
+use crate::file_type::FileType;
+use crate::storage::Storage;
 use chrono::NaiveDateTime;
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::file;
@@ -23,7 +23,7 @@ impl File {
     }
 
     /// Fetches the file by id
-    pub async fn by_id(db: DatabaseConnection, id: u64) -> RepoResult<Option<Self>> {
+    pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some((model, Some(hash))) = file::Entity::find_by_id(id)
             .find_also_related(hash::Entity)
             .one(&db)
@@ -55,7 +55,7 @@ impl File {
     }
 
     /// Returns the unique identifier of the file
-    pub fn id(&self) -> u64 {
+    pub fn id(&self) -> i64 {
         self.model.id
     }
 

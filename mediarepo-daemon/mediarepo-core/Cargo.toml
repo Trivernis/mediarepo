@@ -10,6 +10,10 @@ thiserror = "1.0.29"
 multihash = "0.15.0"
 multibase = "0.9.1"
 base64 = "0.13.0"
+toml = "0.5.8"
+serde = "1.0.130"
+rmp-ipc = "0.4.0"
+typemap_rev = "0.1.5"
 
 [dependencies.sea-orm]
 version = "0.2.4"

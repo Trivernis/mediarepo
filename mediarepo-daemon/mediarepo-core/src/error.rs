@@ -14,6 +14,15 @@ pub enum RepoError {
 
     #[error(transparent)]
     Multibase(#[from] multibase::Error),
+
+    #[error("Config Error: {0}")]
+    TomlDe(#[from] toml::de::Error),
+
+    #[error("Config Error: {0}")]
+    TomlSer(#[from] toml::ser::Error),
+
+    #[error(transparent)]
+    IPC(#[from] rmp_ipc::error::Error),
 }
 
 #[derive(Error, Debug)]

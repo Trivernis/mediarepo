@@ -1,10 +1,10 @@
 use sea_orm::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "storages")]
+#[sea_orm(table_name = "storage_locations")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
+    pub id: i64,
     pub name: String,
     pub path: String,
 }

@@ -7,6 +7,7 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4.19"
+typemap_rev = "0.1.5"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"

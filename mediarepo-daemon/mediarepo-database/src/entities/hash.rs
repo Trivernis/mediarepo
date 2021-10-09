@@ -4,7 +4,7 @@ use sea_orm::prelude::*;
 #[sea_orm(table_name = "hashes")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
+    pub id: i64,
     pub value: String,
 }
 

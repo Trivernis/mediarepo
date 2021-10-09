@@ -1,7 +1,7 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+use rmp_ipc::IPCBuilder;
+
+mod namespaces;
+
+pub fn get_builder(address: &str) -> IPCBuilder {
+    IPCBuilder::new().address(address)
 }

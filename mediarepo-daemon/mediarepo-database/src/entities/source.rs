@@ -4,13 +4,12 @@ use sea_orm::prelude::*;
 #[sea_orm(table_name = "sources")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
-    pub url: String
+    pub id: i64,
+    pub url: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-}
+pub enum Relation {}
 
 impl Related<super::hash::Entity> for Entity {
     fn to() -> RelationDef {

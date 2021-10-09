@@ -1,5 +1,6 @@
 use mediarepo_core::error::RepoDatabaseResult;
 use sea_orm::{Database, DatabaseConnection};
+use sqlx::migrate::MigrateDatabase;
 
 pub mod entities;
 
@@ -13,6 +14,9 @@ pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<DatabaseC
 
 async fn migrate(uri: &str) -> RepoDatabaseResult<()> {
     use sqlx::Connection;
+    if !sqlx::Sqlite::database_exists(uri).await? {
+        sqlx::Sqlite::create_database(uri).await?;
+    }
     let mut conn = sqlx::SqliteConnection::connect(uri).await?;
     sqlx::migrate!().run(&mut conn).await?;
 

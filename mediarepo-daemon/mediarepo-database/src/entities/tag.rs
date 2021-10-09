@@ -4,14 +4,18 @@ use sea_orm::prelude::*;
 #[sea_orm(table_name = "tags")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
+    pub id: i64,
     pub namespace_id: Option<i64>,
     pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(belongs_to = "super::namespace::Entity", from = "Column::NamespaceId", to = "super::namespace::Column::Id")]
+    #[sea_orm(
+        belongs_to = "super::namespace::Entity",
+        from = "Column::NamespaceId",
+        to = "super::namespace::Column::Id"
+    )]
     Namespace,
 }
 

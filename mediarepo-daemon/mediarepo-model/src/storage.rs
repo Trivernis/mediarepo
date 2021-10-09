@@ -26,7 +26,7 @@ impl Storage {
     }
 
     /// Returns the storage by id
-    pub async fn by_id(db: DatabaseConnection, id: u64) -> RepoResult<Option<Self>> {
+    pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some(model) = storage::Entity::find_by_id(id).one(&db).await? {
             let storage = Self::new(db, model);
             Ok(Some(storage))
@@ -78,7 +78,7 @@ impl Storage {
     }
 
     /// Returns the unique identifier of this storage
-    pub fn id(&self) -> u64 {
+    pub fn id(&self) -> i64 {
         self.model.id
     }
 
