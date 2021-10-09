@@ -1,0 +1,20 @@
+@use 'sass:map';
+@use "~@angular/material" as mat;
+@use 'src/app/app.component-theme' as app;
+@include mat.core();
+
+$theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$deep-purple-palette),
+    accent: mat.define-palette(mat.$green-palette),
+    warn: mat.define-palette(mat.$red-palette),
+    background: mat.define-palette(mat.$grey-palette)
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Noto Sans',
+  )
+));
+
+@include mat.all-component-themes($theme);
+@include app.theme($theme);
+

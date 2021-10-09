@@ -1,0 +1,12 @@
+<form [formGroup]="repoForm" (ngSubmit)="addRepository()">
+<mat-form-field appearance="fill">
+  <mat-label>Name</mat-label>
+  <input type="text" matInput required formControlName="name">
+</mat-form-field>
+<mat-form-field appearance="fill" id="path-input">
+  <mat-label>Path</mat-label>
+  <input type="text" matInput required formControlName="path">
+</mat-form-field>
+<button mat-flat-button color="primary" id="add-button" [disabled]="!repoForm.valid">Add</button>
+<mat-divider></mat-divider>
+</form>
