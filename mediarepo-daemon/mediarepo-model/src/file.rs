@@ -22,6 +22,23 @@ impl File {
         Self { db, model, hash }
     }
 
+    /// Returns a list of all known stored files
+    pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<File>> {
+        let files: Vec<(file::Model, Option<hash::Model>)> = file::Entity::find()
+            .find_also_related(hash::Entity)
+            .all(&db)
+            .await?;
+        let files = files
+            .into_iter()
+            .filter_map(|(f, h)| {
+                let h = h?;
+                Some(Self::new(db.clone(), f, h))
+            })
+            .collect();
+
+        Ok(files)
+    }
+
     /// Fetches the file by id
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some((model, Some(hash))) = file::Entity::find_by_id(id)

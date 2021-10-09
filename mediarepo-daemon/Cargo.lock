@@ -1140,9 +1140,9 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af495ca346adde10163eb920b52b5a3992fb209b31df58ece4ed0f855661978c"
+checksum = "6b83ee65fefc258a2f3a2cb0b144c07f3d9bb877fda93bf29595a7ade6f99513"
 dependencies = [
  "lazy_static",
  "log",

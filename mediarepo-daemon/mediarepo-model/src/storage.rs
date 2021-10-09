@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use tokio::fs;
 use tokio::io::{AsyncRead, BufReader};
 
+#[derive(Clone)]
 pub struct Storage {
     db: DatabaseConnection,
     model: StorageModel,
@@ -23,6 +24,17 @@ impl Storage {
             db,
             model,
         }
+    }
+
+    /// Returns all available storages
+    pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
+        let storages: Vec<storage::Model> = storage::Entity::find().all(&db).await?;
+        let storages = storages
+            .into_iter()
+            .map(|s| Self::new(db.clone(), s))
+            .collect();
+
+        Ok(storages)
     }
 
     /// Returns the storage by id

@@ -52,7 +52,8 @@ async fn main() -> RepoResult<()> {
 /// Starts the server
 async fn start_server(opt: Opt) -> RepoResult<()> {
     let settings = load_settings(&opt.repo.join(SETTINGS_PATH)).await?;
-    let repo = get_repo(&opt.repo.join(&settings.database_path).to_str().unwrap()).await?;
+    let mut repo = get_repo(&opt.repo.join(&settings.database_path).to_str().unwrap()).await?;
+    repo.set_main_storage(&settings.default_file_store).await?;
 
     get_builder(&settings.listen_address)
         .insert::<SettingsKey>(settings)

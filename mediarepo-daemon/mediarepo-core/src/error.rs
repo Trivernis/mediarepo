@@ -1,4 +1,5 @@
 use sea_orm::DbErr;
+use std::fmt::{Display, Formatter};
 use thiserror::Error;
 
 pub type RepoResult<T> = Result<T, RepoError>;
@@ -23,6 +24,9 @@ pub enum RepoError {
 
     #[error(transparent)]
     IPC(#[from] rmp_ipc::error::Error),
+
+    #[error(transparent)]
+    Raw(StringError),
 }
 
 #[derive(Error, Debug)]
@@ -40,8 +44,25 @@ pub enum RepoDatabaseError {
     SqlxMigrateError(#[from] sqlx::migrate::MigrateError),
 }
 
+#[derive(Debug)]
+pub struct StringError(String);
+
+impl Display for StringError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl std::error::Error for StringError {}
+
 impl From<sea_orm::DbErr> for RepoError {
     fn from(other: DbErr) -> Self {
         Self::Db(RepoDatabaseError::from(other))
+    }
+}
+
+impl From<&str> for RepoError {
+    fn from(s: &str) -> Self {
+        Self::Raw(StringError(s.to_string()))
     }
 }
