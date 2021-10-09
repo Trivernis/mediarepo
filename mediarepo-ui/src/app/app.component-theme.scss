@@ -12,7 +12,8 @@
   }
 
   .warn {
-    color: mat.get-color-from-palette($warn-palette);
+    background-color: mat.get-color-from-palette($warn-palette);
+    color: white
   }
 }
 

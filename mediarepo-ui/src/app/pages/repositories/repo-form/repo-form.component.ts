@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {RepositoryService} from "../../../services/repository/repository.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-repo-form',
@@ -16,7 +17,7 @@ export class RepoFormComponent implements OnInit {
   })
 
 
-  constructor(private repoService: RepositoryService, private snackBar: MatSnackBar) { }
+  constructor(private repoService: RepositoryService, private errorBroker: ErrorBrokerService) { }
 
   ngOnInit(): void {
   }
@@ -26,9 +27,7 @@ export class RepoFormComponent implements OnInit {
     try {
       await this.repoService.addRepository(name, path);
     } catch(err) {
-      this.snackBar.open(err.Msg, undefined, {
-        panelClass: "warn"
-      })
+      this.errorBroker.showError(err);
     }
   }
 }

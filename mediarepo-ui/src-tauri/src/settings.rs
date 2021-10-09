@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use crate::commands::repo::Repository;
 use crate::error::AppResult;
@@ -9,7 +10,7 @@ static SETTINGS_FILE: &str = "settings.toml";
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Settings {
-  pub repositories: Vec<Repository>,
+  pub repositories: HashMap<String, Repository>,
 }
 
 fn get_settings_path() -> PathBuf {

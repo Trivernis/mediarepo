@@ -3,7 +3,7 @@
   windows_subsystem = "windows"
 )]
 
-use crate::commands::repo::{get_repositories, add_repository};
+use crate::commands::repo::{get_repositories, add_repository, select_repository};
 use crate::context::Context;
 use crate::settings::load_settings;
 
@@ -18,7 +18,7 @@ fn main() {
 
   tauri::Builder::default()
     .manage(context)
-    .invoke_handler(tauri::generate_handler![get_repositories, add_repository])
+    .invoke_handler(tauri::generate_handler![get_repositories, add_repository, select_repository])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

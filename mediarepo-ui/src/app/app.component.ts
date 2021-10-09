@@ -1,34 +1,42 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {RepositoryService} from "./services/repository/repository.service";
 import {DataloaderService} from "./services/dataloader/dataloader.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ErrorBrokerService} from "./services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'mediarepo-ui';
 
   constructor(
     private router: Router,
     private snackBar: MatSnackBar,
+    private errorBroker: ErrorBrokerService,
     private dataloaderService: DataloaderService,
-    private repoService: RepositoryService
+    private repoService: RepositoryService,
   ) {
   }
 
   async ngOnInit() {
-    this.dataloaderService.loaderError.subscribe({
-      error: (err) => {
-        this.snackBar.open(err, undefined, {panelClass: "warn"})
-      }
-    })
+    this.errorBroker.errorCb = (err: { message: string }) => {
+      console.error(err);
+      this.showError(err)
+    };
     await this.dataloaderService.loadData();
     if (this.repoService.selectedRepository.getValue() == undefined) {
       await this.router.navigate(["repositories"])
     }
+  }
+
+  private showError(err: { message: string }) {
+    this.snackBar.open(err.message, undefined, {
+      panelClass: "warn",
+      duration: 2000,
+    });
   }
 }

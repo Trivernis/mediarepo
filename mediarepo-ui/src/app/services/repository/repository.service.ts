@@ -17,7 +17,8 @@ export class RepositoryService {
     this.repositories.next(repos);
   }
 
-  public setRepository(repo: Repository) {
+  public async setRepository(repo: Repository) {
+    await invoke("select_repository", {name: repo.name});
     this.selectedRepository.next(repo);
   }
 
