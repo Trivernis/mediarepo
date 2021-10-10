@@ -1,3 +1,4 @@
+use rmp_ipc::error::Error;
 use sea_orm::DbErr;
 use std::fmt::{Display, Formatter};
 use thiserror::Error;
@@ -64,5 +65,11 @@ impl From<sea_orm::DbErr> for RepoError {
 impl From<&str> for RepoError {
     fn from(s: &str) -> Self {
         Self::Raw(StringError(s.to_string()))
+    }
+}
+
+impl From<RepoError> for rmp_ipc::error::Error {
+    fn from(e: RepoError) -> Error {
+        rmp_ipc::error::Error::Message(format!("{:?}", e))
     }
 }

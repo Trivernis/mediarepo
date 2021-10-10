@@ -667,6 +667,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-database",
  "sea-orm",
+ "serde",
  "tokio",
  "typemap_rev",
 ]

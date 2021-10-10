@@ -219,6 +219,7 @@ dependencies = [
  "libc",
  "num-integer",
  "num-traits",
+ "serde",
  "time",
  "winapi",
 ]
@@ -714,6 +715,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-database",
  "sea-orm",
+ "serde",
  "tokio",
  "typemap_rev",
 ]
@@ -722,7 +724,11 @@ dependencies = [
 name = "mediarepo-socket"
 version = "0.1.0"
 dependencies = [
+ "chrono",
+ "mediarepo-core",
+ "mediarepo-model",
  "rmp-ipc",
+ "serde",
  "tokio",
 ]
 

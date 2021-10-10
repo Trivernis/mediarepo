@@ -7,7 +7,19 @@ edition = "2018"
 
 [dependencies]
 rmp-ipc = "0.4.1"
+serde = "1.0.130"
+
+[dependencies.mediarepo-core]
+path = "../mediarepo-core"
+
+[dependencies.mediarepo-model]
+path = "../mediarepo-model"
 
 [dependencies.tokio]
 version = "1.12.0"
 features = ["net"]
+
+[dependencies.chrono]
+version = "0.4.19"
+features = ["serde"]
+
