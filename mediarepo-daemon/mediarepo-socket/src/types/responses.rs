@@ -1,9 +1,9 @@
 use chrono::NaiveDateTime;
 use mediarepo_model::file::File;
 use mediarepo_model::file_type::FileType;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct FileResponse {
     pub name: Option<String>,
     pub comment: Option<String>,
@@ -28,7 +28,7 @@ impl From<File> for FileResponse {
     }
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InfoResponse {
     pub name: String,
     pub version: String,
