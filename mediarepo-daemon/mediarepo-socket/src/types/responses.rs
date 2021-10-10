@@ -1,9 +1,9 @@
 use chrono::NaiveDateTime;
 use mediarepo_model::file::File;
 use mediarepo_model::file_type::FileType;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct FileResponse {
     pub name: Option<String>,
     pub comment: Option<String>,
