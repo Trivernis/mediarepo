@@ -48,3 +48,15 @@ impl From<rmp_ipc::error::Error> for AppError {
     Self::new(format!("Daemon Error: {:?}", e))
   }
 }
+
+impl From<tauri::Error> for AppError {
+  fn from(e: tauri::Error) -> Self {
+    Self::new(format!("Tauri error: {:?}", e))
+  }
+}
+
+impl From<AppError> for rmp_ipc::error::Error {
+  fn from(e: AppError) -> Self {
+    rmp_ipc::error::Error::Message(e.message)
+  }
+}

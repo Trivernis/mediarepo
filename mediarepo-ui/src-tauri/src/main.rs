@@ -3,7 +3,8 @@
   windows_subsystem = "windows"
 )]
 
-use crate::commands::repo::{get_repositories, add_repository, select_repository};
+use crate::commands::repo::{get_repositories, add_repository, select_repository, get_active_repository};
+use crate::commands::emit_info;
 use crate::context::Context;
 use crate::settings::load_settings;
 
@@ -11,6 +12,7 @@ mod commands;
 pub mod context;
 pub mod error;
 mod settings;
+mod ipc;
 
 fn main() {
   let settings = load_settings().expect("Failed to load settings");
@@ -18,7 +20,7 @@ fn main() {
 
   tauri::Builder::default()
     .manage(context)
-    .invoke_handler(tauri::generate_handler![get_repositories, add_repository, select_repository])
+    .invoke_handler(tauri::generate_handler![get_repositories, add_repository, select_repository, get_active_repository, emit_info])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

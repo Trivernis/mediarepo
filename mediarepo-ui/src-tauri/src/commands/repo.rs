@@ -6,6 +6,9 @@ use crate::error::{AppError, AppResult};
 use tokio::fs;
 use crate::settings::save_settings;
 use rmp_ipc::context::Context as IPCContext;
+use tauri::Window;
+use crate::ipc::build_ipc_context;
+use std::mem;
 
 static REPO_CONFIG_FILE: &str = "repo.toml";
 
@@ -28,6 +31,12 @@ pub async fn get_repositories(context: tauri::State<'_, Context>) -> AppResult<V
   let settings = context.settings.read().await;
 
   Ok(settings.repositories.values().cloned().collect())
+}
+
+#[tauri::command]
+pub async fn get_active_repository(context: tauri::State<'_, Context>) -> AppResult<Option<Repository>> {
+  let repo = context.active_repository.read().await;
+  Ok(repo.clone())
 }
 
 #[tauri::command]
@@ -54,12 +63,18 @@ pub async fn add_repository(name: String, path: String, context: tauri::State<'_
 }
 
 #[tauri::command]
-pub async fn select_repository(name: String, context: tauri::State<'_, Context>) -> AppResult<()> {
+pub async fn select_repository(window: Window, name: String, context: tauri::State<'_, Context>) -> AppResult<()> {
   let settings = context.settings.read().await;
   let repo = settings.repositories.get(&name).ok_or(AppError::new(format!("Repository '{}' not found", name)))?;
-  let ipc = connect(&repo.address).await?;
+  let ipc = connect(window, &repo.address).await?;
   let mut ipc_ctx = context.ipc.write().await;
-  *ipc_ctx = Some(ipc);
+  let old_ipc = mem::replace(&mut *ipc_ctx, Some(ipc));
+
+  if let Some(old_ctx) = old_ipc {
+    old_ctx.stop().await?;
+  }
+  let mut active_repo = context.active_repository.write().await;
+  *active_repo = Some(repo.clone());
 
   Ok(())
 }
@@ -72,8 +87,6 @@ async fn read_repo_config(path: PathBuf) -> AppResult<RepoConfig> {
 }
 
 /// Connects to the IPC Server
-async fn connect(address: &str) -> AppResult<IPCContext> {
-  let ctx = IPCBuilder::new().address(address).build_client().await?;
-
-  Ok(ctx)
+async fn connect(window: Window, address: &str) -> AppResult<IPCContext> {
+  build_ipc_context(window, address).await
 }
