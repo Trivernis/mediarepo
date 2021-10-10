@@ -15,18 +15,25 @@ name = "mediarepo"
 crate-type = ["lib"]
 
 [dependencies]
-toml = "0.5.8"
-structopt = "0.3.23"
+toml = {version = "0.5.8", optional=true}
+structopt = {version="0.3.23", optional=true}
 
 [dependencies.mediarepo-core]
 path = "./mediarepo-core"
 
 [dependencies.mediarepo-model]
 path = "./mediarepo-model"
+optional=true
 
 [dependencies.mediarepo-socket]
 path = "./mediarepo-socket"
+optional=true
 
 [dependencies.tokio]
 version = "1.12.0"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
+
+[features]
+default = ["runtime"]
+runtime = ["toml", "structopt", "mediarepo-model", "mediarepo-socket"]
+library = ["mediarepo-socket"]
