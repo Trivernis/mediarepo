@@ -27,3 +27,9 @@ impl From<File> for FileResponse {
         }
     }
 }
+
+#[derive(Clone, Debug, Serialize)]
+pub struct InfoResponse {
+    pub name: String,
+    pub version: String,
+}
