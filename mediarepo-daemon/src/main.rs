@@ -40,6 +40,7 @@ enum SubCommand {
 
 #[tokio::main]
 async fn main() -> RepoResult<()> {
+    build_logger();
     let opt: Opt = Opt::from_args();
     match opt.cmd {
         SubCommand::Init { force } => init(opt, force).await,
@@ -83,4 +84,12 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     fs::write(opt.repo.join(SETTINGS_PATH), &settings_string.into_bytes()).await?;
 
     Ok(())
+}
+
+fn build_logger() {
+    env_logger::builder()
+        .filter_module("sqlx", log::LevelFilter::Warn)
+        .filter_module("tokio", log::LevelFilter::Info)
+        .filter_module("tracing", log::LevelFilter::Warn)
+        .init();
 }
