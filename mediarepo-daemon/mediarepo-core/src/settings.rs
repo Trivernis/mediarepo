@@ -12,7 +12,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             listen_address: "127.0.0.1:3425".to_string(),
-            database_path: "./db/database.db".to_string(),
+            database_path: "./db/repo.db".to_string(),
             default_file_store: "./files".to_string(),
         }
     }

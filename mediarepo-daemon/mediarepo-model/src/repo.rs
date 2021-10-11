@@ -69,12 +69,18 @@ impl Repo {
 
     /// Adds a file to the database by its readable path in the file system
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
-        let file_type = FileType::from(&path);
+        let mime_match = mime_guess::from_path(&path).first();
+
+        let (mime_type, file_type) = if let Some(mime) = mime_match {
+            (Some(mime.clone().to_string()), FileType::from(mime))
+        } else {
+            (None, FileType::Unknown)
+        };
         let os_file = OpenOptions::new().read(true).open(&path).await?;
         let reader = BufReader::new(os_file);
 
         let storage = self.get_main_storage()?;
-        storage.add_file(reader, file_type).await
+        storage.add_file(reader, file_type, mime_type).await
     }
 
     fn get_main_storage(&self) -> RepoResult<&Storage> {

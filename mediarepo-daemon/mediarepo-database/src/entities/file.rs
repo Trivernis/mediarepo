@@ -9,6 +9,7 @@ pub struct Model {
     pub file_type: u32,
     pub name: Option<String>,
     pub comment: Option<String>,
+    pub mime_type: Option<String>,
     pub storage_id: i64,
     pub hash_id: i64,
     pub import_time: NaiveDateTime,

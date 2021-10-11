@@ -138,9 +138,10 @@ impl Storage {
         &self,
         reader: R,
         file_type: FileType,
+        mime_type: Option<String>,
     ) -> RepoResult<File> {
         let hash = self.store.add_file(reader, None).await?;
-        File::add(self.db.clone(), self.id(), hash, file_type).await
+        File::add(self.db.clone(), self.id(), hash, file_type, mime_type).await
     }
 
     /// Returns the buf reader to the given hash

@@ -77,6 +77,7 @@ impl File {
         storage_id: i64,
         hash: S,
         file_type: FileType,
+        mime_type: Option<String>,
     ) -> RepoResult<Self> {
         let hash = hash::ActiveModel {
             value: Set(hash.to_string()),
@@ -88,6 +89,7 @@ impl File {
         let file = file::ActiveModel {
             hash_id: Set(id),
             file_type: Set(file_type as u32),
+            mime_type: Set(mime_type),
             storage_id: Set(storage_id),
             import_time: Set(now.clone()),
             creation_time: Set(now.clone()),
@@ -120,6 +122,11 @@ impl File {
             3 => FileType::Audio,
             _ => FileType::Unknown,
         }
+    }
+
+    /// Returns the optional mime type of the file
+    pub fn mime_type(&self) -> &Option<String> {
+        &self.model.mime_type
     }
 
     /// Returns the optional name of the file
