@@ -1,9 +1,12 @@
-mat-card, mat-card-content {
-  height: 100%;
-  width: 100%;
+mat-card {
+  height: calc(100% - 32px);
+  width: calc(100% - 32px);
+  padding: 16px;
 }
 
 mat-card-content {
+  height: 100%;
+  width: 100%;
   justify-content: center;
   text-align: center;
 }

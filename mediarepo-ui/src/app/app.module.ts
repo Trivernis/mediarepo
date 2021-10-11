@@ -20,6 +20,7 @@ import { FileGridComponent } from './components/file-grid/file-grid.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatGridListModule} from "@angular/material/grid-list";
 import { FileGridEntryComponent } from './components/file-grid/file-grid-entry/file-grid-entry.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -31,21 +32,22 @@ import { FileGridEntryComponent } from './components/file-grid/file-grid-entry/f
     FileGridComponent,
     FileGridEntryComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatListModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatSnackBarModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatSidenavModule,
-    MatGridListModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatListModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatSnackBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSidenavModule,
+        MatGridListModule,
+        MatProgressBarModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {File} from "../../../models/File";
 import {FileService} from "../../../services/file/file.service";
 import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
+import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-file-grid-entry',
@@ -11,7 +12,7 @@ import {ErrorBrokerService} from "../../../services/error-broker/error-broker.se
 export class FileGridEntryComponent implements OnInit {
 
   @Input() file: File | undefined;
-  contentUrl: string | undefined;
+  contentUrl: SafeResourceUrl | undefined;
   constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) { }
 
   async ngOnInit(): Promise<void> {
