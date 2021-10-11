@@ -11,11 +11,15 @@ import {MatCardModule} from "@angular/material/card";
 import {MatListModule} from "@angular/material/list";
 import {MatButtonModule} from "@angular/material/button";
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import { RepoFormComponent } from './pages/repositories/repo-form/repo-form.component';
+import { FileGridComponent } from './components/file-grid/file-grid.component';
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatGridListModule} from "@angular/material/grid-list";
+import { FileGridEntryComponent } from './components/file-grid/file-grid-entry/file-grid-entry.component';
 
 @NgModule({
   declarations: [
@@ -23,21 +27,25 @@ import { RepoFormComponent } from './pages/repositories/repo-form/repo-form.comp
     RepositoriesComponent,
     HomeComponent,
     RepositoryCardComponent,
-    RepoFormComponent
+    RepoFormComponent,
+    FileGridComponent,
+    FileGridEntryComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatCardModule,
-        MatListModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatListModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSidenavModule,
+    MatGridListModule,
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

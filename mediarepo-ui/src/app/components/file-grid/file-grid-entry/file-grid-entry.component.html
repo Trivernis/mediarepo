@@ -1,0 +1,7 @@
+<mat-card>
+  <mat-card-title *ngIf="!!file?.name">{{file?.name}}</mat-card-title>
+  <mat-card-content>
+    <img class="entry-image" decoding="async" [src]="contentUrl" alt="image">
+  </mat-card-content>
+  <mat-card-footer>{{file?.mime_type}}, {{file?.hash}}</mat-card-footer>
+</mat-card>

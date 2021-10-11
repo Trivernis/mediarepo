@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use rmp_ipc::IPCBuilder;
 use serde::{Serialize, Deserialize};
 use crate::context::Context;
 use crate::error::{AppError, AppResult};

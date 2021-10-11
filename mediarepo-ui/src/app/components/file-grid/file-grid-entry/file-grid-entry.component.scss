@@ -1,0 +1,15 @@
+mat-card, mat-card-content {
+  height: 100%;
+  width: 100%;
+}
+
+mat-card-content {
+  justify-content: center;
+  text-align: center;
+}
+
+.entry-image {
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}

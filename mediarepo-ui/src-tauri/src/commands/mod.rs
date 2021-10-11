@@ -2,6 +2,7 @@ use crate::context::Context;
 use crate::error::AppResult;
 
 pub mod repo;
+pub mod files;
 
 #[tauri::command]
 pub async fn emit_info(context: tauri::State<'_, Context>) -> AppResult<()> {

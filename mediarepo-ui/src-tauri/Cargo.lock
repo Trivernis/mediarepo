@@ -187,17 +187,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "atty"
-version = "0.2.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b39be18770d11421cdb1b9947a45dd3f37e93092cbf377614828a319d5fee8"
-dependencies = [
- "hermit-abi",
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -952,19 +941,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "env_logger"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b2cf0344971ee6c64c31be0d530793fba457d322dfec2810c453d0ef228f9c3"
-dependencies = [
- "atty",
- "humantime",
- "log",
- "regex",
- "termcolor",
-]
-
-[[package]]
 name = "fastrand"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1542,12 +1518,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eee9694f83d9b7c09682fdb32213682939507884e5bcf227be9aff5d644b90dc"
 
 [[package]]
-name = "humantime"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
-
-[[package]]
 name = "ico"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1820,9 +1790,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "mediarepo"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=edc5877582cde744fe23c22f31075da792821e77#edc5877582cde744fe23c22f31075da792821e77"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=a928f5e42eb7a8ce524d3722a4f5ae05889e52ba#a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
 dependencies = [
- "env_logger",
  "log",
  "mediarepo-core",
  "mediarepo-socket",
@@ -1832,7 +1801,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-core"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=edc5877582cde744fe23c22f31075da792821e77#edc5877582cde744fe23c22f31075da792821e77"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=a928f5e42eb7a8ce524d3722a4f5ae05889e52ba#a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
 dependencies = [
  "base64",
  "multibase",
@@ -1850,7 +1819,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-database"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=edc5877582cde744fe23c22f31075da792821e77#edc5877582cde744fe23c22f31075da792821e77"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=a928f5e42eb7a8ce524d3722a4f5ae05889e52ba#a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
 dependencies = [
  "chrono",
  "mediarepo-core",
@@ -1861,11 +1830,13 @@ dependencies = [
 [[package]]
 name = "mediarepo-model"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=edc5877582cde744fe23c22f31075da792821e77#edc5877582cde744fe23c22f31075da792821e77"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=a928f5e42eb7a8ce524d3722a4f5ae05889e52ba#a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
 dependencies = [
  "chrono",
  "mediarepo-core",
  "mediarepo-database",
+ "mime",
+ "mime_guess",
  "sea-orm",
  "serde",
  "tokio",
@@ -1875,7 +1846,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-socket"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=edc5877582cde744fe23c22f31075da792821e77#edc5877582cde744fe23c22f31075da792821e77"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=a928f5e42eb7a8ce524d3722a4f5ae05889e52ba#a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
 dependencies = [
  "chrono",
  "mediarepo-core",
@@ -1898,6 +1869,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59accc507f1338036a0477ef61afdae33cde60840f4dfe481319ce3ad116ddf9"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "mime"
+version = "0.3.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
+
+[[package]]
+name = "mime_guess"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2684d4c2e97d99848d30b324b00c8fcc7e5c897b7cbb5819b09e7c90e8baf212"
+dependencies = [
+ "mime",
+ "unicase",
 ]
 
 [[package]]
@@ -3770,15 +3757,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "termcolor"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2dfed899f0eb03f32ee8c6a0aabdb8a7949659e3466561fc0adf54e26d88c5f4"
-dependencies = [
- "winapi-util",
-]
-
-[[package]]
 name = "thin-slice"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3989,6 +3967,15 @@ name = "ucd-trie"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56dee185309b50d1f11bfedef0fe6d036842e3fb77413abef29f8f8d1c5d4c1c"
+
+[[package]]
+name = "unicase"
+version = "2.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "50f37be617794602aabbeee0be4f259dc1778fabe05e2d67ee8f79326d5cb4f6"
+dependencies = [
+ "version_check",
+]
 
 [[package]]
 name = "unicode-bidi"

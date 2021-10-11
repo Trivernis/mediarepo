@@ -23,10 +23,8 @@ export class AppComponent implements OnInit{
   }
 
   async ngOnInit() {
-    this.errorBroker.errorCb = (err: { message: string }) => {
-      console.error(err);
-      this.showError(err)
-    };
+    this.errorBroker.errorCb = (err: { message: string }) => this.showError(err);
+    this.errorBroker.infoCb = (info: string) => this.showInfo(info);
     await this.dataloaderService.loadData();
     if (this.repoService.selectedRepository.getValue() == undefined) {
       await this.router.navigate(["repositories"])
@@ -36,6 +34,13 @@ export class AppComponent implements OnInit{
   private showError(err: { message: string }) {
     this.snackBar.open(err.message, undefined, {
       panelClass: "warn",
+      duration: 2000,
+    });
+  }
+
+  private showInfo(info: string) {
+    this.snackBar.open(info, undefined, {
+      panelClass: "primary",
       duration: 2000,
     });
   }
