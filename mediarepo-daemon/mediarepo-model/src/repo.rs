@@ -1,4 +1,5 @@
 use crate::file::File;
+use crate::file_type::FileType;
 use crate::storage::Storage;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_database::get_database;
@@ -56,6 +57,11 @@ impl Repo {
         File::by_hash(self.db.clone(), hash).await
     }
 
+    /// Returns a file by id
+    pub async fn file_by_id(&self, id: i64) -> RepoResult<Option<File>> {
+        File::by_id(self.db.clone(), id).await
+    }
+
     /// Returns a list of all stored files
     pub async fn files(&self) -> RepoResult<Vec<File>> {
         File::all(self.db.clone()).await
@@ -63,17 +69,12 @@ impl Repo {
 
     /// Adds a file to the database by its readable path in the file system
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
+        let file_type = FileType::from(&path);
         let os_file = OpenOptions::new().read(true).open(&path).await?;
         let reader = BufReader::new(os_file);
 
         let storage = self.get_main_storage()?;
-        let hash = storage.add_file(reader).await?;
-        let file = self
-            .file_by_hash(hash)
-            .await?
-            .expect("Invalid database state.");
-
-        Ok(file)
+        storage.add_file(reader, file_type).await
     }
 
     fn get_main_storage(&self) -> RepoResult<&Storage> {

@@ -6,6 +6,7 @@ use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
+use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
 use std::path::PathBuf;
@@ -24,7 +25,7 @@ struct Opt {
     cmd: SubCommand,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Clone, Debug, StructOpt)]
 enum SubCommand {
     /// Initializes an empty repository
     Init {
@@ -32,6 +33,13 @@ enum SubCommand {
         /// path to create an empty repository.
         #[structopt(short, long)]
         force: bool,
+    },
+
+    /// Imports file from a folder (by glob pattern) into the repository
+    Import {
+        /// The path to the folder where the files are located
+        #[structopt()]
+        folder_path: String,
     },
 
     /// Starts the event server for the selected repository
@@ -42,19 +50,35 @@ enum SubCommand {
 async fn main() -> RepoResult<()> {
     build_logger();
     let opt: Opt = Opt::from_args();
-    match opt.cmd {
+    match opt.cmd.clone() {
         SubCommand::Init { force } => init(opt, force).await,
         SubCommand::Start => start_server(opt).await,
+        SubCommand::Import { folder_path } => import(opt, folder_path).await,
     }?;
 
     Ok(())
 }
 
-/// Starts the server
-async fn start_server(opt: Opt) -> RepoResult<()> {
+fn build_logger() {
+    env_logger::builder()
+        .filter_module("sqlx", log::LevelFilter::Warn)
+        .filter_module("tokio", log::LevelFilter::Info)
+        .filter_module("tracing", log::LevelFilter::Warn)
+        .init();
+}
+
+async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
     let settings = load_settings(&opt.repo.join(SETTINGS_PATH)).await?;
     let mut repo = get_repo(&opt.repo.join(&settings.database_path).to_str().unwrap()).await?;
-    repo.set_main_storage(&settings.default_file_store).await?;
+    let main_storage_path = opt.repo.join(&settings.default_file_store);
+    repo.set_main_storage(main_storage_path.to_str().unwrap())
+        .await?;
+    Ok((settings, repo))
+}
+
+/// Starts the server
+async fn start_server(opt: Opt) -> RepoResult<()> {
+    let (settings, repo) = init_repo(&opt).await?;
 
     get_builder(&settings.listen_address)
         .insert::<SettingsKey>(settings)
@@ -67,29 +91,47 @@ async fn start_server(opt: Opt) -> RepoResult<()> {
 
 /// Initializes an empty repository
 async fn init(opt: Opt, force: bool) -> RepoResult<()> {
+    log::info!("Initializing repository at {:?}", opt.repo);
     if force {
+        log::debug!("Removing old repository");
         fs::remove_dir_all(&opt.repo).await?;
     }
     let settings = Settings::default();
+    log::debug!("Creating paths");
     create_paths_for_repo(&opt.repo, &settings).await?;
     let db_path = opt.repo.join(&settings.database_path);
     if db_path.exists() {
         panic!("Database already exists in location. Use --force with init to delete everything and start a new repository");
     }
+    log::debug!("Creating repo");
     let repo = get_repo(&db_path.to_str().unwrap()).await?;
     let storage_path = opt.repo.join(&settings.default_file_store);
+    log::debug!("Adding storage");
     repo.add_storage(DEFAULT_STORAGE_NAME, storage_path.to_str().unwrap())
         .await?;
     let settings_string = settings.to_toml_string()?;
+    log::debug!("Writing settings");
     fs::write(opt.repo.join(SETTINGS_PATH), &settings_string.into_bytes()).await?;
+    log::info!("Repository initialized");
 
     Ok(())
 }
 
-fn build_logger() {
-    env_logger::builder()
-        .filter_module("sqlx", log::LevelFilter::Warn)
-        .filter_module("tokio", log::LevelFilter::Info)
-        .filter_module("tracing", log::LevelFilter::Warn)
-        .init();
+/// Imports files from a source into the database
+async fn import(opt: Opt, path: String) -> RepoResult<()> {
+    let (_s, repo) = init_repo(&opt).await?;
+    log::info!("Importing");
+
+    for entry in glob::glob(&path).unwrap() {
+        if let Ok(path) = entry {
+            if path.is_file() {
+                log::debug!("Importing {:?}", path);
+                if let Err(e) = repo.add_file_by_path(path).await {
+                    log::error!("Failed to import: {:?}", e);
+                }
+            }
+        }
+    }
+
+    Ok(())
 }

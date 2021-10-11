@@ -1,6 +1,6 @@
 use crate::file_type::FileType;
 use crate::storage::Storage;
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::file::ActiveModel as ActiveFile;
@@ -69,6 +69,37 @@ impl File {
         } else {
             Ok(None)
         }
+    }
+
+    /// Adds a file with its hash to the database
+    pub(crate) async fn add<S: ToString>(
+        db: DatabaseConnection,
+        storage_id: i64,
+        hash: S,
+        file_type: FileType,
+    ) -> RepoResult<Self> {
+        let hash = hash::ActiveModel {
+            value: Set(hash.to_string()),
+            ..Default::default()
+        };
+        let now = Local::now().naive_local();
+        let hash: hash::ActiveModel = hash.insert(&db).await?;
+        let id: i64 = hash.id.unwrap();
+        let file = file::ActiveModel {
+            hash_id: Set(id),
+            file_type: Set(file_type as u32),
+            storage_id: Set(storage_id),
+            import_time: Set(now.clone()),
+            creation_time: Set(now.clone()),
+            change_time: Set(now),
+            ..Default::default()
+        };
+        let file: file::ActiveModel = file.insert(&db).await?.into();
+        let file = Self::by_id(db, file.id.unwrap())
+            .await?
+            .expect("Inserted file does not exist");
+
+        Ok(file)
     }
 
     /// Returns the unique identifier of the file
