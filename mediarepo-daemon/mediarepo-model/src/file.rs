@@ -1,5 +1,6 @@
 use crate::file_type::FileType;
 use crate::storage::Storage;
+use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::file;
@@ -161,6 +162,11 @@ impl File {
             .expect("The FK storage_id doesn't exist?!");
 
         Ok(storage)
+    }
+
+    /// Returns a list of thumbnails for the file
+    pub async fn thumbnails(&self) -> RepoResult<Vec<Thumbnail>> {
+        Thumbnail::for_file_id(self.db.clone(), self.model.id).await
     }
 
     /// Changes the name of the file

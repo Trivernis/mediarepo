@@ -37,4 +37,10 @@ impl Related<super::source::Entity> for Entity {
     }
 }
 
+impl Related<super::thumbnail::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::thumbnail::Relation::Hash.def().rev()
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
