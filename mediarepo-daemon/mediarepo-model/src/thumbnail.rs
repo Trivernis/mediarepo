@@ -3,7 +3,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::hash;
 use mediarepo_database::entities::thumbnail;
 use sea_orm::prelude::*;
-use sea_orm::DatabaseConnection;
+use sea_orm::{DatabaseConnection, Set};
 
 pub struct Thumbnail {
     db: DatabaseConnection,
@@ -29,6 +29,29 @@ impl Thumbnail {
         } else {
             Ok(None)
         }
+    }
+
+    /// Inserts a thumbnail into the database
+    pub async fn add(
+        db: DatabaseConnection,
+        hash_id: i64,
+        file_id: i64,
+        height: i32,
+        width: i32,
+    ) -> RepoResult<Self> {
+        let active_model = thumbnail::ActiveModel {
+            hash_id: Set(hash_id),
+            file_id: Set(file_id),
+            height: Set(height),
+            width: Set(width),
+            ..Default::default()
+        };
+        let active_model: thumbnail::ActiveModel = active_model.insert(&db).await?;
+        let thumbnail = Self::by_id(db, active_model.id.unwrap())
+            .await?
+            .expect("Inserted thumbnail does not exist");
+
+        Ok(thumbnail)
     }
 
     /// Returns all thumbnails for a given file

@@ -19,7 +19,7 @@ pub struct File {
 }
 
 impl File {
-    fn new(db: DatabaseConnection, model: FileModel, hash: HashModel) -> Self {
+    pub(crate) fn new(db: DatabaseConnection, model: FileModel, hash: HashModel) -> Self {
         Self { db, model, hash }
     }
 
