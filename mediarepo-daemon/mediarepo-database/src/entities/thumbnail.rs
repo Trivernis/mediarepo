@@ -10,6 +10,7 @@ pub struct Model {
     pub hash_id: i64,
     pub height: i32,
     pub width: i32,
+    pub mime: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
