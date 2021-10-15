@@ -28,6 +28,9 @@ pub enum RepoError {
 
     #[error(transparent)]
     Raw(StringError),
+
+    #[error(transparent)]
+    Image(#[from] image::error::ImageError),
 }
 
 #[derive(Error, Debug)]

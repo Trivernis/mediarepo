@@ -27,6 +27,20 @@ impl Hash {
         Ok(hash)
     }
 
+    /// Returns the hash by value
+    pub async fn by_value<S: AsRef<str>>(
+        db: DatabaseConnection,
+        value: S,
+    ) -> RepoResult<Option<Self>> {
+        let hash = hash::Entity::find()
+            .filter(hash::Column::Value.eq(value.as_ref()))
+            .one(&db)
+            .await?
+            .map(|model| Self::new(db, model));
+
+        Ok(hash)
+    }
+
     /// Adds a new hash to the database
     pub async fn add(db: DatabaseConnection, value: String) -> RepoResult<Self> {
         let active_model = hash::ActiveModel {

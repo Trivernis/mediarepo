@@ -6,6 +6,7 @@ pub struct Settings {
     pub listen_address: String,
     pub database_path: String,
     pub default_file_store: String,
+    pub thumbnail_store: String,
 }
 
 impl Default for Settings {
@@ -14,6 +15,7 @@ impl Default for Settings {
             listen_address: "127.0.0.1:3425".to_string(),
             database_path: "./db/repo.db".to_string(),
             default_file_store: "./files".to_string(),
+            thumbnail_store: "./thumb".to_string(),
         }
     }
 }

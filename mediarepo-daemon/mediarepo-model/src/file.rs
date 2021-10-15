@@ -2,12 +2,16 @@ use crate::file_type::FileType;
 use crate::storage::Storage;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
-use mediarepo_core::error::RepoResult;
+use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::image_processing::{
+    create_thumbnail, get_image_bytes_png, read_image, ThumbnailSize,
+};
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::file::ActiveModel as ActiveFile;
 use mediarepo_database::entities::file::Model as FileModel;
 use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash::Model as HashModel;
+use mime::Mime;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
 use tokio::io::BufReader;
@@ -73,22 +77,16 @@ impl File {
     }
 
     /// Adds a file with its hash to the database
-    pub(crate) async fn add<S: ToString>(
+    pub(crate) async fn add(
         db: DatabaseConnection,
         storage_id: i64,
-        hash: S,
+        hash_id: i64,
         file_type: FileType,
         mime_type: Option<String>,
     ) -> RepoResult<Self> {
-        let hash = hash::ActiveModel {
-            value: Set(hash.to_string()),
-            ..Default::default()
-        };
         let now = Local::now().naive_local();
-        let hash: hash::ActiveModel = hash.insert(&db).await?;
-        let id: i64 = hash.id.unwrap();
         let file = file::ActiveModel {
-            hash_id: Set(id),
+            hash_id: Set(hash_id),
             file_type: Set(file_type as u32),
             mime_type: Set(mime_type),
             storage_id: Set(storage_id),
@@ -204,6 +202,26 @@ impl File {
         let storage = self.storage().await?;
 
         storage.get_file_reader(&self.hash.value).await
+    }
+
+    /// Creates a thumbnail for the file
+    pub async fn create_thumbnail(&self, size: ThumbnailSize) -> RepoResult<(Vec<u8>, Mime)> {
+        match self.file_type() {
+            FileType::Image => self.create_image_thumbnail(size).await,
+            _ => Err(RepoError::from(
+                "Unsupported file type for thumbnail generation",
+            )),
+        }
+    }
+
+    /// Creates a thumbnail for an image
+    async fn create_image_thumbnail(&self, size: ThumbnailSize) -> RepoResult<(Vec<u8>, Mime)> {
+        let mut reader = self.get_reader().await?;
+        let image = read_image(&mut reader).await?;
+        let thumb_image = create_thumbnail(image, size);
+        let bytes = get_image_bytes_png(thumb_image)?;
+
+        Ok((bytes, mime::IMAGE_PNG))
     }
 
     /// Returns the active model of the file with only the id set

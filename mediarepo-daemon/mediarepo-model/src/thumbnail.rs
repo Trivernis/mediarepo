@@ -36,14 +36,18 @@ impl Thumbnail {
         db: DatabaseConnection,
         hash_id: i64,
         file_id: i64,
+        storage_id: i64,
         height: i32,
         width: i32,
+        mime: Option<String>,
     ) -> RepoResult<Self> {
         let active_model = thumbnail::ActiveModel {
+            storage_id: Set(storage_id),
             hash_id: Set(hash_id),
             file_id: Set(file_id),
             height: Set(height),
             width: Set(width),
+            mime: Set(mime),
             ..Default::default()
         };
         let active_model: thumbnail::ActiveModel = active_model.insert(&db).await?;
@@ -82,6 +86,10 @@ impl Thumbnail {
 
     pub fn width(&self) -> i32 {
         self.model.width
+    }
+
+    pub fn mime_type(&self) -> &Option<String> {
+        &self.model.mime
     }
 
     /// Returns the storage for the thumbnail

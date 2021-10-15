@@ -1,5 +1,4 @@
-use crate::file::File;
-use crate::file_type::FileType;
+use crate::hash::Hash;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::file_hash_store::FileHashStore;
 use mediarepo_database::entities::storage;
@@ -133,15 +132,14 @@ impl Storage {
         path.exists()
     }
 
-    /// Adds a file to the store
-    pub async fn add_file<R: AsyncRead + Unpin>(
-        &self,
-        reader: R,
-        file_type: FileType,
-        mime_type: Option<String>,
-    ) -> RepoResult<File> {
+    /// Adds a thumbnail
+    pub async fn store_entry<R: AsyncRead + Unpin>(&self, reader: R) -> RepoResult<Hash> {
         let hash = self.store.add_file(reader, None).await?;
-        File::add(self.db.clone(), self.id(), hash, file_type, mime_type).await
+        if let Some(hash) = Hash::by_value(self.db.clone(), &hash).await? {
+            Ok(hash)
+        } else {
+            Hash::add(self.db.clone(), hash).await
+        }
     }
 
     /// Returns the buf reader to the given hash

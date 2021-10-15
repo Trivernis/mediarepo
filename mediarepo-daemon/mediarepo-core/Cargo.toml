@@ -14,6 +14,8 @@ toml = "0.5.8"
 serde = "1.0.130"
 rmp-ipc = "0.4.0"
 typemap_rev = "0.1.5"
+image = "0.23.14"
+futures = "0.3.17"
 
 [dependencies.sea-orm]
 version = "0.2.4"
