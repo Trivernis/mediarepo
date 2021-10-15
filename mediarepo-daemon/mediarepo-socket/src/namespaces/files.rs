@@ -20,6 +20,7 @@ pub fn build(builder: NamespaceBuilder) -> NamespaceBuilder {
         .on("add_file", |c, e| Box::pin(add_file(c, e)))
         .on("read_file", |c, e| Box::pin(read_file(c, e)))
         .on("get_thumbnails", |c, e| Box::pin(get_file_thumbnails(c, e)))
+        .on("read_thumbnail", |c, e| Box::pin(read_thumbnail(c, e)))
 }
 
 /// Returns a list of all files
@@ -93,6 +94,27 @@ async fn get_file_thumbnails(ctx: &Context, event: Event) -> Result<()> {
         .collect();
     ctx.emitter
         .emit_response_to(event.id(), FILES_NAMESPACE, "get_thumbnails", thumb_hashes)
+        .await?;
+
+    Ok(())
+}
+
+/// Reads a thumbnail for the given thumbnail hash
+async fn read_thumbnail(ctx: &Context, event: Event) -> Result<()> {
+    let hash = event.data::<String>()?;
+    let mut reader = {
+        let data = ctx.data.read().await;
+        let repo = data.get::<RepoKey>().unwrap();
+        let thumbnail = repo
+            .thumbnail_by_hash(&hash)
+            .await?
+            .ok_or_else(|| RepoError::from("Thumbnail not found"))?;
+        thumbnail.get_reader().await?
+    };
+    let mut buf = Vec::new();
+    reader.read_to_end(&mut buf).await?;
+    ctx.emitter
+        .emit_response_to(event.id(), FILES_NAMESPACE, "read_thumbnail", buf)
         .await?;
 
     Ok(())

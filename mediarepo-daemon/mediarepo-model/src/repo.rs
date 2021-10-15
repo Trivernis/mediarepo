@@ -102,6 +102,11 @@ impl Repo {
         .await
     }
 
+    /// Returns a thumbnail by its hash
+    pub async fn thumbnail_by_hash<S: AsRef<str>>(&self, hash: S) -> RepoResult<Option<Thumbnail>> {
+        Thumbnail::by_hash(self.db.clone(), hash).await
+    }
+
     /// Creates thumbnails of all sizes for a file
     pub async fn create_thumbnails_for_file(&self, file: File) -> RepoResult<()> {
         let thumb_storage = self.get_thumbnail_storage()?;

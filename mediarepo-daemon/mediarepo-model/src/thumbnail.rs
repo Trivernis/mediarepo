@@ -4,6 +4,8 @@ use mediarepo_database::entities::hash;
 use mediarepo_database::entities::thumbnail;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
+use tokio::fs::File;
+use tokio::io::BufReader;
 
 pub struct Thumbnail {
     db: DatabaseConnection,
@@ -25,6 +27,23 @@ impl Thumbnail {
                 .await?;
 
         if let Some((model, Some(hash))) = model {
+            Ok(Some(Self::new(db, model, hash)))
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Returns a thumbnail by hash
+    pub async fn by_hash<S: AsRef<str>>(
+        db: DatabaseConnection,
+        hash: S,
+    ) -> RepoResult<Option<Self>> {
+        let result: Option<(hash::Model, Option<thumbnail::Model>)> = hash::Entity::find()
+            .filter(hash::Column::Value.eq(hash.as_ref()))
+            .find_also_related(thumbnail::Entity)
+            .one(&db)
+            .await?;
+        if let Some((hash, Some(model))) = result {
             Ok(Some(Self::new(db, model, hash)))
         } else {
             Ok(None)
@@ -99,5 +118,11 @@ impl Thumbnail {
             .expect("The FK storage_id doesn't exist?!");
 
         Ok(storage)
+    }
+
+    /// Returns the reader of the thumbnail file
+    pub async fn get_reader(&self) -> RepoResult<BufReader<File>> {
+        let storage = self.storage().await?;
+        storage.get_file_reader(self.hash()).await
     }
 }
