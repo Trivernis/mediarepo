@@ -1,6 +1,10 @@
-use crate::types::requests::{AddFileRequest, ReadFileRequest};
+use crate::types::requests::{
+    AddFileRequest, FileIdentifier, GetFileThumbnailsRequest, ReadFileRequest,
+};
 use crate::types::responses::FileResponse;
-use mediarepo_core::error::RepoError;
+use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_model::file::File;
+use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use rmp_ipc::context::Context;
 use rmp_ipc::error::Result;
@@ -15,6 +19,7 @@ pub fn build(builder: NamespaceBuilder) -> NamespaceBuilder {
         .on("all_files", |c, e| Box::pin(all_files(c, e)))
         .on("add_file", |c, e| Box::pin(add_file(c, e)))
         .on("read_file", |c, e| Box::pin(read_file(c, e)))
+        .on("get_thumbnails", |c, e| Box::pin(get_file_thumbnails(c, e)))
 }
 
 /// Returns a list of all files
@@ -59,11 +64,9 @@ async fn read_file(ctx: &Context, event: Event) -> Result<()> {
     let mut reader = {
         let data = ctx.data.read().await;
         let repo = data.get::<RepoKey>().unwrap();
-        let file = match request {
-            ReadFileRequest::ID(id) => repo.file_by_id(id).await,
-            ReadFileRequest::Hash(hash) => repo.file_by_hash(hash).await,
-        }?
-        .ok_or_else(|| RepoError::from("File not found"));
+        let file = file_by_identifier(request, repo)
+            .await?
+            .ok_or_else(|| RepoError::from("File not found"));
         file?.get_reader().await?
     };
     let mut buf = Vec::new();
@@ -73,4 +76,31 @@ async fn read_file(ctx: &Context, event: Event) -> Result<()> {
         .await?;
 
     Ok(())
+}
+
+/// Returns a list of available thumbnails of a file
+async fn get_file_thumbnails(ctx: &Context, event: Event) -> Result<()> {
+    let request = event.data::<GetFileThumbnailsRequest>()?;
+    let data = ctx.data.read().await;
+    let repo = data.get::<RepoKey>().unwrap();
+    let file = file_by_identifier(request, repo)
+        .await?
+        .ok_or_else(|| RepoError::from("File not found"))?;
+    let thumbnails = file.thumbnails().await?;
+    let thumb_hashes: Vec<String> = thumbnails
+        .into_iter()
+        .map(|thumb| thumb.hash().clone())
+        .collect();
+    ctx.emitter
+        .emit_response_to(event.id(), FILES_NAMESPACE, "get_thumbnails", thumb_hashes)
+        .await?;
+
+    Ok(())
+}
+
+async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<Option<File>> {
+    match identifier {
+        FileIdentifier::ID(id) => repo.file_by_id(id).await,
+        FileIdentifier::Hash(hash) => repo.file_by_hash(hash).await,
+    }
 }

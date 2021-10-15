@@ -6,7 +6,10 @@ pub struct AddFileRequest {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum ReadFileRequest {
+pub enum FileIdentifier {
     ID(i64),
     Hash(String),
 }
+
+pub type ReadFileRequest = FileIdentifier;
+pub type GetFileThumbnailsRequest = FileIdentifier;
