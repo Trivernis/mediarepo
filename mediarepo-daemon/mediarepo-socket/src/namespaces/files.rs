@@ -2,11 +2,11 @@ use crate::types::requests::{
     AddFileRequest, FileIdentifier, GetFileThumbnailsRequest, ReadFileRequest,
 };
 use crate::types::responses::{FileResponse, ThumbnailResponse};
+use crate::utils::get_repo_from_context;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::rmp_ipc::prelude::*;
 use mediarepo_model::file::File;
 use mediarepo_model::repo::Repo;
-use mediarepo_model::type_keys::RepoKey;
 use std::path::PathBuf;
 use tokio::io::AsyncReadExt;
 
@@ -32,8 +32,7 @@ impl FilesNamespace {
     /// Returns a list of all files
     async fn all_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let files = {
-            let data = ctx.data.read().await;
-            let repo = data.get::<RepoKey>().unwrap();
+            let repo = get_repo_from_context(ctx).await;
             repo.files().await?
         };
         let responses: Vec<FileResponse> = files.into_iter().map(FileResponse::from).collect();
@@ -48,11 +47,9 @@ impl FilesNamespace {
     async fn add_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<AddFileRequest>()?;
         let path = PathBuf::from(request.path);
-        let file = {
-            let data = ctx.data.read().await;
-            let repo = data.get::<RepoKey>().unwrap();
-            repo.add_file_by_path(path).await?
-        };
+        let repo = get_repo_from_context(ctx).await;
+        let file = repo.add_file_by_path(path).await?;
+
         ctx.emitter
             .emit_response_to(
                 event.id(),
@@ -68,16 +65,13 @@ impl FilesNamespace {
     /// Reads the binary contents of a file
     async fn read_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<ReadFileRequest>()?;
-        let mut reader = {
-            let data = ctx.data.read().await;
-            let repo = data.get::<RepoKey>().unwrap();
-            let file = file_by_identifier(request, repo)
-                .await?
-                .ok_or_else(|| RepoError::from("File not found"));
-            file?.get_reader().await?
-        };
+
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(request, &repo).await?;
+        let mut reader = file.get_reader().await?;
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf).await?;
+
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "read_file", buf)
             .await?;
@@ -88,12 +82,10 @@ impl FilesNamespace {
     /// Returns a list of available thumbnails of a file
     async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<GetFileThumbnailsRequest>()?;
-        let data = ctx.data.read().await;
-        let repo = data.get::<RepoKey>().unwrap();
-        let file = file_by_identifier(request, repo)
-            .await?
-            .ok_or_else(|| RepoError::from("File not found"))?;
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(request, &repo).await?;
         let thumbnails = file.thumbnails().await?;
+
         let thumb_responses: Vec<ThumbnailResponse> = thumbnails
             .into_iter()
             .map(ThumbnailResponse::from)
@@ -108,15 +100,12 @@ impl FilesNamespace {
     /// Reads a thumbnail for the given thumbnail hash
     async fn read_thumbnail(ctx: &Context, event: Event) -> IPCResult<()> {
         let hash = event.data::<String>()?;
-        let mut reader = {
-            let data = ctx.data.read().await;
-            let repo = data.get::<RepoKey>().unwrap();
-            let thumbnail = repo
-                .thumbnail_by_hash(&hash)
-                .await?
-                .ok_or_else(|| RepoError::from("Thumbnail not found"))?;
-            thumbnail.get_reader().await?
-        };
+        let repo = get_repo_from_context(ctx).await;
+        let thumbnail = repo
+            .thumbnail_by_hash(&hash)
+            .await?
+            .ok_or_else(|| RepoError::from("Thumbnail not found"))?;
+        let mut reader = thumbnail.get_reader().await?;
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf).await?;
         ctx.emitter
@@ -127,9 +116,10 @@ impl FilesNamespace {
     }
 }
 
-async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<Option<File>> {
-    match identifier {
+async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<File> {
+    let file = match identifier {
         FileIdentifier::ID(id) => repo.file_by_id(id).await,
         FileIdentifier::Hash(hash) => repo.file_by_hash(hash).await,
-    }
+    }?;
+    file.ok_or_else(|| RepoError::from("Thumbnail not found"))
 }

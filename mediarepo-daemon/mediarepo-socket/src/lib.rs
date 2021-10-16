@@ -3,6 +3,7 @@ use mediarepo_core::rmp_ipc::prelude::*;
 
 mod namespaces;
 pub mod types;
+mod utils;
 
 pub fn get_builder(address: &str) -> IPCBuilder {
     namespaces::build_namespaces(IPCBuilder::new().address(address)).on("info", callback!(info))

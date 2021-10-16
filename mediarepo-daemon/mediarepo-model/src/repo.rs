@@ -11,6 +11,7 @@ use std::path::PathBuf;
 use tokio::fs::OpenOptions;
 use tokio::io::BufReader;
 
+#[derive(Clone)]
 pub struct Repo {
     db: DatabaseConnection,
     main_storage: Option<Storage>,

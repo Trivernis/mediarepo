@@ -11,6 +11,7 @@ use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
 use std::path::PathBuf;
+use std::sync::Arc;
 use structopt::StructOpt;
 use tokio::fs;
 use tokio::runtime;
@@ -105,7 +106,7 @@ async fn start_server(opt: Opt) -> RepoResult<()> {
 
     get_builder(&settings.listen_address)
         .insert::<SettingsKey>(settings)
-        .insert::<RepoKey>(repo)
+        .insert::<RepoKey>(Arc::new(repo))
         .build_server()
         .await?;
 
