@@ -1,17 +1,14 @@
 use crate::types::responses::InfoResponse;
-use rmp_ipc::context::Context;
-use rmp_ipc::error::Result;
-use rmp_ipc::{Event, IPCBuilder};
+use mediarepo_core::rmp_ipc::prelude::*;
 
 mod namespaces;
 pub mod types;
 
 pub fn get_builder(address: &str) -> IPCBuilder {
-    namespaces::build_namespaces(IPCBuilder::new().address(address))
-        .on("info", |c, e| Box::pin(info(c, e)))
+    namespaces::build_namespaces(IPCBuilder::new().address(address)).on("info", callback!(info))
 }
 
-async fn info(ctx: &Context, event: Event) -> Result<()> {
+async fn info(ctx: &Context, event: Event) -> IPCResult<()> {
     let response = InfoResponse {
         name: env!("CARGO_PKG_NAME").to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),

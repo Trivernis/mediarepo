@@ -7,3 +7,4 @@ pub mod type_keys;
 
 pub use futures;
 pub use image;
+pub use rmp_ipc;
