@@ -13,16 +13,18 @@ use tokio::io::AsyncReadExt;
 pub struct FilesNamespace;
 
 impl NamespaceProvider for FilesNamespace {
-    fn name() -> String {
-        String::from("files")
+    fn name() -> &'static str {
+        "files"
     }
 
     fn register(handler: &mut EventHandler) {
-        handler.on("all_files", callback!(Self::all_files));
-        handler.on("add_file", callback!(Self::add_file));
-        handler.on("read_file", callback!(Self::read_file));
-        handler.on("get_thumbnails", callback!(Self::thumbnails));
-        handler.on("read_thumbnail", callback!(Self::read_thumbnail));
+        events!(handler,
+            "all_files" => Self::all_files,
+            "add_file" => Self::add_file,
+            "read_file" => Self::read_file,
+            "get_thumbnails" => Self::thumbnails,
+            "read_thumbnail" => Self::read_thumbnail
+        );
     }
 }
 
