@@ -1,7 +1,7 @@
-<mat-card>
+<mat-card #card>
   <mat-card-title *ngIf="!!file?.name">{{file?.name}}</mat-card-title>
   <mat-card-content *ngIf="contentUrl !== undefined">
-    <img *ngIf="contentUrl !== undefined" class="entry-image" decoding="async" [src]="contentUrl" alt="File Image">
+    <img *ngIf="contentUrl !== undefined" class="entry-image" loading="lazy" decoding="async" [src]="contentUrl" alt="File Image">
   </mat-card-content>
   <mat-card-footer>
     <mat-progress-bar *ngIf="contentUrl === undefined" mode="indeterminate"></mat-progress-bar>

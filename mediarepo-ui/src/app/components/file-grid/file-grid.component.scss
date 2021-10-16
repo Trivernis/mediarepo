@@ -1,4 +1,13 @@
 app-file-grid-entry {
+  height: 250px;
+  width: 100%;
+  padding: 5px;
+}
+
+.file-scroll {
   height: 100%;
-  width: 100%
+}
+
+.file-row {
+  display: flex;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {File} from "../../models/File";
 import {FileService} from "../../services/file/file.service";
 
@@ -7,14 +7,9 @@ import {FileService} from "../../services/file/file.service";
   templateUrl: './file-grid.component.html',
   styleUrls: ['./file-grid.component.scss']
 })
-export class FileGridComponent implements OnInit {
+export class FileGridComponent {
 
-  files: File[] = [];
+  @Input() fileRows: File[][] = [];
 
-  constructor(private fileService: FileService) { }
-
-  ngOnInit(): void {
-    this.fileService.displayedFiles.subscribe((files) => this.files = files);
-  }
-
+  constructor() { }
 }

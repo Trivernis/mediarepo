@@ -1,7 +1,6 @@
 mat-card {
   height: calc(100% - 32px);
   width: calc(100% - 32px);
-  padding: 16px;
 }
 
 mat-card-content {
@@ -14,5 +13,6 @@ mat-card-content {
 .entry-image {
   max-width: 100%;
   max-height: 100%;
+  height: auto;
   margin: auto;
 }

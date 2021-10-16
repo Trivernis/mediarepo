@@ -21,6 +21,8 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatGridListModule} from "@angular/material/grid-list";
 import { FileGridEntryComponent } from './components/file-grid/file-grid-entry/file-grid-entry.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {ScrollingModule} from "@angular/cdk/scrolling";
 
 @NgModule({
   declarations: [
@@ -47,6 +49,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         MatSidenavModule,
         MatGridListModule,
         MatProgressBarModule,
+        MatPaginatorModule,
+        ScrollingModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

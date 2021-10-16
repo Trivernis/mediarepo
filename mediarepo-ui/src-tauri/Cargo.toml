@@ -30,7 +30,7 @@ features = ["fs", "io-std", "io-util"]
 
 [dependencies.mediarepo]
 git = "https://github.com/Trivernis/mediarepo-daemon"
-rev = "a928f5e42eb7a8ce524d3722a4f5ae05889e52ba"
+rev = "57308089d58706ee1438f6b55d53691e9e08ce6b"
 features = ["library"]
 default-features=false
 

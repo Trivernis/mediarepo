@@ -23,6 +23,8 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "@tauri-apps/api": "^1.0.0-beta.8",
+    "primeicons": "^4.1.0",
+    "primeng": "^12.2.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

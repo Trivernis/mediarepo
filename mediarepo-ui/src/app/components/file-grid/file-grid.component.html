@@ -1,5 +1,7 @@
-<mat-grid-list gutterSize="1em" cols="5" rowHeight="1:1">
-  <mat-grid-tile *ngFor="let file of files">
-    <app-file-grid-entry [file]="file"></app-file-grid-entry>
-  </mat-grid-tile>
-</mat-grid-list>
+<cdk-virtual-scroll-viewport class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
+  <div *cdkVirtualFor="let fileRow of fileRows">
+    <div class="file-row">
+      <app-file-grid-entry *ngFor="let file of fileRow" [file]="file"></app-file-grid-entry>
+    </div>
+  </div>
+</cdk-virtual-scroll-viewport>
