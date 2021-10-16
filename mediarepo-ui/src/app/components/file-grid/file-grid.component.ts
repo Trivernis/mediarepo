@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {File} from "../../models/File";
 import {FileService} from "../../services/file/file.service";
 
@@ -10,6 +10,8 @@ import {FileService} from "../../services/file/file.service";
 export class FileGridComponent {
 
   @Input() fileRows: File[][] = [];
+  @Output() fileDblClickEvent = new EventEmitter<File>();
+  @Output() fileClickEvent = new EventEmitter<File>();
 
   constructor() { }
 }

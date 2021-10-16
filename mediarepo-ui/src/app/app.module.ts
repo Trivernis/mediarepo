@@ -23,6 +23,7 @@ import { FileGridEntryComponent } from './components/file-grid/file-grid-entry/f
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {LightboxModule} from "ngx-lightbox";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
         MatProgressBarModule,
         MatPaginatorModule,
         ScrollingModule,
+        LightboxModule
     ],
   providers: [],
   bootstrap: [AppComponent]

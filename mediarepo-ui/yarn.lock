@@ -1572,6 +1572,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.50.tgz#1e0caa9364d3fccd2931c3ed96fdbeaa5d4cca83"
   integrity sha512-C6N5s2ZFtuZRj54k2/zyRhNDjJwwcViAM3Nbm8zjBpbqAdZ00mr0CFxvSKeO8Y/e03WVFLpQMdHYVfUd6SB+Hw==
 
+"@types/file-saver@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@types/file-saver/-/file-saver-2.0.3.tgz#b734c4f5a04d20615eaed3dc106e2ab321082009"
+  integrity sha512-MBIou8pd/41jkff7s97B47bc9+p0BszqqDJsO51yDm49uUxeKzrfuNl5fSLC6BpLEWKA8zlwyqALVmXrFwoBHQ==
+
 "@types/glob@^7.1.1":
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.4.tgz#ea59e21d2ee5c517914cb4bc8e4153b99e566672"
@@ -4469,6 +4474,11 @@ file-entry-cache@^6.0.1:
   dependencies:
     flat-cache "^3.0.4"
 
+file-saver@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/file-saver/-/file-saver-2.0.5.tgz#d61cfe2ce059f414d899e9dd6d4107ee25670c38"
+  integrity sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==
+
 file-type@5.2.0, file-type@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-5.2.0.tgz#2ddbea7c73ffe36368dfae49dc338c058c2b8ad6"
@@ -6881,6 +6891,21 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+ngx-filesaver@8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/ngx-filesaver/-/ngx-filesaver-8.1.0.tgz#f82a567f70c4ee81fc67b25bf594f3959c371b19"
+  integrity sha512-xAwThsB/ap9qs7BRgW+mJPWBK60uaqkfPnw3vzbykTdfIvGf62U/6osDCq4TCPl/POWLFui6b3Bu+gfDMqoZhw==
+  dependencies:
+    tslib "^1.9.0"
+
+ngx-lightbox@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/ngx-lightbox/-/ngx-lightbox-2.5.1.tgz#1d16b7445296b541c428c71c71b9f763ddc1cef8"
+  integrity sha512-/EOKxiT8s8pS7CIwAJDrUWt4DsNGdj7fj5ygzZZ4Jdl0iKcfwhGtnpGfrmGZlCeoFDYg5+u1PalFbvYJs0naSQ==
+  dependencies:
+    file-saver "^2.0.5"
+    ngx-filesaver "8.1.0"
 
 nice-napi@^1.0.2:
   version "1.0.2"

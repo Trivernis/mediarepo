@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Repository} from "../../../models/Repository";
 import {RepositoryService} from "../../../services/repository/repository.service";
 import {Router} from "@angular/router";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
 
 @Component({

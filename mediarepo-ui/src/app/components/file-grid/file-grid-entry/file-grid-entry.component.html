@@ -1,4 +1,4 @@
-<mat-card #card>
+<mat-card #card (click)="clickEvent.emit(file)" (dblclick)="dblClickEvent.emit(file)">
   <mat-card-title *ngIf="!!file?.name">{{file?.name}}</mat-card-title>
   <mat-card-content *ngIf="contentUrl !== undefined">
     <img *ngIf="contentUrl !== undefined" class="entry-image" loading="lazy" decoding="async" [src]="contentUrl" alt="File Image">

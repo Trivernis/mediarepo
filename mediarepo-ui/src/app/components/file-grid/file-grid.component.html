@@ -1,7 +1,8 @@
 <cdk-virtual-scroll-viewport class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
   <div *cdkVirtualFor="let fileRow of fileRows">
     <div class="file-row">
-      <app-file-grid-entry *ngFor="let file of fileRow" [file]="file"></app-file-grid-entry>
+      <app-file-grid-entry (clickEvent)="fileClickEvent.emit($event)" (dblClickEvent)="fileDblClickEvent.emit($event)"
+                           *ngFor="let file of fileRow" [file]="file"></app-file-grid-entry>
     </div>
   </div>
 </cdk-virtual-scroll-viewport>
