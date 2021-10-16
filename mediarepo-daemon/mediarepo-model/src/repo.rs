@@ -115,9 +115,8 @@ impl Repo {
             ThumbnailSize::Medium,
             ThumbnailSize::Large,
         ] {
-            let (bytes, mime) = file.create_thumbnail(size).await?;
+            let (bytes, mime, (height, width)) = file.create_thumbnail(size).await?;
             let hash = thumb_storage.store_entry(Cursor::new(bytes)).await?;
-            let (height, width) = size.dimensions();
             Thumbnail::add(
                 self.db.clone(),
                 hash.id(),

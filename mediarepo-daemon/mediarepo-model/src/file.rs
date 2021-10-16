@@ -3,6 +3,7 @@ use crate::storage::Storage;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::image::GenericImageView;
 use mediarepo_core::image_processing::{
     create_thumbnail, get_image_bytes_png, read_image, ThumbnailSize,
 };
@@ -205,7 +206,10 @@ impl File {
     }
 
     /// Creates a thumbnail for the file
-    pub async fn create_thumbnail(&self, size: ThumbnailSize) -> RepoResult<(Vec<u8>, Mime)> {
+    pub async fn create_thumbnail(
+        &self,
+        size: ThumbnailSize,
+    ) -> RepoResult<(Vec<u8>, Mime, (u32, u32))> {
         match self.file_type() {
             FileType::Image => self.create_image_thumbnail(size).await,
             _ => Err(RepoError::from(
@@ -215,13 +219,17 @@ impl File {
     }
 
     /// Creates a thumbnail for an image
-    async fn create_image_thumbnail(&self, size: ThumbnailSize) -> RepoResult<(Vec<u8>, Mime)> {
+    async fn create_image_thumbnail(
+        &self,
+        size: ThumbnailSize,
+    ) -> RepoResult<(Vec<u8>, Mime, (u32, u32))> {
         let mut reader = self.get_reader().await?;
         let image = read_image(&mut reader).await?;
         let thumb_image = create_thumbnail(image, size);
+        let actual_size = (thumb_image.height(), thumb_image.width());
         let bytes = get_image_bytes_png(thumb_image)?;
 
-        Ok((bytes, mime::IMAGE_PNG))
+        Ok((bytes, mime::IMAGE_PNG, actual_size))
     }
 
     /// Returns the active model of the file with only the id set

@@ -1,7 +1,7 @@
 use crate::types::requests::{
     AddFileRequest, FileIdentifier, GetFileThumbnailsRequest, ReadFileRequest,
 };
-use crate::types::responses::FileResponse;
+use crate::types::responses::{FileResponse, ThumbnailResponse};
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_model::file::File;
 use mediarepo_model::repo::Repo;
@@ -88,12 +88,17 @@ async fn get_file_thumbnails(ctx: &Context, event: Event) -> Result<()> {
         .await?
         .ok_or_else(|| RepoError::from("File not found"))?;
     let thumbnails = file.thumbnails().await?;
-    let thumb_hashes: Vec<String> = thumbnails
+    let thumb_responses: Vec<ThumbnailResponse> = thumbnails
         .into_iter()
-        .map(|thumb| thumb.hash().clone())
+        .map(ThumbnailResponse::from)
         .collect();
     ctx.emitter
-        .emit_response_to(event.id(), FILES_NAMESPACE, "get_thumbnails", thumb_hashes)
+        .emit_response_to(
+            event.id(),
+            FILES_NAMESPACE,
+            "get_thumbnails",
+            thumb_responses,
+        )
         .await?;
 
     Ok(())
