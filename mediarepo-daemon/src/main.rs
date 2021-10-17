@@ -5,9 +5,10 @@ use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NA
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 use log::LevelFilter;
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::futures::future;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
+use mediarepo_core::utils::parse_tags_file;
+use mediarepo_model::file::File;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
@@ -163,14 +164,18 @@ async fn import(opt: Opt, path: String) -> RepoResult<()> {
     let (_s, repo) = init_repo(&opt).await?;
     log::info!("Importing");
 
-    let promises = glob::glob(&path)
+    let paths: Vec<PathBuf> = glob::glob(&path)
         .unwrap()
         .into_iter()
         .filter_map(|r| r.ok())
         .filter(|e| e.is_file())
-        .map(|path| import_single_image(path, &repo));
+        .collect();
 
-    future::join_all(promises).await;
+    for path in paths {
+        if let Err(e) = import_single_image(path, &repo).await {
+            log::error!("Import failed: {:?}", e);
+        }
+    }
 
     Ok(())
 }
@@ -178,9 +183,35 @@ async fn import(opt: Opt, path: String) -> RepoResult<()> {
 /// Creates thumbnails of all sizes
 async fn import_single_image(path: PathBuf, repo: &Repo) -> RepoResult<()> {
     log::info!("Importing file");
-    let file = repo.add_file_by_path(path).await?;
+    let file = repo.add_file_by_path(path.clone()).await?;
     log::info!("Creating thumbnails");
-    repo.create_thumbnails_for_file(file).await?;
+    repo.create_thumbnails_for_file(file.clone()).await?;
+    let tags_path = PathBuf::from(format!("{}{}", path.to_str().unwrap(), ".txt"));
+    add_tags_from_tags_file(tags_path, repo, file).await?;
 
+    Ok(())
+}
+
+async fn add_tags_from_tags_file(tags_path: PathBuf, repo: &Repo, file: File) -> RepoResult<()> {
+    log::info!("Adding tags");
+    if tags_path.exists() {
+        let tags = parse_tags_file(tags_path).await?;
+        let mut tag_ids = Vec::new();
+
+        for (namespace, name) in tags {
+            let tag = if let Some(namespace) = namespace {
+                log::info!("Adding namespaced tag '{}:{}'", namespace, name);
+                repo.add_or_find_namespaced_tag(name, namespace).await?
+            } else {
+                log::info!("Adding unnamespaced tag '{}'", name);
+                repo.add_or_find_unnamespaced_tag(name).await?
+            };
+            tag_ids.push(tag.id());
+        }
+        log::info!("Mapping {} tags to the file", tag_ids.len());
+        file.add_tags(tag_ids).await?;
+    } else {
+        log::info!("No tags file '{:?}' found", tags_path);
+    }
     Ok(())
 }

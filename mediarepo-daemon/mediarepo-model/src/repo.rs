@@ -152,7 +152,7 @@ impl Repo {
     }
 
     /// Adds or finds an unnamespaced tag
-    async fn add_or_find_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
+    pub async fn add_or_find_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
         if let Some(tag) = Tag::by_name(self.db.clone(), &name).await? {
             Ok(tag)
         } else {
@@ -166,7 +166,11 @@ impl Repo {
     }
 
     /// Adds or finds a namespaced tag
-    async fn add_or_find_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
+    pub async fn add_or_find_namespaced_tag(
+        &self,
+        name: String,
+        namespace: String,
+    ) -> RepoResult<Tag> {
         if let Some(tag) = Tag::by_name_and_namespace(self.db.clone(), &name, &namespace).await? {
             Ok(tag)
         } else {

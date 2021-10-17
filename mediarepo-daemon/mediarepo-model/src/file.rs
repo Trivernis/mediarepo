@@ -8,23 +8,22 @@ use mediarepo_core::image_processing::{
     create_thumbnail, get_image_bytes_png, read_image, ThumbnailSize,
 };
 use mediarepo_database::entities::file;
-use mediarepo_database::entities::file::ActiveModel as ActiveFile;
-use mediarepo_database::entities::file::Model as FileModel;
 use mediarepo_database::entities::hash;
-use mediarepo_database::entities::hash::Model as HashModel;
+use mediarepo_database::entities::hash_tag;
 use mime::Mime;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
 use tokio::io::BufReader;
 
+#[derive(Clone)]
 pub struct File {
     db: DatabaseConnection,
-    model: FileModel,
-    hash: HashModel,
+    model: file::Model,
+    hash: hash::Model,
 }
 
 impl File {
-    pub(crate) fn new(db: DatabaseConnection, model: FileModel, hash: HashModel) -> Self {
+    pub(crate) fn new(db: DatabaseConnection, model: file::Model, hash: hash::Model) -> Self {
         Self { db, model, hash }
     }
 
@@ -198,6 +197,32 @@ impl File {
         Ok(())
     }
 
+    /// Adds a single tag to the file
+    pub async fn add_tag(&mut self, tag_id: i64) -> RepoResult<()> {
+        let hash_id = self.hash.id;
+        let active_model = hash_tag::ActiveModel {
+            hash_id: Set(hash_id),
+            tag_id: Set(tag_id),
+        };
+        active_model.insert(&self.db).await?;
+        Ok(())
+    }
+
+    /// Adds multiple tags to the file at once
+    pub async fn add_tags(&self, tag_ids: Vec<i64>) -> RepoResult<()> {
+        let hash_id = self.hash.id;
+        let models: Vec<hash_tag::ActiveModel> = tag_ids
+            .into_iter()
+            .map(|tag_id| hash_tag::ActiveModel {
+                hash_id: Set(hash_id),
+                tag_id: Set(tag_id),
+            })
+            .collect();
+        hash_tag::Entity::insert_many(models).exec(&self.db).await?;
+
+        Ok(())
+    }
+
     /// Returns the reader for the file
     pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
         let storage = self.storage().await?;
@@ -233,8 +258,8 @@ impl File {
     }
 
     /// Returns the active model of the file with only the id set
-    fn get_active_model(&self) -> ActiveFile {
-        ActiveFile {
+    fn get_active_model(&self) -> file::ActiveModel {
+        file::ActiveModel {
             id: Set(self.id()),
             ..Default::default()
         }

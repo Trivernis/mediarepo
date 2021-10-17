@@ -17,6 +17,7 @@ impl NamespaceProvider for TagsNamespace {
 }
 
 impl TagsNamespace {
+    /// Returns a list of all tags in the database
     async fn all_tags(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags: Vec<TagResponse> = repo

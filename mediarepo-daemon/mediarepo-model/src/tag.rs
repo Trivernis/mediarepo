@@ -3,8 +3,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
-use sea_orm::QuerySelect;
-use sea_orm::{DatabaseConnection, JoinType, Set};
+use sea_orm::{DatabaseConnection, Set};
 
 #[derive(Clone)]
 pub struct Tag {
@@ -29,7 +28,8 @@ impl Tag {
     /// Returns all tags stored in the database
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
         let tags: Vec<Self> = tag::Entity::find()
-            .find_also_related(namespace::Entity)
+            .inner_join(namespace::Entity)
+            .select_also(namespace::Entity)
             .all(&db)
             .await?
             .into_iter()
@@ -73,7 +73,6 @@ impl Tag {
     ) -> RepoResult<Option<Self>> {
         let tag = tag::Entity::find()
             .find_also_related(namespace::Entity)
-            .join(JoinType::InnerJoin, namespace::Relation::Tag.def())
             .filter(namespace::Column::Name.eq(namespace.as_ref()))
             .filter(tag::Column::Name.eq(name.as_ref()))
             .one(&db)
