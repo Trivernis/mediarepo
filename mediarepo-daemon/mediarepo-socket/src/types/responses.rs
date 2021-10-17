@@ -1,6 +1,7 @@
 use chrono::NaiveDateTime;
 use mediarepo_model::file::File;
 use mediarepo_model::file_type::FileType;
+use mediarepo_model::tag::Tag;
 use mediarepo_model::thumbnail::Thumbnail;
 use serde::{Deserialize, Serialize};
 
@@ -54,4 +55,21 @@ impl From<Thumbnail> for ThumbnailResponse {
 pub struct InfoResponse {
     pub name: String,
     pub version: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TagResponse {
+    pub id: i64,
+    pub name: String,
+    pub namespace: Option<String>,
+}
+
+impl From<Tag> for TagResponse {
+    fn from(tag: Tag) -> Self {
+        Self {
+            id: tag.id(),
+            name: tag.name().to_owned(),
+            namespace: tag.namespace().map(|n| n.name().to_owned()),
+        }
+    }
 }

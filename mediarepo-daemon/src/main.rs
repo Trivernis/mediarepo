@@ -3,6 +3,7 @@ mod utils;
 
 use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
+use log::LevelFilter;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::futures::future;
 use mediarepo_core::settings::Settings;
@@ -10,7 +11,10 @@ use mediarepo_core::type_keys::SettingsKey;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
+use pretty_env_logger::env_logger::WriteStyle;
+use std::env;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::Arc;
 use structopt::StructOpt;
 use tokio::fs;
@@ -66,6 +70,7 @@ fn main() -> RepoResult<()> {
 }
 
 fn get_single_thread_runtime() -> Runtime {
+    log::info!("Using current thread runtime");
     runtime::Builder::new_current_thread()
         .enable_all()
         .max_blocking_threads(1)
@@ -74,6 +79,7 @@ fn get_single_thread_runtime() -> Runtime {
 }
 
 fn get_multi_thread_runtime() -> Runtime {
+    log::info!("Using multi thread runtime");
     runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
@@ -81,7 +87,15 @@ fn get_multi_thread_runtime() -> Runtime {
 }
 
 fn build_logger() {
-    env_logger::builder()
+    pretty_env_logger::formatted_timed_builder()
+        .filter(
+            None,
+            env::var("RUST_LOG")
+                .ok()
+                .and_then(|level| LevelFilter::from_str(&level).ok())
+                .unwrap_or(LevelFilter::Info),
+        )
+        .write_style(WriteStyle::Always)
         .filter_module("sqlx", log::LevelFilter::Warn)
         .filter_module("tokio", log::LevelFilter::Info)
         .filter_module("tracing", log::LevelFilter::Warn)

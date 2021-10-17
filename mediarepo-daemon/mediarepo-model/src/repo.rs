@@ -1,9 +1,12 @@
 use crate::file::File;
 use crate::file_type::FileType;
+use crate::namespace::Namespace;
 use crate::storage::Storage;
+use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::image_processing::ThumbnailSize;
+use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
 use sea_orm::DatabaseConnection;
 use std::io::Cursor;
@@ -131,6 +134,55 @@ impl Repo {
         }
 
         Ok(())
+    }
+
+    /// Returns all tags stored in the database
+    pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
+        Tag::all(self.db.clone()).await
+    }
+
+    /// Adds or finds a tag
+    pub async fn add_or_find_tag<S: ToString>(&self, tag: S) -> RepoResult<Tag> {
+        let (namespace, name) = parse_namespace_and_tag(tag.to_string());
+        if let Some(namespace) = namespace {
+            self.add_or_find_namespaced_tag(name, namespace).await
+        } else {
+            self.add_or_find_unnamespaced_tag(name).await
+        }
+    }
+
+    /// Adds or finds an unnamespaced tag
+    async fn add_or_find_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
+        if let Some(tag) = Tag::by_name(self.db.clone(), &name).await? {
+            Ok(tag)
+        } else {
+            self.add_unnamespaced_tag(name).await
+        }
+    }
+
+    /// Adds an unnamespaced tag
+    async fn add_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
+        Tag::add(self.db.clone(), name, None).await
+    }
+
+    /// Adds or finds a namespaced tag
+    async fn add_or_find_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
+        if let Some(tag) = Tag::by_name_and_namespace(self.db.clone(), &name, &namespace).await? {
+            Ok(tag)
+        } else {
+            self.add_namespaced_tag(name, namespace).await
+        }
+    }
+
+    /// Adds a namespaced tag
+    async fn add_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
+        let namespace =
+            if let Some(namespace) = Namespace::by_name(self.db.clone(), &namespace).await? {
+                namespace
+            } else {
+                Namespace::add(self.db.clone(), namespace).await?
+            };
+        Tag::add(self.db.clone(), name, Some(namespace.id())).await
     }
 
     fn get_main_storage(&self) -> RepoResult<&Storage> {
