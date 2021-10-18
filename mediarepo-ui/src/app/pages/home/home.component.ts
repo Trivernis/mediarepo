@@ -4,6 +4,7 @@ import {File} from "../../models/File";
 import {PageEvent} from "@angular/material/paginator";
 import {Lightbox, LIGHTBOX_EVENT, LightboxEvent} from "ngx-lightbox";
 import {SafeResourceUrl} from "@angular/platform-browser";
+import {ErrorBrokerService} from "../../services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,9 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 export class HomeComponent implements OnInit {
 
   fileRows: File[][] = [];
-  page: number = 0;
-  pageSize: number = 25;
+  private openingLightbox = false;
 
-  constructor(private fileService: FileService, private lightbox: Lightbox, private lightboxEvent: LightboxEvent) { }
+  constructor(private errorBroker: ErrorBrokerService, private fileService: FileService, private lightbox: Lightbox, private lightboxEvent: LightboxEvent) { }
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe((files) => this.setFileRows(files));
@@ -33,7 +33,21 @@ export class HomeComponent implements OnInit {
   }
 
   async openFile(file: File) {
-    let url = await this.fileService.readFile(file.hash, file.mime_type ?? "image/png");
+    if (this.openingLightbox) {
+      return;
+    }
+    this.openingLightbox = true;
+    try {
+      await this.openLightbox(file);
+    } catch(err) {
+      this.errorBroker.showError(err);
+    }
+    this.openingLightbox = false;
+  }
+
+  private async openLightbox(file: File): Promise<void> {
+    let url = await this.fileService.readFile(file.hash,
+      file.mime_type ?? "image/png");
 
     let albums = [
       {
@@ -48,11 +62,12 @@ export class HomeComponent implements OnInit {
       showDownloadButton: true,
       centerVertically: true,
     });
-    const lighboxSubscription = this.lightboxEvent.lightboxEvent$.subscribe((event: any) => {
-      if (event?.id == LIGHTBOX_EVENT.CLOSE) {
-        lighboxSubscription.unsubscribe();
-        URL?.revokeObjectURL(url as string);
-      }
-    })
+    const lighboxSubscription = this.lightboxEvent.lightboxEvent$.subscribe(
+      (event: any) => {
+        if (event?.id == LIGHTBOX_EVENT.CLOSE) {
+          lighboxSubscription.unsubscribe();
+          URL?.revokeObjectURL(url as string);
+        }
+      })
   }
 }

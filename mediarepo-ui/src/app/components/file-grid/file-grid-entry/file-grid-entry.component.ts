@@ -20,9 +20,10 @@ import {Thumbnail} from "../../../models/Thumbnail";
 export class FileGridEntryComponent implements OnInit, OnDestroy {
 
   @ViewChild("card") card!: ElementRef;
-  @Input() file!: File;
-  @Output() clickEvent = new EventEmitter<File>();
-  @Output() dblClickEvent = new EventEmitter<File>();
+  @Input() public file!: File;
+  @Output() clickEvent = new EventEmitter<FileGridEntryComponent>();
+  @Output() dblClickEvent = new EventEmitter<FileGridEntryComponent>();
+  public selected: boolean = false;
   selectedThumbnail: Thumbnail | undefined;
 
   contentUrl: SafeResourceUrl | undefined;

@@ -20,7 +20,7 @@ mat-drawer-content {
 }
 
 mat-drawer-container {
-  height: 100%;
+  height: calc(100% - 64px);
 }
 
 app-file-grid {
