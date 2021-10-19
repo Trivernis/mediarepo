@@ -7,7 +7,7 @@
   $warn-palette: map.get($color-config, 'warn');
 
   mat-card.selected {
-    background-color: mat.get-color-from-palette($primary-palette);
+    background-color: mat.get-color-from-palette($primary-palette, 'darker');
   }
 }
 

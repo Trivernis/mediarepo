@@ -11,6 +11,7 @@ import {ErrorBrokerService} from "../../../services/error-broker/error-broker.se
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {MatCard} from "@angular/material/card";
 import {Thumbnail} from "../../../models/Thumbnail";
+import {GridEntry} from "./GridEntry";
 
 @Component({
   selector: 'app-file-grid-entry',
@@ -20,10 +21,9 @@ import {Thumbnail} from "../../../models/Thumbnail";
 export class FileGridEntryComponent implements OnInit, OnDestroy {
 
   @ViewChild("card") card!: ElementRef;
-  @Input() public file!: File;
+  @Input() public gridEntry!: GridEntry;
   @Output() clickEvent = new EventEmitter<FileGridEntryComponent>();
   @Output() dblClickEvent = new EventEmitter<FileGridEntryComponent>();
-  public selected: boolean = false;
   selectedThumbnail: Thumbnail | undefined;
 
   contentUrl: SafeResourceUrl | undefined;
@@ -43,9 +43,10 @@ export class FileGridEntryComponent implements OnInit, OnDestroy {
 
   async loadImage() {
     try {
-      const thumbnails = await this.fileService.getThumbnails(this.file.hash);
+      const thumbnails = await this.fileService.getThumbnails(this.gridEntry.file.hash);
       let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
       this.selectedThumbnail = thumbnail;
+
       if (!thumbnail) {
         console.log("Thumbnail is empty?!", thumbnails);
       } else {

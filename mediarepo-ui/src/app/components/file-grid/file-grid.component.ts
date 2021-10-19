@@ -2,71 +2,91 @@ import {
   Component,
   EventEmitter,
   HostListener,
-  Input,
+  Input, OnChanges,
   OnInit,
-  Output, QueryList, ViewChildren
+  Output, QueryList, SimpleChanges, ViewChildren
 } from '@angular/core';
 import {File} from "../../models/File";
 import {FileService} from "../../services/file/file.service";
 import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.component";
+import {GridEntry} from "./file-grid-entry/GridEntry";
 
 @Component({
   selector: 'app-file-grid',
   templateUrl: './file-grid.component.html',
   styleUrls: ['./file-grid.component.scss']
 })
-export class FileGridComponent {
+export class FileGridComponent implements OnChanges {
 
-  @Input() fileRows: File[][] = [];
+  @Input() files: File[] = [];
+  @Input() columns: number = 6;
   @Output() fileDblClickEvent = new EventEmitter<File>();
   @Output() filesSelectEvent = new EventEmitter<File[]>();
 
-  @ViewChildren(FileGridEntryComponent) childQuery!: QueryList<FileGridEntryComponent>;
-
-  selectedEntries: FileGridEntryComponent[] = [];
+  selectedEntries: GridEntry[] = [];
 
   private shiftClicked = false;
   private ctrlClicked = false;
+  private gridEntries: GridEntry[] = []
+  partitionedGridEntries: GridEntry[][] = [];
 
-  constructor() { }
+  constructor() {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.gridEntries = this.files.map(file => {return {file, selected: false}});
+    this.setPartitionedGridEntries();
+  }
+
+  private setPartitionedGridEntries() {
+    this.partitionedGridEntries = [];
+
+    for (let i = 0; i < (Math.ceil(this.gridEntries.length / this.columns)); i++) {
+      this.partitionedGridEntries.push(this.gridEntries.slice(i * this.columns, Math.min(this.gridEntries.length, (i + 1) * this.columns)))
+    }
+  }
 
   /**
    * File selector logic
-   * @param {FileGridEntryComponent} entry
+   * @param {FileGridEntryComponent} clickedEntry
    */
-  setSelectedFile(entry: FileGridEntryComponent) {
+  setSelectedFile(clickedEntry: GridEntry) {
     if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
-      this.selectedEntries.forEach(entry => entry.selected = false);
+      this.selectedEntries.forEach(entry => {if (entry !== clickedEntry) entry.selected = false});
       this.selectedEntries = [];
     }
-    // shift selector (forwards and backwards)
     if (this.shiftClicked && this.selectedEntries.length > 0) {
-      const lastEntry = this.selectedEntries[this.selectedEntries.length - 1];
-      let found = false;
-
-      // TODO: change to use wrapped entry files instead because of reused components
-      for (const child of this.childQuery) {
-
-        if (found) {
-          child.selected = true;
-          this.selectedEntries.push(child);
-          if (child === entry || child == lastEntry) {
-            break;
-          }
-        } else if (child === lastEntry || child === entry) {
-          found = true;
-          if (child === entry) {
-            child.selected = true;
-            this.selectedEntries.push(child);
-          }
-        }
-
-      }
+      this.handleShiftSelect(clickedEntry);
     } else {
-      entry.selected = true;
-      this.selectedEntries.push(entry);
+      clickedEntry.selected = !clickedEntry.selected;
+      this.selectedEntries.push(clickedEntry);
     }
     this.filesSelectEvent.emit(this.selectedEntries.map(entry => entry.file));
+  }
+
+  private handleShiftSelect(clickedEntry: GridEntry): void {
+    const lastEntry = this.selectedEntries[this.selectedEntries.length - 1];
+    let found = false;
+    if (clickedEntry == lastEntry) {
+      return;
+    }
+
+    for (const gridEntry of this.gridEntries) {
+      if (found) {
+        gridEntry.selected = true;
+        this.selectedEntries.push(gridEntry);
+        if (gridEntry === clickedEntry || gridEntry == lastEntry) {
+          return;
+        }
+      } else if (gridEntry === lastEntry || gridEntry === clickedEntry) {
+        found = true;
+        if (gridEntry === clickedEntry) {
+          gridEntry.selected = true;
+          this.selectedEntries.push(gridEntry);
+        }
+      }
+
+    }
   }
 
   @HostListener("window:keydown", ["$event"])

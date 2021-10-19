@@ -13,23 +13,14 @@ import {ErrorBrokerService} from "../../services/error-broker/error-broker.servi
 })
 export class HomeComponent implements OnInit {
 
-  fileRows: File[][] = [];
+  files: File[] = [];
   private openingLightbox = false;
 
   constructor(private errorBroker: ErrorBrokerService, private fileService: FileService, private lightbox: Lightbox, private lightboxEvent: LightboxEvent) { }
 
   async ngOnInit() {
-    this.fileService.displayedFiles.subscribe((files) => this.setFileRows(files));
+    this.fileService.displayedFiles.subscribe((files) => this.files = files);
     await this.fileService.getFiles();
-  }
-
-  setFileRows(files: File[]) {
-    this.fileRows = [];
-    const filesPerRow = 6;
-    for (let i = 0; i < (Math.ceil(files.length /filesPerRow )); i++) {
-      this.fileRows.push(files.slice(i * filesPerRow, Math.min(files.length, (i + 1) * filesPerRow)))
-    }
-    console.log(this.fileRows);
   }
 
   async openFile(file: File) {

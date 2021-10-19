@@ -1,5 +1,5 @@
-<mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)" [ngClass]="{'selected': selected}">
-  <mat-card-title *ngIf="!!file?.name">{{file?.name}}</mat-card-title>
+<mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)" [ngClass]="{'selected': gridEntry.selected}">
+  <mat-card-title *ngIf="!!gridEntry.file?.name">{{gridEntry.file?.name}}</mat-card-title>
   <mat-card-content *ngIf="contentUrl !== undefined">
     <img *ngIf="contentUrl !== undefined" class="entry-image" loading="lazy" decoding="async" [src]="contentUrl" alt="File Image">
   </mat-card-content>
