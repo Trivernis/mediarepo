@@ -1,12 +1,8 @@
-use crate::types::requests::{
-    AddFileRequest, FileIdentifier, GetFileThumbnailsRequest, ReadFileRequest,
-};
+use crate::types::requests::{AddFileRequest, GetFileThumbnailsRequest, ReadFileRequest};
 use crate::types::responses::{FileResponse, ThumbnailResponse};
-use crate::utils::get_repo_from_context;
-use mediarepo_core::error::{RepoError, RepoResult};
+use crate::utils::{file_by_identifier, get_repo_from_context};
+use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
-use mediarepo_model::file::File;
-use mediarepo_model::repo::Repo;
 use std::path::PathBuf;
 use tokio::io::AsyncReadExt;
 
@@ -31,11 +27,10 @@ impl NamespaceProvider for FilesNamespace {
 impl FilesNamespace {
     /// Returns a list of all files
     async fn all_files(ctx: &Context, event: Event) -> IPCResult<()> {
-        let files = {
-            let repo = get_repo_from_context(ctx).await;
-            repo.files().await?
-        };
+        let repo = get_repo_from_context(ctx).await;
+        let files = repo.files().await?;
         let responses: Vec<FileResponse> = files.into_iter().map(FileResponse::from).collect();
+
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "all_files", responses)
             .await?;
@@ -114,12 +109,4 @@ impl FilesNamespace {
 
         Ok(())
     }
-}
-
-async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<File> {
-    let file = match identifier {
-        FileIdentifier::ID(id) => repo.file_by_id(id).await,
-        FileIdentifier::Hash(hash) => repo.file_by_hash(hash).await,
-    }?;
-    file.ok_or_else(|| RepoError::from("Thumbnail not found"))
 }

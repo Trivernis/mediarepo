@@ -13,3 +13,4 @@ pub enum FileIdentifier {
 
 pub type ReadFileRequest = FileIdentifier;
 pub type GetFileThumbnailsRequest = FileIdentifier;
+pub type GetFileTagsRequest = FileIdentifier;

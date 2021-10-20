@@ -1,5 +1,6 @@
 use crate::file_type::FileType;
 use crate::storage::Storage;
+use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::{RepoError, RepoResult};
@@ -10,9 +11,12 @@ use mediarepo_core::image_processing::{
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash_tag;
+use mediarepo_database::entities::namespace;
+use mediarepo_database::entities::tag;
 use mime::Mime;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
+use sea_orm::{JoinType, QuerySelect};
 use tokio::io::BufReader;
 
 #[derive(Clone)]
@@ -165,6 +169,23 @@ impl File {
     /// Returns a list of thumbnails for the file
     pub async fn thumbnails(&self) -> RepoResult<Vec<Thumbnail>> {
         Thumbnail::for_file_id(self.db.clone(), self.model.id).await
+    }
+
+    /// Returns the list of tags of the file
+    pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
+        let tags: Vec<(tag::Model, Option<namespace::Model>)> = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .join(JoinType::LeftJoin, hash_tag::Relation::Tag.def().rev())
+            .join(JoinType::InnerJoin, hash_tag::Relation::Hash.def())
+            .filter(hash::Column::Id.eq(self.hash.id))
+            .all(&self.db)
+            .await?;
+        let tags = tags
+            .into_iter()
+            .map(|(tag, namespace)| Tag::new(self.db.clone(), tag, namespace))
+            .collect();
+
+        Ok(tags)
     }
 
     /// Changes the name of the file
