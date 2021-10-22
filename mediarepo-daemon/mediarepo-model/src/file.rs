@@ -90,8 +90,9 @@ impl File {
         }
         let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
             .find_also_related(file::Entity)
-            .join(JoinType::Join, hash_tag::Relation::Hash.def())
+            .join(JoinType::Join, hash_tag::Relation::Hash.def().rev())
             .filter(condition)
+            .group_by(file::Column::Id)
             .all(&db)
             .await?;
         let files: Vec<Self> = results

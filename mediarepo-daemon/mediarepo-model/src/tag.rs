@@ -3,6 +3,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
+use sea_orm::sea_query::Expr;
 use sea_orm::{Condition, DatabaseConnection, Set};
 
 #[derive(Clone)]
@@ -74,7 +75,7 @@ impl Tag {
             all_condition = if let Some(namespace) = namespace {
                 all_condition.add(namespace::Column::Name.eq(namespace))
             } else {
-                all_condition.add(tag::Column::NamespaceId.eq(Option::<i64>::None))
+                all_condition.add(Expr::tbl(tag::Entity, tag::Column::NamespaceId).is_null())
             };
             or_condition = or_condition.add(all_condition);
         }
