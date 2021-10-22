@@ -21,7 +21,8 @@ export class FileGridComponent implements OnChanges {
   @Input() files: File[] = [];
   @Input() columns: number = 6;
   @Output() fileDblClickEvent = new EventEmitter<File>();
-  @Output() filesSelectEvent = new EventEmitter<File[]>();
+  @Output() fileMultiselectEvent = new EventEmitter<File[]>();
+  @Output() fileSelectEvent = new EventEmitter<File | undefined>();
 
   selectedEntries: GridEntry[] = [];
 
@@ -51,6 +52,8 @@ export class FileGridComponent implements OnChanges {
    * @param {FileGridEntryComponent} clickedEntry
    */
   setSelectedFile(clickedEntry: GridEntry) {
+    const previousSelectionSize = this.selectedEntries.length;
+
     if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
       this.selectedEntries.forEach(entry => {if (entry !== clickedEntry) entry.selected = false});
       this.selectedEntries = [];
@@ -61,7 +64,13 @@ export class FileGridComponent implements OnChanges {
       clickedEntry.selected = !clickedEntry.selected;
       this.selectedEntries.push(clickedEntry);
     }
-    this.filesSelectEvent.emit(this.selectedEntries.map(entry => entry.file));
+    if (this.selectedEntries.length == 1) {
+      this.fileSelectEvent.emit(this.selectedEntries.map(entry => entry.file)[0]);
+    } else if (this.selectedEntries.length == 0 && previousSelectionSize == 1){
+      this.fileSelectEvent.emit(undefined);
+    } else {
+      this.fileMultiselectEvent.emit(this.selectedEntries.map(entry => entry.file));
+    }
   }
 
   private handleShiftSelect(clickedEntry: GridEntry): void {
@@ -85,7 +94,6 @@ export class FileGridComponent implements OnChanges {
           this.selectedEntries.push(gridEntry);
         }
       }
-
     }
   }
 

@@ -4,10 +4,31 @@
   </mat-toolbar>
   <mat-drawer-container>
     <mat-drawer mode="side" opened>
-      <p>Drawer</p>
+      <mat-form-field id="tag-search" appearance="fill">
+        <mat-chip-list #chipList>
+          <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
+            {{tag}}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-list>
+        <input matInput
+               [matChipInputFor]="chipList"
+               [matChipInputAddOnBlur]="true"
+               [matChipInputSeparatorKeyCodes]="searchInputSeparators"
+               (matChipInputTokenEnd)="addSearchTag($event)"/>
+      </mat-form-field>
+
+      <h1>Tags</h1>
+      <mat-selection-list [multiple]="false">
+        <mat-list-option
+          *ngFor="let tag of tags">{{tag.namespace ? tag.namespace + ':' + tag.name : tag.name}}</mat-list-option>
+      </mat-selection-list>
     </mat-drawer>
     <mat-drawer-content>
-      <app-file-grid (fileDblClickEvent)="openFile($event)" [files]="files"></app-file-grid>
+      <app-file-grid (fileDblClickEvent)="openFile($event)" [files]="files"
+                     (fileSelectEvent)="onFileSelect($event)"></app-file-grid>
     </mat-drawer-content>
   </mat-drawer-container>
 

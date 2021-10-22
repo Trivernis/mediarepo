@@ -1,13 +1,13 @@
-use std::path::PathBuf;
-use serde::{Serialize, Deserialize};
 use crate::context::Context;
 use crate::error::{AppError, AppResult};
-use tokio::fs;
-use crate::settings::save_settings;
-use rmp_ipc::context::Context as IPCContext;
-use tauri::Window;
 use crate::ipc::build_ipc_context;
+use crate::settings::save_settings;
+use rmp_ipc::ipc::context::Context as IPCContext;
+use serde::{Deserialize, Serialize};
 use std::mem;
+use std::path::PathBuf;
+use tauri::Window;
+use tokio::fs;
 
 static REPO_CONFIG_FILE: &str = "repo.toml";
 
@@ -33,13 +33,19 @@ pub async fn get_repositories(context: tauri::State<'_, Context>) -> AppResult<V
 }
 
 #[tauri::command]
-pub async fn get_active_repository(context: tauri::State<'_, Context>) -> AppResult<Option<Repository>> {
+pub async fn get_active_repository(
+  context: tauri::State<'_, Context>,
+) -> AppResult<Option<Repository>> {
   let repo = context.active_repository.read().await;
   Ok(repo.clone())
 }
 
 #[tauri::command]
-pub async fn add_repository(name: String, path: String, context: tauri::State<'_, Context>) -> AppResult<Vec<Repository>> {
+pub async fn add_repository(
+  name: String,
+  path: String,
+  context: tauri::State<'_, Context>,
+) -> AppResult<Vec<Repository>> {
   let repo_path = path.clone();
   let path = PathBuf::from(path);
   let RepoConfig { listen_address, .. } = read_repo_config(path.join(REPO_CONFIG_FILE)).await?;
@@ -62,9 +68,16 @@ pub async fn add_repository(name: String, path: String, context: tauri::State<'_
 }
 
 #[tauri::command]
-pub async fn select_repository(window: Window, name: String, context: tauri::State<'_, Context>) -> AppResult<()> {
+pub async fn select_repository(
+  window: Window,
+  name: String,
+  context: tauri::State<'_, Context>,
+) -> AppResult<()> {
   let settings = context.settings.read().await;
-  let repo = settings.repositories.get(&name).ok_or(AppError::new(format!("Repository '{}' not found", name)))?;
+  let repo = settings
+    .repositories
+    .get(&name)
+    .ok_or(AppError::new(format!("Repository '{}' not found", name)))?;
   let ipc = connect(window, &repo.address).await?;
   let mut ipc_ctx = context.ipc.write().await;
   let old_ipc = mem::replace(&mut *ipc_ctx, Some(ipc));

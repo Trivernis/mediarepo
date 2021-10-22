@@ -1,8 +1,11 @@
-use crate::context::Context;
-use crate::error::AppResult;
+use rmp_ipc::ipc::context::Context as IPCContext;
 
-pub mod repo;
+use crate::context::Context;
+use crate::error::{AppError, AppResult};
+
 pub mod files;
+pub mod repo;
+pub mod tags;
 
 #[tauri::command]
 pub async fn emit_info(context: tauri::State<'_, Context>) -> AppResult<()> {
@@ -15,4 +18,9 @@ pub async fn emit_info(context: tauri::State<'_, Context>) -> AppResult<()> {
   }
 
   Ok(())
+}
+
+pub async fn get_ipc(context: tauri::State<'_, Context>) -> AppResult<IPCContext> {
+  let ipc = context.ipc.read().await;
+  (ipc.clone()).ok_or(AppError::new("No ipc connection."))
 }

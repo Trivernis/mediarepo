@@ -21,6 +21,11 @@ export class FileService {
     this.displayedFiles.next(all_files);
   }
 
+  public async findFiles(tags: string[]) {
+    let files = await invoke<File[]>("find_files", {tags});
+    this.displayedFiles.next(files);
+  }
+
   public async readFile(hash: string, mime_type: string): Promise<SafeResourceUrl> {
     const data = await invoke<number[]>("read_file_by_hash", {hash});
     const blob = new Blob([new Uint8Array(data)], {type: mime_type});

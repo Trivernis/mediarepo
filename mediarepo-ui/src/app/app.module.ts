@@ -24,6 +24,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {LightboxModule} from "ngx-lightbox";
+import {MatChipsModule} from "@angular/material/chips";
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -35,25 +37,27 @@ import {LightboxModule} from "ngx-lightbox";
     FileGridComponent,
     FileGridEntryComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatCardModule,
-        MatListModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatSidenavModule,
-        MatGridListModule,
-        MatProgressBarModule,
-        MatPaginatorModule,
-        ScrollingModule,
-        LightboxModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatListModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSidenavModule,
+    MatGridListModule,
+    MatProgressBarModule,
+    MatPaginatorModule,
+    ScrollingModule,
+    LightboxModule,
+    MatChipsModule,
+    MatIconModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -55,7 +55,7 @@ version = "0.1.0"
 dependencies = [
  "directories",
  "mediarepo",
- "rmp-ipc 0.4.3",
+ "rmp-ipc",
  "serde",
  "serde_json",
  "tauri",
@@ -1840,7 +1840,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "mediarepo"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=57308089d58706ee1438f6b55d53691e9e08ce6b#57308089d58706ee1438f6b55d53691e9e08ce6b"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=ce93a5793348a05052b324562730d97f5c6e2128#ce93a5793348a05052b324562730d97f5c6e2128"
 dependencies = [
  "log",
  "mediarepo-core",
@@ -1851,14 +1851,14 @@ dependencies = [
 [[package]]
 name = "mediarepo-core"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=57308089d58706ee1438f6b55d53691e9e08ce6b#57308089d58706ee1438f6b55d53691e9e08ce6b"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=ce93a5793348a05052b324562730d97f5c6e2128#ce93a5793348a05052b324562730d97f5c6e2128"
 dependencies = [
  "base64",
  "futures",
  "image",
  "multibase",
  "multihash",
- "rmp-ipc 0.6.0",
+ "rmp-ipc",
  "sea-orm",
  "serde",
  "sqlx",
@@ -1871,7 +1871,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-database"
 version = "0.2.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=57308089d58706ee1438f6b55d53691e9e08ce6b#57308089d58706ee1438f6b55d53691e9e08ce6b"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=ce93a5793348a05052b324562730d97f5c6e2128#ce93a5793348a05052b324562730d97f5c6e2128"
 dependencies = [
  "chrono",
  "mediarepo-core",
@@ -1882,7 +1882,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-model"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=57308089d58706ee1438f6b55d53691e9e08ce6b#57308089d58706ee1438f6b55d53691e9e08ce6b"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=ce93a5793348a05052b324562730d97f5c6e2128#ce93a5793348a05052b324562730d97f5c6e2128"
 dependencies = [
  "chrono",
  "mediarepo-core",
@@ -1898,7 +1898,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-socket"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=57308089d58706ee1438f6b55d53691e9e08ce6b#57308089d58706ee1438f6b55d53691e9e08ce6b"
+source = "git+https://github.com/Trivernis/mediarepo-daemon?rev=ce93a5793348a05052b324562730d97f5c6e2128#ce93a5793348a05052b324562730d97f5c6e2128"
 dependencies = [
  "chrono",
  "mediarepo-core",
@@ -2927,24 +2927,9 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.4.3"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2ada2c7329ea55e1e80f2a1ae9ddb123f93ae4b349d493273138118feadfecb"
-dependencies = [
- "lazy_static",
- "log",
- "rmp-serde",
- "serde",
- "thiserror",
- "tokio",
- "typemap_rev",
-]
-
-[[package]]
-name = "rmp-ipc"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbd5082cefa9a4407327087d75dfadb5bf2d6f07168d0b609a2509f54fa3b243"
+checksum = "17765aa8bd4d19dd81c53c0707192115f36ec200aea9f4557526932ac1f418e0"
 dependencies = [
  "lazy_static",
  "log",
