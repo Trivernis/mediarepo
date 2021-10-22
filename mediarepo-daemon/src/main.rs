@@ -97,7 +97,7 @@ fn build_logger() {
                 .unwrap_or(LevelFilter::Info),
         )
         .write_style(WriteStyle::Always)
-        .filter_module("sqlx", log::LevelFilter::Warn)
+        //.filter_module("sqlx", log::LevelFilter::Warn)
         .filter_module("tokio", log::LevelFilter::Info)
         .filter_module("tracing", log::LevelFilter::Warn)
         .init();

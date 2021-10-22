@@ -15,6 +15,7 @@ use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use mime::Mime;
 use sea_orm::prelude::*;
+use sea_orm::sea_query::{Expr, Query};
 use sea_orm::{Condition, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::BufReader;
@@ -85,12 +86,20 @@ impl File {
         tag_ids: Vec<i64>,
     ) -> RepoResult<Vec<Self>> {
         let mut condition = Condition::all();
+
         for tag in tag_ids {
-            condition = condition.add(hash_tag::Column::TagId.eq(tag));
+            condition = condition.add(
+                hash::Column::Id.in_subquery(
+                    Query::select()
+                        .expr(Expr::col(hash_tag::Column::HashId))
+                        .from(hash_tag::Entity)
+                        .cond_where(hash_tag::Column::TagId.eq(tag))
+                        .to_owned(),
+                ),
+            );
         }
         let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
             .find_also_related(file::Entity)
-            .join(JoinType::Join, hash_tag::Relation::Hash.def().rev())
             .filter(condition)
             .group_by(file::Column::Id)
             .all(&db)
