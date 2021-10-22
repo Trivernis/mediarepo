@@ -3,7 +3,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
-use sea_orm::{DatabaseConnection, Set};
+use sea_orm::{Condition, DatabaseConnection, Set};
 
 #[derive(Clone)]
 pub struct Tag {
@@ -50,36 +50,45 @@ impl Tag {
         Ok(tag)
     }
 
-    /// Retrieves the unnamespaced tag by name
-    pub async fn by_name<S: AsRef<str>>(
-        db: DatabaseConnection,
-        name: S,
-    ) -> RepoResult<Option<Self>> {
-        let tag = tag::Entity::find()
-            .filter(tag::Column::Name.eq(name.as_ref()))
-            .filter(tag::Column::NamespaceId.eq(Option::<i64>::None))
-            .one(&db)
-            .await?
-            .map(|t| Tag::new(db, t, None));
-
-        Ok(tag)
-    }
-
-    /// Retrieves the namespaced tag by name and namespace
-    pub async fn by_name_and_namespace<S1: AsRef<str>, S2: AsRef<str>>(
+    /// Returns one tag by name and namespace
+    pub async fn by_name<S1: ToString>(
         db: DatabaseConnection,
         name: S1,
-        namespace: S2,
+        namespace: Option<String>,
     ) -> RepoResult<Option<Self>> {
-        let tag = tag::Entity::find()
-            .find_also_related(namespace::Entity)
-            .filter(namespace::Column::Name.eq(namespace.as_ref()))
-            .filter(tag::Column::Name.eq(name.as_ref()))
-            .one(&db)
-            .await?
-            .map(|(t, n)| Self::new(db.clone(), t, n));
+        let mut entries = Self::all_by_name(db, vec![(namespace, name.to_string())]).await?;
 
-        Ok(tag)
+        Ok(entries.pop())
+    }
+
+    /// Retrieves the namespaced tags by name and namespace
+    pub async fn all_by_name(
+        db: DatabaseConnection,
+        namespaces_with_names: Vec<(Option<String>, String)>,
+    ) -> RepoResult<Vec<Self>> {
+        let mut or_condition = Condition::any();
+
+        for (namespace, name) in namespaces_with_names {
+            let mut all_condition = Condition::all().add(tag::Column::Name.eq(name));
+
+            all_condition = if let Some(namespace) = namespace {
+                all_condition.add(namespace::Column::Name.eq(namespace))
+            } else {
+                all_condition.add(tag::Column::NamespaceId.eq(Option::<i64>::None))
+            };
+            or_condition = or_condition.add(all_condition);
+        }
+
+        let tags: Vec<Self> = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .filter(or_condition)
+            .all(&db)
+            .await?
+            .into_iter()
+            .map(|(t, n)| Self::new(db.clone(), t, n))
+            .collect();
+
+        Ok(tags)
     }
 
     /// Adds a new tag to the database

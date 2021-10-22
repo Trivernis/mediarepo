@@ -82,6 +82,14 @@ impl Repo {
         File::all(self.db.clone()).await
     }
 
+    /// Finds all files by a list of tags
+    pub async fn find_files_by_tags(&self, tags: Vec<String>) -> RepoResult<Vec<File>> {
+        let tags = self.find_all_tags(tags).await?;
+        let tag_ids = tags.into_iter().map(|tag| tag.id()).collect();
+
+        File::find_by_tags(self.db.clone(), tag_ids).await
+    }
+
     /// Adds a file to the database by its readable path in the file system
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
         let mime_match = mime_guess::from_path(&path).first();
@@ -141,6 +149,13 @@ impl Repo {
         Tag::all(self.db.clone()).await
     }
 
+    /// Finds all tags by name
+    pub async fn find_all_tags(&self, tags: Vec<String>) -> RepoResult<Vec<Tag>> {
+        let tags: Vec<(Option<String>, String)> =
+            tags.into_iter().map(parse_namespace_and_tag).collect();
+        Tag::all_by_name(self.db.clone(), tags).await
+    }
+
     /// Adds or finds a tag
     pub async fn add_or_find_tag<S: ToString>(&self, tag: S) -> RepoResult<Tag> {
         let (namespace, name) = parse_namespace_and_tag(tag.to_string());
@@ -153,7 +168,7 @@ impl Repo {
 
     /// Adds or finds an unnamespaced tag
     pub async fn add_or_find_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
-        if let Some(tag) = Tag::by_name(self.db.clone(), &name).await? {
+        if let Some(tag) = Tag::by_name(self.db.clone(), &name, None).await? {
             Ok(tag)
         } else {
             self.add_unnamespaced_tag(name).await
@@ -171,7 +186,7 @@ impl Repo {
         name: String,
         namespace: String,
     ) -> RepoResult<Tag> {
-        if let Some(tag) = Tag::by_name_and_namespace(self.db.clone(), &name, &namespace).await? {
+        if let Some(tag) = Tag::by_name(self.db.clone(), &name, Some(namespace.clone())).await? {
             Ok(tag)
         } else {
             self.add_namespaced_tag(name, namespace).await

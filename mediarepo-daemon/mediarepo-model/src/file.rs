@@ -15,7 +15,7 @@ use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use mime::Mime;
 use sea_orm::prelude::*;
-use sea_orm::{DatabaseConnection, Set};
+use sea_orm::{Condition, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::BufReader;
 
@@ -78,6 +78,28 @@ impl File {
         } else {
             Ok(None)
         }
+    }
+
+    pub(crate) async fn find_by_tags(
+        db: DatabaseConnection,
+        tag_ids: Vec<i64>,
+    ) -> RepoResult<Vec<Self>> {
+        let mut condition = Condition::all();
+        for tag in tag_ids {
+            condition = condition.add(hash_tag::Column::TagId.eq(tag));
+        }
+        let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
+            .find_also_related(file::Entity)
+            .join(JoinType::Join, hash_tag::Relation::Hash.def())
+            .filter(condition)
+            .all(&db)
+            .await?;
+        let files: Vec<Self> = results
+            .into_iter()
+            .filter_map(|(hash, tag)| Some(Self::new(db.clone(), tag?, hash)))
+            .collect();
+
+        Ok(files)
     }
 
     /// Adds a file with its hash to the database

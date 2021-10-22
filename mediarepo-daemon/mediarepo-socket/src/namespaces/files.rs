@@ -1,4 +1,6 @@
-use crate::types::requests::{AddFileRequest, GetFileThumbnailsRequest, ReadFileRequest};
+use crate::types::requests::{
+    AddFileRequest, FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest,
+};
 use crate::types::responses::{FileResponse, ThumbnailResponse};
 use crate::utils::{file_by_identifier, get_repo_from_context};
 use mediarepo_core::error::RepoError;
@@ -16,6 +18,7 @@ impl NamespaceProvider for FilesNamespace {
     fn register(handler: &mut EventHandler) {
         events!(handler,
             "all_files" => Self::all_files,
+            "find_files" => Self::find_files,
             "add_file" => Self::add_file,
             "read_file" => Self::read_file,
             "get_thumbnails" => Self::thumbnails,
@@ -35,6 +38,18 @@ impl FilesNamespace {
             .emit_response_to(event.id(), Self::name(), "all_files", responses)
             .await?;
 
+        Ok(())
+    }
+
+    /// Searches for files by tags
+    async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
+        let tags = event.data::<FindFilesByTagsRequest>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let files = repo.find_files_by_tags(tags.tags).await?;
+        let responses: Vec<FileResponse> = files.into_iter().map(FileResponse::from).collect();
+        ctx.emitter
+            .emit_response_to(event.id(), Self::name(), "find_files", responses)
+            .await?;
         Ok(())
     }
 
@@ -68,7 +83,7 @@ impl FilesNamespace {
         reader.read_to_end(&mut buf).await?;
 
         ctx.emitter
-            .emit_response_to(event.id(), Self::name(), "read_file", buf)
+            .emit_response_to(event.id(), Self::name(), "read_file", BytePayload::new(buf))
             .await?;
 
         Ok(())
@@ -104,7 +119,12 @@ impl FilesNamespace {
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf).await?;
         ctx.emitter
-            .emit_response_to(event.id(), Self::name(), "read_thumbnail", buf)
+            .emit_response_to(
+                event.id(),
+                Self::name(),
+                "read_thumbnail",
+                BytePayload::new(buf),
+            )
             .await?;
 
         Ok(())

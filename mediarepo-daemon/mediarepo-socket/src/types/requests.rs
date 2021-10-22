@@ -14,3 +14,8 @@ pub enum FileIdentifier {
 pub type ReadFileRequest = FileIdentifier;
 pub type GetFileThumbnailsRequest = FileIdentifier;
 pub type GetFileTagsRequest = FileIdentifier;
+
+#[derive(Serialize, Deserialize)]
+pub struct FindFilesByTagsRequest {
+    pub tags: Vec<String>,
+}
