@@ -4,6 +4,7 @@
   </mat-toolbar>
   <mat-drawer-container>
     <mat-drawer mode="side" opened>
+      <div class="drawer-sidebar-inner">
       <mat-form-field id="tag-search" appearance="fill">
         <mat-chip-list #chipList>
           <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
@@ -20,15 +21,20 @@
                (matChipInputTokenEnd)="addSearchTag($event)"/>
       </mat-form-field>
 
-      <h1>Tags</h1>
-      <mat-selection-list [multiple]="false">
-        <mat-list-option
-          *ngFor="let tag of tags">{{tag.namespace ? tag.namespace + ':' + tag.name : tag.name}}</mat-list-option>
-      </mat-selection-list>
+      <div id="file-tag-list">
+        <h1>Selection Tags</h1>
+        <mat-selection-list [multiple]="false" *ngIf="tags.length > 0">
+          <mat-list-option
+            *ngFor="let tag of tags">{{tag.namespace ? tag.namespace + ':' + tag.name : tag.name}}</mat-list-option>
+        </mat-selection-list>
+      </div>
+      </div>
     </mat-drawer>
     <mat-drawer-content>
       <app-file-grid (fileDblClickEvent)="openFile($event)" [files]="files"
-                     (fileSelectEvent)="onFileSelect($event)"></app-file-grid>
+                     (fileSelectEvent)="onFileSelect($event)"
+                     (fileMultiselectEvent)="onFileMultiSelect($event)"
+      ></app-file-grid>
     </mat-drawer-content>
   </mat-drawer-container>
 

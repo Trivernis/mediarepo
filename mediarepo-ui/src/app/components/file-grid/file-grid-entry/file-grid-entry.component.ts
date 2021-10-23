@@ -27,6 +27,7 @@ export class FileGridEntryComponent implements OnInit, OnDestroy {
   selectedThumbnail: Thumbnail | undefined;
 
   contentUrl: SafeResourceUrl | undefined;
+
   constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) { }
 
   async ngOnInit() {
@@ -37,21 +38,20 @@ export class FileGridEntryComponent implements OnInit, OnDestroy {
     if (this.contentUrl) {
       const url = this.contentUrl;
       this.contentUrl = undefined;
-      URL?.revokeObjectURL(url as string);
     }
   }
 
   async loadImage() {
     try {
-      const thumbnails = await this.fileService.getThumbnails(this.gridEntry.file.hash);
-      let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
-      this.selectedThumbnail = thumbnail;
+        const thumbnails = await this.fileService.getThumbnails(this.gridEntry.file.hash);
+        let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
+        this.selectedThumbnail = thumbnail;
 
-      if (!thumbnail) {
-        console.log("Thumbnail is empty?!", thumbnails);
-      } else {
-        this.contentUrl = await this.fileService.readThumbnail(thumbnail!!);
-      }
+        if (!thumbnail) {
+          console.log("Thumbnail is empty?!", thumbnails);
+        } else {
+          this.contentUrl = await this.fileService.readThumbnail(thumbnail!!);
+        }
     } catch (err) {
       this.errorBroker.showError(err);
     }

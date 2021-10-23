@@ -35,6 +35,12 @@ export class HomeComponent implements OnInit {
     await this.fileService.getFiles();
   }
 
+  async onFileMultiSelect(files: File[]) {
+    if (files.length === 0) {
+      this.clearFileDetails();
+    }
+  }
+
   async onFileSelect(file: File | undefined) {
     if (file) {
       await this.showFileDetails(file);

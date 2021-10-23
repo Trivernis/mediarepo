@@ -12,9 +12,21 @@
   width: 100%;
 }
 
+#file-tag-list {
+  height: calc(100% - 8em);
+  overflow: auto;
+}
+
+.drawer-sidebar-inner {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
 mat-drawer {
   height: 100%;
   width: 25%;
+  overflow: hidden;
 }
 
 mat-drawer-content {

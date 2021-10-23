@@ -62,7 +62,14 @@ export class FileGridComponent implements OnChanges {
       this.handleShiftSelect(clickedEntry);
     } else {
       clickedEntry.selected = !clickedEntry.selected;
-      this.selectedEntries.push(clickedEntry);
+      if (!clickedEntry.selected) {
+        const index = this.selectedEntries.indexOf(clickedEntry);
+        if (index > -1) {
+          this.selectedEntries.splice(index, 1);
+        }
+      } else {
+        this.selectedEntries.push(clickedEntry);
+      }
     }
     if (this.selectedEntries.length == 1) {
       this.fileSelectEvent.emit(this.selectedEntries.map(entry => entry.file)[0]);
