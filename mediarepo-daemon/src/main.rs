@@ -1,9 +1,11 @@
-mod constants;
-mod utils;
+use std::path::PathBuf;
+use std::sync::Arc;
 
-use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
-use crate::utils::{create_paths_for_repo, get_repo, load_settings};
-use log::LevelFilter;
+use structopt::StructOpt;
+use tokio::fs;
+use tokio::runtime;
+use tokio::runtime::Runtime;
+
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
@@ -12,17 +14,13 @@ use mediarepo_model::file::File as RepoFile;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
-use pretty_env_logger::env_logger::WriteStyle;
-use std::env;
-use std::path::PathBuf;
-use std::str::FromStr;
-use std::sync::Arc;
-use structopt::StructOpt;
-use tokio::fs;
-use tokio::runtime;
-use tokio::runtime::Runtime;
-use tracing_flame::FlameLayer;
-use tracing_subscriber::{fmt, prelude::*};
+
+use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
+use crate::utils::{create_paths_for_repo, get_repo, load_settings};
+
+mod constants;
+mod logging;
+mod utils;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "mediarepo", about = "A multimedia repository")]
@@ -64,9 +62,9 @@ fn main() -> RepoResult<()> {
     let opt: Opt = Opt::from_args();
     let mut _guard = None;
     if opt.profile {
-        _guard = Some(init_tracing_flame());
+        _guard = Some(logging::init_tracing_flame());
     } else {
-        build_logger();
+        logging::init_tracing();
     }
 
     match opt.cmd.clone() {
@@ -95,31 +93,6 @@ fn get_multi_thread_runtime() -> Runtime {
         .enable_all()
         .build()
         .unwrap()
-}
-
-fn build_logger() {
-    pretty_env_logger::formatted_timed_builder()
-        .filter(
-            None,
-            env::var("RUST_LOG")
-                .ok()
-                .and_then(|level| LevelFilter::from_str(&level).ok())
-                .unwrap_or(LevelFilter::Info),
-        )
-        .write_style(WriteStyle::Always)
-        .filter_module("sqlx", log::LevelFilter::Warn)
-        .filter_module("tokio", log::LevelFilter::Info)
-        .init();
-}
-
-fn init_tracing_flame() -> impl Drop {
-    let fmt_layer = fmt::Layer::default();
-    let (flame_layer, _guard) = FlameLayer::with_file("./tracing.folded").unwrap();
-    tracing_subscriber::registry()
-        .with(fmt_layer)
-        .with(flame_layer)
-        .init();
-    _guard
 }
 
 async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {

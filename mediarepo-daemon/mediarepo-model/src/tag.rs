@@ -73,6 +73,9 @@ impl Tag {
         db: DatabaseConnection,
         namespaces_with_names: Vec<(Option<String>, String)>,
     ) -> RepoResult<Vec<Self>> {
+        if namespaces_with_names.is_empty() {
+            return Ok(Vec::new());
+        }
         let mut or_condition = Condition::any();
 
         for (namespace, name) in namespaces_with_names {

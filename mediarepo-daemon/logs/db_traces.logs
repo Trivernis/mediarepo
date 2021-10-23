@@ -1,0 +1,78 @@
+2021-10-23T15:44:21.613898807+02:00 - PRAGMA page_size = 4096; …; rows: 2, elapsed: 425.678µs
+
+PRAGMA page_size = 4096;
+PRAGMA locking_mode = NORMAL;
+PRAGMA journal_mode = WAL;
+PRAGMA foreign_keys = ON;
+PRAGMA synchronous = FULL;
+PRAGMA auto_vacuum = NONE;
+
+2021-10-23T15:44:21.614073278+02:00 - CREATE TABLE IF NOT …; rows: 0, elapsed: 40.557µs
+
+CREATE TABLE IF NOT EXISTS _sqlx_migrations (
+  version BIGINT PRIMARY KEY,
+  description TEXT NOT NULL,
+  installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  success BOOLEAN NOT NULL,
+  checksum BLOB NOT NULL,
+  execution_time BIGINT NOT NULL
+);
+
+2021-10-23T15:44:21.614185925+02:00 - SELECT version FROM _sqlx_migrations …; rows: 0, elapsed: 66.197µs
+
+SELECT
+  version
+FROM
+  _sqlx_migrations
+WHERE
+  success = false
+ORDER BY
+  version
+LIMIT
+  1
+
+2021-10-23T15:44:21.614324891+02:00 - SELECT version, checksum FROM …; rows: 7, elapsed: 81.895µs
+
+SELECT
+  version,
+  checksum
+FROM
+  _sqlx_migrations
+ORDER BY
+  version
+
+2021-10-23T15:44:21.614983465+02:00 - PRAGMA page_size = 4096; …; rows: 2, elapsed: 309.278µs
+
+PRAGMA page_size = 4096;
+PRAGMA locking_mode = NORMAL;
+PRAGMA journal_mode = WAL;
+PRAGMA foreign_keys = ON;
+PRAGMA synchronous = FULL;
+PRAGMA auto_vacuum = NONE;
+
+2021-10-23T15:44:21.615170159+02:00 - SELECT `storage_locations`.`id`, `storage_locations`.`name`, `storage_locations`.`path` …; rows: 1, elapsed: 85.937µs
+
+SELECT
+  `storage_locations`.`id`,
+  `storage_locations`.`name`,
+  `storage_locations`.`path`
+FROM
+  `storage_locations`
+WHERE
+  `storage_locations`.`path` = ?
+LIMIT
+  ?
+
+2021-10-23T15:44:21.615322919+02:00 - SELECT `storage_locations`.`id`, `storage_locations`.`name`, `storage_locations`.`path` …; rows: 1, elapsed: 38.929µs
+
+SELECT
+  `storage_locations`.`id`,
+  `storage_locations`.`name`,
+  `storage_locations`.`path`
+FROM
+  `storage_locations`
+WHERE
+  `storage_locations`.`path` = ?
+LIMIT
+  ?
+
