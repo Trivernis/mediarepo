@@ -11,6 +11,8 @@ use crate::commands::repo::{
 use crate::commands::tags::*;
 use crate::context::Context;
 use crate::settings::load_settings;
+use tauri::http::ResponseBuilder;
+use tauri::Manager;
 
 mod commands;
 pub mod context;
@@ -24,6 +26,25 @@ fn main() {
 
   tauri::Builder::default()
     .manage(context)
+    .register_uri_scheme_protocol("once", |app, request| {
+      let context = app.state::<Context>();
+      let resource_key = request.uri().trim_start_matches("once://");
+      let buffer = {
+        let mut buffers = context.once_buffers.lock().unwrap();
+        buffers.remove(resource_key)
+      };
+      if let Some(buffer) = buffer {
+        ResponseBuilder::new()
+          .mimetype(&buffer.mime)
+          .status(200)
+          .body(buffer.buf)
+      } else {
+        ResponseBuilder::new()
+          .mimetype("text/plain")
+          .status(404)
+          .body("Resource not found".as_bytes().to_vec())
+      }
+    })
     .invoke_handler(tauri::generate_handler![
       get_repositories,
       add_repository,

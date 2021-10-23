@@ -1,13 +1,13 @@
-use crate::commands::get_ipc;
+use crate::commands::{add_once_buffer, get_ipc};
 use mediarepo::requests::{FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest};
 use mediarepo::responses::{FileResponse, ThumbnailResponse};
 
 use crate::context::Context;
-use crate::error::{AppError, AppResult};
+use crate::error::AppResult;
 
 #[tauri::command]
 pub async fn get_all_files(context: tauri::State<'_, Context>) -> AppResult<Vec<FileResponse>> {
-  let ipc = get_ipc(context).await?;
+  let ipc = get_ipc(&context).await?;
   let response = ipc
     .emitter
     .emit_to("files", "all_files", ())
@@ -23,7 +23,7 @@ pub async fn find_files(
   tags: Vec<String>,
   context: tauri::State<'_, Context>,
 ) -> AppResult<Vec<FileResponse>> {
-  let ipc = get_ipc(context).await?;
+  let ipc = get_ipc(&context).await?;
   let response = ipc
     .emitter
     .emit_to("files", "find_files", FindFilesByTagsRequest { tags })
@@ -36,17 +36,20 @@ pub async fn find_files(
 #[tauri::command]
 pub async fn read_file_by_hash(
   hash: String,
+  mime: String,
   context: tauri::State<'_, Context>,
-) -> AppResult<Vec<u8>> {
-  let ipc = get_ipc(context).await?;
+) -> AppResult<String> {
+  let ipc = get_ipc(&context).await?;
   let response = ipc
     .emitter
-    .emit_to("files", "read_file", ReadFileRequest::Hash(hash))
+    .emit_to("files", "read_file", ReadFileRequest::Hash(hash.clone()))
     .await?
     .await_reply(&ipc)
     .await?;
+  let raw_data = response.data_raw().to_vec();
+  let uri = add_once_buffer(&context, hash, mime, raw_data);
 
-  Ok(response.data_raw().to_vec())
+  Ok(uri)
 }
 
 #[tauri::command]
@@ -54,7 +57,7 @@ pub async fn get_thumbnails(
   hash: String,
   context: tauri::State<'_, Context>,
 ) -> AppResult<Vec<ThumbnailResponse>> {
-  let ipc = get_ipc(context).await?;
+  let ipc = get_ipc(&context).await?;
   let response = ipc
     .emitter
     .emit_to(
@@ -72,19 +75,18 @@ pub async fn get_thumbnails(
 #[tauri::command]
 pub async fn read_thumbnail(
   hash: String,
+  mime: String,
   context: tauri::State<'_, Context>,
-) -> AppResult<Vec<u8>> {
-  let ipc = context.ipc.read().await;
-  if let Some(ipc) = &*ipc {
-    let response = ipc
-      .emitter
-      .emit_to("files", "read_thumbnail", hash)
-      .await?
-      .await_reply(&ipc)
-      .await?;
+) -> AppResult<String> {
+  let ipc = get_ipc(&context).await?;
+  let response = ipc
+    .emitter
+    .emit_to("files", "read_thumbnail", hash.clone())
+    .await?
+    .await_reply(&ipc)
+    .await?;
+  let raw_data = response.data_raw().to_vec();
+  let uri = add_once_buffer(&context, hash, mime, raw_data);
 
-    Ok(response.data_raw().to_vec())
-  } else {
-    Err(AppError::new("No ipc connection."))
-  }
+  Ok(uri)
 }

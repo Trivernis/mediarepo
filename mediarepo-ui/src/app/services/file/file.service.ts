@@ -26,18 +26,14 @@ export class FileService {
     this.displayedFiles.next(files);
   }
 
-  public async readFile(hash: string, mime_type: string): Promise<SafeResourceUrl> {
-    const data = await invoke<number[]>("read_file_by_hash", {hash});
-    const blob = new Blob([new Uint8Array(data)], {type: mime_type});
-
-    return this.createSafeObjectUrl(blob);
+  public async readFile(hash: string, mime: string): Promise<SafeResourceUrl> {
+    const once_uri =  await invoke<string>("read_file_by_hash", {hash, mime});
+    return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async readThumbnail(thumbnail: Thumbnail): Promise<SafeResourceUrl> {
-    let data = await invoke<number[]>("read_thumbnail", {hash: thumbnail.hash});
-    const blob = new Blob([new Uint8Array(data)], {type: thumbnail.mime});
-
-    return this.createSafeObjectUrl(blob);
+    let once_uri = await invoke<string>("read_thumbnail", {hash: thumbnail.hash, mime: thumbnail.mime});
+    return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async getThumbnails(hash: string): Promise<Thumbnail[]> {

@@ -9,7 +9,7 @@ pub async fn get_tags_for_file(
   hash: String,
   context: tauri::State<'_, Context>,
 ) -> AppResult<Vec<TagResponse>> {
-  let ipc = get_ipc(context).await?;
+  let ipc = get_ipc(&context).await?;
   let response = ipc
     .emitter
     .emit_to("tags", "tags_for_file", FileIdentifier::Hash(hash))
