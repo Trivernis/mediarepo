@@ -1,5 +1,5 @@
 <h1 align="center">
-mediarepo
+mediarepo-daemon
 </h1>
 <h3 align="center" style="color:red">This repository is a work in progress</h3>
 
