@@ -9,6 +9,7 @@ pub fn get_builder(address: &str) -> IPCBuilder {
     namespaces::build_namespaces(IPCBuilder::new().address(address)).on("info", callback!(info))
 }
 
+#[tracing::instrument(skip_all)]
 async fn info(ctx: &Context, event: Event) -> IPCResult<()> {
     let response = InfoResponse {
         name: env!("CARGO_PKG_NAME").to_string(),

@@ -6,6 +6,7 @@ use mediarepo_database::entities::storage::ActiveModel as ActiveStorage;
 use mediarepo_database::entities::storage::Model as StorageModel;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set, Unset};
+use std::fmt::Debug;
 use std::path::PathBuf;
 use tokio::fs;
 use tokio::io::{AsyncRead, BufReader};
@@ -18,6 +19,7 @@ pub struct Storage {
 }
 
 impl Storage {
+    #[tracing::instrument(level = "trace")]
     fn new(db: DatabaseConnection, model: StorageModel) -> Self {
         let path = PathBuf::from(&model.path);
         Self {
@@ -28,6 +30,7 @@ impl Storage {
     }
 
     /// Returns all available storages
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
         let storages: Vec<storage::Model> = storage::Entity::find().all(&db).await?;
         let storages = storages
@@ -39,6 +42,7 @@ impl Storage {
     }
 
     /// Returns the storage by id
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some(model) = storage::Entity::find_by_id(id).one(&db).await? {
             let storage = Self::new(db, model);
@@ -49,7 +53,11 @@ impl Storage {
     }
 
     /// Returns the storage by path
-    pub async fn by_path<S: ToString>(db: DatabaseConnection, path: S) -> RepoResult<Option<Self>> {
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_path<S: ToString + Debug>(
+        db: DatabaseConnection,
+        path: S,
+    ) -> RepoResult<Option<Self>> {
         if let Some(model) = storage::Entity::find()
             .filter(storage::Column::Path.eq(path.to_string()))
             .one(&db)
@@ -64,7 +72,8 @@ impl Storage {
 
     /// Creates a new active storage and also creates the associated directory
     /// if it doesn't exist yet.
-    pub async fn create<S1: ToString, S2: ToString>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn create<S1: ToString + Debug, S2: ToString + Debug>(
         db: DatabaseConnection,
         name: S1,
         path: S2,
@@ -106,7 +115,8 @@ impl Storage {
     }
 
     /// Sets a new name for the storage
-    pub async fn set_name<S: ToString>(&self, name: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_name<S: ToString + Debug>(&self, name: S) -> RepoResult<()> {
         let mut active_storage: ActiveStorage = self.get_active_model();
         active_storage.name = Set(name.to_string());
         active_storage.update(&self.db).await?;
@@ -116,7 +126,8 @@ impl Storage {
 
     /// Sets a new path for the storage. This will only update the database record
     /// so if the physical part of the storage is already created it needs to be migrated first
-    pub async fn set_path<S: ToString>(&mut self, path: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_path<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
         let mut active_storage: ActiveStorage = self.get_active_model();
         active_storage.path = Set(path.to_string());
         let storage: ActiveStorage = active_storage.update(&self.db).await?;
@@ -133,6 +144,7 @@ impl Storage {
     }
 
     /// Adds a thumbnail
+    #[tracing::instrument(level = "debug", skip(self, reader))]
     pub async fn store_entry<R: AsyncRead + Unpin>(&self, reader: R) -> RepoResult<Hash> {
         let hash = self.store.add_file(reader, None).await?;
         if let Some(hash) = Hash::by_value(self.db.clone(), &hash).await? {
@@ -143,7 +155,8 @@ impl Storage {
     }
 
     /// Returns the buf reader to the given hash
-    pub async fn get_file_reader<S: ToString>(
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_file_reader<S: ToString + Debug>(
         &self,
         hash: S,
     ) -> RepoResult<BufReader<tokio::fs::File>> {

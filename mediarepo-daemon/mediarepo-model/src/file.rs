@@ -18,6 +18,7 @@ use sea_orm::prelude::*;
 use sea_orm::sea_query::{Expr, Query};
 use sea_orm::{Condition, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
+use std::fmt::Debug;
 use tokio::io::BufReader;
 
 #[derive(Clone)]
@@ -28,11 +29,13 @@ pub struct File {
 }
 
 impl File {
+    #[tracing::instrument(level = "trace")]
     pub(crate) fn new(db: DatabaseConnection, model: file::Model, hash: hash::Model) -> Self {
         Self { db, model, hash }
     }
 
     /// Returns a list of all known stored files
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<File>> {
         let files: Vec<(file::Model, Option<hash::Model>)> = file::Entity::find()
             .find_also_related(hash::Entity)
@@ -50,6 +53,7 @@ impl File {
     }
 
     /// Fetches the file by id
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some((model, Some(hash))) = file::Entity::find_by_id(id)
             .find_also_related(hash::Entity)
@@ -64,7 +68,8 @@ impl File {
     }
 
     /// Finds the file by hash
-    pub async fn by_hash<S: AsRef<str>>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_hash<S: AsRef<str> + Debug>(
         db: DatabaseConnection,
         hash: S,
     ) -> RepoResult<Option<Self>> {
@@ -81,6 +86,8 @@ impl File {
         }
     }
 
+    /// Finds the file by tags
+    #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn find_by_tags(
         db: DatabaseConnection,
         tag_ids: Vec<i64>,
@@ -113,6 +120,7 @@ impl File {
     }
 
     /// Adds a file with its hash to the database
+    #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn add(
         db: DatabaseConnection,
         storage_id: i64,
@@ -199,11 +207,13 @@ impl File {
     }
 
     /// Returns a list of thumbnails for the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn thumbnails(&self) -> RepoResult<Vec<Thumbnail>> {
         Thumbnail::for_file_id(self.db.clone(), self.model.id).await
     }
 
     /// Returns the list of tags of the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
         let tags: Vec<(tag::Model, Option<namespace::Model>)> = tag::Entity::find()
             .find_also_related(namespace::Entity)
@@ -221,7 +231,8 @@ impl File {
     }
 
     /// Changes the name of the file
-    pub async fn set_name<S: ToString>(&mut self, name: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_name<S: ToString + Debug>(&mut self, name: S) -> RepoResult<()> {
         let mut active_file = self.get_active_model();
         active_file.name = Set(Some(name.to_string()));
         let active_file = active_file.update(&self.db).await?;
@@ -231,7 +242,8 @@ impl File {
     }
 
     /// Changes the comment of the file
-    pub async fn set_comment<S: ToString>(&mut self, comment: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_comment<S: ToString + Debug>(&mut self, comment: S) -> RepoResult<()> {
         let mut active_file = self.get_active_model();
         active_file.comment = Set(Some(comment.to_string()));
         let active_file = active_file.update(&self.db).await?;
@@ -241,6 +253,7 @@ impl File {
     }
 
     /// Changes the type of the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn set_file_type(&mut self, file_type: FileType) -> RepoResult<()> {
         let mut active_file = self.get_active_model();
         active_file.file_type = Set(file_type as u32);
@@ -251,6 +264,7 @@ impl File {
     }
 
     /// Adds a single tag to the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_tag(&mut self, tag_id: i64) -> RepoResult<()> {
         let hash_id = self.hash.id;
         let active_model = hash_tag::ActiveModel {
@@ -262,6 +276,7 @@ impl File {
     }
 
     /// Adds multiple tags to the file at once
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_tags(&self, tag_ids: Vec<i64>) -> RepoResult<()> {
         let hash_id = self.hash.id;
         let models: Vec<hash_tag::ActiveModel> = tag_ids
@@ -277,6 +292,7 @@ impl File {
     }
 
     /// Returns the reader for the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
         let storage = self.storage().await?;
 
@@ -284,6 +300,7 @@ impl File {
     }
 
     /// Creates a thumbnail for the file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_thumbnail(
         &self,
         size: ThumbnailSize,
@@ -297,6 +314,7 @@ impl File {
     }
 
     /// Creates a thumbnail for an image
+    #[tracing::instrument(level = "debug", skip(self))]
     async fn create_image_thumbnail(
         &self,
         size: ThumbnailSize,

@@ -9,6 +9,7 @@ use mediarepo_core::image_processing::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
 use sea_orm::DatabaseConnection;
+use std::fmt::Debug;
 use std::io::Cursor;
 use std::path::PathBuf;
 use tokio::fs::OpenOptions;
@@ -31,35 +32,44 @@ impl Repo {
     }
 
     /// Connects to the database with the given uri
-    pub async fn connect<S: AsRef<str>>(uri: S) -> RepoResult<Self> {
+    #[tracing::instrument(level = "debug")]
+    pub async fn connect<S: AsRef<str> + Debug>(uri: S) -> RepoResult<Self> {
         let db = get_database(uri).await?;
         Ok(Self::new(db))
     }
 
     /// Returns all available storages
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn storages(&self) -> RepoResult<Vec<Storage>> {
         Storage::all(self.db.clone()).await
     }
 
     /// Returns a storage by path
-    pub async fn storage_by_path<S: ToString>(&self, path: S) -> RepoResult<Option<Storage>> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn storage_by_path<S: ToString + Debug>(
+        &self,
+        path: S,
+    ) -> RepoResult<Option<Storage>> {
         Storage::by_path(self.db.clone(), path).await
     }
 
     /// Sets the main storage
-    pub async fn set_main_storage<S: ToString>(&mut self, path: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_main_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
         self.main_storage = Storage::by_path(self.db.clone(), path).await?;
         Ok(())
     }
 
     /// Sets the default thumbnail storage
-    pub async fn set_thumbnail_storage<S: ToString>(&mut self, path: S) -> RepoResult<()> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn set_thumbnail_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
         self.thumbnail_storage = Storage::by_path(self.db.clone(), path).await?;
         Ok(())
     }
 
     /// Adds a storage to the repository
-    pub async fn add_storage<S1: ToString, S2: ToString>(
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn add_storage<S1: ToString + Debug, S2: ToString + Debug>(
         &self,
         name: S1,
         path: S2,
@@ -68,21 +78,25 @@ impl Repo {
     }
 
     /// Returns a file by its mapped hash
-    pub async fn file_by_hash<S: AsRef<str>>(&self, hash: S) -> RepoResult<Option<File>> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn file_by_hash<S: AsRef<str> + Debug>(&self, hash: S) -> RepoResult<Option<File>> {
         File::by_hash(self.db.clone(), hash).await
     }
 
     /// Returns a file by id
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn file_by_id(&self, id: i64) -> RepoResult<Option<File>> {
         File::by_id(self.db.clone(), id).await
     }
 
     /// Returns a list of all stored files
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn files(&self) -> RepoResult<Vec<File>> {
         File::all(self.db.clone()).await
     }
 
     /// Finds all files by a list of tags
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn find_files_by_tags(&self, tags: Vec<String>) -> RepoResult<Vec<File>> {
         let tags = self.find_all_tags(tags).await?;
         let tag_ids = tags.into_iter().map(|tag| tag.id()).collect();
@@ -91,6 +105,7 @@ impl Repo {
     }
 
     /// Adds a file to the database by its readable path in the file system
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
         let mime_match = mime_guess::from_path(&path).first();
 
@@ -115,11 +130,16 @@ impl Repo {
     }
 
     /// Returns a thumbnail by its hash
-    pub async fn thumbnail_by_hash<S: AsRef<str>>(&self, hash: S) -> RepoResult<Option<Thumbnail>> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn thumbnail_by_hash<S: AsRef<str> + Debug>(
+        &self,
+        hash: S,
+    ) -> RepoResult<Option<Thumbnail>> {
         Thumbnail::by_hash(self.db.clone(), hash).await
     }
 
     /// Creates thumbnails of all sizes for a file
+    #[tracing::instrument(level = "debug", skip(self, file))]
     pub async fn create_thumbnails_for_file(&self, file: File) -> RepoResult<()> {
         let thumb_storage = self.get_thumbnail_storage()?;
         for size in [
@@ -145,11 +165,13 @@ impl Repo {
     }
 
     /// Returns all tags stored in the database
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
         Tag::all(self.db.clone()).await
     }
 
     /// Finds all tags by name
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn find_all_tags(&self, tags: Vec<String>) -> RepoResult<Vec<Tag>> {
         let tags: Vec<(Option<String>, String)> =
             tags.into_iter().map(parse_namespace_and_tag).collect();
@@ -157,7 +179,8 @@ impl Repo {
     }
 
     /// Adds or finds a tag
-    pub async fn add_or_find_tag<S: ToString>(&self, tag: S) -> RepoResult<Tag> {
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn add_or_find_tag<S: ToString + Debug>(&self, tag: S) -> RepoResult<Tag> {
         let (namespace, name) = parse_namespace_and_tag(tag.to_string());
         if let Some(namespace) = namespace {
             self.add_or_find_namespaced_tag(name, namespace).await
@@ -167,6 +190,7 @@ impl Repo {
     }
 
     /// Adds or finds an unnamespaced tag
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_or_find_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
         if let Some(tag) = Tag::by_name(self.db.clone(), &name, None).await? {
             Ok(tag)
@@ -176,11 +200,13 @@ impl Repo {
     }
 
     /// Adds an unnamespaced tag
+    #[tracing::instrument(level = "debug", skip(self))]
     async fn add_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
         Tag::add(self.db.clone(), name, None).await
     }
 
     /// Adds or finds a namespaced tag
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_or_find_namespaced_tag(
         &self,
         name: String,
@@ -194,6 +220,7 @@ impl Repo {
     }
 
     /// Adds a namespaced tag
+    #[tracing::instrument(level = "debug", skip(self))]
     async fn add_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
         let namespace =
             if let Some(namespace) = Namespace::by_name(self.db.clone(), &namespace).await? {
@@ -204,6 +231,7 @@ impl Repo {
         Tag::add(self.db.clone(), name, Some(namespace.id())).await
     }
 
+    #[tracing::instrument(level = "trace", skip(self))]
     fn get_main_storage(&self) -> RepoResult<&Storage> {
         if let Some(storage) = &self.main_storage {
             Ok(storage)
@@ -212,6 +240,7 @@ impl Repo {
         }
     }
 
+    #[tracing::instrument(level = "trace", skip(self))]
     fn get_thumbnail_storage(&self) -> RepoResult<&Storage> {
         if let Some(storage) = &self.thumbnail_storage {
             Ok(storage)

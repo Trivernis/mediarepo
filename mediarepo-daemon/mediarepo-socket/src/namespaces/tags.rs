@@ -20,6 +20,7 @@ impl NamespaceProvider for TagsNamespace {
 
 impl TagsNamespace {
     /// Returns a list of all tags in the database
+    #[tracing::instrument(skip_all)]
     async fn all_tags(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags: Vec<TagResponse> = repo
@@ -36,6 +37,7 @@ impl TagsNamespace {
     }
 
     /// Returns all tags for a single file
+    #[tracing::instrument(skip_all)]
     async fn tags_for_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<GetFileTagsRequest>()?;

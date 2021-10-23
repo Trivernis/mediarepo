@@ -5,6 +5,7 @@ use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
 use sea_orm::sea_query::Expr;
 use sea_orm::{Condition, DatabaseConnection, Set};
+use std::fmt::Debug;
 
 #[derive(Clone)]
 pub struct Tag {
@@ -14,6 +15,7 @@ pub struct Tag {
 }
 
 impl Tag {
+    #[tracing::instrument(level = "trace")]
     pub(crate) fn new(
         db: DatabaseConnection,
         model: tag::Model,
@@ -27,6 +29,7 @@ impl Tag {
     }
 
     /// Returns all tags stored in the database
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
         let tags: Vec<Self> = tag::Entity::find()
             .inner_join(namespace::Entity)
@@ -41,6 +44,7 @@ impl Tag {
     }
 
     /// Returns the tag by id
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         let tag = tag::Entity::find_by_id(id)
             .find_also_related(namespace::Entity)
@@ -52,7 +56,8 @@ impl Tag {
     }
 
     /// Returns one tag by name and namespace
-    pub async fn by_name<S1: ToString>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_name<S1: ToString + Debug>(
         db: DatabaseConnection,
         name: S1,
         namespace: Option<String>,
@@ -63,6 +68,7 @@ impl Tag {
     }
 
     /// Retrieves the namespaced tags by name and namespace
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all_by_name(
         db: DatabaseConnection,
         namespaces_with_names: Vec<(Option<String>, String)>,
@@ -93,7 +99,8 @@ impl Tag {
     }
 
     /// Adds a new tag to the database
-    pub async fn add<S: ToString>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn add<S: ToString + Debug>(
         db: DatabaseConnection,
         name: S,
         namespace_id: Option<i64>,

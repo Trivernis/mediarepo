@@ -4,6 +4,7 @@ use mediarepo_database::entities::hash;
 use mediarepo_database::entities::thumbnail;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
+use std::fmt::Debug;
 use tokio::fs::File;
 use tokio::io::BufReader;
 
@@ -14,11 +15,13 @@ pub struct Thumbnail {
 }
 
 impl Thumbnail {
+    #[tracing::instrument(level = "trace")]
     pub(crate) fn new(db: DatabaseConnection, model: thumbnail::Model, hash: hash::Model) -> Self {
         Self { db, model, hash }
     }
 
     /// Returns the thumbnail by id
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         let model: Option<(thumbnail::Model, Option<hash::Model>)> =
             thumbnail::Entity::find_by_id(id)
@@ -34,7 +37,8 @@ impl Thumbnail {
     }
 
     /// Returns a thumbnail by hash
-    pub async fn by_hash<S: AsRef<str>>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_hash<S: AsRef<str> + Debug>(
         db: DatabaseConnection,
         hash: S,
     ) -> RepoResult<Option<Self>> {
@@ -51,6 +55,7 @@ impl Thumbnail {
     }
 
     /// Inserts a thumbnail into the database
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn add(
         db: DatabaseConnection,
         hash_id: i64,
@@ -78,6 +83,7 @@ impl Thumbnail {
     }
 
     /// Returns all thumbnails for a given file
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn for_file_id(db: DatabaseConnection, file_id: i64) -> RepoResult<Vec<Self>> {
         let thumb_models: Vec<(thumbnail::Model, Option<hash::Model>)> = thumbnail::Entity::find()
             .filter(thumbnail::Column::FileId.eq(file_id))
@@ -112,6 +118,7 @@ impl Thumbnail {
     }
 
     /// Returns the storage for the thumbnail
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn storage(&self) -> RepoResult<Storage> {
         let storage = Storage::by_id(self.db.clone(), self.model.storage_id)
             .await?
@@ -121,6 +128,7 @@ impl Thumbnail {
     }
 
     /// Returns the reader of the thumbnail file
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_reader(&self) -> RepoResult<BufReader<File>> {
         let storage = self.storage().await?;
         storage.get_file_reader(self.hash()).await

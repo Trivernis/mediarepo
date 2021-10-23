@@ -2,3 +2,5 @@
 test-local
 .idea
 .env
+tracing.folded
+tracing*.svg

@@ -29,6 +29,7 @@ impl NamespaceProvider for FilesNamespace {
 
 impl FilesNamespace {
     /// Returns a list of all files
+    #[tracing::instrument(skip_all)]
     async fn all_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let files = repo.files().await?;
@@ -42,6 +43,7 @@ impl FilesNamespace {
     }
 
     /// Searches for files by tags
+    #[tracing::instrument(skip_all)]
     async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let tags = event.data::<FindFilesByTagsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
@@ -54,6 +56,7 @@ impl FilesNamespace {
     }
 
     /// Adds a file to the repository
+    #[tracing::instrument(skip_all)]
     async fn add_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<AddFileRequest>()?;
         let path = PathBuf::from(request.path);
@@ -73,6 +76,7 @@ impl FilesNamespace {
     }
 
     /// Reads the binary contents of a file
+    #[tracing::instrument(skip_all)]
     async fn read_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<ReadFileRequest>()?;
 
@@ -90,6 +94,7 @@ impl FilesNamespace {
     }
 
     /// Returns a list of available thumbnails of a file
+    #[tracing::instrument(skip_all)]
     async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
@@ -108,6 +113,7 @@ impl FilesNamespace {
     }
 
     /// Reads a thumbnail for the given thumbnail hash
+    #[tracing::instrument(skip_all)]
     async fn read_thumbnail(ctx: &Context, event: Event) -> IPCResult<()> {
         let hash = event.data::<String>()?;
         let repo = get_repo_from_context(ctx).await;

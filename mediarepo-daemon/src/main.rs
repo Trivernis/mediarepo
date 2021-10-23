@@ -8,7 +8,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
 use mediarepo_core::utils::parse_tags_file;
-use mediarepo_model::file::File;
+use mediarepo_model::file::File as RepoFile;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
@@ -21,6 +21,8 @@ use structopt::StructOpt;
 use tokio::fs;
 use tokio::runtime;
 use tokio::runtime::Runtime;
+use tracing_flame::FlameLayer;
+use tracing_subscriber::{fmt, prelude::*};
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "mediarepo", about = "A multimedia repository")]
@@ -28,6 +30,9 @@ struct Opt {
     /// The path to the repository. Defaults to the current working directory
     #[structopt(long, short, parse(from_os_str), default_value = ".")]
     repo: PathBuf,
+
+    #[structopt(long, short)]
+    profile: bool,
 
     /// The subcommand to invoke
     #[structopt(subcommand)]
@@ -56,8 +61,13 @@ enum SubCommand {
 }
 
 fn main() -> RepoResult<()> {
-    build_logger();
     let opt: Opt = Opt::from_args();
+    let mut _guard = None;
+    if opt.profile {
+        _guard = Some(init_tracing_flame());
+    } else {
+        build_logger();
+    }
 
     match opt.cmd.clone() {
         SubCommand::Init { force } => get_single_thread_runtime().block_on(init(opt, force)),
@@ -97,10 +107,19 @@ fn build_logger() {
                 .unwrap_or(LevelFilter::Info),
         )
         .write_style(WriteStyle::Always)
-        //.filter_module("sqlx", log::LevelFilter::Warn)
+        .filter_module("sqlx", log::LevelFilter::Warn)
         .filter_module("tokio", log::LevelFilter::Info)
-        .filter_module("tracing", log::LevelFilter::Warn)
         .init();
+}
+
+fn init_tracing_flame() -> impl Drop {
+    let fmt_layer = fmt::Layer::default();
+    let (flame_layer, _guard) = FlameLayer::with_file("./tracing.folded").unwrap();
+    tracing_subscriber::registry()
+        .with(fmt_layer)
+        .with(flame_layer)
+        .init();
+    _guard
 }
 
 async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
@@ -192,7 +211,11 @@ async fn import_single_image(path: PathBuf, repo: &Repo) -> RepoResult<()> {
     Ok(())
 }
 
-async fn add_tags_from_tags_file(tags_path: PathBuf, repo: &Repo, file: File) -> RepoResult<()> {
+async fn add_tags_from_tags_file(
+    tags_path: PathBuf,
+    repo: &Repo,
+    file: RepoFile,
+) -> RepoResult<()> {
     log::info!("Adding tags");
     if tags_path.exists() {
         let tags = parse_tags_file(tags_path).await?;

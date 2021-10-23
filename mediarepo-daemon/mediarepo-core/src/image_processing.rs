@@ -8,7 +8,7 @@ use tokio::fs::OpenOptions;
 use tokio::io::{AsyncRead, AsyncReadExt, BufReader};
 
 /// Represents the different sizes of a thumbnail
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum ThumbnailSize {
     Small,
     Medium,

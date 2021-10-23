@@ -6,6 +6,7 @@ use mediarepo_database::entities::hash;
 use mediarepo_database::entities::thumbnail;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
+use std::fmt::Debug;
 
 pub struct Hash {
     db: DatabaseConnection,
@@ -13,11 +14,13 @@ pub struct Hash {
 }
 
 impl Hash {
+    #[tracing::instrument(level = "trace")]
     pub(crate) fn new(db: DatabaseConnection, model: hash::Model) -> Self {
         Self { db, model }
     }
 
     /// Searches for the hash by id
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         let hash = hash::Entity::find_by_id(id)
             .one(&db)
@@ -28,7 +31,8 @@ impl Hash {
     }
 
     /// Returns the hash by value
-    pub async fn by_value<S: AsRef<str>>(
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_value<S: AsRef<str> + Debug>(
         db: DatabaseConnection,
         value: S,
     ) -> RepoResult<Option<Self>> {
@@ -42,6 +46,7 @@ impl Hash {
     }
 
     /// Adds a new hash to the database
+    #[tracing::instrument(level = "debug", skip(db))]
     pub async fn add(db: DatabaseConnection, value: String) -> RepoResult<Self> {
         let active_model = hash::ActiveModel {
             value: Set(value),
@@ -64,6 +69,7 @@ impl Hash {
     }
 
     /// Returns the file associated with the hash
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn file(&self) -> RepoResult<Option<File>> {
         let file = self
             .model
@@ -76,6 +82,7 @@ impl Hash {
     }
 
     /// Returns the the thumbnail associated with the hash
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn thumbnail(&self) -> RepoResult<Option<Thumbnail>> {
         let thumbnail = self
             .model

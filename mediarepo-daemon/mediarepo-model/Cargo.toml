@@ -11,6 +11,7 @@ typemap_rev = "0.1.5"
 serde = "1.0.130"
 mime_guess = "2.0.3"
 mime = "0.3.16"
+tracing = "0.1.29"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
