@@ -9,6 +9,7 @@ import {TagService} from "../../services/tag/tag.service";
 import {Tag} from "../../models/Tag";
 import {MatChipInputEvent} from "@angular/material/chips";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {MatSelectionListChange} from "@angular/material/list";
 
 @Component({
   selector: 'app-home',
@@ -63,6 +64,15 @@ export class HomeComponent implements OnInit {
       this.searchTags.splice(index, 1);
     }
     await this.fileService.findFiles(this.searchTags);
+  }
+
+  async addSearchTagFromList(event: MatSelectionListChange) {
+    if (event.options.length > 0) {
+      const tag = event.options[0].value;
+      this.searchTags.push(tag);
+      await this.fileService.findFiles(this.searchTags);
+    }
+    event.source.deselectAll();
   }
 
   async addSearchTag(event: MatChipInputEvent) {

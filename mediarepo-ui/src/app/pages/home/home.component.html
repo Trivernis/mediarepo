@@ -23,9 +23,9 @@
 
       <div id="file-tag-list">
         <h1>Selection Tags</h1>
-        <mat-selection-list [multiple]="false" *ngIf="tags.length > 0">
+        <mat-selection-list [multiple]="false" *ngIf="tags.length > 0" (selectionChange)="addSearchTagFromList($event)">
           <mat-list-option
-            *ngFor="let tag of tags">{{tag.namespace ? tag.namespace + ':' + tag.name : tag.name}}</mat-list-option>
+            *ngFor="let tag of tags" [value]="tag.getNormalizedOutput()">{{tag.getNormalizedOutput()}}</mat-list-option>
         </mat-selection-list>
       </div>
       </div>
