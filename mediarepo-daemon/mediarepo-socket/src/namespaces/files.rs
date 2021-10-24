@@ -1,8 +1,9 @@
-use crate::types::requests::{
-    AddFileRequest, FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest,
-};
-use crate::types::responses::{FileResponse, ThumbnailResponse};
+use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
+use mediarepo_api::types::files::{
+    AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest,
+    ReadFileRequest, ThumbnailMetadataResponse,
+};
 use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
 use std::path::PathBuf;
@@ -33,7 +34,10 @@ impl FilesNamespace {
     async fn all_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let files = repo.files().await?;
-        let responses: Vec<FileResponse> = files.into_iter().map(FileResponse::from).collect();
+        let responses: Vec<FileMetadataResponse> = files
+            .into_iter()
+            .map(FileMetadataResponse::from_model)
+            .collect();
 
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "all_files", responses)
@@ -47,8 +51,12 @@ impl FilesNamespace {
     async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let tags = event.data::<FindFilesByTagsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let files = repo.find_files_by_tags(tags.tags).await?;
-        let responses: Vec<FileResponse> = files.into_iter().map(FileResponse::from).collect();
+        let tags = tags.tags.into_iter().map(|t| t.name).collect();
+        let files = repo.find_files_by_tags(tags).await?;
+        let responses: Vec<FileMetadataResponse> = files
+            .into_iter()
+            .map(FileMetadataResponse::from_model)
+            .collect();
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "find_files", responses)
             .await?;
@@ -68,7 +76,7 @@ impl FilesNamespace {
                 event.id(),
                 Self::name(),
                 "add_file",
-                FileResponse::from(file),
+                FileMetadataResponse::from_model(file),
             )
             .await?;
 
@@ -81,7 +89,7 @@ impl FilesNamespace {
         let request = event.data::<ReadFileRequest>()?;
 
         let repo = get_repo_from_context(ctx).await;
-        let file = file_by_identifier(request, &repo).await?;
+        let file = file_by_identifier(request.id, &repo).await?;
         let mut reader = file.get_reader().await?;
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf).await?;
@@ -98,12 +106,12 @@ impl FilesNamespace {
     async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.data::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let file = file_by_identifier(request, &repo).await?;
+        let file = file_by_identifier(request.id, &repo).await?;
         let thumbnails = file.thumbnails().await?;
 
-        let thumb_responses: Vec<ThumbnailResponse> = thumbnails
+        let thumb_responses: Vec<ThumbnailMetadataResponse> = thumbnails
             .into_iter()
-            .map(ThumbnailResponse::from)
+            .map(ThumbnailMetadataResponse::from_model)
             .collect();
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "get_thumbnails", thumb_responses)

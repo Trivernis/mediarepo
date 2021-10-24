@@ -12,18 +12,14 @@ repository = "https://github.com/Trivernis/mediarepo-daemon"
 name = "mediarepo"
 path = "src/main.rs"
 
-[lib]
-name = "mediarepo"
-crate-type = ["lib"]
-
 [dependencies]
 tracing = "0.1.29"
-toml = {version = "0.5.8", optional=true}
-structopt = {version="0.3.23", optional=true}
-glob = {version="0.3.0", optional=true}
-log = {version="0.4.14", optional=true}
-tracing-flame = {version = "0.1.0", optional=true}
-tracing-appender = {version="0.2.0", optional=true}
+toml = "0.5.8"
+structopt ="0.3.23"
+glob = "0.3.0"
+log = "0.4.14"
+tracing-flame = "0.1.0"
+tracing-appender = "0.2.0"
 
 
 [dependencies.mediarepo-core]
@@ -31,11 +27,9 @@ path = "./mediarepo-core"
 
 [dependencies.mediarepo-model]
 path = "./mediarepo-model"
-optional=true
 
 [dependencies.mediarepo-socket]
 path = "./mediarepo-socket"
-optional=true
 
 [dependencies.tokio]
 version = "1.12.0"
@@ -43,21 +37,4 @@ features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]
 version="0.2.3"
-optional=true
 features = ["env-filter"]
-
-
-[features]
-default = ["runtime"]
-runtime = [
-    "toml",
-    "structopt",
-    "mediarepo-model",
-    "mediarepo-socket",
-    "tracing-subscriber",
-    "log",
-    "glob",
-    "tracing-flame",
-    "tracing-appender"
-]
-library = ["mediarepo-socket"]

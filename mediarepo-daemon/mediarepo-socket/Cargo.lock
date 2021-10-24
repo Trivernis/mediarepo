@@ -762,6 +762,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
+name = "mediarepo-api"
+version = "0.1.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=af90986e88cc4ef7d797ecc9cfd0c306b2d4c7cd#af90986e88cc4ef7d797ecc9cfd0c306b2d4c7cd"
+dependencies = [
+ "chrono",
+ "serde",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "mediarepo-core"
 version = "0.1.0"
 dependencies = [
@@ -811,6 +822,7 @@ name = "mediarepo-socket"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "mediarepo-api",
  "mediarepo-core",
  "mediarepo-model",
  "serde",

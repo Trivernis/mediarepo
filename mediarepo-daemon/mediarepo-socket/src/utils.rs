@@ -1,4 +1,4 @@
-use crate::types::requests::FileIdentifier;
+use mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::rmp_ipc::ipc::context::Context;
 use mediarepo_model::file::File;

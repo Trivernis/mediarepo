@@ -1,8 +1,8 @@
-use crate::types::responses::InfoResponse;
+use mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::rmp_ipc::prelude::*;
 
+mod from_model;
 mod namespaces;
-pub mod types;
 mod utils;
 
 pub fn get_builder(address: &str) -> IPCBuilder {

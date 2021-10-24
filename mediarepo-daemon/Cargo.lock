@@ -839,6 +839,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mediarepo-api"
+version = "0.1.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=af90986e88cc4ef7d797ecc9cfd0c306b2d4c7cd#af90986e88cc4ef7d797ecc9cfd0c306b2d4c7cd"
+dependencies = [
+ "chrono",
+ "serde",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "mediarepo-core"
 version = "0.1.0"
 dependencies = [
@@ -888,6 +899,7 @@ name = "mediarepo-socket"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "mediarepo-api",
  "mediarepo-core",
  "mediarepo-model",
  "serde",
