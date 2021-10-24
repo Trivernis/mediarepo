@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use chrono::NaiveDateTime;
 use crate::types::identifier::FileIdentifier;
 
@@ -48,7 +49,7 @@ pub struct FileMetadataResponse {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ThumbnailMetadataResponse {
     pub id: i64,
-    pub hash: Strin,
+    pub hash: String,
     pub height: i32,
     pub width: i32,
     pub mime_type: Option<String>,

@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TagResponse {
     pub id: i64,
