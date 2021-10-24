@@ -47,6 +47,7 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         "mediarepo"
     }
 
+    #[tracing::instrument(skip(self, app, _config))]
     fn initialize(
         &mut self,
         app: &AppHandle<R>,

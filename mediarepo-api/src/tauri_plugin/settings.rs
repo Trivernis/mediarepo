@@ -7,14 +7,14 @@ use std::path::PathBuf;
 
 static SETTINGS_FILE: &str = "settings.toml";
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct Repository {
     pub(crate) name: String,
     pub(crate) path: Option<String>,
     pub(crate) address: String,
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Settings {
     pub repositories: HashMap<String, Repository>,
 }
@@ -27,6 +27,7 @@ fn get_settings_path() -> PathBuf {
 }
 
 /// Writes the settings to the file
+#[tracing::instrument(level = "debug")]
 pub fn save_settings(settings: &Settings) -> PluginResult<()> {
     let settings_path = get_settings_path();
     let settings_string = toml::to_string(&settings)?;
@@ -36,8 +37,10 @@ pub fn save_settings(settings: &Settings) -> PluginResult<()> {
 }
 
 /// Loads the settings from the file
+#[tracing::instrument(level = "debug")]
 pub fn load_settings() -> PluginResult<Settings> {
-    let dirs = ProjectDirs::from("com", "trivernis", "mediarepo").unwrap();
+    let dirs = ProjectDirs::from("com", "trivernis", "mediarepo")
+        .expect("Failed to get project directories");
     let config_path = dirs.config_dir().to_path_buf();
     if !config_path.exists() {
         fs::create_dir_all(&config_path)?;

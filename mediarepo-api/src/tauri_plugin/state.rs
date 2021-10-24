@@ -59,6 +59,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    #[tracing::instrument(level = "debug")]
     pub fn load() -> PluginResult<Self> {
         let settings = load_settings()?;
 
