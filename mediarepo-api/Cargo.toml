@@ -9,6 +9,7 @@ license = "gpl-3"
 [dependencies]
 tracing = "0.1.29"
 thiserror = "1.0.30"
+chrono = "0.4.19"
 rmp-ipc = {version = "0.7.2", optional=true}
 tauri = {version = "1.0.0-beta.8", optional=true}
 
