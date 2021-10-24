@@ -3,11 +3,12 @@ use tauri::{AppHandle, Builder, Invoke, Manager, Runtime};
 
 use state::ApiState;
 
-use crate::tauri_plugin::state::BufferState;
+use crate::tauri_plugin::state::{AppState, BufferState};
 
-mod commands;
+pub(crate) mod commands;
 pub mod custom_schemes;
 pub mod error;
+mod settings;
 mod state;
 
 use commands::*;
@@ -30,7 +31,12 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 find_files,
                 read_file_by_hash,
                 get_file_thumbnails,
-                read_thumbnail
+                read_thumbnail,
+                get_repositories,
+                get_tags_for_file,
+                get_active_repository,
+                add_repository,
+                select_repository
             ]),
         }
     }
@@ -51,6 +57,9 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
 
         let buffer_state = BufferState::default();
         app.manage(buffer_state);
+
+        let repo_state = AppState::load()?;
+        app.manage(repo_state);
 
         Ok(())
     }

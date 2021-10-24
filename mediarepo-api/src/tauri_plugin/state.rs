@@ -7,6 +7,7 @@ use tauri::async_runtime::RwLock;
 
 use crate::client_api::ApiClient;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
+use crate::tauri_plugin::settings::{load_settings, Repository, Settings};
 
 pub struct ApiState {
     inner: Arc<RwLock<Option<ApiClient>>>,
@@ -50,4 +51,22 @@ impl OnceBuffer {
 #[derive(Default)]
 pub struct BufferState {
     pub buffer: Arc<Mutex<HashMap<String, OnceBuffer>>>,
+}
+
+pub struct AppState {
+    pub active_repo: Arc<RwLock<Option<Repository>>>,
+    pub settings: Arc<RwLock<Settings>>,
+}
+
+impl AppState {
+    pub fn load() -> PluginResult<Self> {
+        let settings = load_settings()?;
+
+        let state = Self {
+            active_repo: Arc::new(RwLock::new(None)),
+            settings: Arc::new(RwLock::new(settings)),
+        };
+
+        Ok(state)
+    }
 }
