@@ -6,6 +6,7 @@ use crate::types::files::{
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
+use rmp_ipc::payload::{BytePayload, EventSendPayload};
 use rmp_ipc::prelude::Context;
 
 #[derive(Clone)]
@@ -54,13 +55,16 @@ impl FileApi {
     /// Reads the file and returns its contents as bytes
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn read_file_by_hash(&self, hash: String) -> ApiResult<Vec<u8>> {
-        self.emit_and_get(
-            "read_file",
-            ReadFileRequest {
-                id: FileIdentifier::Hash(hash),
-            },
-        )
-        .await
+        let payload: BytePayload = self
+            .emit_and_get(
+                "read_file",
+                ReadFileRequest {
+                    id: FileIdentifier::Hash(hash),
+                },
+            )
+            .await?;
+
+        Ok(payload.to_payload_bytes()?)
     }
 
     /// Returns a list of all thumbnails of the file
@@ -81,6 +85,7 @@ impl FileApi {
     /// Reads the thumbnail of the file and returns its contents in bytes
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn read_thumbnail(&self, hash: String) -> ApiResult<Vec<u8>> {
-        self.emit_and_get("read_thumbnail", hash).await
+        let payload: BytePayload = self.emit_and_get("read_thumbnail", hash).await?;
+        Ok(payload.to_payload_bytes()?)
     }
 }
