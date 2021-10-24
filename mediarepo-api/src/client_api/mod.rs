@@ -65,6 +65,7 @@ impl ApiClient {
     }
 
     /// Connects to the ipc Socket
+    #[tracing::instrument(level = "debug")]
     pub async fn connect(address: &str) -> ApiResult<Self> {
         let ctx = IPCBuilder::new().address(address).build_client().await?;
 
@@ -82,5 +83,11 @@ impl ApiClient {
             .await_reply(&self.ctx)
             .await?;
         Ok(res.data::<InfoResponse>()?)
+    }
+
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn exit(self) -> ApiResult<()> {
+        self.ctx.stop().await?;
+        Ok(())
     }
 }
