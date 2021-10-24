@@ -9,8 +9,8 @@ license = "gpl-3"
 [dependencies]
 tracing = "0.1.29"
 thiserror = "1.0.30"
+async-trait = {version = "0.1.51", optional=true}
 rmp-ipc = {version = "0.7.2", optional=true}
-tauri = {version = "1.0.0-beta.8", optional=true}
 
 [dependencies.serde]
 version = "1.0.130"
@@ -20,6 +20,12 @@ features = ["serde_derive"]
 version = "0.4.19"
 features = ["serde"]
 
+[dependencies.tauri]
+version = "1.0.0-beta.8"
+optional=true
+default-features = false
+features = []
+
 [features]
 tauri-plugin = ["client-api","tauri", "rmp-ipc"]
-client-api = ["rmp-ipc"]
+client-api = ["rmp-ipc", "async-trait"]
