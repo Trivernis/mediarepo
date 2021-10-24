@@ -98,8 +98,7 @@ export class HomeComponent implements OnInit {
   }
 
   private async openLightbox(file: File): Promise<void> {
-    let url = await this.fileService.readFile(file.hash,
-      file.mime_type ?? "image/png");
+    let url = await this.fileService.readFile(file);
 
     let albums = [
       {

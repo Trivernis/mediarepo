@@ -25,21 +25,20 @@ export class RepositoryService {
   }
 
   public async loadRepositories() {
-    let active_repo = await invoke<Repository | undefined>("get_active_repository");
+    let active_repo = await invoke<Repository | undefined>("plugin:mediarepo|get_active_repository");
     this.selectedRepository.next(active_repo);
 
-    let repos = await invoke<Repository[]>("get_repositories");
+    let repos = await invoke<Repository[]>("plugin:mediarepo|get_repositories");
     this.repositories.next(repos);
   }
 
   public async setRepository(repo: Repository) {
-    await invoke("select_repository", {name: repo.name});
-    await invoke("emit_info");
+    await invoke("plugin:mediarepo|select_repository", {name: repo.name});
     this.selectedRepository.next(repo);
   }
 
   public async addRepository(name: string, path: string) {
-    let repos = await invoke<Repository[]>("add_repository", {name, path});
+    let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository", {name, path});
     this.repositories.next(repos);
   }
 }

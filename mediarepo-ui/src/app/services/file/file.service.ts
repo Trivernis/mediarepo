@@ -17,31 +17,26 @@ export class FileService {
   }
 
   public async getFiles() {
-    let all_files = await invoke<File[]>("get_all_files");
+    let all_files = await invoke<File[]>("plugin:mediarepo|get_all_files");
     this.displayedFiles.next(all_files);
   }
 
   public async findFiles(tags: string[]) {
-    let files = await invoke<File[]>("find_files", {tags});
+    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags});
     this.displayedFiles.next(files);
   }
 
-  public async readFile(hash: string, mime: string): Promise<SafeResourceUrl> {
-    const once_uri =  await invoke<string>("read_file_by_hash", {hash, mime});
+  public async readFile(file: File): Promise<SafeResourceUrl> {
+    const once_uri =  await invoke<string>("plugin:mediarepo|read_file_by_hash", {hash: file.hash, mimeType: file.mime_type});
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async readThumbnail(thumbnail: Thumbnail): Promise<SafeResourceUrl> {
-    let once_uri = await invoke<string>("read_thumbnail", {hash: thumbnail.hash, mime: thumbnail.mime});
+    let once_uri = await invoke<string>("plugin:mediarepo|read_thumbnail", {hash: thumbnail.hash, mimeType: thumbnail.mime_type });
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async getThumbnails(hash: string): Promise<Thumbnail[]> {
-    return await invoke<Thumbnail[]>("get_thumbnails", {hash});
-  }
-
-  createSafeObjectUrl(blob: Blob): SafeResourceUrl {
-    const url = URL?.createObjectURL(blob);
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    return await invoke<Thumbnail[]>("plugin:mediarepo|get_file_thumbnails", {hash});
   }
 }

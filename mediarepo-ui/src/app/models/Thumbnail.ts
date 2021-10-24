@@ -2,5 +2,5 @@ export type Thumbnail = {
   hash: string,
   height: number,
   width: number,
-  mime: string | undefined
+  mime_type: string | undefined
 }

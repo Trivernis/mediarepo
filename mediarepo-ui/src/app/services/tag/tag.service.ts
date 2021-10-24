@@ -10,7 +10,7 @@ export class TagService {
   constructor() { }
 
   public async getTagsForFile(hash: string): Promise<Tag[]> {
-    const tags =  await invoke<Tag[]>("get_tags_for_file", {hash});
+    const tags =  await invoke<Tag[]>("plugin:mediarepo|get_tags_for_file", {hash});
     return tags.map(t => new Tag(t.id, t.name, t.namespace));
   }
 }
