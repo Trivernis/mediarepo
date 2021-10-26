@@ -17,7 +17,6 @@ export class AppComponent implements OnInit{
     private router: Router,
     private snackBar: MatSnackBar,
     private errorBroker: ErrorBrokerService,
-    private dataloaderService: DataloaderService,
     private repoService: RepositoryService,
   ) {
   }
@@ -25,7 +24,7 @@ export class AppComponent implements OnInit{
   async ngOnInit() {
     this.errorBroker.errorCb = (err: { message: string }) => this.showError(err);
     this.errorBroker.infoCb = (info: string) => this.showInfo(info);
-    await this.dataloaderService.loadData();
+    await this.repoService.loadRepositories();
     if (this.repoService.selectedRepository.getValue() == undefined) {
       await this.router.navigate(["repositories"])
     }

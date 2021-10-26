@@ -13,14 +13,18 @@ import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
 import {FormControl} from "@angular/forms";
 import {FileSearchComponent} from "../../components/file-search/file-search.component";
+import {DataloaderService} from "../../services/dataloader/dataloader.service";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  public async ngOnInit(): Promise<void> {
+    await this.dataloaderService.loadData();
+  }
 
 
-  constructor() {}
+  constructor(private dataloaderService: DataloaderService) {}
 }

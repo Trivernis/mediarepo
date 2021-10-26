@@ -7,6 +7,7 @@ import {MatChipInputEvent} from "@angular/material/chips";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
+import {TagQuery} from "../../models/TagQuery";
 
 @Component({
   selector: 'app-file-search',
@@ -17,7 +18,7 @@ export class FileSearchComponent {
 
   public searchInputSeparators = [COMMA];
   public formControl = new FormControl();
-  public searchTags: string[] = [];
+  public searchTags: TagQuery[] = [];
   public suggestionTags: Observable<string[]>;
   private allTags: string[] = [];
 
@@ -29,7 +30,7 @@ export class FileSearchComponent {
 
     this.suggestionTags = this.formControl.valueChanges.pipe(startWith(null), map(
       (tag: string | null) => tag ? this.allTags.filter(
-        (t: string) => t.includes(tag)).slice(0, 20) : this.allTags.slice(0, 20)));
+        (t: string) => t.includes(tag.replace(/^-/g, ''))).map((t) => tag.startsWith("-")? "-" + t : t).slice(0, 20) : this.allTags.slice(0, 20)));
   }
 
   public async searchForFiles() {
@@ -37,10 +38,14 @@ export class FileSearchComponent {
   }
 
   public addSearchTag(tag: string) {
-    this.searchTags.push(tag);
+    if (tag.startsWith("-")) {
+      this.searchTags.push(new TagQuery(tag.replace(/^-/g, ''), true));
+    } else {
+      this.searchTags.push(new TagQuery(tag, false));
+    }
   }
 
-  async removeSearchTag(tag: string) {
+  async removeSearchTag(tag: TagQuery) {
     const index = this.searchTags.indexOf(tag);
     if (index >= 0) {
       this.searchTags.splice(index, 1);
@@ -50,8 +55,8 @@ export class FileSearchComponent {
 
   async addSearchTagByChip(event: MatChipInputEvent) {
     const tag = event.value.trim();
-    if (tag.length > 0 && this.allTags.includes(tag)) {
-      this.searchTags.push(tag);
+    if (tag.length > 0 && this.allTags.includes(tag.replace(/-/g, ''))) {
+      this.addSearchTag(tag);
       event.chipInput?.clear();
       this.formControl.setValue(null);
       await this.searchForFiles();    }
@@ -59,7 +64,7 @@ export class FileSearchComponent {
 
   async addSearchTagByAutocomplete(event: MatAutocompleteSelectedEvent) {
     const tag = event.option.viewValue;
-    this.searchTags.push(tag);
+    this.addSearchTag(tag);
     this.formControl.setValue(null);
     this.tagInput.nativeElement.value = '';
     await this.searchForFiles();  }

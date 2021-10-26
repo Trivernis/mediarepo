@@ -5,6 +5,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
+import {DataloaderService} from "../dataloader/dataloader.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class RepositoryService {
   repositories = new BehaviorSubject<Repository[]>([]);
   public selectedRepository = new BehaviorSubject<Repository | undefined>(undefined);
 
-  constructor(private errorBroker: ErrorBrokerService) {
+  constructor(private errorBroker: ErrorBrokerService, private dataloaderService: DataloaderService) {
     this.registerListener()
   }
 
@@ -35,6 +36,7 @@ export class RepositoryService {
   public async setRepository(repo: Repository) {
     await invoke("plugin:mediarepo|select_repository", {name: repo.name});
     this.selectedRepository.next(repo);
+    await this.dataloaderService.loadData();
   }
 
   public async addRepository(name: string, path: string) {

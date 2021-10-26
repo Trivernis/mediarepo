@@ -1,7 +1,7 @@
 <mat-form-field class="full-width" #tagSearch appearance="fill">
     <mat-chip-list #chipList>
       <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
-        {{tag}}
+        {{tag.getNormalizedTag()}}
         <button matChipRemove>
           <mat-icon>cancel</mat-icon>
         </button>

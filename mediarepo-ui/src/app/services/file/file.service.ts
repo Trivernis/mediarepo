@@ -4,6 +4,7 @@ import {File} from "../../models/File";
 import {invoke} from "@tauri-apps/api/tauri";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {Thumbnail} from "../../models/Thumbnail";
+import {TagQuery} from "../../models/TagQuery";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class FileService {
     this.displayedFiles.next(all_files);
   }
 
-  public async findFiles(tags: string[]) {
+  public async findFiles(tags: TagQuery[]) {
     let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags});
     this.displayedFiles.next(files);
   }

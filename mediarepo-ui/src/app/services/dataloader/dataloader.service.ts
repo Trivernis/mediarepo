@@ -12,13 +12,11 @@ export class DataloaderService {
 
   constructor(
     private erroBroker: ErrorBrokerService,
-    private repositoryService: RepositoryService,
     private fileService: FileService,
     private tagService: TagService) { }
 
   public async loadData() {
     try {
-      await this.repositoryService.loadRepositories();
       await this.tagService.loadTags();
       await this.fileService.getFiles();
     } catch (err) {
