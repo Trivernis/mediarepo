@@ -39,15 +39,7 @@ impl FileApi {
 
     /// Searches for a file by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files(&self, tags: Vec<String>) -> ApiResult<Vec<FileMetadataResponse>> {
-        let tags = tags
-            .into_iter()
-            .map(|tag| TagQuery {
-                name: tag,
-                negate: false,
-            })
-            .collect();
-
+    pub async fn find_files(&self, tags: Vec<TagQuery>) -> ApiResult<Vec<FileMetadataResponse>> {
         self.emit_and_get("find_files", FindFilesByTagsRequest { tags })
             .await
     }

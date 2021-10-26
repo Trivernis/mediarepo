@@ -1,6 +1,6 @@
 use crate::tauri_plugin::commands::{add_once_buffer, ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
-use crate::types::files::{FileMetadataResponse, ThumbnailMetadataResponse};
+use crate::types::files::{FileMetadataResponse, TagQuery, ThumbnailMetadataResponse};
 
 #[tauri::command]
 pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMetadataResponse>> {
@@ -12,7 +12,7 @@ pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMet
 
 #[tauri::command]
 pub async fn find_files(
-    tags: Vec<String>,
+    tags: Vec<TagQuery>,
     api_state: ApiAccess<'_>,
 ) -> PluginResult<Vec<FileMetadataResponse>> {
     let api = api_state.api().await?;
