@@ -29,7 +29,7 @@ impl TagApi {
 
     /// Returns a list of all tags stored in the repo
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn get_all_tags(&self) -> ApiResult<Vec<String>> {
+    pub async fn get_all_tags(&self) -> ApiResult<Vec<TagResponse>> {
         self.emit_and_get("all_tags", ()).await
     }
 
