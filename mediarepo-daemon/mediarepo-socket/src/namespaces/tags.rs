@@ -1,6 +1,7 @@
-use crate::types::requests::GetFileTagsRequest;
-use crate::types::responses::TagResponse;
+use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
+use mediarepo_api::types::files::GetFileTagsRequest;
+use mediarepo_api::types::tags::TagResponse;
 use mediarepo_core::rmp_ipc::prelude::*;
 
 pub struct TagsNamespace;
@@ -27,7 +28,7 @@ impl TagsNamespace {
             .tags()
             .await?
             .into_iter()
-            .map(TagResponse::from)
+            .map(TagResponse::from_model)
             .collect();
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "all_tags", tags)
@@ -41,9 +42,9 @@ impl TagsNamespace {
     async fn tags_for_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<GetFileTagsRequest>()?;
-        let file = file_by_identifier(request, &repo).await?;
+        let file = file_by_identifier(request.id, &repo).await?;
         let tags = file.tags().await?;
-        let responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
+        let responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from_model).collect();
 
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "tags_for_file", responses)

@@ -26,3 +26,7 @@ features = ["serde"]
 [dependencies.tracing-futures]
 version = "0.2.5"
 features = ["tokio-executor"]
+
+[dependencies.mediarepo-api]
+git = "https://github.com/Trivernis/mediarepo-api.git"
+rev = "af90986e88cc4ef7d797ecc9cfd0c306b2d4c7cd"
