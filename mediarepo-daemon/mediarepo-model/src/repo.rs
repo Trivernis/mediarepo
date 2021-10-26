@@ -9,8 +9,10 @@ use mediarepo_core::image_processing::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
 use sea_orm::DatabaseConnection;
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::io::Cursor;
+use std::iter::FromIterator;
 use std::path::PathBuf;
 use tokio::fs::OpenOptions;
 use tokio::io::BufReader;
@@ -97,9 +99,23 @@ impl Repo {
 
     /// Finds all files by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files_by_tags(&self, tags: Vec<String>) -> RepoResult<Vec<File>> {
-        let tags = self.find_all_tags(tags).await?;
-        let tag_ids = tags.into_iter().map(|tag| tag.id()).collect();
+    pub async fn find_files_by_tags(&self, tags: Vec<(String, bool)>) -> RepoResult<Vec<File>> {
+        let db_tags = self
+            .find_all_tags(tags.iter().map(|t| t.0.clone()).collect())
+            .await?;
+        let tag_map: HashMap<String, bool> = HashMap::from_iter(tags.into_iter());
+        let tag_ids: Vec<(i64, bool)> = db_tags
+            .into_iter()
+            .map(|tag| {
+                (
+                    tag.id(),
+                    tag_map
+                        .get(&tag.normalized_name())
+                        .cloned()
+                        .unwrap_or(false),
+                )
+            })
+            .collect();
 
         File::find_by_tags(self.db.clone(), tag_ids).await
     }

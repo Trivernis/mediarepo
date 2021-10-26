@@ -90,20 +90,32 @@ impl File {
     #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn find_by_tags(
         db: DatabaseConnection,
-        tag_ids: Vec<i64>,
+        tag_ids: Vec<(i64, bool)>,
     ) -> RepoResult<Vec<Self>> {
         let mut condition = Condition::all();
 
-        for tag in tag_ids {
-            condition = condition.add(
-                hash::Column::Id.in_subquery(
-                    Query::select()
-                        .expr(Expr::col(hash_tag::Column::HashId))
-                        .from(hash_tag::Entity)
-                        .cond_where(hash_tag::Column::TagId.eq(tag))
-                        .to_owned(),
-                ),
-            );
+        for (tag, negated) in tag_ids {
+            condition = if negated {
+                condition.add(
+                    hash::Column::Id.not_in_subquery(
+                        Query::select()
+                            .expr(Expr::col(hash_tag::Column::HashId))
+                            .from(hash_tag::Entity)
+                            .cond_where(hash_tag::Column::TagId.eq(tag))
+                            .to_owned(),
+                    ),
+                )
+            } else {
+                condition.add(
+                    hash::Column::Id.in_subquery(
+                        Query::select()
+                            .expr(Expr::col(hash_tag::Column::HashId))
+                            .from(hash_tag::Entity)
+                            .cond_where(hash_tag::Column::TagId.eq(tag))
+                            .to_owned(),
+                    ),
+                )
+            }
         }
         let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
             .find_also_related(file::Entity)

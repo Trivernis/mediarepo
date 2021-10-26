@@ -32,7 +32,7 @@ impl Tag {
     #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
         let tags: Vec<Self> = tag::Entity::find()
-            .inner_join(namespace::Entity)
+            .left_join(namespace::Entity)
             .select_also(namespace::Entity)
             .all(&db)
             .await?
@@ -134,5 +134,14 @@ impl Tag {
         self.namespace
             .clone()
             .map(|n| Namespace::new(self.db.clone(), n))
+    }
+
+    /// Returns the normalized name of the tag (namespace:tag)
+    pub fn normalized_name(&self) -> String {
+        if let Some(namespace) = &self.namespace {
+            format!("{}:{}", namespace.name, self.model.name)
+        } else {
+            self.model.name.to_owned()
+        }
     }
 }

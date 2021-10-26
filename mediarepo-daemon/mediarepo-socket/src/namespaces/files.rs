@@ -51,7 +51,7 @@ impl FilesNamespace {
     async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let tags = event.data::<FindFilesByTagsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let tags = tags.tags.into_iter().map(|t| t.name).collect();
+        let tags = tags.tags.into_iter().map(|t| (t.name, t.negate)).collect();
         let files = repo.find_files_by_tags(tags).await?;
         let responses: Vec<FileMetadataResponse> = files
             .into_iter()
