@@ -33,6 +33,7 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_file_thumbnails,
                 read_thumbnail,
                 get_repositories,
+                get_all_tags,
                 get_tags_for_file,
                 get_active_repository,
                 add_repository,
