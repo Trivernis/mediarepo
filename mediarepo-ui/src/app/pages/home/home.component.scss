@@ -8,33 +8,12 @@
   overflow: hidden
 }
 
-#file-tag-list {
-  height: calc(100% - 8em);
-  overflow: auto;
+mat-tab-group {
+  height: calc(100% - 64px);
+  width: 100%;
 }
 
-.drawer-sidebar-inner {
+::ng-deep .mat-tab-body-wrapper {
   height: 100%;
   width: 100%;
-  display: block;
-}
-
-mat-drawer {
-  height: 100%;
-  width: 25%;
-  overflow: hidden;
-}
-
-mat-drawer-content {
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: 100%;
-}
-
-mat-drawer-container {
-  height: calc(100% - 64px);
-}
-
-app-file-grid {
-  padding: 0;
 }

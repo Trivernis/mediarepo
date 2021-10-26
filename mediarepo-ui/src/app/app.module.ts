@@ -28,6 +28,8 @@ import {MatChipsModule} from "@angular/material/chips";
 import {MatIconModule} from "@angular/material/icon";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import { FileSearchComponent } from './components/file-search/file-search.component';
+import {MatTabsModule} from "@angular/material/tabs";
+import { SearchPageComponent } from './pages/home/search-page/search-page.component';
 
 @NgModule({
   declarations: [
@@ -39,29 +41,31 @@ import { FileSearchComponent } from './components/file-search/file-search.compon
     FileGridComponent,
     FileGridEntryComponent,
     FileSearchComponent,
+    SearchPageComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatCardModule,
-        MatListModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatSidenavModule,
-        MatGridListModule,
-        MatProgressBarModule,
-        MatPaginatorModule,
-        ScrollingModule,
-        LightboxModule,
-        MatChipsModule,
-        MatIconModule,
-        MatAutocompleteModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatListModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSidenavModule,
+    MatGridListModule,
+    MatProgressBarModule,
+    MatPaginatorModule,
+    ScrollingModule,
+    LightboxModule,
+    MatChipsModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    MatTabsModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

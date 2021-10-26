@@ -1,0 +1,35 @@
+#file-tag-list {
+  height: calc(100% - 8em);
+  overflow: auto;
+}
+
+.drawer-sidebar-inner {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+mat-drawer {
+  height: 100%;
+  width: 25%;
+  overflow: hidden;
+}
+
+mat-drawer-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+}
+
+mat-drawer-container {
+  height: 100%;
+}
+
+app-file-grid {
+  padding: 0;
+}
+
+.page {
+  height: 100%;
+  width: 100%;
+}

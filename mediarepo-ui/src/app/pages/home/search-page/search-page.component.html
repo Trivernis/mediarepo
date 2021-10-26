@@ -1,0 +1,22 @@
+<mat-drawer-container class="page">
+  <mat-drawer mode="side" opened>
+    <div class="drawer-sidebar-inner">
+      <app-file-search #filesearch></app-file-search>
+      <div id="file-tag-list">
+        <h1>Selection Tags</h1>
+        <mat-selection-list [multiple]="false" *ngIf="tags.length > 0"
+                            (selectionChange)="addSearchTagFromList($event)">
+          <mat-list-option
+            *ngFor="let tag of tags"
+            [value]="tag.getNormalizedOutput()">{{tag.getNormalizedOutput()}}</mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <app-file-grid (fileDblClickEvent)="openFile($event)" [files]="files"
+                   (fileSelectEvent)="onFileSelect($event)"
+                   (fileMultiselectEvent)="onFileMultiSelect($event)"
+    ></app-file-grid>
+  </mat-drawer-content>
+</mat-drawer-container>

@@ -15,7 +15,7 @@ import {Observable} from "rxjs";
 })
 export class FileSearchComponent {
 
-  public searchInputSeparators = [ENTER, COMMA];
+  public searchInputSeparators = [COMMA];
   public formControl = new FormControl();
   public searchTags: string[] = [];
   public suggestionTags: Observable<string[]>;
