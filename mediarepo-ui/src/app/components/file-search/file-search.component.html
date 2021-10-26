@@ -1,0 +1,23 @@
+<mat-form-field class="full-width" #tagSearch appearance="fill">
+    <mat-chip-list #chipList>
+      <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
+        {{tag}}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    </mat-chip-list>
+    <input matInput
+           #tagInput
+           [matChipInputFor]="chipList"
+           [matChipInputAddOnBlur]="true"
+           [matChipInputSeparatorKeyCodes]="searchInputSeparators"
+           [matAutocomplete]="auto"
+           [formControl]="formControl"
+           (matChipInputTokenEnd)="addSearchTagByChip($event)"/>
+    <mat-autocomplete #auto (optionSelected)="addSearchTagByAutocomplete($event)">
+      <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
+        {{tag}}
+      </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

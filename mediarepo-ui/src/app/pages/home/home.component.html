@@ -5,22 +5,7 @@
   <mat-drawer-container>
     <mat-drawer mode="side" opened>
       <div class="drawer-sidebar-inner">
-      <mat-form-field id="tag-search" appearance="fill">
-        <mat-chip-list #chipList>
-          <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
-            {{tag}}
-            <button matChipRemove>
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </mat-chip>
-        </mat-chip-list>
-        <input matInput
-               [matChipInputFor]="chipList"
-               [matChipInputAddOnBlur]="true"
-               [matChipInputSeparatorKeyCodes]="searchInputSeparators"
-               (matChipInputTokenEnd)="addSearchTag($event)"/>
-      </mat-form-field>
-
+        <app-file-search #filesearch></app-file-search>
       <div id="file-tag-list">
         <h1>Selection Tags</h1>
         <mat-selection-list [multiple]="false" *ngIf="tags.length > 0" (selectionChange)="addSearchTagFromList($event)">

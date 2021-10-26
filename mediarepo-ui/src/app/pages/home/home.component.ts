@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FileService} from "../../services/file/file.service";
 import {File} from "../../models/File";
-import {PageEvent} from "@angular/material/paginator";
 import {Lightbox, LIGHTBOX_EVENT, LightboxEvent} from "ngx-lightbox";
-import {SafeResourceUrl} from "@angular/platform-browser";
 import {ErrorBrokerService} from "../../services/error-broker/error-broker.service";
 import {TagService} from "../../services/tag/tag.service";
 import {Tag} from "../../models/Tag";
 import {MatChipInputEvent} from "@angular/material/chips";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {MatSelectionListChange} from "@angular/material/list";
+import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
+import {Observable} from "rxjs";
+import {map, startWith} from "rxjs/operators";
+import {FormControl} from "@angular/forms";
+import {FileSearchComponent} from "../../components/file-search/file-search.component";
 
 @Component({
   selector: 'app-home',
@@ -18,22 +21,22 @@ import {MatSelectionListChange} from "@angular/material/list";
 })
 export class HomeComponent implements OnInit {
 
-  files: File[] = [];
   tags: Tag[] = [];
-  searchTags: string[] = [];
+  files: File[] = [];
   private openingLightbox = false;
-  searchInputSeparators = [ENTER, COMMA];
+
+  @ViewChild('filesearch') fileSearch!: FileSearchComponent;
 
   constructor(
     private errorBroker: ErrorBrokerService,
     private fileService: FileService,
     private tagService: TagService,
     private lightbox: Lightbox,
-    private lightboxEvent: LightboxEvent) { }
+    private lightboxEvent: LightboxEvent) {
+  }
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe((files) => this.files = files);
-    await this.fileService.getFiles();
   }
 
   async onFileMultiSelect(files: File[]) {
@@ -58,30 +61,13 @@ export class HomeComponent implements OnInit {
     this.tags = await this.tagService.getTagsForFile(file.hash);
   }
 
-  async removeSearchTag(tag: string) {
-    const index = this.searchTags.indexOf(tag);
-    if (index >= 0) {
-      this.searchTags.splice(index, 1);
-    }
-    await this.fileService.findFiles(this.searchTags);
-  }
-
   async addSearchTagFromList(event: MatSelectionListChange) {
     if (event.options.length > 0) {
       const tag = event.options[0].value;
-      this.searchTags.push(tag);
-      await this.fileService.findFiles(this.searchTags);
+      this.fileSearch.addSearchTag(tag);
+      await this.fileSearch.searchForFiles();
     }
     event.source.deselectAll();
-  }
-
-  async addSearchTag(event: MatChipInputEvent) {
-    const tag = event.value.trim();
-    if (tag.length > 0) {
-      this.searchTags.push(tag);
-      event.chipInput?.clear();
-      await this.fileService.findFiles(this.searchTags);
-    }
   }
 
   async openFile(file: File) {
@@ -91,7 +77,7 @@ export class HomeComponent implements OnInit {
     this.openingLightbox = true;
     try {
       await this.openLightbox(file);
-    } catch(err) {
+    } catch (err) {
       this.errorBroker.showError(err);
     }
     this.openingLightbox = false;

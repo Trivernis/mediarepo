@@ -26,6 +26,8 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
 import {LightboxModule} from "ngx-lightbox";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatIconModule} from "@angular/material/icon";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import { FileSearchComponent } from './components/file-search/file-search.component';
 
 @NgModule({
   declarations: [
@@ -36,28 +38,30 @@ import {MatIconModule} from "@angular/material/icon";
     RepoFormComponent,
     FileGridComponent,
     FileGridEntryComponent,
+    FileSearchComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatListModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatSnackBarModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatSidenavModule,
-    MatGridListModule,
-    MatProgressBarModule,
-    MatPaginatorModule,
-    ScrollingModule,
-    LightboxModule,
-    MatChipsModule,
-    MatIconModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatListModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatSnackBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSidenavModule,
+        MatGridListModule,
+        MatProgressBarModule,
+        MatPaginatorModule,
+        ScrollingModule,
+        LightboxModule,
+        MatChipsModule,
+        MatIconModule,
+        MatAutocompleteModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
