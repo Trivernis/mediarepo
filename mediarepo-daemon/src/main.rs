@@ -7,13 +7,15 @@ use tokio::runtime;
 use tokio::runtime::Runtime;
 
 use mediarepo_core::error::RepoResult;
+use mediarepo_core::futures;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
 use mediarepo_core::utils::parse_tags_file;
-use mediarepo_model::file::File as RepoFile;
+use mediarepo_model::file::{File as RepoFile, File};
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
+use num_integer::Integer;
 
 use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
@@ -52,6 +54,10 @@ enum SubCommand {
         /// The path to the folder where the files are located
         #[structopt()]
         folder_path: String,
+
+        /// If imported files should be deleted after import
+        #[structopt(long)]
+        delete: bool,
     },
 
     /// Starts the event server for the selected repository
@@ -70,9 +76,10 @@ fn main() -> RepoResult<()> {
     match opt.cmd.clone() {
         SubCommand::Init { force } => get_single_thread_runtime().block_on(init(opt, force)),
         SubCommand::Start => get_multi_thread_runtime().block_on(start_server(opt)),
-        SubCommand::Import { folder_path } => {
-            get_single_thread_runtime().block_on(import(opt, folder_path))
-        }
+        SubCommand::Import {
+            folder_path,
+            delete,
+        } => get_single_thread_runtime().block_on(import(opt, folder_path, delete)),
     }?;
 
     Ok(())
@@ -152,7 +159,7 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
 }
 
 /// Imports files from a source into the database
-async fn import(opt: Opt, path: String) -> RepoResult<()> {
+async fn import(opt: Opt, path: String, delete_files: bool) -> RepoResult<()> {
     let (_s, repo) = init_repo(&opt).await?;
     log::info!("Importing");
 
@@ -164,20 +171,42 @@ async fn import(opt: Opt, path: String) -> RepoResult<()> {
         .collect();
 
     for path in paths {
-        if let Err(e) = import_single_image(path, &repo).await {
+        if let Err(e) = import_single_image(&path, &repo).await {
             log::error!("Import failed: {:?}", e);
+            if delete_files {
+                log::info!("Deleting file {:?}", path);
+                let _ = fs::remove_file(&path).await;
+            }
+        } else {
+            if delete_files {
+                log::info!("Deleting file {:?}", path);
+                let _ = fs::remove_file(&path).await;
+            }
         }
+    }
+    log::info!("Creating thumbnails...");
+    let mut files = repo.files().await?;
+
+    for _ in 0..(files.len().div_ceil(&64)) {
+        futures::future::join_all(
+            (0..64)
+                .filter_map(|_| files.pop())
+                .map(|f| create_file_thumbnails(&repo, f)),
+        )
+        .await
+        .into_iter()
+        .filter_map(|r| r.err())
+        .for_each(|e| log::error!("Failed to create thumbnail: {:?}", e));
     }
 
     Ok(())
 }
 
 /// Creates thumbnails of all sizes
-async fn import_single_image(path: PathBuf, repo: &Repo) -> RepoResult<()> {
+async fn import_single_image(path: &PathBuf, repo: &Repo) -> RepoResult<()> {
     log::info!("Importing file");
     let file = repo.add_file_by_path(path.clone()).await?;
-    log::info!("Creating thumbnails");
-    repo.create_thumbnails_for_file(file.clone()).await?;
+    log::info!("Adding tags");
     let tags_path = PathBuf::from(format!("{}{}", path.to_str().unwrap(), ".txt"));
     add_tags_from_tags_file(tags_path, repo, file).await?;
 
@@ -191,16 +220,25 @@ async fn add_tags_from_tags_file(
 ) -> RepoResult<()> {
     log::info!("Adding tags");
     if tags_path.exists() {
-        let tags = parse_tags_file(tags_path).await?;
-        let mut tag_ids = Vec::new();
+        let mut tags = parse_tags_file(tags_path).await?;
+        let resolved_tags = repo.find_all_tags(tags.clone()).await?;
+        tags.retain(|tag| {
+            resolved_tags
+                .iter()
+                .find(|t| if let (Some(ns1), Some(ns2)) = (t.namespace(), &tag.0) {
+                    *ns1.name() == *ns2
+                } else { false } && *t.name() == *tag.1)
+                .is_some()
+        });
+        let mut tag_ids: Vec<i64> = resolved_tags.into_iter().map(|t| t.id()).collect();
 
         for (namespace, name) in tags {
             let tag = if let Some(namespace) = namespace {
                 log::info!("Adding namespaced tag '{}:{}'", namespace, name);
-                repo.add_or_find_namespaced_tag(name, namespace).await?
+                repo.add_namespaced_tag(name, namespace).await?
             } else {
                 log::info!("Adding unnamespaced tag '{}'", name);
-                repo.add_or_find_unnamespaced_tag(name).await?
+                repo.add_unnamespaced_tag(name).await?
             };
             tag_ids.push(tag.id());
         }
@@ -208,6 +246,14 @@ async fn add_tags_from_tags_file(
         file.add_tags(tag_ids).await?;
     } else {
         log::info!("No tags file '{:?}' found", tags_path);
+    }
+    Ok(())
+}
+
+#[tracing::instrument(skip(repo, file))]
+async fn create_file_thumbnails(repo: &Repo, file: File) -> RepoResult<()> {
+    if file.thumbnails().await?.len() == 0 {
+        repo.create_thumbnails_for_file(file).await?;
     }
     Ok(())
 }

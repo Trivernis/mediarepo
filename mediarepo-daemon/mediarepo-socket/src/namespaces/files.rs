@@ -107,7 +107,14 @@ impl FilesNamespace {
         let request = event.data::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(request.id, &repo).await?;
-        let thumbnails = file.thumbnails().await?;
+        let mut thumbnails = file.thumbnails().await?;
+
+        if thumbnails.len() == 0 {
+            tracing::debug!("No thumbnails for file found. Creating thumbnails...");
+            repo.create_thumbnails_for_file(file.clone()).await?;
+            tracing::debug!("Thumbnails for file created.");
+        }
+        thumbnails = file.thumbnails().await?;
 
         let thumb_responses: Vec<ThumbnailMetadataResponse> = thumbnails
             .into_iter()

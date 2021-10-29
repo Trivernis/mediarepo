@@ -100,10 +100,14 @@ impl Repo {
     /// Finds all files by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn find_files_by_tags(&self, tags: Vec<(String, bool)>) -> RepoResult<Vec<File>> {
-        let db_tags = self
-            .find_all_tags(tags.iter().map(|t| t.0.clone()).collect())
-            .await?;
+        let parsed_tags = tags
+            .iter()
+            .map(|t| parse_namespace_and_tag(t.0.clone()))
+            .collect();
+
+        let db_tags = self.find_all_tags(parsed_tags).await?;
         let tag_map: HashMap<String, bool> = HashMap::from_iter(tags.into_iter());
+
         let tag_ids: Vec<(i64, bool)> = db_tags
             .into_iter()
             .map(|tag| {
@@ -188,9 +192,7 @@ impl Repo {
 
     /// Finds all tags by name
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_all_tags(&self, tags: Vec<String>) -> RepoResult<Vec<Tag>> {
-        let tags: Vec<(Option<String>, String)> =
-            tags.into_iter().map(parse_namespace_and_tag).collect();
+    pub async fn find_all_tags(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
         Tag::all_by_name(self.db.clone(), tags).await
     }
 
@@ -217,7 +219,7 @@ impl Repo {
 
     /// Adds an unnamespaced tag
     #[tracing::instrument(level = "debug", skip(self))]
-    async fn add_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
+    pub async fn add_unnamespaced_tag(&self, name: String) -> RepoResult<Tag> {
         Tag::add(self.db.clone(), name, None).await
     }
 
@@ -237,7 +239,7 @@ impl Repo {
 
     /// Adds a namespaced tag
     #[tracing::instrument(level = "debug", skip(self))]
-    async fn add_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
+    pub async fn add_namespaced_tag(&self, name: String, namespace: String) -> RepoResult<Tag> {
         let namespace =
             if let Some(namespace) = Namespace::by_name(self.db.clone(), &namespace).await? {
                 namespace

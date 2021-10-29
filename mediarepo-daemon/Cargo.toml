@@ -20,7 +20,7 @@ glob = "0.3.0"
 log = "0.4.14"
 tracing-flame = "0.1.0"
 tracing-appender = "0.2.0"
-
+num-integer = "0.1.44"
 
 [dependencies.mediarepo-core]
 path = "./mediarepo-core"

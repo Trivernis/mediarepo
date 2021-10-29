@@ -829,6 +829,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-model",
  "mediarepo-socket",
+ "num-integer",
  "structopt",
  "tokio",
  "toml",
