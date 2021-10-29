@@ -235,6 +235,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
 
 [[package]]
+name = "compare"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "120133d4db2ec47efe2e26502ee984747630c67f51974fca0b6c1340cf2368d3"
+
+[[package]]
 name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -764,7 +770,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "mediarepo-api"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=6cb2b0e467b3554b07d04f98d9244d8e4952db68#6cb2b0e467b3554b07d04f98d9244d8e4952db68"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=476b9d152457f78c73f6f6a36c2421cbce9c9194#476b9d152457f78c73f6f6a36c2421cbce9c9194"
 dependencies = [
  "chrono",
  "serde",
@@ -822,6 +828,7 @@ name = "mediarepo-socket"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "compare",
  "mediarepo-api",
  "mediarepo-core",
  "mediarepo-model",

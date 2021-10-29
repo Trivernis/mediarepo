@@ -1,11 +1,17 @@
 use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
+use compare::Compare;
 use mediarepo_api::types::files::{
     AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest,
-    ReadFileRequest, ThumbnailMetadataResponse,
+    ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse,
 };
-use mediarepo_core::error::RepoError;
+use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::futures::future;
 use mediarepo_core::rmp_ipc::prelude::*;
+use mediarepo_model::file::File;
+use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::iter::FromIterator;
 use std::path::PathBuf;
 use tokio::io::AsyncReadExt;
 
@@ -34,6 +40,7 @@ impl FilesNamespace {
     async fn all_files(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let files = repo.files().await?;
+
         let responses: Vec<FileMetadataResponse> = files
             .into_iter()
             .map(FileMetadataResponse::from_model)
@@ -49,10 +56,43 @@ impl FilesNamespace {
     /// Searches for files by tags
     #[tracing::instrument(skip_all)]
     async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
-        let tags = event.data::<FindFilesByTagsRequest>()?;
+        let req = event.data::<FindFilesByTagsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let tags = tags.tags.into_iter().map(|t| (t.name, t.negate)).collect();
-        let files = repo.find_files_by_tags(tags).await?;
+        let tags = req.tags.into_iter().map(|t| (t.name, t.negate)).collect();
+        let mut files = repo.find_files_by_tags(tags).await?;
+
+        let files_nsp: HashMap<String, HashMap<String, String>> = HashMap::from_iter(
+            future::join_all(files.iter().map(|f| {
+                let file = f.clone();
+                async move {
+                    let result: RepoResult<(String, HashMap<String, String>)> =
+                        Ok((f.hash().clone(), get_namespaces_for_file(&file).await?));
+                    result
+                }
+            }))
+            .await
+            .into_iter()
+            .filter_map(|r| match r {
+                Ok(value) => Some(value),
+                Err(e) => {
+                    tracing::error!("{:?}", e);
+                    None
+                }
+            }),
+        );
+
+        let sort_expression = req.sort_expression;
+
+        files.sort_by(|a, b| {
+            compare_files(
+                a,
+                files_nsp.get(a.hash()).unwrap(),
+                b,
+                files_nsp.get(b.hash()).unwrap(),
+                &sort_expression,
+            )
+        });
+
         let responses: Vec<FileMetadataResponse> = files
             .into_iter()
             .map(FileMetadataResponse::from_model)
@@ -149,5 +189,87 @@ impl FilesNamespace {
             .await?;
 
         Ok(())
+    }
+}
+
+#[tracing::instrument(level = "trace", skip_all)]
+fn compare_files(
+    file_a: &File,
+    nsp_a: &HashMap<String, String>,
+    file_b: &File,
+    nsp_b: &HashMap<String, String>,
+    expression: &Vec<SortKey>,
+) -> Ordering {
+    let cmp_date = compare::natural();
+    for sort_key in expression {
+        let ordering = match sort_key {
+            SortKey::Namespace(namespace) => adjust_for_dir(
+                compare_opts(nsp_a.get(&namespace.tag), nsp_b.get(&namespace.tag)),
+                &namespace.direction,
+            ),
+            SortKey::FileName(direction) => adjust_for_dir(
+                compare_opts(file_a.name().clone(), file_b.name().clone()),
+                direction,
+            ),
+            SortKey::FileSize(_direction) => {
+                Ordering::Equal // TODO: Retrieve file size
+            }
+            SortKey::FileImportedTime(direction) => adjust_for_dir(
+                cmp_date.compare(file_a.import_time(), file_b.import_time()),
+                direction,
+            ),
+            SortKey::FileCreatedTime(direction) => adjust_for_dir(
+                cmp_date.compare(file_a.creation_time(), file_b.creation_time()),
+                direction,
+            ),
+            SortKey::FileChangeTime(direction) => adjust_for_dir(
+                cmp_date.compare(file_a.change_time(), file_b.change_time()),
+                direction,
+            ),
+            SortKey::FileType(direction) => adjust_for_dir(
+                compare_opts(file_a.mime_type().clone(), file_b.mime_type().clone()),
+                direction,
+            ),
+            SortKey::NumTags(_) => {
+                Ordering::Equal // TODO: Count tags
+            }
+        };
+        if !ordering.is_eq() {
+            return ordering;
+        }
+    }
+
+    Ordering::Equal
+}
+
+async fn get_namespaces_for_file(file: &File) -> RepoResult<HashMap<String, String>> {
+    let tags = file.tags().await?;
+    let namespaces: HashMap<String, String> =
+        HashMap::from_iter(tags.into_iter().filter_map(|tag| {
+            let namespace = tag.namespace()?;
+            Some((namespace.name().clone(), tag.name().clone()))
+        }));
+
+    Ok(namespaces)
+}
+
+fn compare_opts<T: Ord + Sized>(opt_a: Option<T>, opt_b: Option<T>) -> Ordering {
+    let cmp = compare::natural();
+    if let (Some(a), Some(b)) = (&opt_a, &opt_b) {
+        cmp.compare(a, b)
+    } else if opt_a.is_some() {
+        Ordering::Greater
+    } else if opt_b.is_some() {
+        Ordering::Less
+    } else {
+        Ordering::Equal
+    }
+}
+
+fn adjust_for_dir(ordering: Ordering, direction: &SortDirection) -> Ordering {
+    if *direction == SortDirection::Descending {
+        ordering.reverse()
+    } else {
+        ordering
     }
 }
