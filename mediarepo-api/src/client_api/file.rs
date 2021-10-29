@@ -2,7 +2,7 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
     FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest,
-    TagQuery, ThumbnailMetadataResponse,
+    SortKey, TagQuery, ThumbnailMetadataResponse,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -39,9 +39,19 @@ impl FileApi {
 
     /// Searches for a file by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files(&self, tags: Vec<TagQuery>) -> ApiResult<Vec<FileMetadataResponse>> {
-        self.emit_and_get("find_files", FindFilesByTagsRequest { tags })
-            .await
+    pub async fn find_files(
+        &self,
+        tags: Vec<TagQuery>,
+        sort_expression: Vec<SortKey>,
+    ) -> ApiResult<Vec<FileMetadataResponse>> {
+        self.emit_and_get(
+            "find_files",
+            FindFilesByTagsRequest {
+                tags,
+                sort_expression,
+            },
+        )
+        .await
     }
 
     /// Reads the file and returns its contents as bytes

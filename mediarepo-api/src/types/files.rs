@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
-use chrono::NaiveDateTime;
 use crate::types::identifier::FileIdentifier;
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AddFileRequest {
@@ -25,6 +25,7 @@ pub struct GetFileTagsRequest {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FindFilesByTagsRequest {
     pub tags: Vec<TagQuery>,
+    pub sort_expression: Vec<SortKey>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -32,6 +33,32 @@ pub struct TagQuery {
     pub negate: bool,
     pub name: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum SortKey {
+    Namespace(SortNamespace),
+    FileName(SortDirection),
+    FileSize(SortDirection),
+    FileImportedTime(SortDirection),
+    FileCreatedTime(SortDirection),
+    FileChangeTime(SortDirection),
+    FileType(SortDirection),
+    NumTags(SortDirection),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SortNamespace {
+    pub tag: String,
+    pub direction: SortDirection,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, PartialEq)]
+pub enum SortDirection {
+    Ascending,
+    Descending,
+}
+
+impl Eq for SortDirection {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileMetadataResponse {
