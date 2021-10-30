@@ -34,6 +34,7 @@ app-file-gallery-entry {
   height: 100%;
   width: 100%;
   display: block;
+  position: relative;
 }
 
 img {
@@ -49,4 +50,17 @@ img {
   right: 0;
   width: 3em;
   height: 3em;
+}
+
+.url-loading-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  mat-progress-spinner {
+    margin: auto;
+  }
 }

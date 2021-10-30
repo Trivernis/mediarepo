@@ -5,7 +5,10 @@
   <div class="file-full-view" fxFlex="80%"
        (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null">
     <div class="file-full-view-inner">
-      <img [src]="this.fileContentUrl"/>
+      <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
+        <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+      </div>
+      <img [src]="this.fileContentUrl" decoding="async" alt="Image"/>
     </div>
   </div>
   <mat-divider fxFlex></mat-divider>
