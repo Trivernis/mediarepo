@@ -4,6 +4,8 @@ use tauri::{AppHandle, Builder, Invoke, Manager, Runtime};
 use state::ApiState;
 
 use crate::tauri_plugin::state::{AppState, BufferState};
+use std::thread;
+use std::time::Duration;
 
 pub(crate) mod commands;
 pub mod custom_schemes;
@@ -58,7 +60,11 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         app.manage(api_state);
 
         let buffer_state = BufferState::default();
-        app.manage(buffer_state);
+        app.manage(buffer_state.clone());
+        thread::spawn(move || loop {
+            thread::sleep(Duration::from_secs(10));
+            buffer_state.clear_expired();
+        });
 
         let repo_state = AppState::load()?;
         app.manage(repo_state);

@@ -58,7 +58,7 @@ impl VolatileBuffer {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct BufferState {
     pub buffer: Arc<Mutex<HashMap<String, VolatileBuffer>>>,
 }
