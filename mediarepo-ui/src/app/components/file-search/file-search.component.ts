@@ -7,11 +7,13 @@ import {
 import {TagService} from "../../services/tag/tag.service";
 import {FileService} from "../../services/file/file.service";
 import {FormControl} from "@angular/forms";
-import {COMMA} from "@angular/cdk/keycodes";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {TagQuery} from "../../models/TagQuery";
+import {SortKey} from "../../models/SortKey";
+import {MatDialog} from "@angular/material/dialog";
+import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 
 @Component({
   selector: 'app-file-search',
@@ -23,7 +25,8 @@ export class FileSearchComponent implements AfterViewChecked {
     this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
   }
 
-  public searchInputSeparators = [COMMA];
+  public sortExpression: SortKey[] = [new SortKey("FileImportedTime",
+    "Ascending", undefined)];
   public formControl = new FormControl();
   public searchTags: TagQuery[] = [];
   public suggestionTags: Observable<string[]>;
@@ -32,7 +35,7 @@ export class FileSearchComponent implements AfterViewChecked {
   @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
   @ViewChild("tagInputList") inputList!: ElementRef;
 
-  constructor(private tagService: TagService, private fileService: FileService) {
+  constructor(private tagService: TagService, private fileService: FileService, public dialog: MatDialog) {
     this.tagService.tags.subscribe(
       (tag) => this.allTags = tag.map(t => t.getNormalizedOutput()));
 
@@ -45,7 +48,7 @@ export class FileSearchComponent implements AfterViewChecked {
   }
 
   public async searchForFiles() {
-    await this.fileService.findFiles(this.searchTags);
+    await this.fileService.findFiles(this.searchTags, this.sortExpression);
   }
 
   public addSearchTag(tag: string) {
@@ -63,7 +66,7 @@ export class FileSearchComponent implements AfterViewChecked {
 
   async removeAllSearchTags() {
     this.searchTags = [];
-    await  this.searchForFiles();
+    await this.searchForFiles();
   }
 
   async removeSearchTag(tag: TagQuery) {
@@ -91,5 +94,19 @@ export class FileSearchComponent implements AfterViewChecked {
     this.formControl.setValue(null);
     this.tagInput.nativeElement.value = '';
     await this.searchForFiles();
+  }
+
+  openSortDialog() {
+    const sortEntries = this.sortExpression.map(key => JSON.parse(JSON.stringify(key))).map(key => new SortKey(key.sortType, key.sortDirection, key.namespaceName))
+    const openedDialog = this.dialog.open(FilterDialogComponent, {
+      minWidth: "40vw",
+      data: {
+        sortEntries,
+      },
+    });
+    openedDialog.afterClosed().subscribe(async (sortExpression) => {
+      this.sortExpression = sortExpression;
+      await this.searchForFiles();
+    });
   }
 }

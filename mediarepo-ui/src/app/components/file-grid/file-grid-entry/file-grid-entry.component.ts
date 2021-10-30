@@ -45,7 +45,7 @@ export class FileGridEntryComponent implements OnInit, OnDestroy {
     try {
         const thumbnails = await this.fileService.getThumbnails(this.gridEntry.file.hash);
         let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
-        this.selectedThumbnail = thumbnail;
+        this.selectedThumbnail = thumbnail ?? thumbnails[0];
 
         if (!thumbnail) {
           console.log("Thumbnail is empty?!", thumbnails);

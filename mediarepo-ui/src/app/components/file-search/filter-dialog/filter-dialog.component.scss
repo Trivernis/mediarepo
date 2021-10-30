@@ -1,0 +1,24 @@
+mat-dialog-content {
+  height: 100%;
+}
+
+.sort-input-list {
+  display: table;
+  width: 100%;
+}
+
+.sort-input-row {
+  display: table-row;
+  width: 100%;
+}
+
+mat-form-field, .filler {
+  display: table-cell;
+  padding: 0 1em;
+}
+
+.dialog-actions {
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}

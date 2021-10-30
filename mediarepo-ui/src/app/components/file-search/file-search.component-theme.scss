@@ -14,6 +14,10 @@ $warn-palette: map.get($color-config, 'warn');
   mat-form-field:focus {
     background-color: dimgrey;
   }
+
+  #sort-button {
+    background-color: darken(dimgrey, 5);
+  }
 }
 
 @mixin typography($theme) {

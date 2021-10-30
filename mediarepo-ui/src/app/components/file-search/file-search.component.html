@@ -1,7 +1,8 @@
 <div class="tag-input-list-and-actions">
   <div class="tag-input-list" #tagInputList>
     <div class="tag-input-list-inner">
-      <div class="tag-input-item" *ngFor="let tag of searchTags" mat-ripple (click)="removeSearchTag(tag)">{{tag.getNormalizedTag()}}</div>
+      <div class="tag-input-item" *ngFor="let tag of searchTags" mat-ripple
+           (click)="removeSearchTag(tag)">{{tag.getNormalizedTag()}}</div>
     </div>
   </div>
   <button id="delete-all-tags-button" mat-button (click)="removeAllSearchTags()">
@@ -11,13 +12,14 @@
 <mat-form-field class="full-width" appearance="fill">
   <mat-label>Enter tags to filter for</mat-label>
   <input matInput
-           #tagInput
-            (keydown)="addSearchTagByInput($event)"
-           [matAutocomplete]="auto"
-           [formControl]="formControl"/>
-    <mat-autocomplete #auto (optionSelected)="addSearchTagByAutocomplete($event)">
-      <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
-        {{tag}}
-      </mat-option>
-    </mat-autocomplete>
+         #tagInput
+         (keydown)="addSearchTagByInput($event)"
+         [matAutocomplete]="auto"
+         [formControl]="formControl"/>
+  <mat-autocomplete #auto (optionSelected)="addSearchTagByAutocomplete($event)">
+    <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
+      {{tag}}
+    </mat-option>
+  </mat-autocomplete>
 </mat-form-field>
+<button mat-flat-button id="sort-button" (click)="openSortDialog()">Sort: {{sortExpression.join(", ")}}</button>

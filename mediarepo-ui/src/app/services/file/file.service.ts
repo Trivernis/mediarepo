@@ -5,6 +5,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {Thumbnail} from "../../models/Thumbnail";
 import {TagQuery} from "../../models/TagQuery";
+import {SortKey} from "../../models/SortKey";
 
 @Injectable({
   providedIn: 'root'
@@ -22,15 +23,8 @@ export class FileService {
     this.displayedFiles.next(all_files);
   }
 
-  public async findFiles(tags: TagQuery[]) {
-    const sortBy: any[] = [
-      {Namespace: {tag: "creator", direction: "Descending"}},
-      {Namespace: {tag: "series", direction: "Ascending"}},
-      {Namespace: {tag: "title", direction: "Ascending"}},
-      {Namespace: {tag: "page", direction: "Ascending"}},
-      {Namespace: {tag: "panel", direction: "Ascending"}},
-    ];
-    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags, sortBy});
+  public async findFiles(tags: TagQuery[], sortBy: SortKey[]) {
+    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags, sortBy: sortBy.map(k => k.toBackendType())});
     this.displayedFiles.next(files);
   }
 

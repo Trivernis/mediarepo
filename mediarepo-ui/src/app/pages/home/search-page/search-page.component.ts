@@ -7,6 +7,7 @@ import {FileService} from "../../../services/file/file.service";
 import {TagService} from "../../../services/tag/tag.service";
 import {Lightbox, LIGHTBOX_EVENT, LightboxEvent} from "ngx-lightbox";
 import {MatSelectionListChange} from "@angular/material/list";
+import {SortKey} from "../../../models/SortKey";
 
 @Component({
   selector: 'app-search-page',
@@ -31,6 +32,7 @@ export class SearchPageComponent implements OnInit {
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe((files) => this.files = files);
+    await this.fileService.findFiles([], [new SortKey("FileImportedTime", "Ascending", undefined)])
   }
 
   async onFileMultiSelect(files: File[]) {
