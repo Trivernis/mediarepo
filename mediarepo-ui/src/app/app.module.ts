@@ -37,6 +37,9 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
 import { FileGalleryComponent } from './components/file-gallery/file-gallery.component';
 import { FileGalleryEntryComponent } from './components/file-gallery/file-gallery-entry/file-gallery-entry.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {BlockUIModule} from "primeng/blockui";
+import {PanelModule} from "primeng/panel";
 
 @NgModule({
   declarations: [
@@ -80,6 +83,9 @@ import { FileGalleryEntryComponent } from './components/file-gallery/file-galler
     MatRippleModule,
     MatDialogModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
+    BlockUIModule,
+    PanelModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

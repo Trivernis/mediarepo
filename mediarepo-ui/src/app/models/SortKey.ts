@@ -18,7 +18,7 @@ export class SortKey {
   public toBackendType(): any {
 
     if (this.sortType == "Namespace") {
-      return {"Namespace": {direction:  this.sortDirection, tag: this.namespaceName}}
+      return {"Namespace": {direction:  this.sortDirection, name: this.namespaceName}}
     } else {
       let returnObj: any = {};
       returnObj[this.sortType] = this.sortDirection;

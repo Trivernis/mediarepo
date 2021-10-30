@@ -1,7 +1,7 @@
 import {
   AfterViewChecked,
   Component,
-  ElementRef,
+  ElementRef, EventEmitter, Output,
   ViewChild
 } from '@angular/core';
 import {TagService} from "../../services/tag/tag.service";
@@ -14,6 +14,7 @@ import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
+import {ErrorBrokerService} from "../../services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-file-search',
@@ -30,12 +31,16 @@ export class FileSearchComponent implements AfterViewChecked {
   public formControl = new FormControl();
   public searchTags: TagQuery[] = [];
   public suggestionTags: Observable<string[]>;
+
+  @Output() searchStartEvent = new EventEmitter<void>();
+  @Output() searchEndEvent = new EventEmitter<void>();
+
   private allTags: string[] = [];
 
   @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
   @ViewChild("tagInputList") inputList!: ElementRef;
 
-  constructor(private tagService: TagService, private fileService: FileService, public dialog: MatDialog) {
+  constructor(private errorBroker: ErrorBrokerService, private tagService: TagService, private fileService: FileService, public dialog: MatDialog) {
     this.tagService.tags.subscribe(
       (tag) => this.allTags = tag.map(t => t.getNormalizedOutput()));
 
@@ -48,7 +53,13 @@ export class FileSearchComponent implements AfterViewChecked {
   }
 
   public async searchForFiles() {
-    await this.fileService.findFiles(this.searchTags, this.sortExpression);
+    this.searchStartEvent.emit();
+    try {
+      await this.fileService.findFiles(this.searchTags, this.sortExpression);
+    } catch (err) {
+      this.errorBroker.showError(err);
+    }
+    this.searchEndEvent.emit();
   }
 
   public addSearchTag(tag: string) {

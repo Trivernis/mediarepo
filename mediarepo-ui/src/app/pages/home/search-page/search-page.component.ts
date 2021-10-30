@@ -21,6 +21,7 @@ export class SearchPageComponent implements OnInit {
   private openingLightbox = false;
   showGallery = false;
   preselectedFile: File | undefined;
+  contentLoading = false;
 
   @ViewChild('filesearch') fileSearch!: FileSearchComponent;
 
@@ -34,7 +35,9 @@ export class SearchPageComponent implements OnInit {
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe((files) => this.files = files);
+    this.contentLoading = true;
     await this.fileService.findFiles([], [new SortKey("FileImportedTime", "Ascending", undefined)])
+    this.contentLoading = false;
   }
 
   async onFileMultiSelect(files: File[]) {

@@ -2,7 +2,8 @@
   <mat-drawer mode="side" opened disableClose>
     <div fxLayout="column" class="drawer-sidebar-inner">
       <div id="file-search-input" fxFlex="220px">
-        <app-file-search #filesearch></app-file-search>
+        <app-file-search #filesearch (searchStartEvent)="contentLoading = true"
+                         (searchEndEvent)="contentLoading = false"></app-file-search>
       </div>
       <div id="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <h1>Selection Tags</h1>
@@ -16,13 +17,15 @@
     </div>
   </mat-drawer>
   <mat-drawer-content>
-    <app-file-grid *ngIf="!this.showGallery" (fileDblClickEvent)="openGallery($event)" [files]="files"
-                   (fileSelectEvent)="onFileSelect($event)"
-                   (fileMultiselectEvent)="onFileMultiSelect($event)"
-    ></app-file-grid>
-    <app-file-gallery *ngIf="this.showGallery" [files]="files" (fileSelectEvent)="onFileSelect($event)"
-                      (fileDblClickEvent)="openFile($event)" [preselectedFile]="this.preselectedFile"
-                      (closeEvent)="this.showGallery = false"></app-file-gallery>
-
+      <div *ngIf="contentLoading" class="spinner-overlay">
+        <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+      </div>
+      <app-file-grid *ngIf="!this.showGallery" (fileDblClickEvent)="openGallery($event)" [files]="files"
+                     (fileSelectEvent)="onFileSelect($event)"
+                     (fileMultiselectEvent)="onFileMultiSelect($event)"
+      ></app-file-grid>
+      <app-file-gallery *ngIf="this.showGallery" [files]="files" (fileSelectEvent)="onFileSelect($event)"
+                        (fileDblClickEvent)="openFile($event)" [preselectedFile]="this.preselectedFile"
+                        (closeEvent)="this.showGallery = false"></app-file-gallery>
   </mat-drawer-content>
 </mat-drawer-container>
