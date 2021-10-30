@@ -114,10 +114,13 @@ export class FileSearchComponent implements AfterViewChecked {
       data: {
         sortEntries,
       },
+      disableClose: true,
     });
     openedDialog.afterClosed().subscribe(async (sortExpression) => {
-      this.sortExpression = sortExpression;
-      await this.searchForFiles();
+      if (sortExpression) {
+        this.sortExpression = sortExpression;
+        await this.searchForFiles();
+      }
     });
   }
 }

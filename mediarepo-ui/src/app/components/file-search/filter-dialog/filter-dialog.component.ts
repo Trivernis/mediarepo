@@ -28,4 +28,8 @@ export class FilterDialogComponent {
   public confirmSort(): void {
     this.dialogRef.close(this.sortEntries);
   }
+
+  public cancelSort(): void {
+    this.dialogRef.close()
+  }
 }

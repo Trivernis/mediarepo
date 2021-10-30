@@ -18,7 +18,10 @@ mat-form-field, .filler {
 }
 
 .dialog-actions {
-  align-items: center;
-  text-align: center;
+  display: flex;
+  flex-direction: row-reverse;
   width: 100%;
+  button {
+    margin-left: 1em;
+  }
 }
