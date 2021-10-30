@@ -201,12 +201,22 @@ fn compare_files(
     expression: &Vec<SortKey>,
 ) -> Ordering {
     let cmp_date = compare::natural();
+
     for sort_key in expression {
         let ordering = match sort_key {
-            SortKey::Namespace(namespace) => adjust_for_dir(
-                compare_opts(nsp_a.get(&namespace.tag), nsp_b.get(&namespace.tag)),
-                &namespace.direction,
-            ),
+            SortKey::Namespace(namespace) => {
+                let tag_a = nsp_a.get(&namespace.tag);
+                let tag_b = nsp_b.get(&namespace.tag);
+
+                if let (Some(a), Some(b)) = (
+                    tag_a.and_then(|a| a.parse::<f32>().ok()),
+                    tag_b.and_then(|b| b.parse::<f32>().ok()),
+                ) {
+                    adjust_for_dir(compare_f32(a, b), &namespace.direction)
+                } else {
+                    adjust_for_dir(compare_opts(tag_a, tag_b), &namespace.direction)
+                }
+            }
             SortKey::FileName(direction) => adjust_for_dir(
                 compare_opts(file_a.name().clone(), file_b.name().clone()),
                 direction,
@@ -260,6 +270,16 @@ fn compare_opts<T: Ord + Sized>(opt_a: Option<T>, opt_b: Option<T>) -> Ordering 
     } else if opt_a.is_some() {
         Ordering::Greater
     } else if opt_b.is_some() {
+        Ordering::Less
+    } else {
+        Ordering::Equal
+    }
+}
+
+fn compare_f32(a: f32, b: f32) -> Ordering {
+    if a > b {
+        Ordering::Greater
+    } else if b > a {
         Ordering::Less
     } else {
         Ordering::Equal

@@ -3,6 +3,7 @@ use sea_orm::{Database, DatabaseConnection};
 use sqlx::migrate::MigrateDatabase;
 
 pub mod entities;
+pub mod queries;
 
 /// Connects to the database, runs migrations and returns the RepoDatabase wrapper type
 pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<DatabaseConnection> {
