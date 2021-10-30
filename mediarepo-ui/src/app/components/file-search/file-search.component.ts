@@ -50,9 +50,14 @@ export class FileSearchComponent implements AfterViewChecked {
 
   public addSearchTag(tag: string) {
     if (tag.startsWith("-")) {
-      this.searchTags.push(new TagQuery(tag.replace(/^-/g, ''), true));
+      tag = tag.replace(/^-/g, '');
+      this.searchTags.push(new TagQuery(tag, true));
     } else {
       this.searchTags.push(new TagQuery(tag, false));
+    }
+    if (this.searchTags.filter(t => t.name === tag).length > 1) {
+      const index = this.searchTags.findIndex(t => t.name === tag);
+      this.searchTags.splice(index, 1);
     }
   }
 
