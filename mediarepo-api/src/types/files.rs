@@ -48,7 +48,7 @@ pub enum SortKey {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SortNamespace {
-    pub tag: String,
+    pub name: String,
     pub direction: SortDirection,
 }
 
