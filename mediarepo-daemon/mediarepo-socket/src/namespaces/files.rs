@@ -5,13 +5,12 @@ use mediarepo_api::types::files::{
     AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest,
     ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse,
 };
-use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::futures::future;
+use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
+use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
 use mediarepo_model::file::File;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::path::PathBuf;
 use tokio::io::AsyncReadExt;
 
@@ -60,35 +59,21 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let tags = req.tags.into_iter().map(|t| (t.name, t.negate)).collect();
         let mut files = repo.find_files_by_tags(tags).await?;
+        let hash_ids = files.iter().map(|f| f.hash_id()).collect();
 
-        let files_nsp: HashMap<String, HashMap<String, String>> = HashMap::from_iter(
-            future::join_all(files.iter().map(|f| {
-                let file = f.clone();
-                async move {
-                    let result: RepoResult<(String, HashMap<String, String>)> =
-                        Ok((f.hash().clone(), get_namespaces_for_file(&file).await?));
-                    result
-                }
-            }))
-            .await
-            .into_iter()
-            .filter_map(|r| match r {
-                Ok(value) => Some(value),
-                Err(e) => {
-                    tracing::error!("{:?}", e);
-                    None
-                }
-            }),
-        );
+        let hash_nsp: HashMap<i64, HashMap<String, String>> =
+            get_hashes_with_namespaced_tags(repo.db(), hash_ids).await?;
 
         let sort_expression = req.sort_expression;
+        tracing::debug!("sort_expression = {:?}", sort_expression);
+        let empty_map = HashMap::with_capacity(0);
 
         files.sort_by(|a, b| {
             compare_files(
                 a,
-                files_nsp.get(a.hash()).unwrap(),
+                hash_nsp.get(&a.hash_id()).unwrap_or(&empty_map),
                 b,
-                files_nsp.get(b.hash()).unwrap(),
+                hash_nsp.get(&b.hash_id()).unwrap_or(&empty_map),
                 &sort_expression,
             )
         });
@@ -205,8 +190,8 @@ fn compare_files(
     for sort_key in expression {
         let ordering = match sort_key {
             SortKey::Namespace(namespace) => {
-                let tag_a = nsp_a.get(&namespace.tag);
-                let tag_b = nsp_b.get(&namespace.tag);
+                let tag_a = nsp_a.get(&namespace.name);
+                let tag_b = nsp_b.get(&namespace.name);
 
                 if let (Some(a), Some(b)) = (
                     tag_a.and_then(|a| a.parse::<f32>().ok()),
@@ -250,17 +235,6 @@ fn compare_files(
     }
 
     Ordering::Equal
-}
-
-async fn get_namespaces_for_file(file: &File) -> RepoResult<HashMap<String, String>> {
-    let tags = file.tags().await?;
-    let namespaces: HashMap<String, String> =
-        HashMap::from_iter(tags.into_iter().filter_map(|tag| {
-            let namespace = tag.namespace()?;
-            Some((namespace.name().clone(), tag.name().clone()))
-        }));
-
-    Ok(namespaces)
 }
 
 fn compare_opts<T: Ord + Sized>(opt_a: Option<T>, opt_b: Option<T>) -> Ordering {

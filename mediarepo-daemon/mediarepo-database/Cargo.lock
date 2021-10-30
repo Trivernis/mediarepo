@@ -764,6 +764,7 @@ dependencies = [
  "mediarepo-core",
  "sea-orm",
  "sqlx",
+ "tracing",
 ]
 
 [[package]]

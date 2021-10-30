@@ -40,6 +40,11 @@ impl Repo {
         Ok(Self::new(db))
     }
 
+    /// Returns the database of the repo for raw sql queries
+    pub fn db(&self) -> &DatabaseConnection {
+        &self.db
+    }
+
     /// Returns all available storages
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn storages(&self) -> RepoResult<Vec<Storage>> {

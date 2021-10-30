@@ -169,6 +169,11 @@ impl File {
         &self.hash.value
     }
 
+    /// Returns the hash id of the file
+    pub fn hash_id(&self) -> i64 {
+        self.hash.id
+    }
+
     /// Returns the type of the file
     pub fn file_type(&self) -> FileType {
         match self.model.file_type {

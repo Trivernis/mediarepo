@@ -13,6 +13,9 @@ compare = "0.1.0"
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
 
+[dependencies.mediarepo-database]
+path = "../mediarepo-database"
+
 [dependencies.mediarepo-model]
 path = "../mediarepo-model"
 
@@ -30,4 +33,4 @@ features = ["tokio-executor"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "476b9d152457f78c73f6f6a36c2421cbce9c9194"
+rev = "822abb32a1aa35f209f01a6bafc3106f56d11ddc"

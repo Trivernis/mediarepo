@@ -848,7 +848,7 @@ dependencies = [
 [[package]]
 name = "mediarepo-api"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=476b9d152457f78c73f6f6a36c2421cbce9c9194#476b9d152457f78c73f6f6a36c2421cbce9c9194"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=822abb32a1aa35f209f01a6bafc3106f56d11ddc#822abb32a1aa35f209f01a6bafc3106f56d11ddc"
 dependencies = [
  "chrono",
  "serde",
@@ -883,6 +883,7 @@ dependencies = [
  "mediarepo-core",
  "sea-orm",
  "sqlx",
+ "tracing",
 ]
 
 [[package]]
@@ -909,6 +910,7 @@ dependencies = [
  "compare",
  "mediarepo-api",
  "mediarepo-core",
+ "mediarepo-database",
  "mediarepo-model",
  "serde",
  "tokio",
