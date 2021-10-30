@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 use std::mem;
 use std::sync::Arc;
+use std::time::Duration;
 
 use parking_lot::Mutex;
 use tauri::async_runtime::RwLock;
+use tokio::time::Instant;
 
 use crate::client_api::ApiClient;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
@@ -37,20 +39,75 @@ impl ApiState {
     }
 }
 
-pub struct OnceBuffer {
+#[derive(Clone)]
+pub struct VolatileBuffer {
+    pub accessed: bool,
+    pub valid_until: Instant,
     pub mime: String,
     pub buf: Vec<u8>,
 }
 
-impl OnceBuffer {
+impl VolatileBuffer {
     pub fn new(mime: String, buf: Vec<u8>) -> Self {
-        Self { mime, buf }
+        Self {
+            accessed: false,
+            valid_until: Instant::now() + Duration::from_secs(60),
+            mime,
+            buf,
+        }
     }
 }
 
 #[derive(Default)]
 pub struct BufferState {
-    pub buffer: Arc<Mutex<HashMap<String, OnceBuffer>>>,
+    pub buffer: Arc<Mutex<HashMap<String, VolatileBuffer>>>,
+}
+
+impl BufferState {
+    /// Checks if an entry for the specific key exists and resets
+    /// its state so that it can safely be accessed again.
+    pub fn reserve_entry(&self, key: &String) -> bool {
+        let mut buffers = self.buffer.lock();
+        let entry = buffers.get_mut(key);
+
+        if let Some(entry) = entry {
+            entry.accessed = false; // reset that it has been accessed so it can be reused
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Returns the cloned buffer entry and flags it for expiration
+    pub fn get_entry(&self, key: &str) -> Option<VolatileBuffer> {
+        let mut buffers = self.buffer.lock();
+        let entry = buffers.get_mut(key);
+
+        if let Some(entry) = entry {
+            entry.accessed = true;
+            entry.valid_until = Instant::now() + Duration::from_secs(10); // time to live is 10 seconds
+
+            Some(entry.clone())
+        } else {
+            None
+        }
+    }
+
+    /// Clears all expired entries
+    pub fn clear_expired(&self) {
+        let mut buffer = self.buffer.lock();
+        let keys: Vec<String> = buffer.keys().cloned().collect();
+
+        for key in keys {
+            let (accessed, valid_until) = {
+                let entry = buffer.get(&key).unwrap();
+                (entry.accessed, entry.valid_until.clone())
+            };
+            if accessed && valid_until < Instant::now() {
+                buffer.remove(&key);
+            }
+        }
+    }
 }
 
 pub struct AppState {

@@ -29,11 +29,15 @@ pub async fn read_file_by_hash(
     api_state: ApiAccess<'_>,
     buffer_state: BufferAccess<'_>,
 ) -> PluginResult<String> {
-    let api = api_state.api().await?;
-    let content = api.file.read_file_by_hash(hash.clone()).await?;
-    let uri = add_once_buffer(buffer_state, hash, mime_type, content);
+    if buffer_state.reserve_entry(&hash) {
+        Ok(format!("once://{}", hash)) // entry has been cached
+    } else {
+        let api = api_state.api().await?;
+        let content = api.file.read_file_by_hash(hash.clone()).await?;
+        let uri = add_once_buffer(buffer_state, hash, mime_type, content);
 
-    Ok(uri)
+        Ok(uri)
+    }
 }
 
 #[tauri::command]
@@ -54,9 +58,13 @@ pub async fn read_thumbnail(
     api_state: ApiAccess<'_>,
     buffer_state: BufferAccess<'_>,
 ) -> PluginResult<String> {
-    let api = api_state.api().await?;
-    let content = api.file.read_thumbnail(hash.clone()).await?;
-    let uri = add_once_buffer(buffer_state, hash, mime_type, content);
+    if buffer_state.reserve_entry(&hash) {
+        Ok(format!("once://{}", hash)) // entry has been cached
+    } else {
+        let api = api_state.api().await?;
+        let content = api.file.read_thumbnail(hash.clone()).await?;
+        let uri = add_once_buffer(buffer_state, hash, mime_type, content);
 
-    Ok(uri)
+        Ok(uri)
+    }
 }

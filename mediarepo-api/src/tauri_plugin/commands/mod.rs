@@ -4,7 +4,7 @@ pub use file::*;
 pub use repo::*;
 pub use tag::*;
 
-use crate::tauri_plugin::state::{ApiState, AppState, BufferState, OnceBuffer};
+use crate::tauri_plugin::state::{ApiState, AppState, BufferState, VolatileBuffer};
 
 pub mod file;
 pub mod repo;
@@ -22,7 +22,7 @@ fn add_once_buffer(
     buf: Vec<u8>,
 ) -> String {
     let uri = format!("once://{}", key);
-    let once_buffer = OnceBuffer::new(mime, buf);
+    let once_buffer = VolatileBuffer::new(mime, buf);
     let mut once_buffers = buffer_state.buffer.lock();
     once_buffers.insert(key, once_buffer);
 
