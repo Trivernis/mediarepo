@@ -35,6 +35,8 @@ import {MatRippleModule} from "@angular/material/core";
 import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
+import { FileGalleryComponent } from './components/file-gallery/file-gallery.component';
+import { FileGalleryEntryComponent } from './components/file-gallery/file-gallery-entry/file-gallery-entry.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,8 @@ import {MatSelectModule} from "@angular/material/select";
     FileSearchComponent,
     SearchPageComponent,
     FilterDialogComponent,
+    FileGalleryComponent,
+    FileGalleryEntryComponent,
   ],
   imports: [
     BrowserModule,

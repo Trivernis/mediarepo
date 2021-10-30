@@ -1,0 +1,21 @@
+img {
+  max-height: 100%;
+  width: auto;
+  margin: auto;
+}
+
+.image-wrapper {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  align-items: center;
+  text-align: center;
+  background-color: darken(dimgrey, 15);
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select:none;
+}
+
+.image-wrapper.selected {
+  background-color: darken(dimgrey, 5);
+}

@@ -19,6 +19,8 @@ export class SearchPageComponent implements OnInit {
   tags: Tag[] = [];
   files: File[] = [];
   private openingLightbox = false;
+  showGallery = false;
+  preselectedFile: File | undefined;
 
   @ViewChild('filesearch') fileSearch!: FileSearchComponent;
 
@@ -92,6 +94,11 @@ export class SearchPageComponent implements OnInit {
       this.errorBroker.showError(err);
     }
     this.openingLightbox = false;
+  }
+
+  async openGallery(preselectedFile: File) {
+    this.preselectedFile = preselectedFile;
+    this.showGallery = true;
   }
 
   private async openLightbox(file: File): Promise<void> {
