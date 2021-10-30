@@ -18,7 +18,7 @@ export class DataloaderService {
   public async loadData() {
     try {
       await this.tagService.loadTags();
-      await this.fileService.getFiles();
+      await this.fileService.findFiles([]);
     } catch (err) {
       this.erroBroker.showError(err);
     }

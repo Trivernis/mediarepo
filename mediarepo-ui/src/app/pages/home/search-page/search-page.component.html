@@ -1,8 +1,10 @@
 <mat-drawer-container class="page">
   <mat-drawer mode="side" opened>
-    <div class="drawer-sidebar-inner">
-      <app-file-search #filesearch></app-file-search>
-      <div id="file-tag-list">
+    <div fxLayout="column" class="drawer-sidebar-inner">
+      <div id="file-search-input" fxFlex="150px">
+        <app-file-search #filesearch></app-file-search>
+      </div>
+      <div id="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <h1>Selection Tags</h1>
         <mat-selection-list [multiple]="false" *ngIf="tags.length > 0"
                             (selectionChange)="addSearchTagFromList($event)">

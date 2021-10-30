@@ -30,6 +30,8 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import { FileSearchComponent } from './components/file-search/file-search.component';
 import {MatTabsModule} from "@angular/material/tabs";
 import { SearchPageComponent } from './pages/home/search-page/search-page.component';
+import {FlexModule, GridModule} from "@angular/flex-layout";
+import {MatRippleModule} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -64,7 +66,10 @@ import { SearchPageComponent } from './pages/home/search-page/search-page.compon
     MatChipsModule,
     MatIconModule,
     MatAutocompleteModule,
-    MatTabsModule
+    MatTabsModule,
+    FlexModule,
+    GridModule,
+    MatRippleModule
   ],
   providers: [],
   bootstrap: [AppComponent]

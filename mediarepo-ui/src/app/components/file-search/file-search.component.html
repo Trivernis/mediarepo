@@ -1,20 +1,20 @@
-<mat-form-field class="full-width" #tagSearch appearance="fill">
-    <mat-chip-list #chipList>
-      <mat-chip *ngFor="let tag of searchTags" (removed)="removeSearchTag(tag)" [removable]="true">
-        {{tag.getNormalizedTag()}}
-        <button matChipRemove>
-          <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-chip>
-    </mat-chip-list>
-    <input matInput
+<div class="tag-input-list-and-actions">
+  <div class="tag-input-list" #tagInputList>
+    <div class="tag-input-list-inner">
+      <div class="tag-input-item" *ngFor="let tag of searchTags" mat-ripple (click)="removeSearchTag(tag)">{{tag.getNormalizedTag()}}</div>
+    </div>
+  </div>
+  <button id="delete-all-tags-button" mat-button (click)="removeAllSearchTags()">
+    <mat-icon>delete-sweep</mat-icon>
+  </button>
+</div>
+<mat-form-field class="full-width" appearance="fill">
+  <mat-label>Enter tags to filter for</mat-label>
+  <input matInput
            #tagInput
-           [matChipInputFor]="chipList"
-           [matChipInputAddOnBlur]="true"
-           [matChipInputSeparatorKeyCodes]="searchInputSeparators"
+            (keydown)="addSearchTagByInput($event)"
            [matAutocomplete]="auto"
-           [formControl]="formControl"
-           (matChipInputTokenEnd)="addSearchTagByChip($event)"/>
+           [formControl]="formControl"/>
     <mat-autocomplete #auto (optionSelected)="addSearchTagByAutocomplete($event)">
       <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
         {{tag}}

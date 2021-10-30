@@ -23,7 +23,14 @@ export class FileService {
   }
 
   public async findFiles(tags: TagQuery[]) {
-    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags});
+    const sortBy: any[] = [
+      {Namespace: {tag: "creator", direction: "Descending"}},
+      {Namespace: {tag: "series", direction: "Ascending"}},
+      {Namespace: {tag: "title", direction: "Ascending"}},
+      {Namespace: {tag: "page", direction: "Ascending"}},
+      {Namespace: {tag: "panel", direction: "Ascending"}},
+    ];
+    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags, sortBy});
     this.displayedFiles.next(files);
   }
 

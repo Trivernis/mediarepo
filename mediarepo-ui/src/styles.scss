@@ -2,6 +2,7 @@
 @use "~@angular/material" as mat;
 @use 'src/app/app.component-theme' as app;
 @use 'src/app/components/file-grid/file-grid-entry/file-grid-entry.component-theme' as file-grid-entry;
+@use 'src/app/components/file-search/file-search.component-theme' as file-search;
 @include mat.core();
 
 $theme: mat.define-dark-theme((
@@ -9,7 +10,7 @@ $theme: mat.define-dark-theme((
     primary: mat.define-palette(mat.$deep-purple-palette),
     accent: mat.define-palette(mat.$green-palette),
     warn: mat.define-palette(mat.$red-palette),
-    background: mat.define-palette(mat.$grey-palette)
+    background: mat.define-palette(mat.$blue-grey-palette)
   ),
   typography: mat.define-typography-config(
     $font-family: 'Noto Sans',
@@ -19,3 +20,4 @@ $theme: mat.define-dark-theme((
 @include mat.all-component-themes($theme);
 @include app.theme($theme);
 @include file-grid-entry.theme($theme);
+@include file-search.theme($theme);
