@@ -25,9 +25,6 @@ export class AppComponent implements OnInit{
     this.errorBroker.errorCb = (err: { message: string }) => this.showError(err);
     this.errorBroker.infoCb = (info: string) => this.showInfo(info);
     await this.repoService.loadRepositories();
-    if (this.repoService.selectedRepository.getValue() == undefined) {
-      await this.router.navigate(["repositories"])
-    }
   }
 
   private showError(err: { message: string }) {

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {RepositoryService} from "../../../services/repository/repository.service";
+import {RepositoryService} from "../../../../services/repository/repository.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-repo-form',

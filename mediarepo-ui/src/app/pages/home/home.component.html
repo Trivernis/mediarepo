@@ -1,10 +1,10 @@
 <div id="content">
-  <mat-toolbar color="primary">
-    <h1>Files</h1>
-  </mat-toolbar>
-  <mat-tab-group>
-    <mat-tab label="Search">
-      <app-search-page></app-search-page>
+  <mat-tab-group #tabGroup>
+    <mat-tab label="Repositories">
+      <app-repositories-tab></app-repositories-tab>
+    </mat-tab>
+    <mat-tab *ngIf="this.selectedRepository" label="Search">
+      <app-search-tab></app-search-tab>
     </mat-tab>
   </mat-tab-group>
 </div>

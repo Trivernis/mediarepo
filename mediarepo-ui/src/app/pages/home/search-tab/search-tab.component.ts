@@ -8,13 +8,14 @@ import {TagService} from "../../../services/tag/tag.service";
 import {Lightbox, LIGHTBOX_EVENT, LightboxEvent} from "ngx-lightbox";
 import {MatSelectionListChange} from "@angular/material/list";
 import {SortKey} from "../../../models/SortKey";
+import {RepositoryService} from "../../../services/repository/repository.service";
 
 @Component({
-  selector: 'app-search-page',
-  templateUrl: './search-page.component.html',
-  styleUrls: ['./search-page.component.scss']
+  selector: 'app-search-tab',
+  templateUrl: './search-tab.component.html',
+  styleUrls: ['./search-tab.component.scss']
 })
-export class SearchPageComponent implements OnInit {
+export class SearchTabComponent implements OnInit {
 
   tags: Tag[] = [];
   files: File[] = [];
@@ -27,16 +28,26 @@ export class SearchPageComponent implements OnInit {
 
   constructor(
     private errorBroker: ErrorBrokerService,
+    private repoService: RepositoryService,
     private fileService: FileService,
-    private tagService: TagService,
-    private lightbox: Lightbox,
-    private lightboxEvent: LightboxEvent) {
+    private tagService: TagService,) {
   }
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe((files) => this.files = files);
+    this.repoService.selectedRepository.subscribe(async (repo) => repo && await this.loadFilesInitially());
+    await this.loadFilesInitially();
+  }
+
+  async loadFilesInitially() {
+    this.files = [];
     this.contentLoading = true;
-    await this.fileService.findFiles([], [new SortKey("FileImportedTime", "Ascending", undefined)])
+
+    if (this.fileSearch) {
+      await this.fileSearch.searchForFiles();
+    } else {
+      await this.fileService.findFiles([], [new SortKey("FileImportedTime", "Ascending", undefined)])
+    }
     this.contentLoading = false;
   }
 

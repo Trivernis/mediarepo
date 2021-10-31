@@ -4,9 +4,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {RepositoriesComponent} from './pages/repositories/repositories.component';
+import {RepositoriesTabComponent} from './pages/home/repositories-tab/repositories-tab.component';
 import {HomeComponent} from './pages/home/home.component';
-import {RepositoryCardComponent} from './pages/repositories/repository-card/repository-card.component';
+import {RepositoryCardComponent} from './pages/home/repositories-tab/repository-card/repository-card.component';
 import {MatCardModule} from "@angular/material/card";
 import {MatListModule} from "@angular/material/list";
 import {MatButtonModule} from "@angular/material/button";
@@ -15,7 +15,7 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
-import {RepoFormComponent} from './pages/repositories/repo-form/repo-form.component';
+import {RepoFormComponent} from './pages/home/repositories-tab/repo-form/repo-form.component';
 import {FileGridComponent} from './components/file-grid/file-grid.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatGridListModule} from "@angular/material/grid-list";
@@ -29,7 +29,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {FileSearchComponent} from './components/file-search/file-search.component';
 import {MatTabsModule} from "@angular/material/tabs";
-import {SearchPageComponent} from './pages/home/search-page/search-page.component';
+import {SearchTabComponent} from './pages/home/search-tab/search-tab.component';
 import {FlexModule, GridModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
 import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
@@ -47,14 +47,14 @@ import {MatSliderModule} from "@angular/material/slider";
 @NgModule({
   declarations: [
     AppComponent,
-    RepositoriesComponent,
+    RepositoriesTabComponent,
     HomeComponent,
     RepositoryCardComponent,
     RepoFormComponent,
     FileGridComponent,
     FileGridEntryComponent,
     FileSearchComponent,
-    SearchPageComponent,
+    SearchTabComponent,
     FilterDialogComponent,
     FileGalleryComponent,
     FileGalleryEntryComponent,

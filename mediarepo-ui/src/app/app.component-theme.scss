@@ -7,12 +7,13 @@
   $warn-palette: map.get($color-config, 'warn');
 
   body {
-    background-color: darken(mat.get-color-from-palette($primary-palette, 'darker'), 35);
+    background-color: darken(#303030, 5);
     color: white
   }
   ::ng-deep ::-webkit-scrollbar {
     width: 15px;
     height: 15px;
+    background: #303030;
   }
 
   ::ng-deep ::-webkit-scrollbar-thumb {
