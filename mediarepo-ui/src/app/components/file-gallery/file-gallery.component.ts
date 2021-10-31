@@ -32,9 +32,10 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   @ViewChild("imageDragContainer") imageDragContainer: ElementRef<HTMLDivElement> | undefined;
 
   public selectedFile: Selectable<File> | undefined;
-  fileContentUrl: SafeResourceUrl | undefined;
+  public fileContentUrl: SafeResourceUrl | undefined;
   public imageZoom = 1;
   public imagePosition = {x: 0, y: 0};
+  public mouseInImageView = false;
 
   constructor(private fileService: FileService) {
   }
@@ -152,17 +153,19 @@ export class FileGalleryComponent implements OnChanges, OnInit {
 
   @HostListener("mousewheel", ["$event"])
   private handleScroll(event: any) {
-    const delta = event.wheelDelta ?? event.detail
+    if (this.mouseInImageView) {
+      const delta = event.wheelDelta ?? event.detail;
 
-    if (delta > 0) {
-      this.imageZoom += 0.2
-      if (this.imageZoom > 4) {
-        this.imageZoom = 4;
-      }
-    } else if (delta < 0) {
-      this.imageZoom -= 0.2
-      if (this.imageZoom < 0.5) {
-        this.imageZoom = 0.5;
+      if (delta > 0) {
+        this.imageZoom += 0.2
+        if (this.imageZoom > 4) {
+          this.imageZoom = 4;
+        }
+      } else if (delta < 0) {
+        this.imageZoom -= 0.2
+        if (this.imageZoom < 0.5) {
+          this.imageZoom = 0.5;
+        }
       }
     }
   }
