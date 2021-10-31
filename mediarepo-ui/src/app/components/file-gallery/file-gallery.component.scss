@@ -37,20 +37,9 @@ app-file-gallery-entry {
   position: relative;
 }
 
-img {
-  max-height: 100%;
-  width: auto;
-  display: block;
-  margin: auto;
-}
-
-.align-width {
-  width: 100%;
-  height: auto;
-}
-.align-height {
+app-content-aware-image {
   height: 100%;
-  width: auto;
+  width: 100%;
 }
 
 .close-button {

@@ -41,6 +41,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {BlockUIModule} from "primeng/blockui";
 import {PanelModule} from "primeng/panel";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import { ContentAwareImageComponent } from './components/content-aware-image/content-aware-image.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
     FilterDialogComponent,
     FileGalleryComponent,
     FileGalleryEntryComponent,
+    ContentAwareImageComponent,
   ],
     imports: [
         BrowserModule,

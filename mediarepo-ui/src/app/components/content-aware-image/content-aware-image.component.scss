@@ -1,0 +1,19 @@
+.image-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.image-container > img {
+  margin: auto;
+}
+
+img.scale-height {
+  height: 100%;
+  width: auto;
+}
+
+img.scale-width {
+  width: 100%;
+  height: auto;
+}

@@ -1,4 +1,4 @@
 <div class="image-wrapper" (click)="fileSelectEvent.emit(this.file)" [class.selected]="this.file.selected">
   <mat-progress-spinner *ngIf="!contentUrl"></mat-progress-spinner>
-  <img [src]="contentUrl">
+  <app-content-aware-image *ngIf="contentUrl" [imageSrc]="contentUrl"></app-content-aware-image>
 </div>
