@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use parking_lot::Mutex;
+use parking_lot::RwLock as ParkingRwLock;
 use tauri::async_runtime::RwLock;
 use tokio::time::Instant;
 
@@ -41,7 +42,6 @@ impl ApiState {
 
 #[derive(Clone)]
 pub struct VolatileBuffer {
-    pub accessed: bool,
     pub valid_until: Instant,
     pub mime: String,
     pub buf: Vec<u8>,
@@ -50,8 +50,7 @@ pub struct VolatileBuffer {
 impl VolatileBuffer {
     pub fn new(mime: String, buf: Vec<u8>) -> Self {
         Self {
-            accessed: false,
-            valid_until: Instant::now() + Duration::from_secs(60),
+            valid_until: Instant::now() + Duration::from_secs(120), // buffers that weren't accessed get deleted after 2 minutes
             mime,
             buf,
         }
@@ -60,18 +59,19 @@ impl VolatileBuffer {
 
 #[derive(Default, Clone)]
 pub struct BufferState {
-    pub buffer: Arc<Mutex<HashMap<String, VolatileBuffer>>>,
+    pub buffer: Arc<ParkingRwLock<HashMap<String, Mutex<VolatileBuffer>>>>,
 }
 
 impl BufferState {
     /// Checks if an entry for the specific key exists and resets
     /// its state so that it can safely be accessed again.
     pub fn reserve_entry(&self, key: &String) -> bool {
-        let mut buffers = self.buffer.lock();
-        let entry = buffers.get_mut(key);
+        let buffers = self.buffer.read();
+        let entry = buffers.get(key);
 
         if let Some(entry) = entry {
-            entry.accessed = false; // reset that it has been accessed so it can be reused
+            let mut entry = entry.lock();
+            entry.valid_until = Instant::now() + Duration::from_secs(120); // reset the timer so that it can be accessed again
             true
         } else {
             false
@@ -80,12 +80,12 @@ impl BufferState {
 
     /// Returns the cloned buffer entry and flags it for expiration
     pub fn get_entry(&self, key: &str) -> Option<VolatileBuffer> {
-        let mut buffers = self.buffer.lock();
-        let entry = buffers.get_mut(key);
+        let buffers = self.buffer.read();
+        let entry = buffers.get(key);
 
         if let Some(entry) = entry {
-            entry.accessed = true;
-            entry.valid_until = Instant::now() + Duration::from_secs(10); // time to live is 10 seconds
+            let mut entry = entry.lock();
+            entry.valid_until = Instant::now() + Duration::from_secs(30); // ttl is 30 seconds after being accessed
 
             Some(entry.clone())
         } else {
@@ -95,15 +95,19 @@ impl BufferState {
 
     /// Clears all expired entries
     pub fn clear_expired(&self) {
-        let mut buffer = self.buffer.lock();
-        let keys: Vec<String> = buffer.keys().cloned().collect();
+        let keys: Vec<String> = {
+            let buffer = self.buffer.read();
+            buffer.keys().cloned().collect()
+        };
 
         for key in keys {
-            let (accessed, valid_until) = {
-                let entry = buffer.get(&key).unwrap();
-                (entry.accessed, entry.valid_until.clone())
+            let valid_until = {
+                let buffer = self.buffer.read();
+                let entry = buffer.get(&key).unwrap().lock();
+                entry.valid_until.clone()
             };
-            if accessed && valid_until < Instant::now() {
+            if valid_until < Instant::now() {
+                let mut buffer = self.buffer.write();
                 buffer.remove(&key);
             }
         }

@@ -1,3 +1,4 @@
+use parking_lot::lock_api::Mutex;
 use tauri::State;
 
 pub use file::*;
@@ -23,8 +24,8 @@ fn add_once_buffer(
 ) -> String {
     let uri = format!("once://{}", key);
     let once_buffer = VolatileBuffer::new(mime, buf);
-    let mut once_buffers = buffer_state.buffer.lock();
-    once_buffers.insert(key, once_buffer);
+    let mut once_buffers = buffer_state.buffer.write();
+    once_buffers.insert(key, Mutex::new(once_buffer));
 
     uri
 }
