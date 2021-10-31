@@ -86,19 +86,6 @@ export class SearchPageComponent implements OnInit {
     event.source.deselectAll();
   }
 
-  async openFile(file: File) {
-    if (this.openingLightbox) {
-      return;
-    }
-    this.openingLightbox = true;
-    try {
-      await this.openLightbox(file);
-    } catch (err) {
-      this.errorBroker.showError(err);
-    }
-    this.openingLightbox = false;
-  }
-
   async openGallery(preselectedFile: File) {
     this.preselectedFile = preselectedFile;
     this.showGallery = true;
@@ -107,30 +94,5 @@ export class SearchPageComponent implements OnInit {
   async closeGallery(preselectedFile: File | undefined) {
     this.preselectedFile = preselectedFile;
     this.showGallery = false;
-  }
-
-  private async openLightbox(file: File): Promise<void> {
-    let url = await this.fileService.readFile(file);
-
-    let albums = [
-      {
-        src: url as string,
-        caption: file.name ?? file.comment,
-        thumb: url as string,
-      }
-    ];
-    this.lightbox.open(albums, 0, {
-      disableScrolling: true,
-      showImageNumberLabel: false,
-      showDownloadButton: true,
-      centerVertically: true,
-    });
-    const lighboxSubscription = this.lightboxEvent.lightboxEvent$.subscribe(
-      (event: any) => {
-        if (event?.id == LIGHTBOX_EVENT.CLOSE) {
-          lighboxSubscription.unsubscribe();
-          URL?.revokeObjectURL(url as string);
-        }
-      })
   }
 }

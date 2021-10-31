@@ -11,6 +11,7 @@ import {FileService} from "../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
+import {CdkDrag, CdkDragMove, DragRef, Point} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-file-gallery',
@@ -27,10 +28,13 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   entries: Selectable<File>[] = [];
 
   @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
+  @ViewChild("scaledImage") scaledImage: ElementRef<HTMLDivElement> | undefined;
+  @ViewChild("imageDragContainer") imageDragContainer: ElementRef<HTMLDivElement> | undefined;
 
   public selectedFile: Selectable<File> | undefined;
   fileContentUrl: SafeResourceUrl | undefined;
-  scaleWidth = false;
+  public imageZoom = 1;
+  public imagePosition = {x: 0, y: 0};
 
   constructor(private fileService: FileService) {
   }
@@ -42,6 +46,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
    */
   async onEntrySelect(entry: Selectable<File>) {
     if (entry) {
+      this.resetImage();
       this.selectedFile?.unselect();
       entry.select();
       this.selectedFile = entry;
@@ -58,7 +63,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   async loadSelectedFile() {
     if (this.selectedFile) {
       this.fileContentUrl = undefined;
-      this.fileContentUrl = await this.fileService.readFile(this.selectedFile.data);
+      this.fileContentUrl = await this.fileService.readFile(
+        this.selectedFile.data);
     }
   }
 
@@ -69,8 +75,10 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    this.entries = this.files.map(f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
-    const selectedIndex = this.files.findIndex(f => f.hash === this.selectedFile?.data.hash);
+    this.entries = this.files.map(
+      f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
+    const selectedIndex = this.files.findIndex(
+      f => f.hash === this.selectedFile?.data.hash);
 
     if (!this.selectedFile || selectedIndex < 0) {
       await this.onEntrySelect(this.getPreselectedEntry() ?? this.entries[0])
@@ -111,6 +119,11 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     }
   }
 
+  public resetImage() {
+    this.imageZoom = 1;
+    this.imagePosition = {x: 0, y: 0};
+  }
+
   @HostListener("window:keydown", ["$event"])
   private async handleKeydownEvent(event: KeyboardEvent) {
     switch (event.key) {
@@ -120,12 +133,33 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       case "ArrowLeft":
         await this.previousItem();
         break;
+      case "Escape":
+        this.resetImage();
+        break;
+    }
+  }
+
+  @HostListener("mousewheel", ["$event"])
+  private handleScroll(event: any) {
+    const delta = event.wheelDelta ?? event.detail
+
+    if (delta > 0) {
+      this.imageZoom += 0.2
+      if (this.imageZoom > 4) {
+        this.imageZoom = 4;
+      }
+    } else if (delta < 0) {
+      this.imageZoom -= 0.2
+      if (this.imageZoom < 0.5) {
+        this.imageZoom = 0.5;
+      }
     }
   }
 
   private getPreselectedEntry(): Selectable<File> | undefined {
     if (this.preselectedFile) {
-      const entry = this.entries.find(e => e.data.hash == this.preselectedFile?.hash);
+      const entry = this.entries.find(
+        e => e.data.hash == this.preselectedFile?.hash);
       if (entry) {
         return entry;
       }
@@ -133,10 +167,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     return undefined;
   }
 
-  public adjustImageSize(fullImage: HTMLImageElement, imageContainer: HTMLDivElement): void {
-    const containerRatio = imageContainer.clientHeight / imageContainer.clientWidth;
-    const imageAdjHeight = fullImage.height / containerRatio;
-    const imageAdjWidth = fullImage.width * containerRatio;
-    this.scaleWidth = imageAdjWidth > imageAdjHeight;
+  public onDragMoved($event: CdkDragMove<HTMLDivElement>): void {
+    this.imagePosition.x += $event.delta.x;
+    this.imagePosition.y += $event.delta.y;
   }
 }

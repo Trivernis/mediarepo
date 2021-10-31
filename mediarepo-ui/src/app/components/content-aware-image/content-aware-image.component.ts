@@ -22,10 +22,8 @@ export class ContentAwareImageComponent {
   public adjustSize(image: HTMLImageElement, imageContainer: HTMLDivElement): void {
     const containerHeight = Math.abs(imageContainer.clientHeight);
     const containerWidth = Math.abs(imageContainer.clientWidth);
-    console.log(containerHeight, ',', containerWidth);
     const imageRelativeHeight = image.height / containerHeight;
     const imageRelativeWidth = image.width / containerWidth;
-    console.log(imageRelativeHeight, ',', imageRelativeWidth);
     this.scaleWidth = imageRelativeWidth > imageRelativeHeight;
   }
 }

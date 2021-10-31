@@ -42,6 +42,7 @@ import {BlockUIModule} from "primeng/blockui";
 import {PanelModule} from "primeng/panel";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { ContentAwareImageComponent } from './components/content-aware-image/content-aware-image.component';
+import {MatSliderModule} from "@angular/material/slider";
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { ContentAwareImageComponent } from './components/content-aware-image/con
         BlockUIModule,
         PanelModule,
         DragDropModule,
+        MatSliderModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

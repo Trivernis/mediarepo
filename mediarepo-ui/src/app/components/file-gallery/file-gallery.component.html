@@ -4,11 +4,22 @@
   </button>
   <div class="file-full-view" fxFlex="80%"
        (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null">
-    <div class="file-full-view-inner" #imageContainer>
+    <div class="file-full-view-inner">
       <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
         <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
       </div>
-      <app-content-aware-image *ngIf="this.fileContentUrl" [imageSrc]="this.fileContentUrl"></app-content-aware-image>
+      <div class="zoom-slider">
+        <mat-slider min="0.5" max="4" [value]="this.imageZoom"
+                    (input)="this.imageZoom=$event.value ?? 1" vertical step="0.1"></mat-slider>
+        <button mat-icon-button (click)="this.resetImage()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+      <div #imageDragContainer [cdkDragFreeDragPosition]="this.imagePosition" (cdkDragMoved)="this.onDragMoved($event)" *ngIf="this.fileContentUrl" cdkDrag class="image-drag-container">
+        <div #scaledImage class="image-scale-container" [style]="{scale: this.imageZoom}">
+          <app-content-aware-image [imageSrc]="this.fileContentUrl"></app-content-aware-image>
+        </div>
+      </div>
     </div>
   </div>
   <mat-divider fxFlex></mat-divider>
