@@ -22,10 +22,11 @@
       </div>
       <app-file-grid *ngIf="!this.showGallery" (fileDblClickEvent)="openGallery($event)" [files]="files"
                      (fileSelectEvent)="onFileSelect($event)"
+                     [preselectedFile]="this.preselectedFile"
                      (fileMultiselectEvent)="onFileMultiSelect($event)"
       ></app-file-grid>
       <app-file-gallery *ngIf="this.showGallery" [files]="files" (fileSelectEvent)="onFileSelect($event)"
                         (fileDblClickEvent)="openFile($event)" [preselectedFile]="this.preselectedFile"
-                        (closeEvent)="this.showGallery = false"></app-file-gallery>
+                        (closeEvent)="this.closeGallery($event.selectedFile?.data)"></app-file-gallery>
   </mat-drawer-content>
 </mat-drawer-container>

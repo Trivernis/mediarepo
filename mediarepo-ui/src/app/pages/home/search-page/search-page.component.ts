@@ -104,6 +104,11 @@ export class SearchPageComponent implements OnInit {
     this.showGallery = true;
   }
 
+  async closeGallery(preselectedFile: File | undefined) {
+    this.preselectedFile = preselectedFile;
+    this.showGallery = false;
+  }
+
   private async openLightbox(file: File): Promise<void> {
     let url = await this.fileService.readFile(file);
 

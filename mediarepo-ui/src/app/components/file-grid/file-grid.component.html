@@ -1,4 +1,4 @@
-<cdk-virtual-scroll-viewport class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
+<cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
   <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
     <div class="file-row">
       <app-file-grid-entry (clickEvent)="setSelectedFile($event.gridEntry)" (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"

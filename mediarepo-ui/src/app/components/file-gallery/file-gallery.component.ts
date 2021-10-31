@@ -23,12 +23,12 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   @Input() preselectedFile: File | undefined;
   @Output() fileSelectEvent = new EventEmitter<File | undefined>();
   @Output() fileDblClickEvent = new EventEmitter<File>();
-  @Output() closeEvent = new EventEmitter<void>();
+  @Output() closeEvent = new EventEmitter<FileGalleryComponent>();
   entries: Selectable<File>[] = [];
 
   @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
 
-  selectedFile: Selectable<File> | undefined;
+  public selectedFile: Selectable<File> | undefined;
   fileContentUrl: SafeResourceUrl | undefined;
   scaleWidth = false;
 
