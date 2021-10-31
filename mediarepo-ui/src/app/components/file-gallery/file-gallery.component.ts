@@ -50,8 +50,19 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       this.selectedFile?.unselect();
       entry.select();
       this.selectedFile = entry;
+      const selectedIndex = this.entries.indexOf(entry);
+      //this.virtualScroll.scrollToIndex(, "smooth");
       await this.loadSelectedFile();
-      this.virtualScroll.scrollToIndex(this.entries.indexOf(entry), "smooth");
+
+      if (this.virtualScroll) {
+        const viewportSize = this.virtualScroll.getViewportSize();
+        const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
+        this.virtualScroll.scrollToIndex(Math.max(selectedIndex - indexAdjustment, 0), "smooth");
+
+        if (selectedIndex > indexAdjustment) {
+          this.virtualScroll.scrollToOffset(this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
+        }
+      }
       this.fileSelectEvent.emit(this.selectedFile.data);
     }
   }
