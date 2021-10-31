@@ -1,4 +1,5 @@
 use crate::client_api::error::ApiError;
+use rmp_ipc::error::Error;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
 
@@ -27,9 +28,19 @@ impl From<&str> for PluginError {
 
 impl From<ApiError> for PluginError {
     fn from(e: ApiError) -> Self {
-        Self {
-            message: format!("ApiError: {:?}", e),
-        }
+        let message = match e {
+            ApiError::IPC(ipc_error) => match ipc_error {
+                Error::Message(message) => message,
+                Error::SendError => String::from("Failed to send event to daemon"),
+                Error::ErrorEvent(e) => {
+                    format!("Received error: {}", e.to_string())
+                }
+                e => {
+                    format!("{:?}", e)
+                }
+            },
+        };
+        Self { message }
     }
 }
 

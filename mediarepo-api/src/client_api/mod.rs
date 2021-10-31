@@ -7,6 +7,7 @@ use crate::client_api::file::FileApi;
 use crate::client_api::tag::TagApi;
 use crate::types::misc::InfoResponse;
 use async_trait::async_trait;
+use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::ipc::context::Context;
 use rmp_ipc::ipc::stream_emitter::EmitMetadata;
 use rmp_ipc::payload::{EventReceivePayload, EventSendPayload};
@@ -16,7 +17,7 @@ use std::fmt::Debug;
 #[async_trait]
 pub trait IPCApi {
     fn namespace() -> &'static str;
-    fn ctx(&self) -> &Context;
+    fn ctx(&self) -> PoolGuard<Context>;
 
     async fn emit<T: EventSendPayload + Debug + Send>(
         &self,
@@ -41,7 +42,7 @@ pub trait IPCApi {
         data: T,
     ) -> ApiResult<R> {
         let meta = self.emit(event_name, data).await?;
-        let response = meta.await_reply(self.ctx()).await?;
+        let response = meta.await_reply(&self.ctx()).await?;
 
         Ok(response.data()?)
     }
@@ -49,14 +50,14 @@ pub trait IPCApi {
 
 #[derive(Clone)]
 pub struct ApiClient {
-    ctx: Context,
+    ctx: PooledContext,
     pub file: FileApi,
     pub tag: TagApi,
 }
 
 impl ApiClient {
     /// Creates a new client from an existing ipc context
-    pub fn new(ctx: Context) -> Self {
+    pub fn new(ctx: PooledContext) -> Self {
         Self {
             file: FileApi::new(ctx.clone()),
             tag: TagApi::new(ctx.clone()),
@@ -67,7 +68,10 @@ impl ApiClient {
     /// Connects to the ipc Socket
     #[tracing::instrument(level = "debug")]
     pub async fn connect(address: &str) -> ApiResult<Self> {
-        let ctx = IPCBuilder::new().address(address).build_client().await?;
+        let ctx = IPCBuilder::new()
+            .address(address)
+            .build_pooled_client(8)
+            .await?;
 
         Ok(Self::new(ctx))
     }
@@ -75,19 +79,20 @@ impl ApiClient {
     /// Returns information about the connected ipc server
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn info(&self) -> ApiResult<InfoResponse> {
-        let res = self
-            .ctx
+        let ctx = self.ctx.acquire();
+        let res = ctx
             .emitter
             .emit("info", ())
             .await?
-            .await_reply(&self.ctx)
+            .await_reply(&ctx)
             .await?;
         Ok(res.data::<InfoResponse>()?)
     }
 
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn exit(self) -> ApiResult<()> {
-        self.ctx.stop().await?;
+        let ctx = (*self.ctx.acquire()).clone();
+        ctx.stop().await?;
         Ok(())
     }
 }

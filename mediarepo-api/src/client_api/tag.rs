@@ -4,11 +4,12 @@ use crate::types::files::GetFileTagsRequest;
 use crate::types::identifier::FileIdentifier;
 use crate::types::tags::TagResponse;
 use async_trait::async_trait;
+use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::ipc::context::Context;
 
 #[derive(Clone)]
 pub struct TagApi {
-    ctx: Context,
+    ctx: PooledContext,
 }
 
 #[async_trait]
@@ -17,13 +18,13 @@ impl IPCApi for TagApi {
         "tags"
     }
 
-    fn ctx(&self) -> &Context {
-        &self.ctx
+    fn ctx(&self) -> PoolGuard<Context> {
+        self.ctx.acquire()
     }
 }
 
 impl TagApi {
-    pub fn new(ctx: Context) -> Self {
+    pub fn new(ctx: PooledContext) -> Self {
         Self { ctx }
     }
 

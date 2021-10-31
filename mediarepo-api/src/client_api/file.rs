@@ -6,12 +6,13 @@ use crate::types::files::{
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
+use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::payload::{BytePayload, EventSendPayload};
 use rmp_ipc::prelude::Context;
 
 #[derive(Clone)]
 pub struct FileApi {
-    ctx: Context,
+    ctx: PooledContext,
 }
 
 #[async_trait]
@@ -20,14 +21,14 @@ impl IPCApi for FileApi {
         "files"
     }
 
-    fn ctx(&self) -> &Context {
-        &self.ctx
+    fn ctx(&self) -> PoolGuard<Context> {
+        self.ctx.acquire()
     }
 }
 
 impl FileApi {
     /// Creates a new file api client
-    pub fn new(ctx: Context) -> Self {
+    pub fn new(ctx: PooledContext) -> Self {
         Self { ctx }
     }
 
