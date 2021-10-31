@@ -1,7 +1,9 @@
 <h1 mat-dialog-title>Sort Entries</h1>
 <div mat-dialog-content>
-    <div class="sort-input-list">
-      <div class="sort-input-row" *ngFor="let sortKey of sortEntries">
+    <div cdkDropList class="sort-input-list" (cdkDropListDropped)="this.onSortEntryDrop($event)">
+      <div cdkDrag class="sort-input-row" *ngFor="let sortKey of sortEntries">
+        <div class="drag-placeholder" *cdkDragPlaceholder></div>
+        <div class="drag-handle" cdkDragHandle><mat-icon>drag_handle</mat-icon></div>
         <mat-form-field>
           <mat-label>Key</mat-label>
           <mat-select required [(value)]="sortKey.sortType">

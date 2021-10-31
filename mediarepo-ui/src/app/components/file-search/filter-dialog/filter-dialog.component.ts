@@ -1,6 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {SortKey} from "../../../models/SortKey";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-filter-dialog',
@@ -31,5 +32,9 @@ export class FilterDialogComponent {
 
   public cancelSort(): void {
     this.dialogRef.close()
+  }
+
+  public onSortEntryDrop(event: CdkDragDrop<SortKey[]>): void {
+    moveItemInArray(this.sortEntries, event.previousIndex, event.currentIndex);
   }
 }
