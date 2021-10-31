@@ -30,6 +30,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
 
   selectedFile: Selectable<File> | undefined;
   fileContentUrl: SafeResourceUrl | undefined;
+  scaleWidth = false;
 
   constructor(private fileService: FileService) {
   }
@@ -130,5 +131,12 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       }
     }
     return undefined;
+  }
+
+  public adjustImageSize(fullImage: HTMLImageElement, imageContainer: HTMLDivElement): void {
+    const containerRatio = imageContainer.clientHeight / imageContainer.clientWidth;
+    const imageAdjHeight = fullImage.height / containerRatio;
+    const imageAdjWidth = fullImage.width * containerRatio;
+    this.scaleWidth = imageAdjWidth > imageAdjHeight;
   }
 }

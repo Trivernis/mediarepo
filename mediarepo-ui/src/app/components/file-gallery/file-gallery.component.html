@@ -4,11 +4,13 @@
   </button>
   <div class="file-full-view" fxFlex="80%"
        (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null">
-    <div class="file-full-view-inner">
+    <div class="file-full-view-inner" #imageContainer>
       <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
         <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
       </div>
-      <img [src]="this.fileContentUrl" decoding="async" alt="Image"/>
+      <img #fullImage *ngIf="this.fileContentUrl" (load)="this.adjustImageSize(fullImage, imageContainer)" (window:resize)="adjustImageSize(fullImage, imageContainer)"
+           [class.align-width]="this.scaleWidth" [class.align-height]="!this.scaleWidth"
+           [src]="this.fileContentUrl" decoding="async" alt="Image"/>
     </div>
   </div>
   <mat-divider fxFlex></mat-divider>

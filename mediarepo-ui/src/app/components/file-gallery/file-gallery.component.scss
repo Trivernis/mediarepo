@@ -44,6 +44,15 @@ img {
   margin: auto;
 }
 
+.align-width {
+  width: 100%;
+  height: auto;
+}
+.align-height {
+  height: 100%;
+  width: auto;
+}
+
 .close-button {
   position: absolute;
   top: 0;
