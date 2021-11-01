@@ -39,7 +39,10 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_tags_for_file,
                 get_active_repository,
                 add_repository,
-                select_repository
+                select_repository,
+                init_repository,
+                start_daemon,
+                check_daemon_running,
             ]),
         }
     }
@@ -61,13 +64,14 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
 
         let buffer_state = BufferState::default();
         app.manage(buffer_state.clone());
+
+        let repo_state = AppState::load()?;
+        app.manage(repo_state);
+
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(10));
             buffer_state.clear_expired();
         });
-
-        let repo_state = AppState::load()?;
-        app.manage(repo_state);
 
         Ok(())
     }

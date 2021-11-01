@@ -1,4 +1,5 @@
 use crate::client_api::error::ApiError;
+use crate::daemon_management::error::DaemonError;
 use rmp_ipc::error::Error;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
@@ -65,5 +66,11 @@ impl From<toml::ser::Error> for PluginError {
         Self {
             message: format!("Serialization failed: {:?}", e),
         }
+    }
+}
+
+impl From<DaemonError> for PluginError {
+    fn from(e: DaemonError) -> Self {
+        Self { message: e.message }
     }
 }

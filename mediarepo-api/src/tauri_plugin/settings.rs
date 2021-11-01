@@ -14,9 +14,19 @@ pub struct Repository {
     pub(crate) address: String,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Settings {
+    pub daemon_path: String,
     pub repositories: HashMap<String, Repository>,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            daemon_path: String::from("mediarepo-daemon"),
+            repositories: HashMap::new(),
+        }
+    }
 }
 
 fn get_settings_path() -> PathBuf {

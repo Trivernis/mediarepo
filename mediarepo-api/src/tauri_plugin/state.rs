@@ -9,6 +9,7 @@ use tauri::async_runtime::RwLock;
 use tokio::time::Instant;
 
 use crate::client_api::ApiClient;
+use crate::daemon_management::cli::DaemonCli;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{load_settings, Repository, Settings};
 
@@ -117,6 +118,7 @@ impl BufferState {
 pub struct AppState {
     pub active_repo: Arc<RwLock<Option<Repository>>>,
     pub settings: Arc<RwLock<Settings>>,
+    pub running_daemons: Arc<RwLock<HashMap<String, DaemonCli>>>,
 }
 
 impl AppState {
@@ -125,10 +127,25 @@ impl AppState {
         let settings = load_settings()?;
 
         let state = Self {
-            active_repo: Arc::new(RwLock::new(None)),
+            active_repo: Default::default(),
             settings: Arc::new(RwLock::new(settings)),
+            running_daemons: Default::default(),
         };
 
         Ok(state)
+    }
+
+    /// Returns the daemon cli client
+    pub async fn get_daemon_cli(&self, repo_path: String) -> DaemonCli {
+        let settings = self.settings.read().await;
+        let path = settings.daemon_path.clone();
+
+        DaemonCli::new(path, repo_path)
+    }
+
+    /// Adds a started daemon to the running daemons
+    pub async fn add_started_daemon(&self, daemon: DaemonCli) {
+        let mut daemons = self.running_daemons.write().await;
+        daemons.insert(daemon.repo_path().to_owned(), daemon);
     }
 }
