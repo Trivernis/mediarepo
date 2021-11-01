@@ -827,28 +827,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
-name = "mediarepo"
-version = "0.1.0"
-dependencies = [
- "glob",
- "log",
- "mediarepo-core",
- "mediarepo-model",
- "mediarepo-socket",
- "num-integer",
- "structopt",
- "tokio",
- "toml",
- "tracing",
- "tracing-appender",
- "tracing-flame",
- "tracing-subscriber 0.2.25",
-]
-
-[[package]]
 name = "mediarepo-api"
 version = "0.1.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=822abb32a1aa35f209f01a6bafc3106f56d11ddc#822abb32a1aa35f209f01a6bafc3106f56d11ddc"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=e5bccc31eaedb1aed5973be98852b9c2632ed62d#e5bccc31eaedb1aed5973be98852b9c2632ed62d"
 dependencies = [
  "chrono",
  "serde",
@@ -873,6 +854,25 @@ dependencies = [
  "tokio",
  "toml",
  "typemap_rev",
+]
+
+[[package]]
+name = "mediarepo-daemon"
+version = "0.1.0"
+dependencies = [
+ "glob",
+ "log",
+ "mediarepo-core",
+ "mediarepo-model",
+ "mediarepo-socket",
+ "num-integer",
+ "structopt",
+ "tokio",
+ "toml",
+ "tracing",
+ "tracing-appender",
+ "tracing-flame",
+ "tracing-subscriber 0.2.25",
 ]
 
 [[package]]

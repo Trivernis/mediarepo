@@ -4,3 +4,4 @@ test-local
 .env
 tracing.folded
 tracing*.svg
+logs
