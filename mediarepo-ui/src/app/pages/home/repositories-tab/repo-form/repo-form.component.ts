@@ -3,6 +3,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {dialog} from "@tauri-apps/api";
 
 @Component({
   selector: 'app-repo-form',
@@ -29,5 +30,13 @@ export class RepoFormComponent implements OnInit {
     } catch(err) {
       this.errorBroker.showError(err);
     }
+  }
+
+  public async openFolderDialog($event: MouseEvent): Promise<void> {
+    const path = await dialog.open({
+      directory: true,
+      multiple: false,
+    });
+    this.repoForm.controls.path.setValue(path);
   }
 }

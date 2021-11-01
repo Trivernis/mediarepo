@@ -18,6 +18,7 @@ export class RepositoryService {
     this.registerListener()
   }
 
+  /// Registers the info listener
   async registerListener() {
     await listen("info", (event: { payload: Info }) => {
       const message = `Connected to ${event.payload.name}, Version: ${event.payload.version}`;
@@ -25,6 +26,10 @@ export class RepositoryService {
     });
   }
 
+  /**
+   * Loads all repositories stored in the settings
+   * @returns {Promise<void>}
+   */
   public async loadRepositories() {
     let active_repo = await invoke<Repository | undefined>("plugin:mediarepo|get_active_repository");
     this.selectedRepository.next(active_repo);
@@ -33,14 +38,43 @@ export class RepositoryService {
     this.repositories.next(repos);
   }
 
+  /**
+   * Sets the active repository
+   * @param {Repository} repo
+   * @returns {Promise<void>}
+   */
   public async setRepository(repo: Repository) {
     await invoke("plugin:mediarepo|select_repository", {name: repo.name});
     this.selectedRepository.next(repo);
     await this.dataloaderService.loadData();
   }
 
+  /**
+   * Adds a respository to the repository list in the settings
+   * @param {string} name
+   * @param {string} path
+   * @returns {Promise<void>}
+   */
   public async addRepository(name: string, path: string) {
     let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository", {name, path});
     this.repositories.next(repos);
+  }
+
+  /**
+   * Checks if a daemon is running for the specified address
+   * @param {string} address
+   * @returns {Promise<boolean>}
+   */
+  public async checkDaemonRunning(address: string): Promise<boolean> {
+    return await invoke<boolean>("plugin:mediarepo|check_daemon_running", {address});
+  }
+
+  /**
+   * Starts a daemon for the given repository path
+   * @param {string} repoPath
+   * @returns {Promise<void>}
+   */
+  public async startDaemon(repoPath: string): Promise<void> {
+    await invoke("plugin:mediarepo|start_daemon", {repoPath})
   }
 }

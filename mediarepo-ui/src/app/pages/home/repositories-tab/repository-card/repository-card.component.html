@@ -1,7 +1,12 @@
 <mat-card>
-  <mat-card-title>{{repository?.name}}</mat-card-title>
-  <mat-card-content>{{repository?.address}}</mat-card-content>
+  <mat-card-title>{{repository.name}}</mat-card-title>
+  <mat-card-content>
+    <p class="repository-path" *ngIf="repository.path">{{repository.path!}}</p>
+    <p class="repository-address" *ngIf="!repository.path">{{repository.address}}</p>
+    <div *ngIf="daemonRunning" class="daemon-running-info">Running</div>
+  </mat-card-content>
   <mat-action-list>
-    <button mat-flat-button color="primary" (click)="selectRepository()">Open</button>
+    <button *ngIf="!daemonRunning" mat-flat-button color="primary" (click)="startDaemonAndSelectRepository()">Open</button>
+    <button *ngIf="daemonRunning" mat-flat-button color="primary" (click)="selectRepository()">Connect</button>
   </mat-action-list>
 </mat-card>
