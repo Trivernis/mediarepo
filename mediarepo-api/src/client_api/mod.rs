@@ -2,10 +2,10 @@ pub mod error;
 pub mod file;
 pub mod tag;
 
-use crate::client_api::error::ApiResult;
+use crate::client_api::error::{ApiError, ApiResult};
 use crate::client_api::file::FileApi;
 use crate::client_api::tag::TagApi;
-use crate::types::misc::InfoResponse;
+use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
 use async_trait::async_trait;
 use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::ipc::context::Context;
@@ -72,8 +72,15 @@ impl ApiClient {
             .address(address)
             .build_pooled_client(8)
             .await?;
+        let client = Self::new(ctx);
+        let info = client.info().await?;
+        let server_api_version = info.api_version();
 
-        Ok(Self::new(ctx))
+        if !check_apis_compatible(get_api_version(), server_api_version) {
+            Err(ApiError::VersionMismatch)
+        } else {
+            Ok(client)
+        }
     }
 
     /// Returns information about the connected ipc server
