@@ -1,12 +1,16 @@
 <mat-card>
   <mat-card-title>{{repository.name}}</mat-card-title>
+  <div [class]="'repository-status ' + this.getDaemonStatusClass()">
+    <p>{{this.getDaemonStatusText()}}</p>
+  </div>
   <mat-card-content>
-    <p class="repository-path" *ngIf="repository.path">{{repository.path!}}</p>
-    <p class="repository-address" *ngIf="!repository.path">{{repository.address}}</p>
-    <div *ngIf="daemonRunning" class="daemon-running-info">Running</div>
+    <p class="repository-path" *ngIf="repository.local">{{repository.path!}}</p>
+    <p class="repository-address" *ngIf="!repository.local">{{repository.address}}</p>
   </mat-card-content>
   <mat-action-list>
-    <button *ngIf="!daemonRunning" mat-flat-button color="primary" (click)="startDaemonAndSelectRepository()">Open</button>
-    <button *ngIf="daemonRunning" mat-flat-button color="primary" (click)="selectRepository()">Connect</button>
+    <button *ngIf="!this.isSelectedRepository() && repository.local" mat-flat-button color="primary" (click)="startDaemonAndSelectRepository()">Open</button>
+    <button *ngIf="!this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="selectRepository()" [disabled]="!this.daemonRunning">Connect</button>
+    <button *ngIf="this.isSelectedRepository() && repository.local" mat-flat-button color="primary" (click)="this.repoService.closeSelectedRepository()">Close</button>
+    <button *ngIf="this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="this.repoService.disconnectSelectedRepository()" [disabled]="!this.daemonRunning">Disconnect</button>
   </mat-action-list>
 </mat-card>

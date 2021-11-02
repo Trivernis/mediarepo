@@ -26,7 +26,7 @@ export class RepoFormComponent implements OnInit {
   async addRepository() {
     let {name, path} = this.repoForm.value;
     try {
-      await this.repoService.addRepository(name, path);
+      await this.repoService.addRepository(name, path, undefined, true);
     } catch(err) {
       this.errorBroker.showError(err);
     }

@@ -1,8 +1,8 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {DataloaderService} from "../../services/dataloader/dataloader.service";
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Repository} from "../../models/Repository";
 import {RepositoryService} from "../../services/repository/repository.service";
 import {MatTabGroup} from "@angular/material/tabs";
+import {TagService} from "../../services/tag/tag.service";
 
 @Component({
   selector: 'app-home',
@@ -15,16 +15,22 @@ export class HomeComponent implements OnInit {
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
+
+  constructor(private repoService: RepositoryService, private tagService: TagService) {}
+
   public async ngOnInit(): Promise<void> {
-    await this.dataloaderService.loadData();
     this.selectedRepository = this.repoService.selectedRepository.getValue();
-    this.repoService.selectedRepository.subscribe((selected) => {
+    this.repoService.selectedRepository.subscribe(async (selected) => {
       this.selectedRepository = selected;
       this.updateSelectedTab();
+      await this.loadRepoData();
     });
   }
 
   public updateSelectedTab() {
+    if (!this.tabGroup) {
+      return;
+    }
     if (!this.selectedRepository) {
       this.tabGroup.selectedIndex = 0;
     } else if (this.tabGroup.selectedIndex === 0) {
@@ -32,5 +38,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  constructor(private dataloaderService: DataloaderService, private repoService: RepositoryService) {}
+  async loadRepoData() {
+    await this.tagService.loadTags();
+  }
 }

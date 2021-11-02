@@ -5,7 +5,6 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
-import {DataloaderService} from "../dataloader/dataloader.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,7 @@ export class RepositoryService {
   repositories = new BehaviorSubject<Repository[]>([]);
   public selectedRepository = new BehaviorSubject<Repository | undefined>(undefined);
 
-  constructor(private errorBroker: ErrorBrokerService, private dataloaderService: DataloaderService) {
+  constructor(private errorBroker: ErrorBrokerService) {
     this.registerListener()
   }
 
@@ -31,9 +30,7 @@ export class RepositoryService {
    * @returns {Promise<void>}
    */
   public async loadRepositories() {
-    let active_repo = await invoke<Repository | undefined>("plugin:mediarepo|get_active_repository");
-    this.selectedRepository.next(active_repo);
-
+    await this.loadSelectedRepository();
     let repos = await invoke<Repository[]>("plugin:mediarepo|get_repositories");
     this.repositories.next(repos);
   }
@@ -45,18 +42,37 @@ export class RepositoryService {
    */
   public async setRepository(repo: Repository) {
     await invoke("plugin:mediarepo|select_repository", {name: repo.name});
-    this.selectedRepository.next(repo);
-    await this.dataloaderService.loadData();
+    await this.loadRepositories();
+  }
+
+  /**
+   * Disconnects from a remote repository
+   * @returns {Promise<void>}
+   */
+  public async disconnectSelectedRepository() {
+    await invoke("plugin:mediarepo|disconnect_repository");
+    await this.loadRepositories();
+  }
+
+  /**
+   * Closes a local selected repository
+   * @returns {Promise<void>}
+   */
+  public async closeSelectedRepository() {
+    await invoke("plugin:mediarepo|close_local_repository");
+    await this.loadRepositories();
   }
 
   /**
    * Adds a respository to the repository list in the settings
    * @param {string} name
    * @param {string} path
+   * @param address
+   * @param local
    * @returns {Promise<void>}
    */
-  public async addRepository(name: string, path: string) {
-    let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository", {name, path});
+  public async addRepository(name: string, path: string | undefined, address: string | undefined, local: boolean) {
+    let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository", {name, path, address, local});
     this.repositories.next(repos);
   }
 
@@ -76,5 +92,10 @@ export class RepositoryService {
    */
   public async startDaemon(repoPath: string): Promise<void> {
     await invoke("plugin:mediarepo|start_daemon", {repoPath})
+  }
+
+  async loadSelectedRepository() {
+    let active_repo = await invoke<Repository | undefined>("plugin:mediarepo|get_active_repository");
+    this.selectedRepository.next(active_repo);
   }
 }

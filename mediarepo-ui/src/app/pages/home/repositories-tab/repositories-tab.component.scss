@@ -7,10 +7,17 @@
 
 .repo-page-content {
   margin: 0 10%;
+  height: calc(100% - 2em);
 }
 
 .add-repo-tools {
-  margin: 1em 0
+  margin: 1em 0;
+  height: 5em;
 }
 
-
+.repository-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: calc(100% - 5em);
+}

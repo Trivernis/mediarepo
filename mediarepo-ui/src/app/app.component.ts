@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {RepositoryService} from "./services/repository/repository.service";
-import {DataloaderService} from "./services/dataloader/dataloader.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ErrorBrokerService} from "./services/error-broker/error-broker.service";
 
