@@ -24,9 +24,20 @@ impl ApiState {
         }
     }
 
+    /// Sets the active api client and disconnects the old one
     pub async fn set_api(&self, client: ApiClient) {
         let mut inner = self.inner.write().await;
         let old_client = mem::replace(&mut *inner, Some(client));
+
+        if let Some(client) = old_client {
+            let _ = client.exit().await;
+        }
+    }
+
+    /// Disconnects the api client
+    pub async fn disconnect(&self) {
+        let mut inner = self.inner.write().await;
+        let old_client = mem::take(&mut *inner);
 
         if let Some(client) = old_client {
             let _ = client.exit().await;

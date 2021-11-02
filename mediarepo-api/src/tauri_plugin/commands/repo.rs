@@ -3,6 +3,7 @@ use crate::tauri_plugin::commands::{ApiAccess, AppAccess};
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{save_settings, Repository};
 use serde::{Deserialize, Serialize};
+use std::mem;
 use std::path::PathBuf;
 use tokio::fs;
 
@@ -57,6 +58,27 @@ pub async fn add_repository(
     }
 
     Ok(repositories)
+}
+
+#[tauri::command]
+pub async fn disconnect_repository(api_state: ApiAccess<'_>) -> PluginResult<()> {
+    api_state.disconnect().await;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn close_local_repository(
+    app_state: AppAccess<'_>,
+    api_state: ApiAccess<'_>,
+) -> PluginResult<()> {
+    let mut active_repo = app_state.active_repo.write().await;
+    if let Some(path) = mem::take(&mut *active_repo).and_then(|r| r.path) {
+        app_state.stop_running_daemon(&path).await?;
+    }
+    api_state.disconnect().await;
+
+    Ok(())
 }
 
 #[tauri::command]
