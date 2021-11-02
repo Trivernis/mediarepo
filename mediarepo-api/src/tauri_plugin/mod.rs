@@ -79,6 +79,7 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     fn extend_api(&mut self, message: Invoke<R>) {
         (self.invoke_handler)(message)
     }
