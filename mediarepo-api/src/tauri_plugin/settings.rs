@@ -14,6 +14,7 @@ pub struct Repository {
     pub(crate) path: Option<String>,
     pub(crate) address: Option<String>,
     pub(crate) local: bool,
+    pub(crate) last_opened: Option<u128>,
 }
 
 #[derive(DeserializePiecewiseDefault, Debug, Serialize)]

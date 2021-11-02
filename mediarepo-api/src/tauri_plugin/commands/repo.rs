@@ -5,6 +5,7 @@ use crate::tauri_plugin::settings::{save_settings, Repository};
 use serde::{Deserialize, Serialize};
 use std::mem;
 use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::fs;
 
 static REPO_CONFIG_FILE: &str = "repo.toml";
@@ -19,8 +20,11 @@ pub struct RepoConfig {
 #[tauri::command]
 pub async fn get_repositories(app_state: AppAccess<'_>) -> PluginResult<Vec<Repository>> {
     let settings = app_state.settings.read().await;
+    let mut repositories: Vec<Repository> = settings.repositories.values().cloned().collect();
+    repositories.sort_by_key(|r| r.last_opened.unwrap_or(0));
+    repositories.reverse(); // the last opened repository should always be on top
 
-    Ok(settings.repositories.values().cloned().collect())
+    Ok(repositories)
 }
 
 #[tauri::command]
@@ -47,6 +51,7 @@ pub async fn add_repository(
         path,
         address,
         local,
+        last_opened: None,
     };
 
     let mut repositories = Vec::new();
@@ -92,10 +97,13 @@ pub async fn select_repository(
     app_state: AppAccess<'_>,
     api_state: ApiAccess<'_>,
 ) -> PluginResult<()> {
-    let settings = app_state.settings.read().await;
-    let repo = settings.repositories.get(&name).ok_or(PluginError::from(
-        format!("Repository '{}' not found", name).as_str(),
-    ))?;
+    let mut settings = app_state.settings.write().await;
+    let repo = settings
+        .repositories
+        .get_mut(&name)
+        .ok_or(PluginError::from(
+            format!("Repository '{}' not found", name).as_str(),
+        ))?;
     let address = if let Some(address) = &repo.address {
         address.clone()
     } else {
@@ -112,7 +120,15 @@ pub async fn select_repository(
     api_state.set_api(client).await;
 
     let mut active_repo = app_state.active_repo.write().await;
+    repo.last_opened = Some(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    );
+
     *active_repo = Some(repo.clone());
+    save_settings(&settings)?;
 
     Ok(())
 }
