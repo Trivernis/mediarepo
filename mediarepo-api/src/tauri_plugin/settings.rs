@@ -12,7 +12,8 @@ static SETTINGS_FILE: &str = "settings.toml";
 pub struct Repository {
     pub(crate) name: String,
     pub(crate) path: Option<String>,
-    pub(crate) address: String,
+    pub(crate) address: Option<String>,
+    pub(crate) local: bool,
 }
 
 #[derive(DeserializePiecewiseDefault, Debug, Serialize)]

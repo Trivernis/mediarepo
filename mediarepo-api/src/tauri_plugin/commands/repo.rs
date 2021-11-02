@@ -31,17 +31,21 @@ pub async fn get_active_repository(app_state: AppAccess<'_>) -> PluginResult<Opt
 #[tauri::command]
 pub async fn add_repository(
     name: String,
-    path: String,
+    path: Option<String>,
+    address: Option<String>,
+    local: bool,
     app_state: AppAccess<'_>,
 ) -> PluginResult<Vec<Repository>> {
-    let repo_path = path.clone();
-    let path = PathBuf::from(path);
-    let RepoConfig { listen_address, .. } = read_repo_config(path.join(REPO_CONFIG_FILE)).await?;
-
+    if path.is_none() && address.is_none() {
+        return Err(PluginError::from(
+            "Either a path or an address needs to be specified for the repository",
+        ));
+    }
     let repo = Repository {
         name,
-        path: Some(repo_path),
-        address: listen_address,
+        path,
+        address,
+        local,
     };
 
     let mut repositories = Vec::new();
@@ -65,7 +69,19 @@ pub async fn select_repository(
     let repo = settings.repositories.get(&name).ok_or(PluginError::from(
         format!("Repository '{}' not found", name).as_str(),
     ))?;
-    let client = ApiClient::connect(&repo.address).await?;
+    let address = if let Some(address) = &repo.address {
+        address.clone()
+    } else {
+        tracing::debug!("Reading repo address from config.");
+        let path = repo
+            .path
+            .clone()
+            .ok_or_else(|| PluginError::from("Missing repo path or address in config."))?;
+        let config = read_repo_config(PathBuf::from(path).join(REPO_CONFIG_FILE)).await?;
+
+        config.listen_address
+    };
+    let client = ApiClient::connect(&address).await?;
     api_state.set_api(client).await;
 
     let mut active_repo = app_state.active_repo.write().await;
