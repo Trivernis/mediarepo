@@ -124,7 +124,7 @@ pub async fn select_repository(
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_millis(),
+            .as_secs(),
     );
 
     *active_repo = Some(repo.clone());
