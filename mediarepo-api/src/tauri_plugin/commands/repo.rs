@@ -61,8 +61,13 @@ pub async fn add_repository(
 }
 
 #[tauri::command]
-pub async fn disconnect_repository(api_state: ApiAccess<'_>) -> PluginResult<()> {
+pub async fn disconnect_repository(
+    app_state: AppAccess<'_>,
+    api_state: ApiAccess<'_>,
+) -> PluginResult<()> {
     api_state.disconnect().await;
+    let mut active_repo = app_state.active_repo.write().await;
+    mem::take(&mut *active_repo);
 
     Ok(())
 }
