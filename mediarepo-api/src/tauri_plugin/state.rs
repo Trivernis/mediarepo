@@ -148,4 +148,15 @@ impl AppState {
         let mut daemons = self.running_daemons.write().await;
         daemons.insert(daemon.repo_path().to_owned(), daemon);
     }
+
+    /// Tries to stop a running daemon
+    pub async fn stop_running_daemon(&self, repo_path: &String) -> PluginResult<()> {
+        let mut daemons = self.running_daemons.write().await;
+
+        if let Some(mut daemon) = daemons.remove(repo_path) {
+            daemon.stop_daemon().await?;
+        }
+
+        Ok(())
+    }
 }

@@ -43,6 +43,7 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 init_repository,
                 start_daemon,
                 check_daemon_running,
+                stop_daemon,
             ]),
         }
     }

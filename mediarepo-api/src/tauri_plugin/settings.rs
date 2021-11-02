@@ -1,6 +1,7 @@
 use crate::tauri_plugin::error::PluginResult;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
+use serde_piecewise_default::DeserializePiecewiseDefault;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -14,7 +15,7 @@ pub struct Repository {
     pub(crate) address: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(DeserializePiecewiseDefault, Debug, Serialize)]
 pub struct Settings {
     pub daemon_path: String,
     pub repositories: HashMap<String, Repository>,

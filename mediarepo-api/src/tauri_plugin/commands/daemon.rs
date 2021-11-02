@@ -20,6 +20,13 @@ pub async fn start_daemon(app_state: AppAccess<'_>, repo_path: String) -> Plugin
 }
 
 #[tauri::command]
+pub async fn stop_daemon(app_state: AppAccess<'_>, repo_path: String) -> PluginResult<()> {
+    app_state.stop_running_daemon(&repo_path).await?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn check_daemon_running(address: String) -> PluginResult<bool> {
     if let Ok(api_client) = ApiClient::connect(&address).await {
         Ok(api_client.info().await.is_ok())

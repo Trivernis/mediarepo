@@ -1,5 +1,6 @@
 use crate::daemon_management::error::{DaemonError, DaemonResult};
 use std::ffi::OsStr;
+use std::mem;
 use tokio::process::{Child, Command};
 
 #[derive(Debug)]
@@ -34,6 +35,17 @@ impl DaemonCli {
     pub fn start_daemon(&mut self) -> DaemonResult<()> {
         let child = self.run_daemon_process(vec!["--repo", self.repo_path.as_str(), "start"])?;
         self.child = Some(child);
+
+        Ok(())
+    }
+
+    /// Kills the running daemon process if there's one associated with the
+    /// daemon cli
+    #[tracing::instrument]
+    pub async fn stop_daemon(&mut self) -> DaemonResult<()> {
+        if let Some(mut child) = mem::take(&mut self.child) {
+            child.kill().await?;
+        }
 
         Ok(())
     }
@@ -76,6 +88,7 @@ impl DaemonCli {
     ) -> DaemonResult<Child> {
         Command::new(&self.daemon_path)
             .args(args)
+            .kill_on_drop(true)
             .spawn()
             .map_err(DaemonError::from)
     }
