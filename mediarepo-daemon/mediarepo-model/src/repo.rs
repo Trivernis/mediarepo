@@ -63,14 +63,14 @@ impl Repo {
     /// Sets the main storage
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn set_main_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
-        self.main_storage = Storage::by_path(self.db.clone(), path).await?;
+        self.main_storage = Storage::by_name(self.db.clone(), path.to_string()).await?;
         Ok(())
     }
 
     /// Sets the default thumbnail storage
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn set_thumbnail_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
-        self.thumbnail_storage = Storage::by_path(self.db.clone(), path).await?;
+        self.thumbnail_storage = Storage::by_name(self.db.clone(), path.to_string()).await?;
         Ok(())
     }
 

@@ -9,7 +9,7 @@ repository = "https://github.com/Trivernis/mediarepo-daemon"
 
 
 [[bin]]
-name = "mediarepo"
+name = "mediarepo-daemon"
 path = "src/main.rs"
 
 [dependencies]

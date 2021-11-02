@@ -52,6 +52,24 @@ impl Storage {
         }
     }
 
+    /// Returns the storage by name
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn by_name<S: AsRef<str> + Debug>(
+        db: DatabaseConnection,
+        name: S,
+    ) -> RepoResult<Option<Self>> {
+        if let Some(model) = storage::Entity::find()
+            .filter(storage::Column::Name.eq(name.as_ref()))
+            .one(&db)
+            .await?
+        {
+            let storage = Self::new(db, model);
+            Ok(Some(storage))
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Returns the storage by path
     #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_path<S: ToString + Debug>(

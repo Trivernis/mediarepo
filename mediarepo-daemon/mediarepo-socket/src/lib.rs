@@ -11,10 +11,10 @@ pub fn get_builder(address: &str) -> IPCBuilder {
 
 #[tracing::instrument(skip_all)]
 async fn info(ctx: &Context, event: Event) -> IPCResult<()> {
-    let response = InfoResponse {
-        name: env!("CARGO_PKG_NAME").to_string(),
-        version: env!("CARGO_PKG_VERSION").to_string(),
-    };
+    let response = InfoResponse::new(
+        env!("CARGO_PKG_NAME").to_string(),
+        env!("CARGO_PKG_VERSION").to_string(),
+    );
     ctx.emitter
         .emit_response(event.id(), "info", response)
         .await?;

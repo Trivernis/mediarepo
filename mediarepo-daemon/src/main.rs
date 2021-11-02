@@ -16,6 +16,7 @@ use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use mediarepo_socket::get_builder;
 use num_integer::Integer;
+use std::env;
 
 use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
@@ -65,7 +66,12 @@ enum SubCommand {
 }
 
 fn main() -> RepoResult<()> {
-    let opt: Opt = Opt::from_args();
+    let mut opt: Opt = Opt::from_args();
+    opt.repo = env::current_dir()
+        .unwrap()
+        .join(opt.repo)
+        .canonicalize()
+        .unwrap();
     let mut _guard = None;
     if opt.profile {
         _guard = Some(logging::init_tracing_flame());
@@ -105,11 +111,9 @@ fn get_multi_thread_runtime() -> Runtime {
 async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
     let settings = load_settings(&opt.repo.join(SETTINGS_PATH)).await?;
     let mut repo = get_repo(&opt.repo.join(&settings.database_path).to_str().unwrap()).await?;
-    let main_storage_path = opt.repo.join(&settings.default_file_store);
-    let thumb_storage_path = opt.repo.join(&settings.thumbnail_store);
-    repo.set_main_storage(main_storage_path.to_str().unwrap())
-        .await?;
-    repo.set_thumbnail_storage(thumb_storage_path.to_str().unwrap())
+
+    repo.set_main_storage(&settings.default_file_store).await?;
+    repo.set_thumbnail_storage(&settings.thumbnail_store)
         .await?;
     Ok((settings, repo))
 }
@@ -143,11 +147,19 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     }
     log::debug!("Creating repo");
     let repo = get_repo(&db_path.to_str().unwrap()).await?;
-    let storage_path = opt.repo.join(&settings.default_file_store);
+    let storage_path = opt
+        .repo
+        .join(&settings.default_file_store)
+        .canonicalize()
+        .unwrap();
     log::debug!("Adding storage");
     repo.add_storage(DEFAULT_STORAGE_NAME, storage_path.to_str().unwrap())
         .await?;
-    let thumb_storage_path = opt.repo.join(&settings.thumbnail_store);
+    let thumb_storage_path = opt
+        .repo
+        .join(&settings.thumbnail_store)
+        .canonicalize()
+        .unwrap();
     repo.add_storage(THUMBNAIL_STORAGE_NAME, thumb_storage_path.to_str().unwrap())
         .await?;
     let settings_string = settings.to_toml_string()?;
