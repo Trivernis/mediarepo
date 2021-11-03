@@ -1,8 +1,11 @@
-<cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
-  <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
-    <div class="file-row">
-      <app-file-grid-entry (clickEvent)="setSelectedFile($event.gridEntry)" (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"
-                           *ngFor="let gridEntry of rowEntry" [gridEntry]="gridEntry"></app-file-grid-entry>
+<div class="file-gallery-inner">
+  <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" maxBufferPx="500" minBufferPx="500" itemSize="250">
+    <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
+      <div class="file-row">
+        <app-file-grid-entry (clickEvent)="setSelectedFile($event.gridEntry)" (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"
+                             *ngFor="let gridEntry of rowEntry" [gridEntry]="gridEntry"></app-file-grid-entry>
+      </div>
     </div>
-  </div>
-</cdk-virtual-scroll-viewport>
+  </cdk-virtual-scroll-viewport>
+
+</div>

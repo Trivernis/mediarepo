@@ -9,6 +9,8 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 export class ContentAwareImageComponent {
 
   @Input() imageSrc!: string | SafeResourceUrl;
+  @Input() maximizeHeight: boolean = true;
+  @Input() maximizeWidth: boolean = true;
 
   scaleWidth = false;
 

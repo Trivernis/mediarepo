@@ -1,7 +1,7 @@
 <mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)" [ngClass]="{'selected': gridEntry.selected}">
   <mat-card-title *ngIf="!!gridEntry.file?.name">{{gridEntry.file?.name}}</mat-card-title>
   <mat-card-content *ngIf="contentUrl !== undefined">
-    <app-content-aware-image class="entry-image" *ngIf="contentUrl" [imageSrc]="contentUrl"></app-content-aware-image>
+    <app-content-aware-image [maximizeHeight]="false" class="entry-image" *ngIf="contentUrl" [imageSrc]="contentUrl"></app-content-aware-image>
   </mat-card-content>
   <mat-card-footer>
     <mat-progress-bar *ngIf="contentUrl === undefined" mode="indeterminate"></mat-progress-bar>

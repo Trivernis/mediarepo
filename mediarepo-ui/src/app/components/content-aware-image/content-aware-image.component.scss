@@ -4,16 +4,18 @@
   display: flex;
 }
 
-.image-container > img {
+img {
   margin: auto;
+  max-height: 100%;
+  max-width: 100%;
+  height: auto;
+  width: auto;
 }
 
 img.scale-height {
   height: 100%;
-  width: auto;
 }
 
 img.scale-width {
   width: 100%;
-  height: auto;
 }

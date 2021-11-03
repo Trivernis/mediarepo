@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, ElementRef,
   EventEmitter,
   HostListener,
   Input, OnChanges,
@@ -27,6 +27,7 @@ export class FileGridComponent implements OnChanges, OnInit {
   @Output() fileSelectEvent = new EventEmitter<File | undefined>();
 
   @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
+  @ViewChild("galleryWrapper") galleryWrapper!: ElementRef<HTMLDivElement>;
 
   selectedEntries: GridEntry[] = [];
 
@@ -47,54 +48,6 @@ export class FileGridComponent implements OnChanges, OnInit {
     if (changes["files"]) {
       this.gridEntries = this.files.map(file => {return {file, selected: false}});
       this.setPartitionedGridEntries();
-    }
-  }
-
-  private handlePreselection() {
-    if (this.preselectedFile && this.selectedEntries.length === 0) {
-      const selectedEntry = this.gridEntries.find(e => e.file.hash == this.preselectedFile?.hash);
-      if (selectedEntry) {
-        this.setSelectedFile(selectedEntry);
-      }
-    }
-  }
-
-  private handleScrollToPreselection() {
-    if (this.preselectedFile && this.selectedEntries.length === 0) {
-      const rowIndex = this.partitionedGridEntries.findIndex(
-        r => r.findIndex(e => e.file.hash == this.preselectedFile?.hash) >= 0);
-      if (rowIndex >= 0) {
-        this.virtualScroll?.scrollToIndex(rowIndex);
-      }
-    }
-  }
-
-  private setPartitionedGridEntries() {
-    this.partitionedGridEntries = [];
-    this.selectedEntries = [];
-    let scrollToIndex = -1;
-    let selectedEntry: GridEntry | undefined = undefined;
-
-    for (let i = 0; i < (Math.ceil(this.gridEntries.length / this.columns)); i++) {
-      const entries = this.gridEntries.slice(i * this.columns, Math.min(this.gridEntries.length, (i + 1) * this.columns));
-      this.partitionedGridEntries.push(entries);
-      const preselectedEntry = entries.find(e => e.file.hash == this.preselectedFile?.hash);
-
-      if (preselectedEntry) {
-        scrollToIndex = i;
-        selectedEntry = preselectedEntry;
-      }
-    }
-    if (scrollToIndex >= 0 && this.preselectedFile && this.selectedEntries.length == 0) {
-      setTimeout(() => {  // add timeout to avoid being stuck in the update loop
-        if (this.virtualScroll) {
-          this.virtualScroll?.scrollToIndex(scrollToIndex);
-          if (selectedEntry) {
-            selectedEntry.selected = true;
-            this.selectedEntries = [selectedEntry];
-          }
-        }
-      }, 0);
     }
   }
 
@@ -128,6 +81,35 @@ export class FileGridComponent implements OnChanges, OnInit {
       this.fileSelectEvent.emit(undefined);
     } else {
       this.fileMultiselectEvent.emit(this.selectedEntries.map(entry => entry.file));
+    }
+  }
+
+  private setPartitionedGridEntries() {
+    this.partitionedGridEntries = [];
+    this.selectedEntries = [];
+    let scrollToIndex = -1;
+    let selectedEntry: GridEntry | undefined = undefined;
+
+    for (let i = 0; i < (Math.ceil(this.gridEntries.length / this.columns)); i++) {
+      const entries = this.gridEntries.slice(i * this.columns, Math.min(this.gridEntries.length, (i + 1) * this.columns));
+      this.partitionedGridEntries.push(entries);
+      const preselectedEntry = entries.find(e => e.file.hash == this.preselectedFile?.hash);
+
+      if (preselectedEntry) {
+        scrollToIndex = i;
+        selectedEntry = preselectedEntry;
+      }
+    }
+    if (scrollToIndex >= 0 && this.preselectedFile && this.selectedEntries.length == 0) {
+      setTimeout(() => {  // add timeout to avoid being stuck in the update loop
+        if (this.virtualScroll) {
+          this.virtualScroll?.scrollToIndex(scrollToIndex);
+          if (selectedEntry) {
+            selectedEntry.selected = true;
+            this.selectedEntries = [selectedEntry];
+          }
+        }
+      }, 0);
     }
   }
 
