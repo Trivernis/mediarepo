@@ -28,8 +28,11 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) { }
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (!this.cachedFile || this.file.data.hash !== this.cachedFile.hash) { // handle changes to the file when the component is not destroyed
+    if (changes["file"] && (!this.cachedFile || this.file.data.hash !== this.cachedFile!.hash)) { // handle changes to the file when the component is not destroyed
       this.cachedFile = this.file.data;
+      this.contentUrl = undefined;
+      await this.loadImage();
+    } else if (!this.contentUrl) {
       await this.loadImage();
     }
   }
@@ -41,14 +44,17 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
 
   async loadImage() {
     try {
-      const thumbnails = await this.fileService.getThumbnails(this.file.data.hash);
+      const hash = this.file.data.hash;
+      const thumbnails = await this.fileService.getThumbnails(hash);
       let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
       thumbnail = thumbnail ?? thumbnails[0];
 
       if (!thumbnail) {
         console.log("Thumbnail is empty?!", thumbnails);
-      } else {
+      } else if (this.file.data.hash === hash) {
         this.contentUrl = await this.fileService.readThumbnail(thumbnail!!);
+      } else {
+        console.warn("Grid file updated while loading thumbnail.")
       }
     } catch (err) {
       this.errorBroker.showError(err);
