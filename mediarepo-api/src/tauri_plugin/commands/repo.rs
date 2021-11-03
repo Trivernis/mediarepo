@@ -104,6 +104,15 @@ pub async fn select_repository(
         .ok_or(PluginError::from(
             format!("Repository '{}' not found", name).as_str(),
         ))?;
+    if let Some(path) = app_state
+        .active_repo
+        .read()
+        .await
+        .clone()
+        .and_then(|r| r.path)
+    {
+        app_state.stop_running_daemon(&path).await?;
+    }
     let address = if let Some(address) = &repo.address {
         address.clone()
     } else {
