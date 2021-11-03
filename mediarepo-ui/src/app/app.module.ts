@@ -15,7 +15,6 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
-import {RepoFormComponent} from './pages/home/repositories-tab/repo-form/repo-form.component';
 import {FileGridComponent} from './components/file-grid/file-grid.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatGridListModule} from "@angular/material/grid-list";
@@ -43,6 +42,7 @@ import {PanelModule} from "primeng/panel";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { ContentAwareImageComponent } from './components/content-aware-image/content-aware-image.component';
 import {MatSliderModule} from "@angular/material/slider";
+import { AddRepositoryDialogComponent } from './pages/home/repositories-tab/add-repository-dialog/add-repository-dialog.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +50,6 @@ import {MatSliderModule} from "@angular/material/slider";
     RepositoriesTabComponent,
     HomeComponent,
     RepositoryCardComponent,
-    RepoFormComponent,
     FileGridComponent,
     FileGridEntryComponent,
     FileSearchComponent,
@@ -59,6 +58,7 @@ import {MatSliderModule} from "@angular/material/slider";
     FileGalleryComponent,
     FileGalleryEntryComponent,
     ContentAwareImageComponent,
+    AddRepositoryDialogComponent,
   ],
     imports: [
         BrowserModule,

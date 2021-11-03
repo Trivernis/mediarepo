@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Add a Repository</h1>
+<div mat-dialog-content>
+  <form [formGroup]="formGroup">
+
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Type</mat-label>
+      <mat-select #repoTypeSelect formControlName="repositoryType"
+                  (selectionChange)="onTypeChange(repoTypeSelect.value)">
+        <mat-option value="local">Local</mat-option>
+        <mat-option value="remote">Remote</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="repoTypeSelect.value === 'local'">
+      <button class="button-folder-select" mat-button (click)="openFolderDialog()"><mat-icon>folder</mat-icon></button>
+      <mat-label>Path</mat-label>
+      <input matInput formControlName="path">
+    </mat-form-field>
+
+    <mat-form-field *ngIf="repoTypeSelect.value === 'remote'">
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address">
+    </mat-form-field>
+  </form>
+  <div *ngIf="repoTypeSelect.value === 'remote'" class="connection-state">
+    <span>Status:</span>&nbsp;<span>{{this.onlineStatus}}</span>
+  </div>
+</div>
+<div class="dialog-buttons" mat-dialog-actions>
+  <button mat-flat-button [disabled]="!formGroup.valid" color="primary" (click)="addRepository()">Add</button>
+  <button mat-stroked-button color="accent" (click)="closeDialog()">Cancel</button>
+  <button class="check-connection-button" *ngIf="repoTypeSelect.value === 'remote'" [disabled]="!formGroup.valid"
+          mat-stroked-button (click)="checkRepositoryStatus()">Check Connection</button>
+</div>

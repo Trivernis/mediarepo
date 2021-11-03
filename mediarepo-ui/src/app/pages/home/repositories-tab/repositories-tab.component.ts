@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Repository} from "../../../models/Repository";
 import {RepositoryService} from "../../../services/repository/repository.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {MatDialog} from "@angular/material/dialog";
+import {AddRepositoryDialogComponent} from "./add-repository-dialog/add-repository-dialog.component";
 
 @Component({
   selector: 'app-repositories-tab',
@@ -15,6 +15,7 @@ export class RepositoriesTabComponent implements OnInit {
 
   constructor(
     private repoService: RepositoryService,
+    public dialog: MatDialog
   ) {
   }
 
@@ -26,7 +27,11 @@ export class RepositoriesTabComponent implements OnInit {
     });
   }
 
-  async addRepository() {
-
+  public openAddRepositoryDialog() {
+    this.dialog.open(AddRepositoryDialogComponent, {
+      disableClose: true,
+      minWidth: "30%",
+      minHeight: "30%",
+    });
   }
 }
