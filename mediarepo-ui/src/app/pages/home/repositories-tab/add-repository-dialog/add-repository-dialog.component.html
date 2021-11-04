@@ -38,6 +38,7 @@
   </div>
 </div>
 <div class="dialog-buttons" mat-dialog-actions>
+  <button mat-stroked-button color="accent" (click)="closeDialog()">Cancel</button>
   <button mat-flat-button *ngIf="repoTypeSelect.value === 'remote' || this.localRepoExists"
           [disabled]="!formGroup.valid" matTooltip="Add the existing repository" color="primary"
           (click)="addRepository()">Add
@@ -47,7 +48,6 @@
           matTooltip="Initialize the repository in the specified path" color="accent"
           (click)="this.initLocalRepository()">Init
   </button>
-  <button mat-stroked-button color="accent" (click)="closeDialog()">Cancel</button>
   <button class="check-connection-button" *ngIf="repoTypeSelect.value === 'remote'" [disabled]="!formGroup.valid"
           mat-stroked-button (click)="checkRepositoryStatus()">Check Connection
   </button>

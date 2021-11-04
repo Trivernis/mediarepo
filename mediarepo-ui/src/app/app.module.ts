@@ -44,6 +44,8 @@ import { ContentAwareImageComponent } from './components/content-aware-image/con
 import {MatSliderModule} from "@angular/material/slider";
 import { AddRepositoryDialogComponent } from './pages/home/repositories-tab/add-repository-dialog/add-repository-dialog.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatMenuModule} from "@angular/material/menu";
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     FileGalleryEntryComponent,
     ContentAwareImageComponent,
     AddRepositoryDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -94,6 +97,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     DragDropModule,
     MatSliderModule,
     MatTooltipModule,
+    MatMenuModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

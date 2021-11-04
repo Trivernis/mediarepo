@@ -3,6 +3,8 @@ import {Repository} from "../../../../models/Repository";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {Router} from "@angular/router";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent} from "../../../../components/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-repository-card',
@@ -17,12 +19,18 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
 
   statusRefreshInterval: number | undefined;
 
-  constructor(public repoService: RepositoryService, private router: Router, private errorBroker: ErrorBrokerService) {}
+  constructor(
+    public repoService: RepositoryService,
+    private router: Router,
+    private errorBroker: ErrorBrokerService,
+    public dialog: MatDialog) {
+  }
 
   public async ngOnInit() {
     if (!this.repository.local) {
       await this.checkRemoteRepositoryStatus();
-      this.statusRefreshInterval = setInterval(async() => await this.checkRemoteRepositoryStatus(), 10000);
+      this.statusRefreshInterval = setInterval(
+        async () => await this.checkRemoteRepositoryStatus(), 10000);
     }
   }
 
@@ -34,6 +42,21 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
 
   public isSelectedRepository(): boolean {
     return this.repoService.selectedRepository.getValue()?.name === this.repository.name
+  }
+
+  public async removeRepository() {
+    await this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Remove repository",
+        message: `Do you really want to remove the repository "${this.repository.name}"?`,
+        confirmAction: "Remove",
+        confirmColor: "warn"
+      }
+    }).afterClosed().subscribe(async confirmation => {
+      if (confirmation === true) {
+        await this.repoService.removeRepository(this.repository.name);
+      }
+    });
   }
 
   public getDaemonStatusText(): string {
@@ -72,14 +95,15 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
   }
 
   public async selectRepository() {
-      try {
-        await this.repoService.setRepository(this.repository);
-      } catch(err) {
-        this.errorBroker.showError(err);
-      }
+    try {
+      await this.repoService.setRepository(this.repository);
+    } catch (err) {
+      this.errorBroker.showError(err);
+    }
   }
 
   async checkRemoteRepositoryStatus() {
-    this.daemonRunning = await this.repoService.checkDaemonRunning(this.repository.address!);
+    this.daemonRunning = await this.repoService.checkDaemonRunning(
+      this.repository.address!);
   }
 }

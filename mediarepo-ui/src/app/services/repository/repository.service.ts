@@ -108,7 +108,8 @@ export class RepositoryService {
    * @returns {Promise<void>}
    */
   public async removeRepository(name: string): Promise<void> {
-    await invoke("plugin:mediarepo|remove_repository", {name})
+    await invoke("plugin:mediarepo|remove_repository", {name});
+    await this.loadRepositories();
   }
 
   /**

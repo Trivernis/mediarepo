@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>
+{{title}}
+</h1>
+<div mat-dialog-content>
+{{message}}
+</div>
+<div mat-dialog-actions class="confirm-dialog-actions">
+  <button mat-stroked-button [color]="this.denyColor" (click)="closeDialog(false)">{{denyAction}}</button>
+  <button mat-flat-button [color]="this.confirmColor" (click)="closeDialog(true)">{{confirmAction}}</button>
+</div>

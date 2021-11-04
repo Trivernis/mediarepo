@@ -12,5 +12,10 @@
     <button *ngIf="!this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="selectRepository()" [disabled]="!this.daemonRunning">Connect</button>
     <button *ngIf="this.isSelectedRepository() && repository.local" mat-flat-button color="primary" (click)="this.repoService.closeSelectedRepository()">Close</button>
     <button *ngIf="this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="this.repoService.disconnectSelectedRepository()" [disabled]="!this.daemonRunning">Disconnect</button>
+    <button mat-button [mat-menu-trigger-for]="menu"><mat-icon>more_vert</mat-icon></button>
+    <mat-menu #menu="matMenu">
+      <button *ngIf="repository.local" mat-menu-item (click)="removeRepository()">Delete</button>
+      <button *ngIf="!repository.local" mat-menu-item (click)="removeRepository()">Remove</button>
+    </mat-menu>
   </mat-action-list>
 </mat-card>
