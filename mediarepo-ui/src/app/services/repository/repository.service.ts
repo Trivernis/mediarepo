@@ -41,6 +41,14 @@ export class RepositoryService {
    * @returns {Promise<void>}
    */
   public async setRepository(repo: Repository) {
+    const selectedRepo = this.selectedRepository.getValue()
+    if (selectedRepo) {
+      if (selectedRepo.local) {
+        await this.closeSelectedRepository();
+      } else {
+        await this.disconnectSelectedRepository();
+      }
+    }
     await invoke("plugin:mediarepo|select_repository", {name: repo.name});
     await this.loadRepositories();
   }
@@ -86,12 +94,34 @@ export class RepositoryService {
   }
 
   /**
+   * Checks if a local repository exists
+   * @param {string} path
+   * @returns {Promise<boolean>}
+   */
+  public async checkLocalRepositoryExists(path: string): Promise<boolean> {
+    return await invoke<boolean>("plugin:mediarepo|check_local_repository_exists", {path})
+  }
+
+  /**
+   * Removes a repository from the list of saved repositories
+   * @param {string} name
+   * @returns {Promise<void>}
+   */
+  public async removeRepository(name: string): Promise<void> {
+    await invoke("plugin:mediarepo|remove_repository", {name})
+  }
+
+  /**
    * Starts a daemon for the given repository path
    * @param {string} repoPath
    * @returns {Promise<void>}
    */
   public async startDaemon(repoPath: string): Promise<void> {
     await invoke("plugin:mediarepo|start_daemon", {repoPath})
+  }
+
+  public async initRepository(repoPath: string): Promise<void> {
+    await invoke("plugin:mediarepo|init_repository", {repoPath});
   }
 
   async loadSelectedRepository() {

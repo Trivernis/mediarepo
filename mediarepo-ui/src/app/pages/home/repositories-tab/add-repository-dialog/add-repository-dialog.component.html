@@ -2,12 +2,13 @@
 <div mat-dialog-content>
   <form [formGroup]="formGroup">
 
-    <mat-form-field>
+    <mat-form-field matTooltipShowDelay="1000" matTooltip="A unique name for the repository">
       <mat-label>Name</mat-label>
-      <input matInput formControlName="name">
+      <input matInput formControlName="name" (change)="validateName()" (input)="validateName()" (blur)="validateName()">
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field matTooltipShowDelay="1000"
+                    matTooltip="Type of repository if it's on the local system or somewhere else">
       <mat-label>Type</mat-label>
       <mat-select #repoTypeSelect formControlName="repositoryType"
                   (selectionChange)="onTypeChange(repoTypeSelect.value)">
@@ -16,13 +17,18 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field *ngIf="repoTypeSelect.value === 'local'">
-      <button class="button-folder-select" mat-button (click)="openFolderDialog()"><mat-icon>folder</mat-icon></button>
+    <mat-form-field *ngIf="repoTypeSelect.value === 'local'"
+                    matTooltipShowDelay="1000"
+                    matTooltip="Path where the repository is located or should be created">
+      <button class="button-folder-select" mat-button (click)="openFolderDialog()">
+        <mat-icon>folder</mat-icon>
+      </button>
       <mat-label>Path</mat-label>
-      <input matInput formControlName="path">
+      <input matInput formControlName="path" (change)="this.checkLocalRepoExists()">
     </mat-form-field>
 
-    <mat-form-field *ngIf="repoTypeSelect.value === 'remote'">
+    <mat-form-field *ngIf="repoTypeSelect.value === 'remote'" matTooltipShowDelay="1000"
+                    matTooltip="IP address and port of the remote repository">
       <mat-label>Address</mat-label>
       <input matInput formControlName="address">
     </mat-form-field>
@@ -32,8 +38,17 @@
   </div>
 </div>
 <div class="dialog-buttons" mat-dialog-actions>
-  <button mat-flat-button [disabled]="!formGroup.valid" color="primary" (click)="addRepository()">Add</button>
+  <button mat-flat-button *ngIf="repoTypeSelect.value === 'remote' || this.localRepoExists"
+          [disabled]="!formGroup.valid" matTooltip="Add the existing repository" color="primary"
+          (click)="addRepository()">Add
+  </button>
+  <button mat-flat-button *ngIf="repoTypeSelect.value === 'local' && !this.localRepoExists"
+          [disabled]="!formGroup.valid"
+          matTooltip="Initialize the repository in the specified path" color="accent"
+          (click)="this.initLocalRepository()">Init
+  </button>
   <button mat-stroked-button color="accent" (click)="closeDialog()">Cancel</button>
   <button class="check-connection-button" *ngIf="repoTypeSelect.value === 'remote'" [disabled]="!formGroup.valid"
-          mat-stroked-button (click)="checkRepositoryStatus()">Check Connection</button>
+          mat-stroked-button (click)="checkRepositoryStatus()">Check Connection
+  </button>
 </div>

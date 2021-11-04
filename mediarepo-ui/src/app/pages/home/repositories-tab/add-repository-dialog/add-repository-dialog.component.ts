@@ -9,13 +9,14 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {dialog} from "@tauri-apps/api";
+import {Repository} from "../../../../models/Repository";
 
 @Component({
   selector: 'app-add-repository-dialog',
   templateUrl: './add-repository-dialog.component.html',
   styleUrls: ['./add-repository-dialog.component.scss']
 })
-export class AddRepositoryDialogComponent {
+export class AddRepositoryDialogComponent implements OnInit {
 
   formGroup = new FormGroup({
     name: new FormControl("My Repository", [Validators.required]),
@@ -24,7 +25,9 @@ export class AddRepositoryDialogComponent {
     address: new FormControl("", [this.validateAddress])
   });
 
+  repositories: Repository[] = [];
   onlineStatus = "Unknown";
+  localRepoExists = false;
 
   constructor(
     public repoService: RepositoryService,
@@ -33,12 +36,26 @@ export class AddRepositoryDialogComponent {
     @Inject(MAT_DIALOG_DATA) data: any) {
   }
 
+  ngOnInit(): void {
+    this.repoService.repositories.subscribe(repositories => this.repositories = repositories)
+  }
+
   public async checkRepositoryStatus() {
     this.onlineStatus = "Checking...";
     const address = this.formGroup.value.address;
     const running = await this.repoService.checkDaemonRunning(address);
     console.log(running);
     this.onlineStatus = running? "Online" : "Offline";
+  }
+
+  public async checkLocalRepoExists() {
+    this.localRepoExists = await this.repoService.checkLocalRepositoryExists(this.formGroup.value.path);
+  }
+
+  public async initLocalRepository() {
+    const path = this.formGroup.value.path;
+    await this.repoService.initRepository(path);
+    await this.checkLocalRepoExists();
   }
 
   public async addRepository() {
@@ -63,6 +80,7 @@ export class AddRepositoryDialogComponent {
       multiple: false,
     });
     this.formGroup.get("path")?.setValue(path);
+    await this.checkLocalRepoExists();
   }
 
   public async onTypeChange(type: string) {
@@ -84,6 +102,15 @@ export class AddRepositoryDialogComponent {
           break;
       }
     }, 0);
+  }
+
+  validateName() {
+    const control = this.formGroup.get("name");
+    const value = control?.value;
+
+    if (this.repositories.find(r => r.name === value)) {
+      control?.setErrors({nameAlreadyExists: value});
+    }
   }
 
   validatePath(control: AbstractControl): ValidationErrors | null {
