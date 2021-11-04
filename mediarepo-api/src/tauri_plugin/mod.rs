@@ -37,6 +37,7 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_repositories,
                 get_all_tags,
                 get_tags_for_file,
+                get_tags_for_files,
                 get_active_repository,
                 add_repository,
                 select_repository,
