@@ -23,6 +23,11 @@ pub struct GetFileTagsRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GetFilesTagsRequest {
+    pub hashes: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FindFilesByTagsRequest {
     pub tags: Vec<TagQuery>,
     pub sort_expression: Vec<SortKey>,

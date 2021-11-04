@@ -1,6 +1,6 @@
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
-use crate::types::files::GetFileTagsRequest;
+use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
 use crate::types::identifier::FileIdentifier;
 use crate::types::tags::TagResponse;
 use async_trait::async_trait;
@@ -44,5 +44,12 @@ impl TagApi {
             },
         )
         .await
+    }
+
+    /// Returns a list of all tags that are assigned to the list of files
+    #[tracing::instrument(level = "debug", skip_all)]
+    pub async fn get_tags_for_files(&self, hashes: Vec<String>) -> ApiResult<Vec<TagResponse>> {
+        self.emit_and_get("tags_for_files", GetFilesTagsRequest { hashes })
+            .await
     }
 }
