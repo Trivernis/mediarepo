@@ -66,6 +66,32 @@ pub async fn add_repository(
 }
 
 #[tauri::command]
+pub async fn remove_repository(app_state: AppAccess<'_>, name: String) -> PluginResult<()> {
+    let mut settings = app_state.settings.write().await;
+
+    if let Some(_repo) = settings.repositories.remove(&name) {
+        save_settings(&settings)?;
+        Ok(())
+    } else {
+        Err(PluginError::from(format!(
+            "The repository '{}' does not exist.",
+            name
+        )))
+    }
+}
+
+#[tauri::command]
+pub async fn check_local_repository_exists(path: String) -> PluginResult<bool> {
+    let config_path = PathBuf::from(path).join(REPO_CONFIG_FILE);
+
+    if !config_path.exists() {
+        Ok(false)
+    } else {
+        Ok(true)
+    }
+}
+
+#[tauri::command]
 pub async fn disconnect_repository(
     app_state: AppAccess<'_>,
     api_state: ApiAccess<'_>,
@@ -104,15 +130,7 @@ pub async fn select_repository(
         .ok_or(PluginError::from(
             format!("Repository '{}' not found", name).as_str(),
         ))?;
-    if let Some(path) = app_state
-        .active_repo
-        .read()
-        .await
-        .clone()
-        .and_then(|r| r.path)
-    {
-        app_state.stop_running_daemon(&path).await?;
-    }
+    close_selected_repository(&app_state).await?;
     let address = if let Some(address) = &repo.address {
         address.clone()
     } else {
@@ -138,6 +156,20 @@ pub async fn select_repository(
 
     *active_repo = Some(repo.clone());
     save_settings(&settings)?;
+
+    Ok(())
+}
+
+async fn close_selected_repository(app_state: &AppAccess<'_>) -> PluginResult<()> {
+    if let Some(path) = app_state
+        .active_repo
+        .read()
+        .await
+        .clone()
+        .and_then(|r| r.path)
+    {
+        app_state.stop_running_daemon(&path).await?;
+    }
 
     Ok(())
 }

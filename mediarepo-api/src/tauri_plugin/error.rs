@@ -27,6 +27,12 @@ impl From<&str> for PluginError {
     }
 }
 
+impl From<String> for PluginError {
+    fn from(message: String) -> Self {
+        Self { message }
+    }
+}
+
 impl From<ApiError> for PluginError {
     fn from(e: ApiError) -> Self {
         let message = match e {

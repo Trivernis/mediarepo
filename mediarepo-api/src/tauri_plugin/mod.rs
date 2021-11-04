@@ -45,7 +45,9 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 check_daemon_running,
                 stop_daemon,
                 disconnect_repository,
-                close_local_repository
+                close_local_repository,
+                check_local_repository_exists,
+                remove_repository
             ]),
         }
     }
