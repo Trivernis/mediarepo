@@ -62,13 +62,12 @@ export class SearchTabComponent implements OnInit {
   async onFileSelect(file: File | undefined) {
     if (file) {
       await this.showFileDetails([file]);
-    } else {
-      this.tags = [];
     }
   }
 
   async showFileDetails(files: File[]) {
-    this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash));
+    this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash))
+    this.tags = this.tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
   }
 
   async addSearchTagFromList(event: MatSelectionListChange) {
