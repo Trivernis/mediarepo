@@ -1,7 +1,7 @@
 import {
   AfterViewChecked,
   Component,
-  ElementRef, EventEmitter, Output,
+  ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {TagService} from "../../services/tag/tag.service";
@@ -15,6 +15,7 @@ import {SortKey} from "../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {ErrorBrokerService} from "../../services/error-broker/error-broker.service";
+
 
 @Component({
   selector: 'app-file-search',
@@ -32,24 +33,29 @@ export class FileSearchComponent implements AfterViewChecked {
   public searchTags: TagQuery[] = [];
   public suggestionTags: Observable<string[]>;
 
+  @Input() validTags: string[] = [];
   @Output() searchStartEvent = new EventEmitter<void>();
   @Output() searchEndEvent = new EventEmitter<void>();
-
-  private allTags: string[] = [];
 
   @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
   @ViewChild("tagInputList") inputList!: ElementRef;
 
   constructor(private errorBroker: ErrorBrokerService, private tagService: TagService, private fileService: FileService, public dialog: MatDialog) {
-    this.tagService.tags.subscribe(
-      (tag) => this.allTags = tag.map(t => t.getNormalizedOutput()));
-
     this.suggestionTags = this.formControl.valueChanges.pipe(startWith(null),
       map(
-        (tag: string | null) => tag ? this.allTags.filter(
-            (t: string) => t.includes(tag.replace(/^-/g, '')))
-          .map((t) => tag.startsWith("-") ? "-" + t : t)
-          .slice(0, 20) : this.allTags.slice(0, 20)));
+        (tag: string | null) => tag ? this.filterSuggestionTag(
+          tag) : this.validTags.slice(0, 20)));
+  }
+
+  private filterSuggestionTag(tag: string) {
+    const negated = tag.startsWith("-");
+    const normalizedTag = tag.replace(/^-/, "");
+
+    return this.validTags.filter(
+        t => t.includes(normalizedTag) && this.searchTags.findIndex(
+          s => s.name === t) < 0)
+      .map(t => negated ? "-" + t : t)
+      .slice(0, 20);
   }
 
   public async searchForFiles() {
@@ -91,7 +97,7 @@ export class FileSearchComponent implements AfterViewChecked {
   async addSearchTagByInput(event: KeyboardEvent) {
     if (event.key === "Enter") {
       const tag = (this.formControl.value as string ?? "").trim();
-      if (tag.length > 0 && this.allTags.includes(tag.replace(/-/g, ''))) {
+      if (tag.length > 0 && this.validTags.includes(tag.replace(/-/g, ''))) {
         this.addSearchTag(tag);
         this.formControl.setValue(null);
         await this.searchForFiles();
@@ -108,7 +114,9 @@ export class FileSearchComponent implements AfterViewChecked {
   }
 
   openSortDialog() {
-    const sortEntries = this.sortExpression.map(key => JSON.parse(JSON.stringify(key))).map(key => new SortKey(key.sortType, key.sortDirection, key.namespaceName))
+    const sortEntries = this.sortExpression.map(
+      key => JSON.parse(JSON.stringify(key))).map(
+      key => new SortKey(key.sortType, key.sortDirection, key.namespaceName))
     const openedDialog = this.dialog.open(FilterDialogComponent, {
       minWidth: "40vw",
       data: {

@@ -17,6 +17,7 @@ import {RepositoryService} from "../../../services/repository/repository.service
 })
 export class SearchTabComponent implements OnInit {
 
+  tagsOfFiles: Tag[] = [];
   tags: Tag[] = [];
   files: File[] = [];
   private openingLightbox = false;
@@ -34,7 +35,10 @@ export class SearchTabComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.fileService.displayedFiles.subscribe((files) => this.files = files);
+    this.fileService.displayedFiles.subscribe(async (files) => {
+      this.files = files;
+      await this.loadTagsForDisplayedFiles();
+    });
     this.repoService.selectedRepository.subscribe(async (repo) => repo && await this.loadFilesInitially());
     await this.loadFilesInitially();
   }
@@ -64,28 +68,7 @@ export class SearchTabComponent implements OnInit {
   }
 
   async showFileDetails(files: File[]) {
-    this.tags = [];
-
-    for (const file of files) {
-      const fileTags = await this.tagService.getTagsForFile(file.hash)
-      for (const tag of fileTags) {
-        if (this.tags.findIndex((t) => t.getNormalizedOutput() === tag.getNormalizedOutput()) < 0) {
-          this.tags.push(tag);
-        }
-      }
-    }
-
-    this.tags = this.tags.sort((a, b) => {
-      const aNorm = a.getNormalizedOutput();
-      const bNorm = b.getNormalizedOutput();
-      if (aNorm > bNorm) {
-        return 1
-      } else if (bNorm > aNorm) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+    this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash));
   }
 
   async addSearchTagFromList(event: MatSelectionListChange) {
@@ -105,5 +88,13 @@ export class SearchTabComponent implements OnInit {
   async closeGallery(preselectedFile: File | undefined) {
     this.preselectedFile = preselectedFile;
     this.showGallery = false;
+  }
+
+  async loadTagsForDisplayedFiles() {
+    this.tagsOfFiles = await this.tagService.getTagsForFiles(this.files.map(f => f.hash));
+  }
+
+  getValidTagsForSearch(): string[] {
+    return this.tagsOfFiles.map(t => t.getNormalizedOutput())
   }
 }

@@ -1,4 +1,7 @@
 export class Tag {
+
+  private normalizedTag?: string = undefined;
+
   constructor(
     public id: number,
     public name: string,
@@ -6,6 +9,9 @@ export class Tag {
   ) {}
 
   public getNormalizedOutput(): string {
-    return this.namespace ? this.namespace + ':' + this.name : this.name
+    if (!this.normalizedTag) {
+      this.normalizedTag = this.namespace ? this.namespace + ':' + this.name : this.name
+    }
+    return this.normalizedTag;
   }
 };

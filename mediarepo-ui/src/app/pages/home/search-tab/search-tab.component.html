@@ -3,7 +3,7 @@
     <div fxLayout="column" class="drawer-sidebar-inner">
       <div id="file-search-input" fxFlex="220px">
         <app-file-search #filesearch (searchStartEvent)="contentLoading = true"
-                         (searchEndEvent)="contentLoading = false"></app-file-search>
+                         (searchEndEvent)="contentLoading = false" [validTags]="this.getValidTagsForSearch()"></app-file-search>
       </div>
       <div id="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <h1>Selection Tags</h1>

@@ -21,4 +21,14 @@ export class TagService {
     const tags =  await invoke<Tag[]>("plugin:mediarepo|get_tags_for_file", {hash});
     return tags.map(t => new Tag(t.id, t.name, t.namespace));
   }
+
+  public async getTagsForFiles(hashes: string[]): Promise<Tag[]> {
+    let tags: Tag[] = []
+    if (hashes.length === 1) {
+      tags = await invoke<Tag[]>("plugin:mediarepo|get_tags_for_file", {hash: hashes[0]});
+    } else if (hashes.length > 0) {
+      tags = await invoke<Tag[]>("plugin:mediarepo|get_tags_for_files", {hashes});
+    }
+    return tags.map(t => new Tag(t.id, t.name, t.namespace));
+  }
 }
