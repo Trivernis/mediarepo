@@ -110,7 +110,7 @@ impl Repo {
             .map(|t| parse_namespace_and_tag(t.0.clone()))
             .collect();
 
-        let db_tags = self.find_all_tags(parsed_tags).await?;
+        let db_tags = self.all_tags(parsed_tags).await?;
         let tag_map: HashMap<String, bool> = HashMap::from_iter(tags.into_iter());
 
         let tag_ids: Vec<(i64, bool)> = db_tags
@@ -197,8 +197,14 @@ impl Repo {
 
     /// Finds all tags by name
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_all_tags(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
+    pub async fn all_tags(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
         Tag::all_by_name(self.db.clone(), tags).await
+    }
+
+    /// Finds all tags that are assigned to the given list of hashes
+    #[tracing::instrument(level = "debug", skip_all)]
+    pub async fn find_tags_for_hashes(&self, hashes: Vec<String>) -> RepoResult<Vec<Tag>> {
+        Tag::for_hash_list(self.db.clone(), hashes).await
     }
 
     /// Adds or finds a tag

@@ -233,7 +233,7 @@ async fn add_tags_from_tags_file(
     log::info!("Adding tags");
     if tags_path.exists() {
         let mut tags = parse_tags_file(tags_path).await?;
-        let resolved_tags = repo.find_all_tags(tags.clone()).await?;
+        let resolved_tags = repo.all_tags(tags.clone()).await?;
         tags.retain(|tag| {
             resolved_tags
                 .iter()

@@ -1,10 +1,13 @@
 use crate::namespace::Namespace;
 use mediarepo_core::error::RepoResult;
+use mediarepo_database::entities::hash;
+use mediarepo_database::entities::hash_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::{Condition, DatabaseConnection, Set};
+use sea_orm::QuerySelect;
+use sea_orm::{Condition, DatabaseConnection, JoinType, Set};
 use std::fmt::Debug;
 
 #[derive(Clone)]
@@ -92,6 +95,27 @@ impl Tag {
         let tags: Vec<Self> = tag::Entity::find()
             .find_also_related(namespace::Entity)
             .filter(or_condition)
+            .all(&db)
+            .await?
+            .into_iter()
+            .map(|(t, n)| Self::new(db.clone(), t, n))
+            .collect();
+
+        Ok(tags)
+    }
+
+    /// Returns all tags that are assigned to any of the passed hashes
+    #[tracing::instrument(level = "debug", skip_all)]
+    pub async fn for_hash_list(
+        db: DatabaseConnection,
+        hashes: Vec<String>,
+    ) -> RepoResult<Vec<Self>> {
+        let tags: Vec<Self> = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .join(JoinType::LeftJoin, hash_tag::Relation::Tag.def().rev())
+            .join(JoinType::InnerJoin, hash_tag::Relation::Hash.def())
+            .filter(hash::Column::Value.is_in(hashes))
+            .group_by(tag::Column::Id)
             .all(&db)
             .await?
             .into_iter()
