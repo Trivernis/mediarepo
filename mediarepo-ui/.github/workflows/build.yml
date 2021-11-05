@@ -88,7 +88,7 @@ jobs:
         path: |
           node_modules
           src-tauri/target
-          /home/runner/.cargo/bin
+          /home/runner/.cargo
           ~/.cargo
         key: ${{ runner.os }}-release-dependencies-${{ hashFiles('src-tauri/Cargo.lock') }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
