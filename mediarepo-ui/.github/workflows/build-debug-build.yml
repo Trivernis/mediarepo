@@ -29,7 +29,7 @@ jobs:
           src-tauri/target
           ~/.cargo
         key: ${{ runner.os }}-dependencies-${{ hashFiles('src-tauri/Cargo.lock') }}-${{ hashFiles('yarn.lock') }}
-        restore_keys: |
+        restore-keys: |
           ${{ runner.os }}-dependencies-
 
     - name: Use Node.js 16
@@ -48,6 +48,13 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
+
+    - name: Install OS-specific dependencies
+      uses: knicknic/os-specific-run@v1.0.3
+      with:
+        linux: |
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libappindicator3-dev patchelf librsvg2-dev -y
 
     - name: Build project
       run: cargo tauri build --debug
