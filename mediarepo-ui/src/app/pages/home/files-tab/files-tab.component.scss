@@ -16,13 +16,14 @@ mat-drawer-content {
 
 mat-drawer-container {
   height: 100%;
+  overflow: hidden;
 }
 
 app-file-grid {
   padding: 0;
 }
 
-app-file-gallery {
+app-file-gallery, app-files-tab-sidebar {
   padding: 0;
   height: 100%;
   width: 100%;

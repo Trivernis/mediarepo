@@ -47,6 +47,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatMenuModule} from "@angular/material/menu";
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilesTabSidebarComponent } from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
+import {MatExpansionModule} from "@angular/material/expansion";
 
 @NgModule({
   declarations: [
@@ -100,6 +101,7 @@ import { FilesTabSidebarComponent } from './pages/home/files-tab/files-tab-sideb
     MatSliderModule,
     MatTooltipModule,
     MatMenuModule,
+    MatExpansionModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

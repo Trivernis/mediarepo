@@ -1,19 +1,30 @@
-#file-search-input {
-  width: 100%;
-  overflow: hidden;
-}
-
 app-file-search {
   display: block;
   width: 100%;
 }
 
+#file-search-input {
+  width: 100%;
+  overflow: hidden;
+}
+
 #file-tag-list {
   height: 100%;
   overflow-y: auto;
+  width: 100%;
 }
 
-.sidebar-inner {
+mat-tab-group, mat-tab {
+  height: 100%;
+  width: 100%;
+}
+
+mat-selection-list {
+  height: 100%;
+  user-select: none;
+}
+
+.sidebar-inner, .search-tab-inner {
   height: 100%;
   width: 100%;
   display: block;
