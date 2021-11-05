@@ -29,16 +29,16 @@ jobs:
 
     - name: Install dependencies
       uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: build
+      with:
+        cmd: build
 
     - name: Build project
       run: cargo tauri build --debug
 
     - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: mediarepo-ui-{{ matrix.os }}
-          path: | 
-            src-tauri/release/bundle/*
-            src-tauri/release/mediarepo-ui*
+      uses: actions/upload-artifact@v2
+      with:
+        name: mediarepo-ui-{{ matrix.os }}
+        path: |
+          src-tauri/release/bundle/*
+          src-tauri/release/mediarepo-ui*
