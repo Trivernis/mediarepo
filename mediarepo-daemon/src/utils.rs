@@ -26,6 +26,10 @@ pub async fn create_paths_for_repo(root: &PathBuf, settings: &Settings) -> RepoR
     if !storage_path.exists() {
         fs::create_dir_all(storage_path).await?;
     }
+    let thumbnail_path = root.join(&settings.thumbnail_store);
+    if !thumbnail_path.exists() {
+        fs::create_dir_all(thumbnail_path).await?;
+    }
 
     Ok(())
 }

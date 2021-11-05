@@ -14,8 +14,8 @@ impl Default for Settings {
         Self {
             listen_address: "127.0.0.1:3425".to_string(),
             database_path: "./db/repo.db".to_string(),
-            default_file_store: "./files".to_string(),
-            thumbnail_store: "./thumb".to_string(),
+            default_file_store: "Main".to_string(),
+            thumbnail_store: "Thumbnails".to_string(),
         }
     }
 }

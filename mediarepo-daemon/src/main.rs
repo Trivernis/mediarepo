@@ -255,7 +255,9 @@ async fn add_tags_from_tags_file(
             tag_ids.push(tag.id());
         }
         log::info!("Mapping {} tags to the file", tag_ids.len());
-        file.add_tags(tag_ids).await?;
+        if !tag_ids.is_empty() {
+            file.add_tags(tag_ids).await?;
+        }
     } else {
         log::info!("No tags file '{:?}' found", tags_path);
     }
