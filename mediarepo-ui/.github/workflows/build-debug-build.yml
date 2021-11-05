@@ -1,0 +1,44 @@
+name: Build Debug Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - github-actions
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 16
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+
+    - name: Install Tauri
+      run: cargo install tauri-cli --version ^1.0.0-beta
+
+    - name: Install dependencies
+      uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: build
+
+    - name: Build project
+      run: cargo tauri build --debug
+
+    - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: mediarepo-ui-{{ matrix.os }}
+          path: | 
+            src-tauri/release/bundle/*
+            src-tauri/release/mediarepo-ui*
