@@ -14,7 +14,12 @@ pub async fn get_repo(db_path: &str) -> RepoResult<Repo> {
     Repo::connect(format!("sqlite://{}", db_path)).await
 }
 
-pub async fn create_paths_for_repo(root: &PathBuf, settings: &Settings) -> RepoResult<()> {
+pub async fn create_paths_for_repo(
+    root: &PathBuf,
+    settings: &Settings,
+    storage_path: &str,
+    thumbnail_path: &str,
+) -> RepoResult<()> {
     if !root.exists() {
         fs::create_dir_all(&root).await?;
     }
@@ -22,11 +27,11 @@ pub async fn create_paths_for_repo(root: &PathBuf, settings: &Settings) -> RepoR
     if !db_path.exists() {
         fs::create_dir_all(db_path.parent().unwrap()).await?;
     }
-    let storage_path = root.join(&settings.default_file_store);
+    let storage_path = root.join(storage_path);
     if !storage_path.exists() {
         fs::create_dir_all(storage_path).await?;
     }
-    let thumbnail_path = root.join(&settings.thumbnail_store);
+    let thumbnail_path = root.join(thumbnail_path);
     if !thumbnail_path.exists() {
         fs::create_dir_all(thumbnail_path).await?;
     }

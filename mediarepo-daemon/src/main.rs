@@ -18,7 +18,10 @@ use mediarepo_socket::get_builder;
 use num_integer::Integer;
 use std::env;
 
-use crate::constants::{DEFAULT_STORAGE_NAME, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME};
+use crate::constants::{
+    DEFAULT_STORAGE_NAME, DEFAULT_STORAGE_PATH, SETTINGS_PATH, THUMBNAIL_STORAGE_NAME,
+    THUMBNAIL_STORAGE_PATH,
+};
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 
 mod constants;
@@ -140,24 +143,26 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     }
     let settings = Settings::default();
     log::debug!("Creating paths");
-    create_paths_for_repo(&opt.repo, &settings).await?;
+    create_paths_for_repo(
+        &opt.repo,
+        &settings,
+        DEFAULT_STORAGE_PATH,
+        THUMBNAIL_STORAGE_PATH,
+    )
+    .await?;
     let db_path = opt.repo.join(&settings.database_path);
     if db_path.exists() {
         panic!("Database already exists in location. Use --force with init to delete everything and start a new repository");
     }
     log::debug!("Creating repo");
     let repo = get_repo(&db_path.to_str().unwrap()).await?;
-    let storage_path = opt
-        .repo
-        .join(&settings.default_file_store)
-        .canonicalize()
-        .unwrap();
+    let storage_path = opt.repo.join(DEFAULT_STORAGE_PATH).canonicalize().unwrap();
     log::debug!("Adding storage");
     repo.add_storage(DEFAULT_STORAGE_NAME, storage_path.to_str().unwrap())
         .await?;
     let thumb_storage_path = opt
         .repo
-        .join(&settings.thumbnail_store)
+        .join(THUMBNAIL_STORAGE_PATH)
         .canonicalize()
         .unwrap();
     repo.add_storage(THUMBNAIL_STORAGE_NAME, thumb_storage_path.to_str().unwrap())
@@ -240,7 +245,7 @@ async fn add_tags_from_tags_file(
                 .find(|t| if let (Some(ns1), Some(ns2)) = (t.namespace(), &tag.0) {
                     *ns1.name() == *ns2
                 } else { false } && *t.name() == *tag.1)
-                .is_some()
+                .is_none()
         });
         let mut tag_ids: Vec<i64> = resolved_tags.into_iter().map(|t| t.id()).collect();
 
