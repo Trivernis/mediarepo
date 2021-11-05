@@ -6,7 +6,8 @@ export class Tag {
     public id: number,
     public name: string,
     public namespace: string | undefined
-  ) {}
+  ) {
+  }
 
   public getNormalizedOutput(): string {
     if (!this.normalizedTag) {
@@ -14,4 +15,4 @@ export class Tag {
     }
     return this.normalizedTag;
   }
-};
+}

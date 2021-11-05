@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TagItemComponent } from './tag-item.component';
+import {TagItemComponent} from './tag-item.component';
 
 describe('TagItemComponent', () => {
   let component: TagItemComponent;
@@ -8,9 +8,9 @@ describe('TagItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TagItemComponent ]
-    })
-    .compileComponents();
+        declarations: [TagItemComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

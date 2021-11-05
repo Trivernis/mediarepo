@@ -34,21 +34,21 @@ import {MatRippleModule} from "@angular/material/core";
 import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
-import { FileGalleryComponent } from './components/file-gallery/file-gallery.component';
-import { FileGalleryEntryComponent } from './components/file-gallery/file-gallery-entry/file-gallery-entry.component';
+import {FileGalleryComponent} from './components/file-gallery/file-gallery.component';
+import {FileGalleryEntryComponent} from './components/file-gallery/file-gallery-entry/file-gallery-entry.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {BlockUIModule} from "primeng/blockui";
 import {PanelModule} from "primeng/panel";
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import { ContentAwareImageComponent } from './components/content-aware-image/content-aware-image.component';
+import {ContentAwareImageComponent} from './components/content-aware-image/content-aware-image.component';
 import {MatSliderModule} from "@angular/material/slider";
-import { AddRepositoryDialogComponent } from './pages/home/repositories-tab/add-repository-dialog/add-repository-dialog.component';
+import {AddRepositoryDialogComponent} from './pages/home/repositories-tab/add-repository-dialog/add-repository-dialog.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatMenuModule} from "@angular/material/menu";
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { FilesTabSidebarComponent } from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
+import {ConfirmDialogComponent} from './components/confirm-dialog/confirm-dialog.component';
+import {FilesTabSidebarComponent} from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
 import {MatExpansionModule} from "@angular/material/expansion";
-import { TagItemComponent } from './components/tag-item/tag-item.component';
+import {TagItemComponent} from './components/tag-item/tag-item.component';
 
 @NgModule({
   declarations: [

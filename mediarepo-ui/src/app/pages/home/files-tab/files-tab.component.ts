@@ -1,13 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Tag} from "../../../models/Tag";
+import {Component, OnInit} from '@angular/core';
 import {File} from "../../../models/File";
-import {FileSearchComponent} from "../../../components/file-search/file-search.component";
 import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
 import {FileService} from "../../../services/file/file.service";
-import {TagService} from "../../../services/tag/tag.service";
-import {Lightbox, LIGHTBOX_EVENT, LightboxEvent} from "ngx-lightbox";
-import {MatSelectionListChange} from "@angular/material/list";
-import {SortKey} from "../../../models/SortKey";
 import {RepositoryService} from "../../../services/repository/repository.service";
 
 @Component({

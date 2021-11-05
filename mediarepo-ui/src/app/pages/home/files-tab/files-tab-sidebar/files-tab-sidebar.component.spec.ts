@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FilesTabSidebarComponent } from './files-tab-sidebar.component';
+import {FilesTabSidebarComponent} from './files-tab-sidebar.component';
 
 describe('FilesTabSidebarComponent', () => {
   let component: FilesTabSidebarComponent;
@@ -8,9 +8,9 @@ describe('FilesTabSidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FilesTabSidebarComponent ]
-    })
-    .compileComponents();
+        declarations: [FilesTabSidebarComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { ErrorBrokerService } from './error-broker.service';
+import {ErrorBrokerService} from './error-broker.service';
 
 describe('ErrorBrokerService', () => {
   let service: ErrorBrokerService;

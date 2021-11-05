@@ -1,6 +1,6 @@
 <div class="repo-page-content">
   <div class="add-repo-tools">
-    <button mat-flat-button color="primary" (click)="openAddRepositoryDialog()">Add Repository</button>
+    <button (click)="openAddRepositoryDialog()" color="primary" mat-flat-button>Add Repository</button>
   </div>
   <div class="repository-list">
     <div *ngFor="let repository of repositories" class="repository-container">

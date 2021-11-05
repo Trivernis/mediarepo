@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Tag} from "../../models/Tag";
 
 @Component({
@@ -12,5 +12,6 @@ export class TagItemComponent {
   @Input() namespaceColor: string | undefined;
   @Input() tagColor: string | undefined;
 
-  constructor() { }
+  constructor() {
+  }
 }

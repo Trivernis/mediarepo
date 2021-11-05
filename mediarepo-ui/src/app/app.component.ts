@@ -9,7 +9,7 @@ import {ErrorBrokerService} from "./services/error-broker/error-broker.service";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'mediarepo-ui';
 
   constructor(
@@ -21,7 +21,8 @@ export class AppComponent implements OnInit{
   }
 
   async ngOnInit() {
-    this.errorBroker.errorCb = (err: { message: string }) => this.showError(err);
+    this.errorBroker.errorCb = (err: { message: string }) => this.showError(
+      err);
     this.errorBroker.infoCb = (info: string) => this.showInfo(info);
     await this.repoService.loadRepositories();
   }

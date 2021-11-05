@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
@@ -14,7 +14,8 @@ export class ContentAwareImageComponent {
 
   scaleWidth = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   /**
    * Fits the image into the container

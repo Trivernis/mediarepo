@@ -3,6 +3,7 @@
 @use 'src/app/app.component-theme' as app;
 @use 'src/app/components/file-grid/file-grid-entry/file-grid-entry.component-theme' as file-grid-entry;
 @use 'src/app/components/file-search/file-search.component-theme' as file-search;
+
 @include mat.core();
 
 $theme: mat.define-dark-theme((

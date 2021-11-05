@@ -1,13 +1,16 @@
 import {
-  Component, ElementRef,
+  Component,
+  ElementRef,
   EventEmitter,
   HostListener,
-  Input, OnChanges,
+  Input,
+  OnChanges,
   OnInit,
-  Output, QueryList, SimpleChanges, ViewChild, ViewChildren
+  Output,
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {File} from "../../models/File";
-import {FileService} from "../../services/file/file.service";
 import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.component";
 import {GridEntry} from "./file-grid-entry/GridEntry";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
@@ -30,11 +33,10 @@ export class FileGridComponent implements OnChanges, OnInit {
   @ViewChild("galleryWrapper") galleryWrapper!: ElementRef<HTMLDivElement>;
 
   selectedEntries: GridEntry[] = [];
-
+  partitionedGridEntries: GridEntry[][] = [];
   private shiftClicked = false;
   private ctrlClicked = false;
   private gridEntries: GridEntry[] = []
-  partitionedGridEntries: GridEntry[][] = [];
 
   constructor() {
   }

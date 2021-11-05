@@ -1,22 +1,24 @@
 <div class="gallery-container" fxLayout="column">
-  <button mat-icon-button class="close-button" (click)="this.closeEvent.emit(this)">
+  <button (click)="this.closeEvent.emit(this)" class="close-button" mat-icon-button>
     <mat-icon>close</mat-icon>
   </button>
-  <div class="file-full-view" fxFlex="80%"
-       (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null">
-    <div (mouseenter)="this.mouseInImageView = true" (mouseleave)="this.mouseInImageView = false" class="file-full-view-inner">
+  <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null" class="file-full-view"
+       fxFlex="80%">
+    <div (mouseenter)="this.mouseInImageView = true" (mouseleave)="this.mouseInImageView = false"
+         class="file-full-view-inner">
       <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
-        <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+        <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
       </div>
       <div class="zoom-slider">
-        <mat-slider min="0.5" max="4" [value]="this.imageZoom"
-                    (input)="this.imageZoom=$event.value ?? 1" vertical step="0.1"></mat-slider>
-        <button mat-icon-button (click)="this.resetImage()">
+        <mat-slider (input)="this.imageZoom=$event.value ?? 1" [value]="this.imageZoom" max="4"
+                    min="0.5" step="0.1" vertical></mat-slider>
+        <button (click)="this.resetImage()" mat-icon-button>
           <mat-icon>refresh</mat-icon>
         </button>
       </div>
-      <div #imageDragContainer [cdkDragFreeDragPosition]="this.imagePosition" (cdkDragMoved)="this.onDragMoved($event)" *ngIf="this.fileContentUrl" cdkDrag class="image-drag-container">
-        <div #scaledImage class="image-scale-container" [style]="{scale: this.imageZoom}">
+      <div #imageDragContainer (cdkDragMoved)="this.onDragMoved($event)" *ngIf="this.fileContentUrl"
+           [cdkDragFreeDragPosition]="this.imagePosition" cdkDrag class="image-drag-container">
+        <div #scaledImage [style]="{scale: this.imageZoom}" class="image-scale-container">
           <app-content-aware-image [imageSrc]="this.fileContentUrl"></app-content-aware-image>
         </div>
       </div>
@@ -24,10 +26,10 @@
   </div>
   <mat-divider fxFlex></mat-divider>
   <div class="file-scroll-view" fxFlex="20%">
-    <cdk-virtual-scroll-viewport #virtualScroll orientation="horizontal" itemSize="260" minBufferPx="1000"
-                                 maxBufferPx="3000" class="file-scroll-viewport">
+    <cdk-virtual-scroll-viewport #virtualScroll class="file-scroll-viewport" itemSize="260" maxBufferPx="3000"
+                                 minBufferPx="1000" orientation="horizontal">
       <div *cdkVirtualFor="let entry of entries" class="file-item">
-        <app-file-gallery-entry [file]="entry" (fileSelectEvent)="onEntrySelect($event)"></app-file-gallery-entry>
+        <app-file-gallery-entry (fileSelectEvent)="onEntrySelect($event)" [file]="entry"></app-file-gallery-entry>
       </div>
     </cdk-virtual-scroll-viewport>
   </div>

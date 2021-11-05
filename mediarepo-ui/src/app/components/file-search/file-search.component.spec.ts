@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileSearchComponent } from './file-search.component';
+import {FileSearchComponent} from './file-search.component';
 
 describe('FileSearchComponent', () => {
   let component: FileSearchComponent;
@@ -8,9 +8,9 @@ describe('FileSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileSearchComponent ]
-    })
-    .compileComponents();
+        declarations: [FileSearchComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

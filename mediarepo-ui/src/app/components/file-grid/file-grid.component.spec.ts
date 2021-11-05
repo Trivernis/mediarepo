@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileGridComponent } from './file-grid.component';
+import {FileGridComponent} from './file-grid.component';
 
 describe('FileGridComponent', () => {
   let component: FileGridComponent;
@@ -8,9 +8,9 @@ describe('FileGridComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileGridComponent ]
-    })
-    .compileComponents();
+        declarations: [FileGridComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

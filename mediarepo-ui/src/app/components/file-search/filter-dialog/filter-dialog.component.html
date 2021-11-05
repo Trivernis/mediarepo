@@ -1,40 +1,48 @@
 <h1 mat-dialog-title>Sort Entries</h1>
 <div mat-dialog-content>
-    <div cdkDropList class="sort-input-list" (cdkDropListDropped)="this.onSortEntryDrop($event)">
-      <div cdkDrag class="sort-input-row" *ngFor="let sortKey of sortEntries">
-        <div class="drag-placeholder" *cdkDragPlaceholder></div>
-        <div class="drag-handle" cdkDragHandle><mat-icon>drag_handle</mat-icon></div>
-        <mat-form-field>
-          <mat-label>Key</mat-label>
-          <mat-select required [(value)]="sortKey.sortType">
-            <mat-option value="Namespace">Namespace</mat-option>
-            <mat-option value="FileName">File Name</mat-option>
-            <mat-option value="FileSize">File Size</mat-option>
-            <mat-option value="FileImportedTime">Time Imported</mat-option>
-            <mat-option value="FileCreatedTime">Time Created</mat-option>
-            <mat-option value="FileChangeTime">Time Changed</mat-option>
-            <mat-option value="FileType">File Type</mat-option>
-            <mat-option value="NumTags">Number of Tags</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field *ngIf="sortKey.sortType === 'Namespace'">
-          <mat-label>Namespace Name</mat-label>
-          <input #namespaceInput matInput required [value]="sortKey.namespaceName ?? ''" (change)="sortKey.namespaceName = namespaceInput.value">
-        </mat-form-field>
-        <div class="filler" *ngIf="sortKey.sortType !== 'Namespace'"></div>
-        <mat-form-field>
-          <mat-label>Direction</mat-label>
-          <mat-select [(value)]="sortKey.sortDirection" required>
-            <mat-option value="Ascending">Ascending</mat-option>
-            <mat-option value="Descending">Descending</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button *ngIf="sortEntries.indexOf(sortKey) === sortEntries.length -1" mat-flat-button (click)="addNewSortKey()"><mat-icon>add</mat-icon></button>
-        <button *ngIf="sortEntries.indexOf(sortKey) !== sortEntries.length -1" mat-flat-button (click)="removeSortKey(sortKey)"><mat-icon>remove</mat-icon></button>
+  <div (cdkDropListDropped)="this.onSortEntryDrop($event)" cdkDropList class="sort-input-list">
+    <div *ngFor="let sortKey of sortEntries" cdkDrag class="sort-input-row">
+      <div *cdkDragPlaceholder class="drag-placeholder"></div>
+      <div cdkDragHandle class="drag-handle">
+        <mat-icon>drag_handle</mat-icon>
       </div>
+      <mat-form-field>
+        <mat-label>Key</mat-label>
+        <mat-select [(value)]="sortKey.sortType" required>
+          <mat-option value="Namespace">Namespace</mat-option>
+          <mat-option value="FileName">File Name</mat-option>
+          <mat-option value="FileSize">File Size</mat-option>
+          <mat-option value="FileImportedTime">Time Imported</mat-option>
+          <mat-option value="FileCreatedTime">Time Created</mat-option>
+          <mat-option value="FileChangeTime">Time Changed</mat-option>
+          <mat-option value="FileType">File Type</mat-option>
+          <mat-option value="NumTags">Number of Tags</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="sortKey.sortType === 'Namespace'">
+        <mat-label>Namespace Name</mat-label>
+        <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value" [value]="sortKey.namespaceName ?? ''" matInput
+               required>
+      </mat-form-field>
+      <div *ngIf="sortKey.sortType !== 'Namespace'" class="filler"></div>
+      <mat-form-field>
+        <mat-label>Direction</mat-label>
+        <mat-select [(value)]="sortKey.sortDirection" required>
+          <mat-option value="Ascending">Ascending</mat-option>
+          <mat-option value="Descending">Descending</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button (click)="addNewSortKey()" *ngIf="sortEntries.indexOf(sortKey) === sortEntries.length -1" mat-flat-button>
+        <mat-icon>add</mat-icon>
+      </button>
+      <button (click)="removeSortKey(sortKey)" *ngIf="sortEntries.indexOf(sortKey) !== sortEntries.length -1"
+              mat-flat-button>
+        <mat-icon>remove</mat-icon>
+      </button>
     </div>
+  </div>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
-  <button mat-flat-button color="primary" (click)="confirmSort()">Sort</button>
-  <button mat-stroked-button color="accent" (click)="cancelSort()">Cancel</button>
+  <button (click)="confirmSort()" color="primary" mat-flat-button>Sort</button>
+  <button (click)="cancelSort()" color="accent" mat-stroked-button>Cancel</button>
 </div>

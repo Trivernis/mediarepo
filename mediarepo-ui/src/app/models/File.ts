@@ -9,5 +9,6 @@ export class File {
     public creation_time: Date,
     public change_time: Date,
     public import_time: Date,
-  ) {}
+  ) {
+  }
 }

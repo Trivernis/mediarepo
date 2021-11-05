@@ -5,7 +5,8 @@ export class SortKey {
     public sortType: "Namespace" | "FileName" | "FileSize" | "FileImportedTime" | "FileCreatedTime" | "FileChangeTime" | "FileType" | "NumTags",
     public sortDirection: "Ascending" | "Descending",
     public namespaceName: string | undefined
-  ) {}
+  ) {
+  }
 
   public toString(): string {
     if (this.sortType == "Namespace") {
@@ -18,7 +19,12 @@ export class SortKey {
   public toBackendType(): any {
 
     if (this.sortType == "Namespace") {
-      return {"Namespace": {direction:  this.sortDirection, name: this.namespaceName}}
+      return {
+        "Namespace": {
+          direction: this.sortDirection,
+          name: this.namespaceName
+        }
+      }
     } else {
       let returnObj: any = {};
       returnObj[this.sortType] = this.sortDirection;

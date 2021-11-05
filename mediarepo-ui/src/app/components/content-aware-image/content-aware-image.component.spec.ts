@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ContentAwareImageComponent } from './content-aware-image.component';
+import {ContentAwareImageComponent} from './content-aware-image.component';
 
 describe('ContentAwareImageComponent', () => {
   let component: ContentAwareImageComponent;
@@ -8,9 +8,9 @@ describe('ContentAwareImageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ContentAwareImageComponent ]
-    })
-    .compileComponents();
+        declarations: [ContentAwareImageComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

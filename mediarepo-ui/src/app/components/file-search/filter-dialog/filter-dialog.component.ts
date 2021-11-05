@@ -12,7 +12,8 @@ export class FilterDialogComponent {
 
   public sortEntries: SortKey[] = []
 
-  constructor(public dialogRef: MatDialogRef<FilterDialogComponent>, @Inject(MAT_DIALOG_DATA) data: any) {
+  constructor(public dialogRef: MatDialogRef<FilterDialogComponent>, @Inject(
+    MAT_DIALOG_DATA) data: any) {
     this.sortEntries = data.sortEntries;
   }
 

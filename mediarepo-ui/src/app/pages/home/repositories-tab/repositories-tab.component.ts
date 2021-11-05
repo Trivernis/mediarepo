@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Repository} from "../../../models/Repository";
 import {RepositoryService} from "../../../services/repository/repository.service";
 import {MatDialog} from "@angular/material/dialog";

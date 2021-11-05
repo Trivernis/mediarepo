@@ -2,7 +2,8 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {
   AbstractControl,
   FormControl,
-  FormGroup, ValidationErrors,
+  FormGroup,
+  ValidationErrors,
   Validators
 } from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
@@ -37,7 +38,8 @@ export class AddRepositoryDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.repoService.repositories.subscribe(repositories => this.repositories = repositories)
+    this.repoService.repositories.subscribe(
+      repositories => this.repositories = repositories)
   }
 
   public async checkRepositoryStatus() {
@@ -45,11 +47,12 @@ export class AddRepositoryDialogComponent implements OnInit {
     const address = this.formGroup.value.address;
     const running = await this.repoService.checkDaemonRunning(address);
     console.log(running);
-    this.onlineStatus = running? "Online" : "Offline";
+    this.onlineStatus = running ? "Online" : "Offline";
   }
 
   public async checkLocalRepoExists() {
-    this.localRepoExists = await this.repoService.checkLocalRepositoryExists(this.formGroup.value.path);
+    this.localRepoExists = await this.repoService.checkLocalRepositoryExists(
+      this.formGroup.value.path);
   }
 
   public async initLocalRepository() {
@@ -60,10 +63,11 @@ export class AddRepositoryDialogComponent implements OnInit {
 
   public async addRepository() {
     let {name, repositoryType, path, address} = this.formGroup.value;
-    path = repositoryType === "local"? path : undefined;
-    address = repositoryType === "remote"? address : undefined;
+    path = repositoryType === "local" ? path : undefined;
+    address = repositoryType === "remote" ? address : undefined;
     try {
-      await this.repoService.addRepository(name, path, address, repositoryType === "local");
+      await this.repoService.addRepository(name, path, address,
+        repositoryType === "local");
       this.dialogRef.close();
     } catch (err) {
       this.errorBroker.showError(err);
@@ -114,20 +118,22 @@ export class AddRepositoryDialogComponent implements OnInit {
   }
 
   validatePath(control: AbstractControl): ValidationErrors | null {
-    const repositoryType = control.parent?.get("repositoryType")?.value ?? "local";
+    const repositoryType = control.parent?.get(
+      "repositoryType")?.value ?? "local";
 
     if (repositoryType === "local") {
-      return control.value.length > 0? null : {valueRequired: control.value};
+      return control.value.length > 0 ? null : {valueRequired: control.value};
     }
     return null;
   }
 
   validateAddress(control: AbstractControl): ValidationErrors | null {
-    const repositoryType = control.parent?.get("repositoryType")?.value ?? "remote";
+    const repositoryType = control.parent?.get(
+      "repositoryType")?.value ?? "remote";
 
     if (repositoryType === "remote") {
       const match = /(\d+\.){3}\d+:\d+|\S+:\d+/.test(control.value)
-      return match? null : {invalidAddress: control.value};
+      return match ? null : {invalidAddress: control.value};
     }
 
     return null;

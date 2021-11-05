@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileGalleryComponent } from './file-gallery.component';
+import {FileGalleryComponent} from './file-gallery.component';
 
 describe('FileGalleryComponent', () => {
   let component: FileGalleryComponent;
@@ -8,9 +8,9 @@ describe('FileGalleryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileGalleryComponent ]
-    })
-    .compileComponents();
+        declarations: [FileGalleryComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

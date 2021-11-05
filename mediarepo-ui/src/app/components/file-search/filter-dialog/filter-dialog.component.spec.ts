@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FilterDialogComponent } from './filter-dialog.component';
+import {FilterDialogComponent} from './filter-dialog.component';
 
 describe('FilterDialogComponent', () => {
   let component: FilterDialogComponent;
@@ -8,9 +8,9 @@ describe('FilterDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FilterDialogComponent ]
-    })
-    .compileComponents();
+        declarations: [FilterDialogComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

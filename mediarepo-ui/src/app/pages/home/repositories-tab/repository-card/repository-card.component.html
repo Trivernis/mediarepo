@@ -4,18 +4,28 @@
     <p>{{this.getDaemonStatusText()}}</p>
   </div>
   <mat-card-content>
-    <p class="repository-path" *ngIf="repository.local">{{repository.path!}}</p>
-    <p class="repository-address" *ngIf="!repository.local">{{repository.address}}</p>
+    <p *ngIf="repository.local" class="repository-path">{{repository.path!}}</p>
+    <p *ngIf="!repository.local" class="repository-address">{{repository.address}}</p>
   </mat-card-content>
   <mat-action-list>
-    <button *ngIf="!this.isSelectedRepository() && repository.local" mat-flat-button color="primary" (click)="startDaemonAndSelectRepository()">Open</button>
-    <button *ngIf="!this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="selectRepository()" [disabled]="!this.daemonRunning">Connect</button>
-    <button *ngIf="this.isSelectedRepository() && repository.local" mat-flat-button color="primary" (click)="this.repoService.closeSelectedRepository()">Close</button>
-    <button *ngIf="this.isSelectedRepository() && !repository.local" mat-flat-button color="primary" (click)="this.repoService.disconnectSelectedRepository()">Disconnect</button>
-    <button mat-button [mat-menu-trigger-for]="menu" class="menu-button"><mat-icon>more_vert</mat-icon></button>
+    <button (click)="startDaemonAndSelectRepository()" *ngIf="!this.isSelectedRepository() && repository.local" color="primary"
+            mat-flat-button>Open
+    </button>
+    <button (click)="selectRepository()" *ngIf="!this.isSelectedRepository() && !repository.local" [disabled]="!this.daemonRunning"
+            color="primary" mat-flat-button>Connect
+    </button>
+    <button (click)="this.repoService.closeSelectedRepository()" *ngIf="this.isSelectedRepository() && repository.local" color="primary"
+            mat-flat-button>Close
+    </button>
+    <button (click)="this.repoService.disconnectSelectedRepository()" *ngIf="this.isSelectedRepository() && !repository.local" color="primary"
+            mat-flat-button>Disconnect
+    </button>
+    <button [mat-menu-trigger-for]="menu" class="menu-button" mat-button>
+      <mat-icon>more_vert</mat-icon>
+    </button>
     <mat-menu #menu="matMenu">
-      <button *ngIf="repository.local" mat-menu-item (click)="removeRepository()">Delete</button>
-      <button *ngIf="!repository.local" mat-menu-item (click)="removeRepository()">Remove</button>
+      <button (click)="removeRepository()" *ngIf="repository.local" mat-menu-item>Delete</button>
+      <button (click)="removeRepository()" *ngIf="!repository.local" mat-menu-item>Remove</button>
     </mat-menu>
   </mat-action-list>
 </mat-card>

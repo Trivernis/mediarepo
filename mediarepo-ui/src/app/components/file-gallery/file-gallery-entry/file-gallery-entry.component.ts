@@ -1,10 +1,11 @@
 import {
   Component,
   EventEmitter,
-  Input, OnChanges,
-  OnDestroy,
+  Input,
+  OnChanges,
   OnInit,
-  Output, SimpleChanges
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {File} from "../../../models/File";
 import {FileService} from "../../../services/file/file.service";
@@ -25,7 +26,8 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
 
   private cachedFile: File | undefined;
 
-  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) { }
+  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  }
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes["file"] && (!this.cachedFile || this.file.data.hash !== this.cachedFile!.hash)) { // handle changes to the file when the component is not destroyed
@@ -46,7 +48,8 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
     try {
       const hash = this.file.data.hash;
       const thumbnails = await this.fileService.getThumbnails(hash);
-      let thumbnail = thumbnails.find(t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
+      let thumbnail = thumbnails.find(
+        t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
       thumbnail = thumbnail ?? thumbnails[0];
 
       if (!thumbnail) {

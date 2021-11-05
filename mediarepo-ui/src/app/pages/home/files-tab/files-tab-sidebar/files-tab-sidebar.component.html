@@ -2,18 +2,19 @@
   <mat-tab-group headerPosition="below">
     <mat-tab label="Search">
       <div class="search-tab-inner" fxLayout="column">
-        <div id="file-search-input" >
-          <app-file-search #filesearch (searchStartEvent)="this.searchStartEvent.emit()"
-                           (searchEndEvent)="this.searchEndEvent.emit()" [validTags]="this.getValidTagsForSearch()"></app-file-search>
+        <div id="file-search-input">
+          <app-file-search #filesearch (searchEndEvent)="this.searchEndEvent.emit()"
+                           (searchStartEvent)="this.searchStartEvent.emit()"
+                           [validTags]="this.getValidTagsForSearch()"></app-file-search>
         </div>
         <mat-divider fxFlex="1em"></mat-divider>
-        <div  class="tag-list-header" fxFlex="40px">
+        <div class="tag-list-header" fxFlex="40px">
           <h2>Tags</h2>
           <mat-divider></mat-divider>
         </div>
         <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
           <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-            <div class="selectable-tag" *cdkVirtualFor="let tag of tags" matRipple (click)="addSearchTag(tag)">
+            <div (click)="addSearchTag(tag)" *cdkVirtualFor="let tag of tags" class="selectable-tag" matRipple>
               <app-tag-item [tag]="tag"></app-tag-item>
             </div>
           </cdk-virtual-scroll-viewport>

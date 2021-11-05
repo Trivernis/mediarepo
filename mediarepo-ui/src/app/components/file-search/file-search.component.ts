@@ -1,7 +1,11 @@
 import {
   AfterViewChecked,
   Component,
-  ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
   ViewChild
 } from '@angular/core';
 import {TagService} from "../../services/tag/tag.service";
@@ -49,17 +53,6 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
   public ngAfterViewChecked(): void {
     this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
-  }
-
-  private filterSuggestionTag(tag: string) {
-    const negated = tag.startsWith("-");
-    const normalizedTag = tag.replace(/^-/, "");
-
-    return this.validTags.filter(
-        t => t.includes(normalizedTag) && this.searchTags.findIndex(
-          s => s.name === t) < 0)
-      .map(t => negated ? "-" + t : t)
-      .slice(0, 20);
   }
 
   public async searchForFiles() {
@@ -134,5 +127,16 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         await this.searchForFiles();
       }
     });
+  }
+
+  private filterSuggestionTag(tag: string) {
+    const negated = tag.startsWith("-");
+    const normalizedTag = tag.replace(/^-/, "");
+
+    return this.validTags.filter(
+        t => t.includes(normalizedTag) && this.searchTags.findIndex(
+          s => s.name === t) < 0)
+      .map(t => negated ? "-" + t : t)
+      .slice(0, 20);
   }
 }

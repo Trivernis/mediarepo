@@ -1,4 +1,4 @@
-import {Inject, Injectable, Sanitizer} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {File} from "../../models/File";
 import {invoke} from "@tauri-apps/api/tauri";
@@ -24,21 +24,25 @@ export class FileService {
   }
 
   public async findFiles(tags: TagQuery[], sortBy: SortKey[]) {
-    let files = await invoke<File[]>("plugin:mediarepo|find_files", {tags, sortBy: sortBy.map(k => k.toBackendType())});
+    let files = await invoke<File[]>("plugin:mediarepo|find_files",
+      {tags, sortBy: sortBy.map(k => k.toBackendType())});
     this.displayedFiles.next(files);
   }
 
   public async readFile(file: File): Promise<SafeResourceUrl> {
-    const once_uri =  await invoke<string>("plugin:mediarepo|read_file_by_hash", {hash: file.hash, mimeType: file.mime_type});
+    const once_uri = await invoke<string>("plugin:mediarepo|read_file_by_hash",
+      {hash: file.hash, mimeType: file.mime_type});
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async readThumbnail(thumbnail: Thumbnail): Promise<SafeResourceUrl> {
-    let once_uri = await invoke<string>("plugin:mediarepo|read_thumbnail", {hash: thumbnail.hash, mimeType: thumbnail.mime_type });
+    let once_uri = await invoke<string>("plugin:mediarepo|read_thumbnail",
+      {hash: thumbnail.hash, mimeType: thumbnail.mime_type});
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
   public async getThumbnails(hash: string): Promise<Thumbnail[]> {
-    return await invoke<Thumbnail[]>("plugin:mediarepo|get_file_thumbnails", {hash});
+    return await invoke<Thumbnail[]>("plugin:mediarepo|get_file_thumbnails",
+      {hash});
   }
 }

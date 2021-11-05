@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RepositoriesTabComponent } from './repositories-tab.component';
+import {RepositoriesTabComponent} from './repositories-tab.component';
 
 describe('RepositoriesComponent', () => {
   let component: RepositoriesTabComponent;
@@ -8,9 +8,9 @@ describe('RepositoriesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RepositoriesTabComponent ]
-    })
-    .compileComponents();
+        declarations: [RepositoriesTabComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AddRepositoryDialogComponent } from './add-repository-dialog.component';
+import {AddRepositoryDialogComponent} from './add-repository-dialog.component';
 
 describe('AddRepositoryDialogComponent', () => {
   let component: AddRepositoryDialogComponent;
@@ -8,9 +8,9 @@ describe('AddRepositoryDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddRepositoryDialogComponent ]
-    })
-    .compileComponents();
+        declarations: [AddRepositoryDialogComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

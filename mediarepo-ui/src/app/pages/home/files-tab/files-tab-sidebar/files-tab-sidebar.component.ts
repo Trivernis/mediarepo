@@ -1,16 +1,17 @@
 import {
   Component,
   EventEmitter,
-  Input, OnChanges,
+  Input,
+  OnChanges,
   OnInit,
-  Output, SimpleChanges,
+  Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Tag} from "../../../../models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
 import {FileService} from "../../../../services/file/file.service";
 import {File} from "../../../../models/File";
-import {MatSelectionListChange} from "@angular/material/list";
 import {FileSearchComponent} from "../../../../components/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 

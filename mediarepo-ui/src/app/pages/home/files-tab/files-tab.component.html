@@ -1,19 +1,20 @@
 <mat-drawer-container class="page">
-  <mat-drawer mode="side" opened disableClose>
+  <mat-drawer disableClose mode="side" opened>
     <app-files-tab-sidebar (searchEndEvent)="this.contentLoading = false"
-                           (searchStartEvent)="this.contentLoading = true" [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
+                           (searchStartEvent)="this.contentLoading = true"
+                           [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
   </mat-drawer>
   <mat-drawer-content>
     <div *ngIf="contentLoading" class="spinner-overlay">
       <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
     </div>
-    <app-file-grid *ngIf="!this.showGallery" (fileDblClickEvent)="openGallery($event)" [files]="files"
-                   (fileSelectEvent)="onFileSelect($event)"
+    <app-file-grid (fileDblClickEvent)="openGallery($event)" (fileMultiselectEvent)="onFileMultiSelect($event)" (fileSelectEvent)="onFileSelect($event)"
+                   *ngIf="!this.showGallery"
+                   [files]="files"
                    [preselectedFile]="this.preselectedFile"
-                   (fileMultiselectEvent)="onFileMultiSelect($event)"
     ></app-file-grid>
-    <app-file-gallery *ngIf="this.showGallery" [files]="files" (fileSelectEvent)="onFileSelect($event)"
-                      [preselectedFile]="this.preselectedFile"
-                      (closeEvent)="this.closeGallery($event.selectedFile?.data)"></app-file-gallery>
+    <app-file-gallery (closeEvent)="this.closeGallery($event.selectedFile?.data)" (fileSelectEvent)="onFileSelect($event)" *ngIf="this.showGallery"
+                      [files]="files"
+                      [preselectedFile]="this.preselectedFile"></app-file-gallery>
   </mat-drawer-content>
 </mat-drawer-container>

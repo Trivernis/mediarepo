@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Repository} from "../../models/Repository";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
@@ -11,7 +11,8 @@ import {ErrorBrokerService} from "../error-broker/error-broker.service";
 })
 export class RepositoryService {
   repositories = new BehaviorSubject<Repository[]>([]);
-  public selectedRepository = new BehaviorSubject<Repository | undefined>(undefined);
+  public selectedRepository = new BehaviorSubject<Repository | undefined>(
+    undefined);
 
   constructor(private errorBroker: ErrorBrokerService) {
     this.registerListener()
@@ -80,7 +81,8 @@ export class RepositoryService {
    * @returns {Promise<void>}
    */
   public async addRepository(name: string, path: string | undefined, address: string | undefined, local: boolean) {
-    let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository", {name, path, address, local});
+    let repos = await invoke<Repository[]>("plugin:mediarepo|add_repository",
+      {name, path, address, local});
     this.repositories.next(repos);
   }
 
@@ -90,7 +92,8 @@ export class RepositoryService {
    * @returns {Promise<boolean>}
    */
   public async checkDaemonRunning(address: string): Promise<boolean> {
-    return await invoke<boolean>("plugin:mediarepo|check_daemon_running", {address});
+    return await invoke<boolean>("plugin:mediarepo|check_daemon_running",
+      {address});
   }
 
   /**
@@ -99,7 +102,8 @@ export class RepositoryService {
    * @returns {Promise<boolean>}
    */
   public async checkLocalRepositoryExists(path: string): Promise<boolean> {
-    return await invoke<boolean>("plugin:mediarepo|check_local_repository_exists", {path})
+    return await invoke<boolean>(
+      "plugin:mediarepo|check_local_repository_exists", {path})
   }
 
   /**
@@ -126,7 +130,8 @@ export class RepositoryService {
   }
 
   async loadSelectedRepository() {
-    let active_repo = await invoke<Repository | undefined>("plugin:mediarepo|get_active_repository");
+    let active_repo = await invoke<Repository | undefined>(
+      "plugin:mediarepo|get_active_repository");
     this.selectedRepository.next(active_repo);
   }
 }

@@ -1,5 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import {Injectable} from '@angular/core';
 import {listen} from "@tauri-apps/api/event";
 
 @Injectable({
@@ -32,7 +31,7 @@ export class ErrorBrokerService {
     }
   }
 
-  showError(error: {message: string}) {
+  showError(error: { message: string }) {
     console.error(error);
     if (this.errorCb) {
       if (!error.message) {

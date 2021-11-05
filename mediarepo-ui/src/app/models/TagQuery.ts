@@ -3,6 +3,6 @@ export class TagQuery {
   }
 
   public getNormalizedTag(): string {
-    return this.negate? "-" + this.name : this.name;
+    return this.negate ? "-" + this.name : this.name;
   }
 }

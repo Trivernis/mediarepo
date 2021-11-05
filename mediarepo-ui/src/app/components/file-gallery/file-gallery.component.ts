@@ -1,17 +1,21 @@
 import {
-  Component, ElementRef,
-  EventEmitter, HostListener,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnInit,
-  Output, SimpleChanges, ViewChild
+  Output,
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {File} from "../../models/File";
 import {FileService} from "../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {CdkDrag, CdkDragMove, DragRef, Point} from "@angular/cdk/drag-drop";
+import {CdkDragMove} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-file-gallery',
@@ -29,7 +33,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
 
   @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
   @ViewChild("scaledImage") scaledImage: ElementRef<HTMLDivElement> | undefined;
-  @ViewChild("imageDragContainer") imageDragContainer: ElementRef<HTMLDivElement> | undefined;
+  @ViewChild(
+    "imageDragContainer") imageDragContainer: ElementRef<HTMLDivElement> | undefined;
 
   public selectedFile: Selectable<File> | undefined;
   public fileContentUrl: SafeResourceUrl | undefined;
@@ -58,10 +63,12 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       if (this.virtualScroll) {
         const viewportSize = this.virtualScroll.getViewportSize();
         const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
-        this.virtualScroll.scrollToIndex(Math.max(selectedIndex - indexAdjustment, 0), "smooth");
+        this.virtualScroll.scrollToIndex(
+          Math.max(selectedIndex - indexAdjustment, 0), "smooth");
 
         if (selectedIndex > indexAdjustment) {
-          this.virtualScroll.scrollToOffset(this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
+          this.virtualScroll.scrollToOffset(
+            this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
         }
       }
       this.fileSelectEvent.emit(this.selectedFile.data);
@@ -136,6 +143,11 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     this.imagePosition = {x: 0, y: 0};
   }
 
+  public onDragMoved($event: CdkDragMove<HTMLDivElement>): void {
+    this.imagePosition.x += $event.delta.x;
+    this.imagePosition.y += $event.delta.y;
+  }
+
   @HostListener("window:keydown", ["$event"])
   private async handleKeydownEvent(event: KeyboardEvent) {
     switch (event.key) {
@@ -179,10 +191,5 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       }
     }
     return undefined;
-  }
-
-  public onDragMoved($event: CdkDragMove<HTMLDivElement>): void {
-    this.imagePosition.x += $event.delta.x;
-    this.imagePosition.y += $event.delta.y;
   }
 }

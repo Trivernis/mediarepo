@@ -16,7 +16,8 @@ export class HomeComponent implements OnInit {
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
 
-  constructor(private repoService: RepositoryService, private tagService: TagService) {}
+  constructor(private repoService: RepositoryService, private tagService: TagService) {
+  }
 
   public async ngOnInit(): Promise<void> {
     this.selectedRepository = this.repoService.selectedRepository.getValue();
