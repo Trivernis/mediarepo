@@ -17,66 +17,36 @@ import {RepositoryService} from "../../../services/repository/repository.service
 })
 export class FilesTabComponent implements OnInit {
 
-  tagsOfFiles: Tag[] = [];
-  tags: Tag[] = [];
+
   files: File[] = [];
-  private openingLightbox = false;
   showGallery = false;
   preselectedFile: File | undefined;
   contentLoading = false;
-
-  @ViewChild('filesearch') fileSearch!: FileSearchComponent;
+  selectedFiles: File[] = [];
 
   constructor(
     private errorBroker: ErrorBrokerService,
     private repoService: RepositoryService,
-    private fileService: FileService,
-    private tagService: TagService,) {
+    private fileService: FileService,) {
   }
 
   async ngOnInit() {
     this.fileService.displayedFiles.subscribe(async (files) => {
       this.files = files;
-      await this.loadTagsForDisplayedFiles();
     });
-    this.repoService.selectedRepository.subscribe(async (repo) => repo && await this.loadFilesInitially());
-    await this.loadFilesInitially();
-  }
-
-  async loadFilesInitially() {
-    this.files = [];
-    this.contentLoading = true;
-
-    if (this.fileSearch) {
-      await this.fileSearch.searchForFiles();
-    } else {
-      await this.fileService.findFiles([], [new SortKey("FileImportedTime", "Ascending", undefined)])
-    }
-    this.contentLoading = false;
   }
 
   async onFileMultiSelect(files: File[]) {
-    await this.showFileDetails(files);
+    this.selectedFiles = files;
   }
+
 
   async onFileSelect(file: File | undefined) {
     if (file) {
-      await this.showFileDetails([file]);
+      this.selectedFiles = [file];
+    } else {
+      this.selectedFiles = [];
     }
-  }
-
-  async showFileDetails(files: File[]) {
-    this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash))
-    this.tags = this.tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
-  }
-
-  async addSearchTagFromList(event: MatSelectionListChange) {
-    if (event.options.length > 0) {
-      const tag = event.options[0].value;
-      this.fileSearch.addSearchTag(tag);
-      await this.fileSearch.searchForFiles();
-    }
-    event.source.deselectAll();
   }
 
   async openGallery(preselectedFile: File) {
@@ -87,13 +57,5 @@ export class FilesTabComponent implements OnInit {
   async closeGallery(preselectedFile: File | undefined) {
     this.preselectedFile = preselectedFile;
     this.showGallery = false;
-  }
-
-  async loadTagsForDisplayedFiles() {
-    this.tagsOfFiles = await this.tagService.getTagsForFiles(this.files.map(f => f.hash));
-  }
-
-  getValidTagsForSearch(): string[] {
-    return this.tagsOfFiles.map(t => t.getNormalizedOutput())
   }
 }

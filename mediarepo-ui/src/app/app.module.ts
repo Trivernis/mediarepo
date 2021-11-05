@@ -46,6 +46,7 @@ import { AddRepositoryDialogComponent } from './pages/home/repositories-tab/add-
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatMenuModule} from "@angular/material/menu";
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { FilesTabSidebarComponent } from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     ContentAwareImageComponent,
     AddRepositoryDialogComponent,
     ConfirmDialogComponent,
+    FilesTabSidebarComponent,
   ],
   imports: [
     BrowserModule,

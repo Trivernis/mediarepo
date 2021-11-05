@@ -1,0 +1,15 @@
+<div fxLayout="column" class="sidebar-inner">
+  <div id="file-search-input" fxFlex="220px">
+    <app-file-search #filesearch (searchStartEvent)="this.searchStartEvent.emit()"
+                     (searchEndEvent)="this.searchEndEvent.emit()" [validTags]="this.getValidTagsForSearch()"></app-file-search>
+  </div>
+  <div id="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
+    <h1>Selection Tags</h1>
+    <mat-selection-list [multiple]="false" *ngIf="tags.length > 0"
+                        (selectionChange)="addSearchTagFromList($event)">
+      <mat-list-option
+        *ngFor="let tag of tags"
+        [value]="tag.getNormalizedOutput()">{{tag.getNormalizedOutput()}}</mat-list-option>
+    </mat-selection-list>
+  </div>
+</div>

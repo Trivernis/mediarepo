@@ -22,11 +22,7 @@ import {ErrorBrokerService} from "../../services/error-broker/error-broker.servi
   templateUrl: './file-search.component.html',
   styleUrls: ['./file-search.component.scss']
 })
-export class FileSearchComponent implements AfterViewChecked {
-  public ngAfterViewChecked(): void {
-    this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
-  }
-
+export class FileSearchComponent implements AfterViewChecked, OnInit {
   public sortExpression: SortKey[] = [new SortKey("FileImportedTime",
     "Ascending", undefined)];
   public formControl = new FormControl();
@@ -45,6 +41,14 @@ export class FileSearchComponent implements AfterViewChecked {
       map(
         (tag: string | null) => tag ? this.filterSuggestionTag(
           tag) : this.validTags.slice(0, 20)));
+  }
+
+  public async ngOnInit() {
+    await this.searchForFiles();
+  }
+
+  public ngAfterViewChecked(): void {
+    this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
   }
 
   private filterSuggestionTag(tag: string) {
