@@ -78,7 +78,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
 
   private async refreshFileSelection() {
     const filteredSelection = this.selectedFiles.filter(
-      file => this.files.findIndex(f => f.hash === file.hash) >= 0);
+      file => this.files.findIndex(f => f.id === file.id) >= 0);
     if (filteredSelection.length === 0) {
       this.tags = [];
       this.showAllTagsFallback();
@@ -93,7 +93,6 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
       this.tags = this.tagsOfFiles.sort(
         (a, b) => a.getNormalizedOutput()
           .localeCompare(b.getNormalizedOutput()));
-      ;
     }
   }
 }

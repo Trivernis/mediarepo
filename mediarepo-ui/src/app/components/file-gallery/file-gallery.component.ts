@@ -173,7 +173,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   private getPreselectedEntry(): Selectable<File> | undefined {
     if (this.preselectedFile) {
       const entry = this.entries.find(
-        e => e.data.hash == this.preselectedFile?.hash);
+        e => e.data.id === this.preselectedFile?.id);
       if (entry) {
         return entry;
       }
