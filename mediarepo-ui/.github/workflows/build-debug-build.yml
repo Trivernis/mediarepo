@@ -27,6 +27,7 @@ jobs:
         path: | 
           node_modules
           src-tauri/target
+          /home/runner/.cargo/bin
           ~/.cargo
         key: ${{ runner.os }}-dependencies-${{ hashFiles('src-tauri/Cargo.lock') }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
@@ -64,5 +65,5 @@ jobs:
       with:
         name: mediarepo-ui-{{ matrix.os }}
         path: |
-          src-tauri/target/release/bundle/*
-          src-tauri/target/release/mediarepo-ui*
+          src-tauri/target/debug/bundle
+          src-tauri/target/debug/mediarepo-ui*
