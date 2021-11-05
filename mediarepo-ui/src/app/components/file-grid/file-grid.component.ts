@@ -40,13 +40,18 @@ export class FileGridComponent implements OnChanges, OnInit {
   }
 
   public ngOnInit(): void {
-    this.gridEntries = this.files.map(file => {return {file, selected: false}});
+    this.gridEntries = this.files.map(file => {
+      return {file, selected: false}
+    });
     this.setPartitionedGridEntries();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["files"]) {
-      this.gridEntries = this.files.map(file => {return {file, selected: false}});
+      this.gridEntries = this.files.map(file => {
+        return {file, selected: false}
+      });
+      this.refreshFileSelections();
       this.setPartitionedGridEntries();
     }
   }
@@ -59,7 +64,9 @@ export class FileGridComponent implements OnChanges, OnInit {
     const previousSelectionSize = this.selectedEntries.length;
 
     if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
-      this.selectedEntries.forEach(entry => {if (entry !== clickedEntry) entry.selected = false});
+      this.selectedEntries.forEach(entry => {
+        if (entry !== clickedEntry) entry.selected = false
+      });
       this.selectedEntries = [];
     }
     if (this.shiftClicked && this.selectedEntries.length > 0) {
@@ -76,24 +83,28 @@ export class FileGridComponent implements OnChanges, OnInit {
       }
     }
     if (this.selectedEntries.length == 1) {
-      this.fileSelectEvent.emit(this.selectedEntries.map(entry => entry.file)[0]);
-    } else if (this.selectedEntries.length == 0 && previousSelectionSize == 1){
+      this.fileSelectEvent.emit(
+        this.selectedEntries.map(entry => entry.file)[0]);
+    } else if (this.selectedEntries.length == 0 && previousSelectionSize == 1) {
       this.fileSelectEvent.emit(undefined);
     } else {
-      this.fileMultiselectEvent.emit(this.selectedEntries.map(entry => entry.file));
+      this.fileMultiselectEvent.emit(
+        this.selectedEntries.map(entry => entry.file));
     }
   }
 
   private setPartitionedGridEntries() {
     this.partitionedGridEntries = [];
-    this.selectedEntries = [];
     let scrollToIndex = -1;
     let selectedEntry: GridEntry | undefined = undefined;
 
-    for (let i = 0; i < (Math.ceil(this.gridEntries.length / this.columns)); i++) {
-      const entries = this.gridEntries.slice(i * this.columns, Math.min(this.gridEntries.length, (i + 1) * this.columns));
+    for (let i = 0; i < (Math.ceil(
+      this.gridEntries.length / this.columns)); i++) {
+      const entries = this.gridEntries.slice(i * this.columns,
+        Math.min(this.gridEntries.length, (i + 1) * this.columns));
       this.partitionedGridEntries.push(entries);
-      const preselectedEntry = entries.find(e => e.file.hash == this.preselectedFile?.hash);
+      const preselectedEntry = entries.find(
+        e => e.file.hash == this.preselectedFile?.hash);
 
       if (preselectedEntry) {
         scrollToIndex = i;
@@ -106,11 +117,19 @@ export class FileGridComponent implements OnChanges, OnInit {
           this.virtualScroll?.scrollToIndex(scrollToIndex);
           if (selectedEntry) {
             selectedEntry.selected = true;
-            this.selectedEntries = [selectedEntry];
+            this.selectedEntries.push(selectedEntry);
           }
         }
       }, 0);
     }
+  }
+
+  private refreshFileSelections() {
+    const newSelection: GridEntry[] = this.gridEntries.filter(
+      entry => this.selectedEntries.findIndex(
+        e => e.file.id == entry.file.id) >= 0);
+    newSelection.forEach(entry => entry.selected = true);
+    this.selectedEntries = newSelection;
   }
 
   private handleShiftSelect(clickedEntry: GridEntry): void {
@@ -140,16 +159,24 @@ export class FileGridComponent implements OnChanges, OnInit {
   @HostListener("window:keydown", ["$event"])
   private handleKeydownEvent(event: KeyboardEvent) {
     switch (event.key) {
-      case "Shift": this.shiftClicked = true; break;
-      case "Control": this.ctrlClicked = true; break;
+      case "Shift":
+        this.shiftClicked = true;
+        break;
+      case "Control":
+        this.ctrlClicked = true;
+        break;
     }
   }
 
   @HostListener("window:keyup", ["$event"])
   private handleKeyupEvent(event: KeyboardEvent) {
     switch (event.key) {
-      case "Shift": this.shiftClicked = false; break;
-      case "Control": this.ctrlClicked = false; break;
+      case "Shift":
+        this.shiftClicked = false;
+        break;
+      case "Control":
+        this.ctrlClicked = false;
+        break;
     }
   }
 }

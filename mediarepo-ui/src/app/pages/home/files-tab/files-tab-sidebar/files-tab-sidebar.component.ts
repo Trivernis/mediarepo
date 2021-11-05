@@ -35,6 +35,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     this.fileService.displayedFiles.subscribe(async files => {
       this.files = files;
       await this.loadTagsForDisplayedFiles();
+      await this.refreshFileSelection();
     });
     this.repoService.selectedRepository.subscribe(
       async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
@@ -75,10 +76,24 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
       (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
   }
 
-  showAllTagsFallback() {
+  private async refreshFileSelection() {
+    const filteredSelection = this.selectedFiles.filter(
+      file => this.files.findIndex(f => f.hash === file.hash) >= 0);
+    if (filteredSelection.length === 0) {
+      this.tags = [];
+      this.showAllTagsFallback();
+    } else if (filteredSelection.length < this.selectedFiles.length) {
+      this.selectedFiles = filteredSelection;
+      await this.showFileDetails(this.selectedFiles);
+    }
+  }
+
+  private showAllTagsFallback() {
     if (this.tags.length === 0) {
       this.tags = this.tagsOfFiles.sort(
-        (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));;
+        (a, b) => a.getNormalizedOutput()
+          .localeCompare(b.getNormalizedOutput()));
+      ;
     }
   }
 }

@@ -1,5 +1,6 @@
 export class File {
   constructor(
+    public id: number,
     public name: string | undefined,
     public comment: string | undefined,
     public hash: string,
