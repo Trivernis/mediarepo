@@ -36,31 +36,33 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
       this.files = files;
       await this.loadTagsForDisplayedFiles();
     });
-    this.repoService.selectedRepository.subscribe(async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
+    this.repoService.selectedRepository.subscribe(
+      async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
   }
 
   async ngOnInit() {
     this.fileSearch && await this.fileSearch.searchForFiles();
+    if (this.tags.length === 0) {
+      this.tags = this.tagsOfFiles;
+    }
   }
 
-  public async ngOnChanges(changes: SimpleChanges): Promise<void >{
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes["selectedFiles"]) {
-      const tags = await this.tagService.getTagsForFiles(this.selectedFiles.map(f => f.hash));
-      this.tags = tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
+      await this.showFileDetails(this.selectedFiles);
+      this.showAllTagsFallback();
     }
   }
 
   async loadTagsForDisplayedFiles() {
-    this.tagsOfFiles = await this.tagService.getTagsForFiles(this.files.map(f => f.hash));
+    this.tagsOfFiles = await this.tagService.getTagsForFiles(
+      this.files.map(f => f.hash));
+    this.showAllTagsFallback();
   }
 
-  async addSearchTagFromList(event: MatSelectionListChange) {
-    if (event.options.length > 0) {
-      const tag = event.options[0].value;
-      this.fileSearch.addSearchTag(tag);
-      await this.fileSearch.searchForFiles();
-    }
-    event.source.deselectAll();
+  async addSearchTag(tag: Tag) {
+    this.fileSearch.addSearchTag(tag.getNormalizedOutput());
+    await this.fileSearch.searchForFiles();
   }
 
   getValidTagsForSearch(): string[] {
@@ -69,6 +71,14 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
 
   async showFileDetails(files: File[]) {
     this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash))
-    this.tags = this.tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
+    this.tags = this.tags.sort(
+      (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
+  }
+
+  showAllTagsFallback() {
+    if (this.tags.length === 0) {
+      this.tags = this.tagsOfFiles.sort(
+        (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));;
+    }
   }
 }
