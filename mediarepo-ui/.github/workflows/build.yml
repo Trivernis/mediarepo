@@ -40,7 +40,7 @@ jobs:
         node-version: 16
 
     - name: Install Tauri
-      run: cargo install tauri-cli --version ^1.0.0-beta
+      run: cargo install tauri-cli --version ^1.0.0-beta --force
 
     - name: Install Angular CLI
       run: npm install -g @angular/cli
@@ -68,7 +68,7 @@ jobs:
         path: |
           src-tauri/target/debug/bundle
           src-tauri/target/debug/mediarepo-ui*
-  
+
   build-release:
 
     runs-on: ${{ matrix.os }}
