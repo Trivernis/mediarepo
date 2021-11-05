@@ -19,6 +19,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache Dependencies
+      id: cache-dependencies
+      uses: actions/cache@v2
+      with:
+        path: | 
+          node_modules
+          src-tauri/target
+          ~/.cargo
+        key: ${{ runner.os }}-dependencies-${{ hashFiles('src-tauri/Cargo.lock') }}-${{ hashFiles('yarn.lock') }}
+        restore_keys: |
+          ${{ runner.os }}-dependencies-
+
     - name: Use Node.js 16
       uses: actions/setup-node@v1
       with:
@@ -26,6 +38,9 @@ jobs:
 
     - name: Install Tauri
       run: cargo install tauri-cli --version ^1.0.0-beta
+
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli
 
     - name: Install dependencies
       uses: borales/actions-yarn@v2.3.0
