@@ -11,11 +11,11 @@ import {SortKey} from "../../../models/SortKey";
 import {RepositoryService} from "../../../services/repository/repository.service";
 
 @Component({
-  selector: 'app-search-tab',
-  templateUrl: './search-tab.component.html',
-  styleUrls: ['./search-tab.component.scss']
+  selector: 'app-files-tab',
+  templateUrl: './files-tab.component.html',
+  styleUrls: ['./files-tab.component.scss']
 })
-export class SearchTabComponent implements OnInit {
+export class FilesTabComponent implements OnInit {
 
   tagsOfFiles: Tag[] = [];
   tags: Tag[] = [];

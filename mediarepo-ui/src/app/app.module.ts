@@ -28,7 +28,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {FileSearchComponent} from './components/file-search/file-search.component';
 import {MatTabsModule} from "@angular/material/tabs";
-import {SearchTabComponent} from './pages/home/search-tab/search-tab.component';
+import {FilesTabComponent} from './pages/home/files-tab/files-tab.component';
 import {FlexModule, GridModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
 import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
@@ -56,7 +56,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     FileGridComponent,
     FileGridEntryComponent,
     FileSearchComponent,
-    SearchTabComponent,
+    FilesTabComponent,
     FilterDialogComponent,
     FileGalleryComponent,
     FileGalleryEntryComponent,
