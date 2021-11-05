@@ -95,6 +95,7 @@ impl Tag {
         let tags: Vec<Self> = tag::Entity::find()
             .find_also_related(namespace::Entity)
             .filter(or_condition)
+            .group_by(tag::Column::Id)
             .all(&db)
             .await?
             .into_iter()

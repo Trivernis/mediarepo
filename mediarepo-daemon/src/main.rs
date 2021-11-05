@@ -238,16 +238,20 @@ async fn add_tags_from_tags_file(
     log::info!("Adding tags");
     if tags_path.exists() {
         let mut tags = parse_tags_file(tags_path).await?;
-        let resolved_tags = repo.all_tags(tags.clone()).await?;
+        log::info!("Found {} tags in the tag file", tags.len());
+        let resolved_tags = repo.tags_by_names(tags.clone()).await?;
+
         tags.retain(|tag| {
             resolved_tags
                 .iter()
                 .find(|t| if let (Some(ns1), Some(ns2)) = (t.namespace(), &tag.0) {
                     *ns1.name() == *ns2
-                } else { false } && *t.name() == *tag.1)
+                } else { t.namespace().is_none() && tag.0.is_none() } && *t.name() == *tag.1)
                 .is_none()
         });
         let mut tag_ids: Vec<i64> = resolved_tags.into_iter().map(|t| t.id()).collect();
+        log::info!("Existing tag_ids count is {}", tag_ids.len());
+        log::info!("{} tags need to be created", tags.len());
 
         for (namespace, name) in tags {
             let tag = if let Some(namespace) = namespace {
