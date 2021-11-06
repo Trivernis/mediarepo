@@ -103,8 +103,14 @@ impl TagsNamespace {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<ChangeFileTagsRequest>()?;
         let file = file_by_identifier(request.file_id, &repo).await?;
-        file.add_tags(request.added_tags).await?;
-        file.remove_tags(request.removed_tags).await?;
+
+        if !request.added_tags.is_empty() {
+            file.add_tags(request.added_tags).await?;
+        }
+        if !request.removed_tags.is_empty() {
+            file.remove_tags(request.removed_tags).await?;
+        }
+
         let responses: Vec<TagResponse> = file
             .tags()
             .await?

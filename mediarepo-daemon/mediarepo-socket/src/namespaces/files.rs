@@ -3,7 +3,7 @@ use crate::utils::{file_by_identifier, get_repo_from_context};
 use compare::Compare;
 use mediarepo_api::types::files::{
     AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest,
-    ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse,
+    ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
@@ -28,7 +28,8 @@ impl NamespaceProvider for FilesNamespace {
             "add_file" => Self::add_file,
             "read_file" => Self::read_file,
             "get_thumbnails" => Self::thumbnails,
-            "read_thumbnail" => Self::read_thumbnail
+            "read_thumbnail" => Self::read_thumbnail,
+            "update_file_name" => Self::update_file_name
         );
     }
 }
@@ -170,6 +171,25 @@ impl FilesNamespace {
                 Self::name(),
                 "read_thumbnail",
                 BytePayload::new(buf),
+            )
+            .await?;
+
+        Ok(())
+    }
+
+    /// Updates the name of a file
+    #[tracing::instrument(skip_all)]
+    async fn update_file_name(ctx: &Context, event: Event) -> IPCResult<()> {
+        let repo = get_repo_from_context(ctx).await;
+        let request = event.data::<UpdateFileNameRequest>()?;
+        let mut file = file_by_identifier(request.file_id, &repo).await?;
+        file.set_name(request.name).await?;
+        ctx.emitter
+            .emit_response_to(
+                event.id(),
+                Self::name(),
+                "update_file_name",
+                FileMetadataResponse::from_model(file),
             )
             .await?;
 
