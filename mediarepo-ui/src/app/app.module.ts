@@ -48,6 +48,7 @@ import {ConfirmDialogComponent} from './components/confirm-dialog/confirm-dialog
 import {FilesTabSidebarComponent} from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {TagItemComponent} from './components/tag-item/tag-item.component';
+import { FileEditComponent } from './components/file-edit/file-edit.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import {TagItemComponent} from './components/tag-item/tag-item.component';
     ConfirmDialogComponent,
     FilesTabSidebarComponent,
     TagItemComponent,
+    FileEditComponent,
   ],
   imports: [
     BrowserModule,

@@ -47,7 +47,7 @@ export class FileGridEntryComponent implements OnInit, OnChanges {
     async loadImage() {
         try {
             const thumbnails = await this.fileService.getThumbnails(
-                this.gridEntry.file.hash);
+                this.gridEntry.file);
             let thumbnail = thumbnails.find(
                 t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
             thumbnail = thumbnail ?? thumbnails[0];

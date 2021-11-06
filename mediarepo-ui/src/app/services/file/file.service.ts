@@ -31,7 +31,7 @@ export class FileService {
 
   public async readFile(file: File): Promise<SafeResourceUrl> {
     const once_uri = await invoke<string>("plugin:mediarepo|read_file_by_hash",
-      {hash: file.hash, mimeType: file.mime_type});
+      {id: file.id, hash: file.hash, mimeType: file.mime_type});
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
@@ -41,8 +41,12 @@ export class FileService {
     return this.sanitizer.bypassSecurityTrustResourceUrl(once_uri);
   }
 
-  public async getThumbnails(hash: string): Promise<Thumbnail[]> {
+  public async getThumbnails(file: File): Promise<Thumbnail[]> {
     return await invoke<Thumbnail[]>("plugin:mediarepo|get_file_thumbnails",
-      {hash});
+      {id: file.id});
+  }
+
+  public async updateFileName(file: File, name: string): Promise<File> {
+    return await invoke<File>("plugin:mediarepo|update_file_name", {id: file.id, name})
   }
 }
