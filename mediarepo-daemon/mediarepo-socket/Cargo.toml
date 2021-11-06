@@ -33,4 +33,4 @@ features = ["tokio-executor"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "b123e69d92dfd384d37b9005c8e261c69fddfcc5"
+rev = "28b25e94eb2cdb8cec86e3e452081a649b8cd64e"

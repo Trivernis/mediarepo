@@ -1,25 +1,26 @@
-use crate::file_type::FileType;
-use crate::storage::Storage;
-use crate::tag::Tag;
-use crate::thumbnail::Thumbnail;
+use std::fmt::Debug;
+use std::io::Cursor;
+use std::str::FromStr;
+
 use chrono::{Local, NaiveDateTime};
-use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::image::GenericImageView;
-use mediarepo_core::image_processing::{
-    create_thumbnail, get_image_bytes_png, read_image, ThumbnailSize,
-};
+use sea_orm::prelude::*;
+use sea_orm::sea_query::{Expr, Query};
+use sea_orm::{Condition, DatabaseConnection, Set};
+use sea_orm::{JoinType, QuerySelect};
+use tokio::io::{AsyncReadExt, BufReader};
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_core::thumbnailer::{self, Thumbnail as ThumbnailerThumb, ThumbnailSize};
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
-use mime::Mime;
-use sea_orm::prelude::*;
-use sea_orm::sea_query::{Expr, Query};
-use sea_orm::{Condition, DatabaseConnection, Set};
-use sea_orm::{JoinType, QuerySelect};
-use std::fmt::Debug;
-use tokio::io::BufReader;
+
+use crate::file_type::FileType;
+use crate::storage::Storage;
+use crate::tag::Tag;
+use crate::thumbnail::Thumbnail;
 
 #[derive(Clone)]
 pub struct File {
@@ -331,31 +332,21 @@ impl File {
 
     /// Creates a thumbnail for the file
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn create_thumbnail(
+    pub async fn create_thumbnail<I: IntoIterator<Item = ThumbnailSize> + Debug>(
         &self,
-        size: ThumbnailSize,
-    ) -> RepoResult<(Vec<u8>, Mime, (u32, u32))> {
-        match self.file_type() {
-            FileType::Image => self.create_image_thumbnail(size).await,
-            _ => Err(RepoError::from(
-                "Unsupported file type for thumbnail generation",
-            )),
-        }
-    }
+        sizes: I,
+    ) -> RepoResult<Vec<ThumbnailerThumb>> {
+        let mut buf = Vec::new();
+        self.get_reader().await?.read_to_end(&mut buf).await?;
+        let mime_type = self
+            .model
+            .mime_type
+            .clone()
+            .map(|mime_type| mime::Mime::from_str(&mime_type).unwrap())
+            .unwrap_or(mime::IMAGE_STAR);
+        let thumbs = thumbnailer::create_thumbnails(Cursor::new(buf), mime_type, sizes)?;
 
-    /// Creates a thumbnail for an image
-    #[tracing::instrument(level = "debug", skip(self))]
-    async fn create_image_thumbnail(
-        &self,
-        size: ThumbnailSize,
-    ) -> RepoResult<(Vec<u8>, Mime, (u32, u32))> {
-        let mut reader = self.get_reader().await?;
-        let image = read_image(&mut reader).await?;
-        let thumb_image = create_thumbnail(image, size);
-        let actual_size = (thumb_image.height(), thumb_image.width());
-        let bytes = get_image_bytes_png(thumb_image)?;
-
-        Ok((bytes, mime::IMAGE_PNG, actual_size))
+        Ok(thumbs)
     }
 
     /// Returns the active model of the file with only the id set

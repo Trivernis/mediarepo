@@ -5,7 +5,7 @@ use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::image_processing::ThumbnailSize;
+use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
 use sea_orm::DatabaseConnection;
@@ -167,13 +167,15 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip(self, file))]
     pub async fn create_thumbnails_for_file(&self, file: File) -> RepoResult<()> {
         let thumb_storage = self.get_thumbnail_storage()?;
-        for size in [
-            ThumbnailSize::Small,
-            ThumbnailSize::Medium,
-            ThumbnailSize::Large,
-        ] {
-            let (bytes, mime, (height, width)) = file.create_thumbnail(size).await?;
-            let hash = thumb_storage.store_entry(Cursor::new(bytes)).await?;
+        let size = ThumbnailSize::Medium;
+        let (height, width) = size.dimensions();
+        let thumbs = file.create_thumbnail([size]).await?;
+
+        for thumb in thumbs {
+            let mut buf = Vec::new();
+            thumb.write_png(&mut buf)?;
+            let hash = thumb_storage.store_entry(Cursor::new(buf)).await?;
+
             Thumbnail::add(
                 self.db.clone(),
                 hash.id(),
@@ -181,7 +183,7 @@ impl Repo {
                 thumb_storage.id(),
                 height as i32,
                 width as i32,
-                Some(mime.to_string()),
+                Some(mime::IMAGE_PNG.to_string()),
             )
             .await?;
         }

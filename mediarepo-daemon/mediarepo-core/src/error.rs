@@ -30,7 +30,7 @@ pub enum RepoError {
     Raw(StringError),
 
     #[error(transparent)]
-    Image(#[from] image::error::ImageError),
+    Thumbnailer(#[from] thumbnailer::error::ThumbError),
 }
 
 #[derive(Error, Debug)]

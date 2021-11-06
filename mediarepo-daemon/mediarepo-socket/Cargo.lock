@@ -201,6 +201,9 @@ name = "cc"
 version = "1.0.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "79c2681d6594606957bbb8631c4b90a7fcaaa72cdb714743a437b156d6a7eedd"
+dependencies = [
+ "jobserver",
+]
 
 [[package]]
 name = "cfg-if"
@@ -697,6 +700,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 
 [[package]]
+name = "jobserver"
+version = "0.1.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af25a77299a7f711a01975c35a6a424eb6862092cc2d6c72c4ed6cbc56dfc1fa"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "jpeg-decoder"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -744,6 +756,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "libwebp-sys"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e70c064738b35a28fd6f991d27c0d9680353641d167ae3702a8228dd8272ef6"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -769,8 +790,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.4.1"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=b123e69d92dfd384d37b9005c8e261c69fddfcc5#b123e69d92dfd384d37b9005c8e261c69fddfcc5"
+version = "0.4.2"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=28b25e94eb2cdb8cec86e3e452081a649b8cd64e#28b25e94eb2cdb8cec86e3e452081a649b8cd64e"
 dependencies = [
  "chrono",
  "serde",
@@ -785,7 +806,6 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "futures 0.3.17",
- "image",
  "multibase",
  "multihash",
  "rmp-ipc",
@@ -793,6 +813,7 @@ dependencies = [
  "serde",
  "sqlx",
  "thiserror",
+ "thumbnailer",
  "tokio",
  "toml",
  "typemap_rev",
@@ -1846,6 +1867,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "thumbnailer"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10341d6f800bc62e7b6cf98b78851385db843bdae629bc4353d30c2fde0ed011"
+dependencies = [
+ "image",
+ "mime",
+ "rayon",
+ "thiserror",
+ "webp",
+]
+
+[[package]]
 name = "tiff"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2149,6 +2183,16 @@ checksum = "38eb105f1c59d9eaa6b5cdc92b859d85b926e82cb2e0945cd0c9259faa6fe9fb"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "webp"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0041a9fcbdbf6402c3cb0ec7c2c1a1c240efd523519a0763ae07753bc95f7713"
+dependencies = [
+ "image",
+ "libwebp-sys",
 ]
 
 [[package]]
