@@ -77,7 +77,15 @@ impl ApiClient {
         let server_api_version = info.api_version();
 
         if !check_apis_compatible(get_api_version(), server_api_version) {
-            Err(ApiError::VersionMismatch)
+            let server_version_string = format!(
+                "{}.{}.{}",
+                server_api_version.0, server_api_version.1, server_api_version.2
+            );
+            let client_version_string = env!("CARGO_PKG_VERSION").to_string();
+            Err(ApiError::VersionMismatch {
+                server: server_version_string,
+                client: client_version_string,
+            })
         } else {
             Ok(client)
         }

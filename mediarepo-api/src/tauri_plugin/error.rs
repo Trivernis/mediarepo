@@ -46,7 +46,9 @@ impl From<ApiError> for PluginError {
                     format!("{:?}", e)
                 }
             },
-            ApiError::VersionMismatch => {String::from("The servers API version is not supported by the client. Please make sure both are up to date.")}
+            ApiError::VersionMismatch { server, client } => {
+                format!("The servers API version ({}) is not supported by the client ({}). Please make sure both are up to date.", server, client)
+            }
         };
         Self { message }
     }
