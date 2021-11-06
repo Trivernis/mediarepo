@@ -2,7 +2,7 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
     FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest,
-    SortKey, TagQuery, ThumbnailMetadataResponse,
+    SortKey, TagQuery, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -80,5 +80,14 @@ impl FileApi {
     pub async fn read_thumbnail(&self, hash: String) -> ApiResult<Vec<u8>> {
         let payload: BytePayload = self.emit_and_get("read_thumbnail", hash).await?;
         Ok(payload.to_payload_bytes()?)
+    }
+
+    /// Updates a files name
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn update_file_name(&self, file_id: FileIdentifier, name: String) -> ApiResult<()> {
+        self.emit("update_file_name", UpdateFileNameRequest { file_id, name })
+            .await?;
+
+        Ok(())
     }
 }

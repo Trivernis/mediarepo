@@ -50,7 +50,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 check_local_repository_exists,
                 remove_repository,
                 change_file_tags,
-                create_tags
+                create_tags,
+                update_file_name
             ]),
         }
     }

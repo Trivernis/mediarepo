@@ -86,3 +86,9 @@ pub struct ThumbnailMetadataResponse {
     pub width: i32,
     pub mime_type: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UpdateFileNameRequest {
+    pub file_id: FileIdentifier,
+    pub name: String,
+}

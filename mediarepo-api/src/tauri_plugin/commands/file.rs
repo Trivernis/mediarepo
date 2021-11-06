@@ -70,3 +70,13 @@ pub async fn read_thumbnail(
         Ok(uri)
     }
 }
+
+#[tauri::command]
+pub async fn update_file_name(api_state: ApiAccess<'_>, id: i64, name: String) -> PluginResult<()> {
+    let api = api_state.api().await?;
+    api.file
+        .update_file_name(FileIdentifier::ID(id), name)
+        .await?;
+
+    Ok(())
+}
