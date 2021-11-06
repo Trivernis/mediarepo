@@ -57,14 +57,9 @@ impl FileApi {
 
     /// Reads the file and returns its contents as bytes
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn read_file_by_hash(&self, hash: String) -> ApiResult<Vec<u8>> {
+    pub async fn read_file_by_hash(&self, id: FileIdentifier) -> ApiResult<Vec<u8>> {
         let payload: BytePayload = self
-            .emit_and_get(
-                "read_file",
-                ReadFileRequest {
-                    id: FileIdentifier::Hash(hash),
-                },
-            )
+            .emit_and_get("read_file", ReadFileRequest { id })
             .await?;
 
         Ok(payload.to_payload_bytes()?)
@@ -74,15 +69,10 @@ impl FileApi {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_file_thumbnails(
         &self,
-        hash: String,
+        id: FileIdentifier,
     ) -> ApiResult<Vec<ThumbnailMetadataResponse>> {
-        self.emit_and_get(
-            "get_thumbnails",
-            GetFileThumbnailsRequest {
-                id: FileIdentifier::Hash(hash),
-            },
-        )
-        .await
+        self.emit_and_get("get_thumbnails", GetFileThumbnailsRequest { id })
+            .await
     }
 
     /// Reads the thumbnail of the file and returns its contents in bytes

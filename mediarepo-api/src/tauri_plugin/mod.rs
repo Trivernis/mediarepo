@@ -48,7 +48,9 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 disconnect_repository,
                 close_local_repository,
                 check_local_repository_exists,
-                remove_repository
+                remove_repository,
+                change_file_tags,
+                create_tags
             ]),
         }
     }

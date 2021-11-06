@@ -2,7 +2,7 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
 use crate::types::identifier::FileIdentifier;
-use crate::types::tags::TagResponse;
+use crate::types::tags::{ChangeFileTagsRequest, TagResponse};
 use async_trait::async_trait;
 use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::ipc::context::Context;
@@ -36,14 +36,9 @@ impl TagApi {
 
     /// Returns a list of all tags for a file
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn get_tags_for_file(&self, hash: String) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get(
-            "tags_for_file",
-            GetFileTagsRequest {
-                id: FileIdentifier::Hash(hash),
-            },
-        )
-        .await
+    pub async fn get_tags_for_file(&self, id: FileIdentifier) -> ApiResult<Vec<TagResponse>> {
+        self.emit_and_get("tags_for_file", GetFileTagsRequest { id })
+            .await
     }
 
     /// Returns a list of all tags that are assigned to the list of files
@@ -51,5 +46,30 @@ impl TagApi {
     pub async fn get_tags_for_files(&self, hashes: Vec<String>) -> ApiResult<Vec<TagResponse>> {
         self.emit_and_get("tags_for_files", GetFilesTagsRequest { hashes })
             .await
+    }
+
+    /// Creates a new tag and returns the created tag object
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn create_tags(&self, tags: Vec<String>) -> ApiResult<Vec<TagResponse>> {
+        self.emit_and_get("create_tags", tags).await
+    }
+
+    /// Changes the tags of a file
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn change_file_tags(
+        &self,
+        file_id: FileIdentifier,
+        added_tags: Vec<i64>,
+        removed_tags: Vec<i64>,
+    ) -> ApiResult<Vec<TagResponse>> {
+        self.emit_and_get(
+            "change_file_tags",
+            ChangeFileTagsRequest {
+                file_id,
+                added_tags,
+                removed_tags,
+            },
+        )
+        .await
     }
 }
