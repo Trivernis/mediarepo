@@ -45,4 +45,8 @@ export class FileService {
     return await invoke<Thumbnail[]>("plugin:mediarepo|get_file_thumbnails",
       {id: file.id});
   }
+
+  public async updateFileName(file: File, name: string): Promise<File> {
+    return await invoke<File>("plugin:mediarepo|update_file_name", {id: file.id, name})
+  }
 }

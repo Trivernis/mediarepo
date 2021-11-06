@@ -3,7 +3,7 @@
     <h1>Edit File</h1>
     <mat-form-field *ngIf="this.files.length === 1" appearance="fill">
       <mat-label>Name</mat-label>
-      <input matInput>
+      <input #fileNameInput matInput (focusout)="this.changeFileName(fileNameInput.value)">
     </mat-form-field>
   </div>
   <div class="tag-edit-list" fxFlex fxFlexFill fxFlexAlign="start">

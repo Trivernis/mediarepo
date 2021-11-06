@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, ElementRef,
   Input,
   OnChanges,
   OnInit,
@@ -14,6 +14,7 @@ import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
 import {TagService} from "../../services/tag/tag.service";
+import {FileService} from "../../services/file/file.service";
 
 @Component({
   selector: 'app-file-edit',
@@ -33,9 +34,11 @@ export class FileEditComponent implements OnInit, OnChanges {
   public editMode: string = "Toggle";
 
   @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
+  @ViewChild("fileNameInput") fileNameInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private tagService: TagService,
+    private fileService: FileService,
   ) {
     this.suggestionTags = this.tagInputForm.valueChanges.pipe(startWith(null),
       map(
@@ -47,11 +50,26 @@ export class FileEditComponent implements OnInit, OnChanges {
     this.tagService.tags.subscribe(tags => this.allTags = tags);
     await this.tagService.loadTags();
     await this.loadFileTags();
+    this.resetFileNameInput();
   }
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes["files"]) {
       await this.loadFileTags()
+      this.resetFileNameInput();
+    }
+  }
+
+  public async changeFileName(value: string) {
+    const name = value.trim();
+
+    if (name.length > 0) {
+      const file = this.files[0];
+      console.log("Updating name to", name);
+      const responseFile = await this.fileService.updateFileName(file, name);
+      console.log("Updated name");
+      file.name = responseFile.name;
+      this.resetFileNameInput();
     }
   }
 
@@ -143,6 +161,12 @@ export class FileEditComponent implements OnInit, OnChanges {
       this.fileTags[file.id] = await this.tagService.getTagsForFiles([file.hash]);
     }
     this.mapFileTagsToTagList();
+  }
+
+  private resetFileNameInput() {
+    if (this.files.length === 1) {
+      this.fileNameInput.nativeElement.value = this.files[0].name ?? "";
+    }
   }
 
   private mapFileTagsToTagList() {
