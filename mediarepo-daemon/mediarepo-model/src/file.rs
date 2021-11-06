@@ -308,6 +308,19 @@ impl File {
         Ok(())
     }
 
+    /// Removes multiple tags from the file
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn remove_tags(&self, tag_ids: Vec<i64>) -> RepoResult<()> {
+        let hash_id = self.hash.id;
+        hash_tag::Entity::delete_many()
+            .filter(hash_tag::Column::HashId.eq(hash_id))
+            .filter(hash_tag::Column::TagId.is_in(tag_ids))
+            .exec(&self.db)
+            .await?;
+
+        Ok(())
+    }
+
     /// Returns the reader for the file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
