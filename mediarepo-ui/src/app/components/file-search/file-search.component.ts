@@ -135,7 +135,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     return this.validTags.filter(
         t => t.includes(normalizedTag) && this.searchTags.findIndex(
-          s => s.name === t) < 0)
+          s => s.getNormalizedTag() === t) < 0)
       .map(t => negated ? "-" + t : t)
       .slice(0, 20);
   }

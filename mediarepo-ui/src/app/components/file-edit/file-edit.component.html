@@ -1,0 +1,48 @@
+<div class="file-edit-inner" fxLayout="column">
+  <div class="file-metadata" fxFlex="150px">
+    <h1>Edit File</h1>
+    <mat-form-field *ngIf="this.files.length === 1" appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput>
+    </mat-form-field>
+  </div>
+  <div class="tag-edit-list" fxFlex fxFlexFill fxFlexAlign="start">
+    <cdk-virtual-scroll-viewport #tagScroll itemSize="50" maxBufferPx="2000" minBufferPx="1000">
+      <div class="editable-tag" *cdkVirtualFor="let tag of tags">
+        <app-tag-item [tag]="tag"></app-tag-item>
+        <button class="tag-remove-button" mat-icon-button (click)="removeTag(tag)">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  <mat-divider fxFlex="1em"></mat-divider>
+  <div class="tag-input" fxFlex="200px">
+    <div class="tag-input-field">
+      <mat-form-field class="form-field-tag-input" appearance="fill">
+        <mat-label>{{modeSelect.value}} tag</mat-label>
+        <input [formControl]="tagInputForm" matInput [matAutocomplete]="auto">
+      </mat-form-field>
+
+      <mat-autocomplete #auto (optionSelected)="editTagByAutocomplete($event)">
+        <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
+          {{tag}}
+        </mat-option>
+
+      </mat-autocomplete>
+      <button mat-icon-button class="add-tag-button">
+        <mat-icon *ngIf="editMode === 'Toggle'">change_circle</mat-icon>
+        <mat-icon *ngIf="editMode === 'Add'">add_circle</mat-icon>
+        <mat-icon *ngIf="editMode === 'Remove'">remove_circle</mat-icon>
+      </button>
+    </div>
+    <mat-form-field class="form-field-mode" appearance="fill">
+      <mat-label>Mode</mat-label>
+      <mat-select #modeSelect [(value)]="editMode">
+        <mat-option value="Toggle">Toggle</mat-option>
+        <mat-option value="Add">Add</mat-option>
+        <mat-option value="Remove">Remove</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

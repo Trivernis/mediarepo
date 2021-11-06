@@ -1,0 +1,70 @@
+.file-metadata, .tag-input {
+  width: 100%;
+  mat-form-field {
+    width: 100%;
+  }
+
+  mat-form-field.form-field-mode {
+    width: 10em;
+  }
+
+  mat-form-field.form-field-tag-input {
+
+  }
+}
+
+.file-edit-inner {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+.tag-edit-list {
+  height: 100%;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+cdk-virtual-scroll-viewport {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  ::ng-deep .cdk-virtual-scroll-content-wrapper {
+    width: 100%;
+  }
+}
+
+.editable-tag {
+  height: 50px;
+  width: 100%;
+  display: flex;
+  font-size: 1.2em;
+  transition-duration: 0.1s;
+  user-select: none;
+  overflow: hidden;
+  cursor: default;
+
+  app-tag-item {
+    margin: auto auto auto 0.25em;
+  }
+
+  .tag-remove-button {
+    margin-right: 1em;
+    height: 50px;
+    width: 50px;
+  }
+}
+
+.tag-input-field {
+  display: flex;
+  flex-direction: row;
+  .add-tag-button {
+    width: 65px;
+    height: 65px;
+  }
+}
+
+mat-divider {
+  width: 100%;
+}

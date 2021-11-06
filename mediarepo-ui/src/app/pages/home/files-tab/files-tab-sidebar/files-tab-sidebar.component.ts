@@ -14,6 +14,7 @@ import {FileService} from "../../../../services/file/file.service";
 import {File} from "../../../../models/File";
 import {FileSearchComponent} from "../../../../components/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
+import {FileEditComponent} from "../../../../components/file-edit/file-edit.component";
 
 @Component({
   selector: 'app-files-tab-sidebar',
@@ -27,10 +28,12 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
   @Output() searchEndEvent = new EventEmitter<void>();
 
   @ViewChild('filesearch') fileSearch!: FileSearchComponent;
+  @ViewChild("fileedit") fileEdit: FileEditComponent | undefined;
 
   public tagsOfFiles: Tag[] = [];
   public tags: Tag[] = [];
   public files: File[] = [];
+  public tagsOfSelection: Tag[] = [];
 
   constructor(private repoService: RepositoryService, private tagService: TagService, private fileService: FileService) {
     this.fileService.displayedFiles.subscribe(async files => {
@@ -72,9 +75,10 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
   }
 
   async showFileDetails(files: File[]) {
-    this.tags = await this.tagService.getTagsForFiles(files.map(f => f.hash))
-    this.tags = this.tags.sort(
+    this.tagsOfSelection = await this.tagService.getTagsForFiles(files.map(f => f.hash))
+    this.tagsOfSelection = this.tagsOfSelection.sort(
       (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
+    this.tags = this.tagsOfSelection;
   }
 
   private async refreshFileSelection() {
