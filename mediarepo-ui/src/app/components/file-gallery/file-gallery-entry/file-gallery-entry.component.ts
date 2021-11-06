@@ -47,7 +47,7 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   async loadImage() {
     try {
       const hash = this.file.data.hash;
-      const thumbnails = await this.fileService.getThumbnails(hash);
+      const thumbnails = await this.fileService.getThumbnails(this.file.data);
       let thumbnail = thumbnails.find(
         t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
       thumbnail = thumbnail ?? thumbnails[0];

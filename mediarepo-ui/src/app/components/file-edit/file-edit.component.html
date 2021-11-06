@@ -21,7 +21,7 @@
     <div class="tag-input-field">
       <mat-form-field class="form-field-tag-input" appearance="fill">
         <mat-label>{{modeSelect.value}} tag</mat-label>
-        <input [formControl]="tagInputForm" matInput [matAutocomplete]="auto">
+        <input [formControl]="tagInputForm" matInput [matAutocomplete]="auto" (keydown)="this.handleTagInputKeydown($event)" (submit)="this.editTag(tagInputForm.value)">
       </mat-form-field>
 
       <mat-autocomplete #auto (optionSelected)="editTagByAutocomplete($event)">

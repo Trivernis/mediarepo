@@ -22,7 +22,7 @@
       </div>
     </mat-tab>
     <mat-tab label="Edit" *ngIf="this.selectedFiles.length > 0">
-      <app-file-edit #fileedit [files]="this.selectedFiles" [tags]="tagsOfSelection"></app-file-edit>
+      <app-file-edit #fileedit [files]="this.selectedFiles"></app-file-edit>
     </mat-tab>
   </mat-tab-group>
 </div>
