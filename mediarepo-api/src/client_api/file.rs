@@ -84,10 +84,12 @@ impl FileApi {
 
     /// Updates a files name
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn update_file_name(&self, file_id: FileIdentifier, name: String) -> ApiResult<()> {
-        self.emit("update_file_name", UpdateFileNameRequest { file_id, name })
-            .await?;
-
-        Ok(())
+    pub async fn update_file_name(
+        &self,
+        file_id: FileIdentifier,
+        name: String,
+    ) -> ApiResult<FileMetadataResponse> {
+        self.emit_and_get("update_file_name", UpdateFileNameRequest { file_id, name })
+            .await
     }
 }
