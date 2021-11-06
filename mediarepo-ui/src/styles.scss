@@ -3,13 +3,14 @@
 @use 'src/app/app.component-theme' as app;
 @use 'src/app/components/file-grid/file-grid-entry/file-grid-entry.component-theme' as file-grid-entry;
 @use 'src/app/components/file-search/file-search.component-theme' as file-search;
+@use "src/app/components/file-gallery/file-gallery-entry/file-gallery-entry.component-theme" as gallery-entry;
 
 @include mat.core();
 
 $theme: mat.define-dark-theme((
   color: (
-    primary: mat.define-palette(mat.$deep-purple-palette),
-    accent: mat.define-palette(mat.$green-palette),
+    primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
+    accent: mat.define-palette(mat.$green-palette, A200, A100, A400),
     warn: mat.define-palette(mat.$red-palette),
     background: mat.define-palette(mat.$blue-grey-palette)
   ),
@@ -22,3 +23,4 @@ $theme: mat.define-dark-theme((
 @include app.theme($theme);
 @include file-grid-entry.theme($theme);
 @include file-search.theme($theme);
+@include gallery-entry.theme($theme);

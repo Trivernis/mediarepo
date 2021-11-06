@@ -22,7 +22,6 @@ import {FileGridEntryComponent} from './components/file-grid/file-grid-entry/fil
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {ScrollingModule} from "@angular/cdk/scrolling";
-import {LightboxModule} from "ngx-lightbox";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatIconModule} from "@angular/material/icon";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
@@ -86,7 +85,6 @@ import {TagItemComponent} from './components/tag-item/tag-item.component';
     MatProgressBarModule,
     MatPaginatorModule,
     ScrollingModule,
-    LightboxModule,
     MatChipsModule,
     MatIconModule,
     MatAutocompleteModule,
