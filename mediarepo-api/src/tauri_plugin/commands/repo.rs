@@ -140,16 +140,7 @@ pub async fn select_repository(
             .path
             .clone()
             .ok_or_else(|| PluginError::from("Missing repo path or address in config."))?;
-        let address_path = PathBuf::from(path).join(".tcp");
-        let mut address = String::from("127.0.0.1:2400");
-        for _ in 0..10 {
-            if address_path.exists() {
-                address = fs::read_to_string(address_path).await?;
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(250)).await;
-        }
-        address
+        get_repo_address(path).await?
     };
     let client = ApiClient::connect(address).await?;
     api_state.set_api(client).await;
@@ -166,6 +157,27 @@ pub async fn select_repository(
     save_settings(&settings)?;
 
     Ok(())
+}
+
+async fn get_repo_address(path: String) -> PluginResult<String> {
+    let tcp_path = PathBuf::from(&path).join("repo.tcp");
+    let socket_path = PathBuf::from(&path).join("repo.socket");
+
+    let mut address = String::from("127.0.0.1:2400");
+    for _ in 0..10 {
+        #[cfg(unix)]
+        if socket_path.exists() {
+            address = socket_path.to_str().unwrap().to_string();
+            break;
+        }
+        if tcp_path.exists() {
+            address = fs::read_to_string(tcp_path).await?;
+            break;
+        }
+        tokio::time::sleep(Duration::from_millis(250)).await;
+    }
+
+    Ok(address)
 }
 
 async fn close_selected_repository(app_state: &AppAccess<'_>) -> PluginResult<()> {
