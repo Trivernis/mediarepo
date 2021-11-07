@@ -2,11 +2,13 @@ use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
 use compare::Compare;
 use mediarepo_api::types::files::{
-    AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest,
-    ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
+    AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailOfSizeRequest,
+    GetFileThumbnailsRequest, ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse,
+    UpdateFileNameRequest,
 };
 use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
+use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
 use mediarepo_model::file::File;
 use std::cmp::Ordering;
@@ -29,6 +31,7 @@ impl NamespaceProvider for FilesNamespace {
             "read_file" => Self::read_file,
             "get_thumbnails" => Self::thumbnails,
             "read_thumbnail" => Self::read_thumbnail,
+            "get_thumbnail_of_size" => Self::get_thumbnail_of_size,
             "update_file_name" => Self::update_file_name
         );
     }
@@ -137,7 +140,7 @@ impl FilesNamespace {
 
         if thumbnails.len() == 0 {
             tracing::debug!("No thumbnails for file found. Creating thumbnails...");
-            repo.create_thumbnails_for_file(file.clone()).await?;
+            repo.create_thumbnails_for_file(&file).await?;
             tracing::debug!("Thumbnails for file created.");
         }
         thumbnails = file.thumbnails().await?;
@@ -174,6 +177,54 @@ impl FilesNamespace {
                 Self::name(),
                 "read_thumbnail",
                 BytePayload::new(buf),
+            )
+            .await?;
+
+        Ok(())
+    }
+
+    /// Returns a thumbnail that is within the range of the requested sizes
+    #[tracing::instrument(skip_all)]
+    async fn get_thumbnail_of_size<S: AsyncProtocolStream>(
+        ctx: &Context<S>,
+        event: Event,
+    ) -> IPCResult<()> {
+        let request = event.data::<GetFileThumbnailOfSizeRequest>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(request.id, &repo).await?;
+        let thumbnails = file.thumbnails().await?;
+        let min_size = request.min_size;
+        let max_size = request.max_size;
+
+        let found_thumbnail = thumbnails.into_iter().find(|thumb| {
+            let height = thumb.height() as u32;
+            let width = thumb.width() as u32;
+            height >= min_size.0
+                && height <= max_size.0
+                && width >= min_size.1
+                && width <= max_size.1
+        });
+
+        let thumbnail = if let Some(thumbnail) = found_thumbnail {
+            thumbnail
+        } else {
+            let middle_size = ((max_size.0 + min_size.0) / 2, (max_size.1 + min_size.1) / 2);
+            let thumbnail = repo
+                .create_file_thumbnail(&file, ThumbnailSize::Custom(middle_size))
+                .await?;
+
+            thumbnail
+        };
+        let mut buf = Vec::new();
+        thumbnail.get_reader().await?.read_to_end(&mut buf).await?;
+        let byte_payload = BytePayload::new(buf);
+        let thumb_payload = ThumbnailMetadataResponse::from_model(thumbnail);
+        ctx.emitter
+            .emit_response_to(
+                event.id(),
+                Self::name(),
+                "get_thumbnail_of_size",
+                TandemPayload::new(thumb_payload, byte_payload),
             )
             .await?;
 

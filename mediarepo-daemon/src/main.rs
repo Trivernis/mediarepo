@@ -286,7 +286,7 @@ async fn add_tags_from_tags_file(
 #[tracing::instrument(skip(repo, file))]
 async fn create_file_thumbnails(repo: &Repo, file: File) -> RepoResult<()> {
     if file.thumbnails().await?.len() == 0 {
-        repo.create_thumbnails_for_file(file).await?;
+        repo.create_thumbnails_for_file(&file).await?;
     }
     Ok(())
 }

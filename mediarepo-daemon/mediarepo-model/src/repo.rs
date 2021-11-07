@@ -165,30 +165,64 @@ impl Repo {
 
     /// Creates thumbnails of all sizes for a file
     #[tracing::instrument(level = "debug", skip(self, file))]
-    pub async fn create_thumbnails_for_file(&self, file: File) -> RepoResult<()> {
+    pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<()> {
         let thumb_storage = self.get_thumbnail_storage()?;
         let size = ThumbnailSize::Medium;
         let (height, width) = size.dimensions();
         let thumbs = file.create_thumbnail([size]).await?;
 
         for thumb in thumbs {
-            let mut buf = Vec::new();
-            thumb.write_png(&mut buf)?;
-            let hash = thumb_storage.store_entry(Cursor::new(buf)).await?;
-
-            Thumbnail::add(
-                self.db.clone(),
-                hash.id(),
-                file.id(),
-                thumb_storage.id(),
-                height as i32,
-                width as i32,
-                Some(mime::IMAGE_PNG.to_string()),
-            )
-            .await?;
+            self.store_single_thumbnail(file, thumb_storage, height, width, thumb)
+                .await?;
         }
 
         Ok(())
+    }
+
+    #[tracing::instrument(level = "debug", skip(self, file))]
+    pub async fn create_file_thumbnail(
+        &self,
+        file: &File,
+        size: ThumbnailSize,
+    ) -> RepoResult<Thumbnail> {
+        let thumb_storage = self.get_thumbnail_storage()?;
+        let (height, width) = size.dimensions();
+        let thumb = file
+            .create_thumbnail([size])
+            .await?
+            .pop()
+            .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
+        let thumbnail = self
+            .store_single_thumbnail(file, thumb_storage, height, width, thumb)
+            .await?;
+
+        Ok(thumbnail)
+    }
+
+    async fn store_single_thumbnail(
+        &self,
+        file: &File,
+        thumb_storage: &Storage,
+        height: u32,
+        width: u32,
+        thumb: mediarepo_core::thumbnailer::Thumbnail,
+    ) -> RepoResult<Thumbnail> {
+        let mut buf = Vec::new();
+        thumb.write_png(&mut buf)?;
+        let hash = thumb_storage.store_entry(Cursor::new(buf)).await?;
+
+        let thumbnail = Thumbnail::add(
+            self.db.clone(),
+            hash.id(),
+            file.id(),
+            thumb_storage.id(),
+            height as i32,
+            width as i32,
+            Some(mime::IMAGE_PNG.to_string()),
+        )
+        .await?;
+
+        Ok(thumbnail)
     }
 
     /// Returns all tags stored in the database

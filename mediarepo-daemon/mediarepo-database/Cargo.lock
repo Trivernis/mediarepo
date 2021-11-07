@@ -1295,9 +1295,9 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05b0a3f127316ca5ca832cb7e9e616641ffbab659c2cb2ab7210d60e7441f70f"
+checksum = "87d2b669d0332e1478b88fdecf4c03cc0c8ce1d977a79eba848f4532213567e6"
 dependencies = [
  "async-trait",
  "byteorder",
