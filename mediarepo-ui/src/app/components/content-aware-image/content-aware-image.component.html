@@ -1,5 +1,4 @@
 <div #imageContainer (window:resize)="this.adjustSize(image, imageContainer)" class="image-container">
   <img #image (load)="this.adjustSize(image, imageContainer)" [class.scale-height]="(!scaleWidth) && maximizeHeight" [class.scale-width]="scaleWidth && maximizeWidth"
-       [src]="this.imageSrc" alt=""
-       decoding="async">
+       [src]="this.imageSrc" alt="">
 </div>

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
@@ -6,15 +6,24 @@ import {SafeResourceUrl} from "@angular/platform-browser";
   templateUrl: './content-aware-image.component.html',
   styleUrls: ['./content-aware-image.component.scss']
 })
-export class ContentAwareImageComponent {
+export class ContentAwareImageComponent implements OnInit {
 
   @Input() imageSrc!: string | SafeResourceUrl;
   @Input() maximizeHeight: boolean = true;
   @Input() maximizeWidth: boolean = true;
+  @Input() decoding: "async" | "sync" | "auto" = "auto";
+
+  @ViewChild("image") image: ElementRef<HTMLImageElement> | undefined;
 
   scaleWidth = false;
 
   constructor() {
+  }
+
+  public ngOnInit(): void {
+    if (this.image) {
+      this.image.nativeElement.decoding = this.decoding;
+    }
   }
 
   /**

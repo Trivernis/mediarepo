@@ -19,7 +19,7 @@
       <div #imageDragContainer (cdkDragMoved)="this.onDragMoved($event)" *ngIf="this.fileContentUrl"
            [cdkDragFreeDragPosition]="this.imagePosition" cdkDrag class="image-drag-container">
         <div #scaledImage [style]="{scale: this.imageZoom}" class="image-scale-container">
-          <app-content-aware-image [imageSrc]="this.fileContentUrl"></app-content-aware-image>
+          <app-content-aware-image [imageSrc]="this.fileContentUrl" decoding="sync"></app-content-aware-image>
         </div>
       </div>
     </div>
