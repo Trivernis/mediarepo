@@ -2,8 +2,8 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
     FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailOfSizeRequest,
-    GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery, ThumbnailFullResponse,
-    ThumbnailMetadataResponse, UpdateFileNameRequest,
+    GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery, ThumbnailMetadataResponse,
+    UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -107,7 +107,7 @@ where
         min_size: (u32, u32),
         max_size: (u32, u32),
     ) -> ApiResult<(ThumbnailMetadataResponse, Vec<u8>)> {
-        let payload: ThumbnailFullResponse = self
+        let payload: TandemPayload<ThumbnailMetadataResponse, BytePayload> = self
             .emit_and_get(
                 "get_thumbnail_of_size",
                 GetFileThumbnailOfSizeRequest {
