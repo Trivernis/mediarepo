@@ -124,6 +124,7 @@ impl AsyncProtocolStream for ApiProtocolStream {
             }
             #[cfg(not(unix))]
             {
+                use rmp_ipc::prelude::IPCError;
                 Err(IPCError::BuildError(
                     "The address can not be made into a socket address".to_string(),
                 ))
