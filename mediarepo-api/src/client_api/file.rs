@@ -1,8 +1,9 @@
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
-    FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailsRequest, ReadFileRequest,
-    SortKey, TagQuery, ThumbnailMetadataResponse, UpdateFileNameRequest,
+    FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailOfSizeRequest,
+    GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery, ThumbnailFullResponse,
+    ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -95,7 +96,30 @@ where
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn read_thumbnail(&self, hash: String) -> ApiResult<Vec<u8>> {
         let payload: BytePayload = self.emit_and_get("read_thumbnail", hash).await?;
-        Ok(payload.to_payload_bytes()?)
+        Ok(payload.into_inner())
+    }
+
+    /// Returns a thumbnail of size that is within the specified range
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_thumbnail_of_size(
+        &self,
+        file_id: FileIdentifier,
+        min_size: (u32, u32),
+        max_size: (u32, u32),
+    ) -> ApiResult<(ThumbnailMetadataResponse, Vec<u8>)> {
+        let payload: ThumbnailFullResponse = self
+            .emit_and_get(
+                "get_thumbnail_of_size",
+                GetFileThumbnailOfSizeRequest {
+                    id: file_id,
+                    min_size,
+                    max_size,
+                },
+            )
+            .await?;
+        let (metadata, bytes) = payload.into_inner();
+
+        Ok((metadata, bytes.into_inner()))
     }
 
     /// Updates a files name

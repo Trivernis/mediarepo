@@ -1,5 +1,6 @@
 use crate::types::identifier::FileIdentifier;
 use chrono::NaiveDateTime;
+use rmp_ipc::payload::{BytePayload, TandemPayload};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -101,8 +102,4 @@ pub struct UpdateFileNameRequest {
     pub name: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ThumbnailFullResponse {
-    pub metadata: ThumbnailMetadataResponse,
-    pub data: Vec<u8>,
-}
+pub type ThumbnailFullResponse = TandemPayload<ThumbnailMetadataResponse, BytePayload>;

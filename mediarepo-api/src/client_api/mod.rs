@@ -35,10 +35,7 @@ pub trait IPCApi<S: AsyncProtocolStream> {
         Ok(meta)
     }
 
-    async fn emit_and_get<
-        T: EventSendPayload + Debug + Send,
-        R: EventReceivePayload + Debug + Send,
-    >(
+    async fn emit_and_get<T: EventSendPayload + Debug + Send, R: EventReceivePayload + Send>(
         &self,
         event_name: &str,
         data: T,
