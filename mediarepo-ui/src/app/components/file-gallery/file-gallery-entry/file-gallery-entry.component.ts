@@ -34,8 +34,6 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
       this.cachedFile = this.file.data;
       this.contentUrl = undefined;
       await this.loadImage();
-    } else if (!this.contentUrl) {
-      await this.loadImage();
     }
   }
 
@@ -47,17 +45,10 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   async loadImage() {
     try {
       const hash = this.file.data.hash;
-      const thumbnails = await this.fileService.getThumbnails(this.file.data);
-      let thumbnail = thumbnails.find(
-        t => (t.height > 250 || t.width > 250) && (t.height < 500 && t.width < 500));
-      thumbnail = thumbnail ?? thumbnails[0];
+      const contentUrl = await this.fileService.getFileThumbnail(this.file.data, 250, 250);
 
-      if (!thumbnail) {
-        console.log("Thumbnail is empty?!", thumbnails);
-      } else if (this.file.data.hash === hash) {
-        this.contentUrl = await this.fileService.readThumbnail(thumbnail!!);
-      } else {
-        console.warn("Grid file updated while loading thumbnail.")
+      if (this.file.data.hash === hash) {  // avoid issues with changed files
+        this.contentUrl = contentUrl;
       }
     } catch (err) {
       this.errorBroker.showError(err);
