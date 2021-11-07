@@ -6,6 +6,7 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {Thumbnail} from "../../models/Thumbnail";
 import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
+import {RepositoryService} from "../repository/repository.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,14 @@ import {SortKey} from "../../models/SortKey";
 export class FileService {
 
   displayedFiles = new BehaviorSubject<File[]>([]);
-  pendingThumbnails: {[key:number]: BehaviorSubject<boolean>} = {};
   thumbnailCache: {[key: number]: Thumbnail[]} = {};
 
-  constructor(@Inject(DomSanitizer) private sanitizer: DomSanitizer) {
+  constructor(@Inject(DomSanitizer) private sanitizer: DomSanitizer, private repoService: RepositoryService) {
+    repoService.selectedRepository.subscribe(_ => this.clearCache());
+  }
 
+  public clearCache() {
+    this.thumbnailCache = {};
   }
 
   public async getFiles() {
@@ -46,13 +50,6 @@ export class FileService {
    * @returns {Promise<SafeResourceUrl>}
    */
   public async getFileThumbnail(file: File, width: number, height: number): Promise<SafeResourceUrl> {
-    let subject = this.pendingThumbnails[file.id];
-    if (subject && !await subject.toPromise()) {  // avoid calling for the same thumbnail multiple times
-      await subject.toPromise();
-    }
-    subject = new BehaviorSubject<boolean>(false);
-    this.pendingThumbnails[file.id] = subject;
-    setTimeout(() => subject.next(true), 5000); // allow new request after 5 seconds max
     const thumbnails = await this.getThumbnails(file);
     const thumbnail = thumbnails.find(t => t.height >= height * 0.7 && t.width >= width * 0.7 && t.height <= height * 1.3 && t.width <= width * 1.3);
     let url;
@@ -63,8 +60,6 @@ export class FileService {
       url = await this.getThumbnailOfSize(file, height * 0.9, width * 0.9, height * 1.1, width * 1.1);
       delete this.thumbnailCache[file.id];
     }
-    this.pendingThumbnails[file.id].next(true);
-    delete this.pendingThumbnails[file.id];
 
     return url;
   }
