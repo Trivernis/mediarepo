@@ -34,6 +34,7 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 read_file_by_hash,
                 get_file_thumbnails,
                 read_thumbnail,
+                get_thumbnail_of_size,
                 get_repositories,
                 get_all_tags,
                 get_tags_for_file,
@@ -85,7 +86,7 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         Ok(())
     }
 
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(level = "trace", skip_all)]
     fn extend_api(&mut self, message: Invoke<R>) {
         (self.invoke_handler)(message)
     }

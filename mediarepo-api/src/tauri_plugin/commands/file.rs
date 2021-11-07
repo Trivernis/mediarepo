@@ -72,6 +72,29 @@ pub async fn read_thumbnail(
 }
 
 #[tauri::command]
+pub async fn get_thumbnail_of_size(
+    api_state: ApiAccess<'_>,
+    buffer_state: BufferAccess<'_>,
+    file_id: i64,
+    min_size: (u32, u32),
+    max_size: (u32, u32),
+) -> PluginResult<String> {
+    let api = api_state.api().await?;
+    let (thumb, data) = api
+        .file
+        .get_thumbnail_of_size(FileIdentifier::ID(file_id), min_size, max_size)
+        .await?;
+    let uri = add_once_buffer(
+        buffer_state,
+        thumb.hash,
+        thumb.mime_type.unwrap_or(String::from("image/png")),
+        data,
+    );
+
+    Ok(uri)
+}
+
+#[tauri::command]
 pub async fn update_file_name(
     api_state: ApiAccess<'_>,
     id: i64,

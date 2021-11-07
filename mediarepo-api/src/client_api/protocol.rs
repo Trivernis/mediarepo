@@ -26,9 +26,12 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
     type RemoteAddressType = String;
     type Stream = ApiProtocolStream;
 
+    #[tracing::instrument]
     async fn protocol_bind(address: Self::AddressType) -> Result<Self> {
         if let Some(addr) = address.to_socket_addrs().ok().and_then(|mut a| a.next()) {
             let listener = TcpListener::bind(addr).await?;
+            tracing::info!("Connecting via TCP");
+
             Ok(Self::Tcp(listener))
         } else {
             #[cfg(unix)]
@@ -37,6 +40,7 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
                 use tokio::net::UnixListener;
                 let path = PathBuf::from(address);
                 let listener = UnixListener::bind(path)?;
+                tracing::info!("Connecting via unix domain socket");
 
                 Ok(Self::UnixSocket(listener))
             }
