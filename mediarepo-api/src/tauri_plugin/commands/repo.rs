@@ -161,7 +161,7 @@ pub async fn select_repository(
 
 async fn get_repo_address(path: String) -> PluginResult<String> {
     let tcp_path = PathBuf::from(&path).join("repo.tcp");
-    let socket_path = PathBuf::from(&path).join("repo.socket");
+    let socket_path = PathBuf::from(&path).join("repo.sock");
 
     let mut address = String::from("127.0.0.1:2400");
     for _ in 0..10 {
