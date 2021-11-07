@@ -121,14 +121,25 @@ async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
 /// Starts the server
 async fn start_server(opt: Opt) -> RepoResult<()> {
     let (settings, repo) = init_repo(&opt).await?;
-    let (address, handle) = start_tcp_server(
+    let mut handles = Vec::new();
+
+    #[cfg(unix)]
+    {
+        let socket_path = opt.repo.join("repo.sock");
+        let handle =
+            mediarepo_socket::create_unix_socket(socket_path, settings.clone(), repo.clone())?;
+        handles.push(handle);
+    }
+
+    let (address, tcp_handle) = start_tcp_server(
         settings.listen_address.clone(),
         settings.port_range,
         settings,
         repo,
     )?;
-    fs::write(opt.repo.join(".tcp"), &address.into_bytes()).await?;
-    handle.await.unwrap();
+    handles.push(tcp_handle);
+    fs::write(opt.repo.join("repo.tcp"), &address.into_bytes()).await?;
+    futures::future::join_all(handles.into_iter()).await;
 
     Ok(())
 }

@@ -7,13 +7,14 @@ use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
-use tokio::net::TcpListener;
+use tokio::net::{TcpListener, UnixListener};
 use tokio::task::JoinHandle;
 
 mod from_model;
 mod namespaces;
 mod utils;
 
+#[tracing::instrument(skip(settings, repo))]
 pub fn start_tcp_server(
     ip: IpAddr,
     port_range: (u16, u16),
@@ -35,6 +36,30 @@ pub fn start_tcp_server(
     });
 
     Ok((address_string, join_handle))
+}
+
+#[cfg(unix)]
+#[tracing::instrument(skip(settings, repo))]
+pub fn create_unix_socket(
+    path: std::path::PathBuf,
+    settings: Settings,
+    repo: Repo,
+) -> RepoResult<JoinHandle<()>> {
+    use std::fs;
+
+    if path.exists() {
+        fs::remove_file(&path)?;
+    }
+    let join_handle = tokio::task::spawn(async move {
+        get_builder::<UnixListener>(path)
+            .insert::<RepoKey>(Arc::new(repo))
+            .insert::<SettingsKey>(settings)
+            .build_server()
+            .await
+            .expect("Failed to create unix domain socket");
+    });
+
+    Ok(join_handle)
 }
 
 fn get_builder<L: AsyncStreamProtocolListener>(address: L::AddressType) -> IPCBuilder<L> {
