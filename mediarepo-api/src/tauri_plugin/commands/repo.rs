@@ -7,6 +7,7 @@ use std::mem;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::fs;
+use tokio::time::Duration;
 
 static REPO_CONFIG_FILE: &str = "repo.toml";
 
@@ -134,14 +135,21 @@ pub async fn select_repository(
     let address = if let Some(address) = &repo.address {
         address.clone()
     } else {
-        tracing::debug!("Reading repo address from config.");
+        tracing::debug!("Reading repo address from local file.");
         let path = repo
             .path
             .clone()
             .ok_or_else(|| PluginError::from("Missing repo path or address in config."))?;
-        let config = read_repo_config(PathBuf::from(path).join(REPO_CONFIG_FILE)).await?;
-
-        config.listen_address
+        let address_path = PathBuf::from(path).join(".tcp");
+        let mut address = String::from("127.0.0.1:2400");
+        for _ in 0..10 {
+            if address_path.exists() {
+                address = fs::read_to_string(address_path).await?;
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(250)).await;
+        }
+        address
     };
     let client = ApiClient::connect(address).await?;
     api_state.set_api(client).await;
@@ -172,11 +180,4 @@ async fn close_selected_repository(app_state: &AppAccess<'_>) -> PluginResult<()
     }
 
     Ok(())
-}
-
-async fn read_repo_config(path: PathBuf) -> PluginResult<RepoConfig> {
-    let toml_str = fs::read_to_string(path).await?;
-    let config = toml::from_str(&toml_str)?;
-
-    Ok(config)
 }
