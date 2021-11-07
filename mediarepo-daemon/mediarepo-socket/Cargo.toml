@@ -9,6 +9,7 @@ edition = "2018"
 serde = "1.0.130"
 tracing = "0.1.29"
 compare = "0.1.0"
+port_check = "0.1.5"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
@@ -33,4 +34,4 @@ features = ["tokio-executor"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "28b25e94eb2cdb8cec86e3e452081a649b8cd64e"
+rev = "17a7ade9a8112d3c8450ab6ea67c4f184d05744e"

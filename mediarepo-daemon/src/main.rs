@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use structopt::StructOpt;
 use tokio::fs;
@@ -9,12 +8,10 @@ use tokio::runtime::Runtime;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::futures;
 use mediarepo_core::settings::Settings;
-use mediarepo_core::type_keys::SettingsKey;
 use mediarepo_core::utils::parse_tags_file;
 use mediarepo_model::file::{File as RepoFile, File};
 use mediarepo_model::repo::Repo;
-use mediarepo_model::type_keys::RepoKey;
-use mediarepo_socket::get_builder;
+use mediarepo_socket::start_tcp_server;
 use num_integer::Integer;
 use std::env;
 
@@ -124,12 +121,14 @@ async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
 /// Starts the server
 async fn start_server(opt: Opt) -> RepoResult<()> {
     let (settings, repo) = init_repo(&opt).await?;
-
-    get_builder(&settings.listen_address)
-        .insert::<SettingsKey>(settings)
-        .insert::<RepoKey>(Arc::new(repo))
-        .build_server()
-        .await?;
+    let (address, handle) = start_tcp_server(
+        settings.listen_address.clone(),
+        settings.port_range,
+        settings,
+        repo,
+    )?;
+    fs::write(opt.repo.join(".tcp"), &address.into_bytes()).await?;
+    handle.await.unwrap();
 
     Ok(())
 }

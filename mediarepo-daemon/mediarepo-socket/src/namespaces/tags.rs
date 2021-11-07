@@ -11,7 +11,7 @@ impl NamespaceProvider for TagsNamespace {
         "tags"
     }
 
-    fn register(handler: &mut EventHandler) {
+    fn register<S: AsyncProtocolStream>(handler: &mut EventHandler<S>) {
         events!(handler,
             "all_tags" => Self::all_tags,
             "tags_for_file" => Self::tags_for_file,
@@ -25,7 +25,7 @@ impl NamespaceProvider for TagsNamespace {
 impl TagsNamespace {
     /// Returns a list of all tags in the database
     #[tracing::instrument(skip_all)]
-    async fn all_tags(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn all_tags<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags: Vec<TagResponse> = repo
             .tags()
@@ -42,7 +42,10 @@ impl TagsNamespace {
 
     /// Returns all tags for a single file
     #[tracing::instrument(skip_all)]
-    async fn tags_for_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn tags_for_file<S: AsyncProtocolStream>(
+        ctx: &Context<S>,
+        event: Event,
+    ) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<GetFileTagsRequest>()?;
         let file = file_by_identifier(request.id, &repo).await?;
@@ -58,7 +61,10 @@ impl TagsNamespace {
 
     /// Returns all tags for a given list of file hashes
     #[tracing::instrument(skip_all)]
-    async fn tags_for_files(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn tags_for_files<S: AsyncProtocolStream>(
+        ctx: &Context<S>,
+        event: Event,
+    ) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<GetFilesTagsRequest>()?;
         let tag_responses: Vec<TagResponse> = repo
@@ -76,7 +82,7 @@ impl TagsNamespace {
 
     /// Creates all tags given as input or returns the existing tag
     #[tracing::instrument(skip_all)]
-    async fn create_tags(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn create_tags<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags = event.data::<Vec<String>>()?;
         let mut created_tags = Vec::new();
@@ -99,7 +105,10 @@ impl TagsNamespace {
     /// Changes tags of a file
     /// it removes the tags from the removed list and adds the one from the add list
     #[tracing::instrument(skip_all)]
-    async fn change_file_tags(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn change_file_tags<S: AsyncProtocolStream>(
+        ctx: &Context<S>,
+        event: Event,
+    ) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.data::<ChangeFileTagsRequest>()?;
         let file = file_by_identifier(request.file_id, &repo).await?;

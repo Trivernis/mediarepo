@@ -101,6 +101,10 @@ impl Thumbnail {
         self.model.id
     }
 
+    pub fn file_id(&self) -> i64 {
+        self.model.file_id
+    }
+
     pub fn hash(&self) -> &String {
         &self.hash.value
     }

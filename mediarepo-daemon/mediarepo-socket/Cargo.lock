@@ -790,8 +790,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.4.2"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=28b25e94eb2cdb8cec86e3e452081a649b8cd64e#28b25e94eb2cdb8cec86e3e452081a649b8cd64e"
+version = "0.5.1"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=17a7ade9a8112d3c8450ab6ea67c4f184d05744e#17a7ade9a8112d3c8450ab6ea67c4f184d05744e"
 dependencies = [
  "chrono",
  "serde",
@@ -856,6 +856,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-database",
  "mediarepo-model",
+ "port_check",
  "serde",
  "tokio",
  "tracing",
@@ -1209,6 +1210,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "port_check"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6519412c9e0d4be579b9f0618364d19cb434b324fc6ddb1b27b1e682c7105ed"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1417,10 +1424,12 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.7.2"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f68b5ec0f51d53896979bb5364c10c6b0edf753b56570f1f2425b24ea6e85955"
+checksum = "05b0a3f127316ca5ca832cb7e9e616641ffbab659c2cb2ab7210d60e7441f70f"
 dependencies = [
+ "async-trait",
+ "byteorder",
  "lazy_static",
  "rmp-serde",
  "serde",

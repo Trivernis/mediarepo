@@ -1,12 +1,13 @@
 use mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::rmp_ipc::ipc::context::Context;
+use mediarepo_core::rmp_ipc::protocol::AsyncProtocolStream;
 use mediarepo_model::file::File;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::sync::Arc;
 
-pub async fn get_repo_from_context(ctx: &Context) -> Arc<Repo> {
+pub async fn get_repo_from_context<S: AsyncProtocolStream>(ctx: &Context<S>) -> Arc<Repo> {
     let data = ctx.data.read().await;
     let repo = data.get::<RepoKey>().unwrap();
     Arc::clone(repo)

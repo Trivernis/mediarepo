@@ -38,6 +38,7 @@ impl FromModel<Thumbnail> for ThumbnailMetadataResponse {
     fn from_model(model: Thumbnail) -> Self {
         Self {
             id: model.id(),
+            file_id: model.file_id(),
             hash: model.hash().to_owned(),
             height: model.height(),
             width: model.width(),

@@ -31,6 +31,9 @@ pub enum RepoError {
 
     #[error(transparent)]
     Thumbnailer(#[from] thumbnailer::error::ThumbError),
+
+    #[error("No free tcp port available")]
+    PortUnavailable,
 }
 
 #[derive(Error, Debug)]

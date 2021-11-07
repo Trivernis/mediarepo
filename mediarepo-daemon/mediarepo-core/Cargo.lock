@@ -1061,10 +1061,12 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.7.2"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f68b5ec0f51d53896979bb5364c10c6b0edf753b56570f1f2425b24ea6e85955"
+checksum = "05b0a3f127316ca5ca832cb7e9e616641ffbab659c2cb2ab7210d60e7441f70f"
 dependencies = [
+ "async-trait",
+ "byteorder",
  "lazy_static",
  "rmp-serde",
  "serde",

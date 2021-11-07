@@ -1,9 +1,11 @@
 use crate::error::RepoResult;
 use serde::{Deserialize, Serialize};
+use std::net::IpAddr;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Settings {
-    pub listen_address: String,
+    pub listen_address: IpAddr,
+    pub port_range: (u16, u16),
     pub database_path: String,
     pub default_file_store: String,
     pub thumbnail_store: String,
@@ -12,7 +14,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            listen_address: "127.0.0.1:3425".to_string(),
+            listen_address: IpAddr::from([127, 0, 0, 1]),
+            port_range: (3400, 3500),
             database_path: "./db/repo.db".to_string(),
             default_file_store: "Main".to_string(),
             thumbnail_store: "Thumbnails".to_string(),
