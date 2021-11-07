@@ -1,0 +1,41 @@
+name: Build releases for multiple platforms
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache build data
+        uses: actions/cache@v2
+        with:
+          path: |
+            target
+            ~/.cargo/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: mediarepo-daemon-${{ runner.os }}
+          path: |
+            target/release/mediarepo-daemon*
