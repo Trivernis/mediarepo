@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use rmp_ipc::error::Result;
+use rmp_ipc::prelude::IPCError;
 use rmp_ipc::prelude::IPCResult;
 use rmp_ipc::protocol::*;
 use std::io::Error;
@@ -55,6 +56,7 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
 
     async fn protocol_accept(&self) -> Result<(Self::Stream, Self::RemoteAddressType)> {
         match self {
+            #[cfg(unix)]
             ApiProtocolListener::UnixSocket(listener) => {
                 let (stream, addr) = listener.accept().await?;
                 Ok((
