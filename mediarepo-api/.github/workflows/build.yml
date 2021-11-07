@@ -30,4 +30,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Build
-        run: cargo build --verbose
+        run: cargo build
+
+      - name: Build API
+        run: cargo build --features=client-api
+
+      - name: Build Plugin
+        run: cargo build --features=tauri-plugin

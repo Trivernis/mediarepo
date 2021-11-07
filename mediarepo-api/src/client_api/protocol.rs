@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use rmp_ipc::error::Result;
-use rmp_ipc::prelude::IPCError;
 use rmp_ipc::prelude::IPCResult;
 use rmp_ipc::protocol::*;
 use std::io::Error;
@@ -47,6 +46,7 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
             }
             #[cfg(not(unix))]
             {
+                use rmp_ipc::prelude::IPCError;
                 Err(IPCError::BuildError(
                     "The address can not be made into a socket address".to_string(),
                 ))
