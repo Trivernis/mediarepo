@@ -143,7 +143,7 @@ pub async fn select_repository(
 
         config.listen_address
     };
-    let client = ApiClient::connect(&address).await?;
+    let client = ApiClient::connect(address).await?;
     api_state.set_api(client).await;
 
     let mut active_repo = app_state.active_repo.write().await;

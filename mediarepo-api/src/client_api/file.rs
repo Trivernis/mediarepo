@@ -8,27 +8,43 @@ use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
 use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::payload::{BytePayload, EventSendPayload};
-use rmp_ipc::prelude::Context;
+use rmp_ipc::prelude::*;
 
-#[derive(Clone)]
-pub struct FileApi {
-    ctx: PooledContext,
+pub struct FileApi<S: AsyncProtocolStream> {
+    ctx: PooledContext<S>,
+}
+
+impl<S> Clone for FileApi<S>
+where
+    S: AsyncProtocolStream,
+{
+    fn clone(&self) -> Self {
+        Self {
+            ctx: self.ctx.clone(),
+        }
+    }
 }
 
 #[async_trait]
-impl IPCApi for FileApi {
+impl<S> IPCApi<S> for FileApi<S>
+where
+    S: AsyncProtocolStream,
+{
     fn namespace() -> &'static str {
         "files"
     }
 
-    fn ctx(&self) -> PoolGuard<Context> {
+    fn ctx(&self) -> PoolGuard<Context<S>> {
         self.ctx.acquire()
     }
 }
 
-impl FileApi {
+impl<S> FileApi<S>
+where
+    S: AsyncProtocolStream,
+{
     /// Creates a new file api client
-    pub fn new(ctx: PooledContext) -> Self {
+    pub fn new(ctx: PooledContext<S>) -> Self {
         Self { ctx }
     }
 

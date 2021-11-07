@@ -1,5 +1,6 @@
 pub mod error;
 pub mod file;
+pub mod protocol;
 pub mod tag;
 
 use crate::client_api::error::{ApiError, ApiResult};
@@ -11,13 +12,14 @@ use rmp_ipc::context::{PoolGuard, PooledContext};
 use rmp_ipc::ipc::context::Context;
 use rmp_ipc::ipc::stream_emitter::EmitMetadata;
 use rmp_ipc::payload::{EventReceivePayload, EventSendPayload};
+use rmp_ipc::prelude::{AsyncProtocolStream, AsyncStreamProtocolListener};
 use rmp_ipc::IPCBuilder;
 use std::fmt::Debug;
 
 #[async_trait]
-pub trait IPCApi {
+pub trait IPCApi<S: AsyncProtocolStream> {
     fn namespace() -> &'static str;
-    fn ctx(&self) -> PoolGuard<Context>;
+    fn ctx(&self) -> PoolGuard<Context<S>>;
 
     async fn emit<T: EventSendPayload + Debug + Send>(
         &self,
@@ -47,17 +49,31 @@ pub trait IPCApi {
         Ok(response.data()?)
     }
 }
-
-#[derive(Clone)]
-pub struct ApiClient {
-    ctx: PooledContext,
-    pub file: FileApi,
-    pub tag: TagApi,
+pub struct ApiClient<L: AsyncStreamProtocolListener> {
+    ctx: PooledContext<L::Stream>,
+    pub file: FileApi<L::Stream>,
+    pub tag: TagApi<L::Stream>,
 }
 
-impl ApiClient {
+impl<L> Clone for ApiClient<L>
+where
+    L: AsyncStreamProtocolListener,
+{
+    fn clone(&self) -> Self {
+        Self {
+            ctx: self.ctx.clone(),
+            file: self.file.clone(),
+            tag: self.tag.clone(),
+        }
+    }
+}
+
+impl<L> ApiClient<L>
+where
+    L: AsyncStreamProtocolListener,
+{
     /// Creates a new client from an existing ipc context
-    pub fn new(ctx: PooledContext) -> Self {
+    pub fn new(ctx: PooledContext<L::Stream>) -> Self {
         Self {
             file: FileApi::new(ctx.clone()),
             tag: TagApi::new(ctx.clone()),
@@ -67,8 +83,8 @@ impl ApiClient {
 
     /// Connects to the ipc Socket
     #[tracing::instrument(level = "debug")]
-    pub async fn connect(address: &str) -> ApiResult<Self> {
-        let ctx = IPCBuilder::new()
+    pub async fn connect(address: L::AddressType) -> ApiResult<Self> {
+        let ctx = IPCBuilder::<L>::new()
             .address(address)
             .build_pooled_client(8)
             .await?;

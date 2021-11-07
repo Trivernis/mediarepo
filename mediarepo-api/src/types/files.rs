@@ -18,6 +18,13 @@ pub struct GetFileThumbnailsRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GetFileThumbnailOfSizeRequest {
+    pub id: FileIdentifier,
+    pub min_size: (u32, u32),
+    pub max_size: (u32, u32),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GetFileTagsRequest {
     pub id: FileIdentifier,
 }
@@ -81,6 +88,7 @@ pub struct FileMetadataResponse {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ThumbnailMetadataResponse {
     pub id: i64,
+    pub file_id: i64,
     pub hash: String,
     pub height: i32,
     pub width: i32,
@@ -91,4 +99,10 @@ pub struct ThumbnailMetadataResponse {
 pub struct UpdateFileNameRequest {
     pub file_id: FileIdentifier,
     pub name: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ThumbnailFullResponse {
+    pub metadata: ThumbnailMetadataResponse,
+    pub data: Vec<u8>,
 }
