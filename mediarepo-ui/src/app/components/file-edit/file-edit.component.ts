@@ -125,12 +125,7 @@ export class FileEditComponent implements OnInit, OnChanges {
           [tag.id], []);
       }
     }
-    if (this.tags.findIndex(t => t.getNormalizedOutput() === tag.getNormalizedOutput()) < 0) {
-      this.tags.push(tag);
-      this.tags = this.tags.sort(
-        (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
-      this.tags = [...this.tags]; // angular pls detect it wtf
-    }
+    this.mapFileTagsToTagList();
     const index = this.tags.indexOf(tag);
     index >= 0 && this.tagScroll.scrollToIndex(index);
   }
@@ -142,11 +137,7 @@ export class FileEditComponent implements OnInit, OnChanges {
           [], [tag.id]);
       }
     }
-    const index = this.tags.indexOf(tag);
-    if (index >= 0) {
-      this.tags.splice(index, 1);
-      this.tags = [...this.tags]; // so angular detects the change
-    }
+    this.mapFileTagsToTagList();
   }
 
   private filterSuggestionTag(tag: string) {
