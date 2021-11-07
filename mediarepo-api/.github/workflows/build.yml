@@ -29,6 +29,14 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+
+      - name: Install OS-specific dependencies
+        uses: knicknic/os-specific-run@v1.0.3
+        with:
+          linux: |
+            sudo apt update
+            sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
+
       - name: Build
         run: cargo build
 
