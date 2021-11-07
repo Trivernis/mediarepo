@@ -7,7 +7,7 @@ use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
-use tokio::net::{TcpListener, UnixListener};
+use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 
 mod from_model;
@@ -46,6 +46,7 @@ pub fn create_unix_socket(
     repo: Repo,
 ) -> RepoResult<JoinHandle<()>> {
     use std::fs;
+    use tokio::net::UnixListener;
 
     if path.exists() {
         fs::remove_file(&path)?;
