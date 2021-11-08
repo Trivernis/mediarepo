@@ -16,6 +16,7 @@ mat-drawer-content {
 
 mat-drawer-container {
   height: 100%;
+  width: 100%;
   overflow: hidden;
 }
 
@@ -25,11 +26,6 @@ app-file-grid {
 
 app-file-gallery, app-files-tab-sidebar {
   padding: 0;
-  height: 100%;
-  width: 100%;
-}
-
-.page {
   height: 100%;
   width: 100%;
 }

@@ -1,0 +1,19 @@
+<app-native-file-select (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
+<button mat-stroked-button class="filled-button">{{this.fileCount}} files found</button>
+
+<mat-divider></mat-divider>
+
+<button mat-flat-button class="filled-button">Tag parsing options</button>
+
+<section class="binary-import-options">
+  <mat-checkbox [checked]="this.importTagsFromTxt" (change)="this.importTagsFromTxt = $event.checked">Import tags from
+    adjacent .txt tag files
+  </mat-checkbox>
+  <mat-checkbox [checked]="this.deleteAfterImport" (change)="this.deleteAfterImport = $event.checked" color="warn">
+    Delete files from original location after import
+  </mat-checkbox>
+</section>
+
+<mat-divider></mat-divider>
+
+<button mat-flat-button color="primary" class="import-button">Import</button>

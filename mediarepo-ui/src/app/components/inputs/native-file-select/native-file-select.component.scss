@@ -1,0 +1,14 @@
+.file-select-inner, mat-form-field {
+  width: 100%;
+}
+
+.buttons-native-select {
+  display: flex;
+  flex-direction: row;
+  padding-top: 4px;
+  button {
+    width: 3em;
+    height: 3em;
+    margin-left: -10px;
+  }
+}
