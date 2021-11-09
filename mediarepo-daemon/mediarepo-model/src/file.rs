@@ -297,6 +297,9 @@ impl File {
     /// Adds multiple tags to the file at once
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_tags(&self, tag_ids: Vec<i64>) -> RepoResult<()> {
+        if tag_ids.is_empty() {
+            return Ok(());
+        }
         let hash_id = self.hash.id;
         let models: Vec<hash_tag::ActiveModel> = tag_ids
             .into_iter()

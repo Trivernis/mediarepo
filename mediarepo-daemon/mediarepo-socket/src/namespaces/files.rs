@@ -13,7 +13,8 @@ use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
 use mediarepo_model::file::File;
 use std::cmp::Ordering;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::iter::FromIterator;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
@@ -111,6 +112,7 @@ impl FilesNamespace {
             .await?;
         file.set_name(metadata.name).await?;
 
+        let tags: HashSet<String> = HashSet::from_iter(tags.into_iter());
         let tags = repo
             .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
             .await?;

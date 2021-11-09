@@ -132,7 +132,7 @@ impl Repo {
     }
 
     /// Adds a file from bytes to the database
-    #[tracing::instrument(level = "debug", skip(self))]
+    #[tracing::instrument(level = "debug", skip(self, content))]
     pub async fn add_file(
         &self,
         mime_type: Option<String>,
