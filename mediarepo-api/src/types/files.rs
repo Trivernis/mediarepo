@@ -89,7 +89,7 @@ pub struct FileMetadataResponse {
 pub struct FileOSMetadata {
     pub path: String,
     pub name: String,
-    pub mime_type: String,
+    pub mime_type: Option<String>,
     pub creation_time: NaiveDateTime,
     pub change_time: NaiveDateTime,
 }

@@ -175,9 +175,7 @@ async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
 /// metadata for it
 #[tracing::instrument(level = "trace")]
 async fn retrieve_file_information(path: PathBuf) -> PluginResult<FileOSMetadata> {
-    let mime = mime_guess::from_path(&path)
-        .first()
-        .ok_or_else(|| format!("Could not guess mime for file {:?}", path))?;
+    let mime = mime_guess::from_path(&path).first();
     let metadata = fs::metadata(&path).await?;
     let creation_time = metadata.created()?;
     let change_time = metadata.modified()?;
@@ -188,7 +186,7 @@ async fn retrieve_file_information(path: PathBuf) -> PluginResult<FileOSMetadata
     let os_metadata = FileOSMetadata {
         path: path.to_string_lossy().to_string(),
         name: name.to_string_lossy().to_string(),
-        mime_type: mime.to_string(),
+        mime_type: mime.map(|m| m.to_string()),
         creation_time: system_time_to_naive_date_time(creation_time),
         change_time: system_time_to_naive_date_time(change_time),
     };
