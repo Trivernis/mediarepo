@@ -157,7 +157,9 @@ async fn resolve_path_to_files(path: PathBuf) -> PluginResult<Vec<FileOSMetadata
 async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
     let mut entries = vec![entry];
 
-    for i in 0..entries.len() {
+    let mut i = 0;
+
+    while i < entries.len() {
         let entry = &entries[i];
 
         if entry.path().is_dir() {
@@ -166,6 +168,7 @@ async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
                 entries.push(entry);
             }
         }
+        i += 1;
     }
 
     Ok(entries)
