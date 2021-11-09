@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {dialog} from "@tauri-apps/api";
 import {DialogFilter} from "@tauri-apps/api/dialog";
@@ -8,10 +16,10 @@ import {DialogFilter} from "@tauri-apps/api/dialog";
   templateUrl: './native-file-select.component.html',
   styleUrls: ['./native-file-select.component.scss']
 })
-export class NativeFileSelectComponent implements OnInit{
+export class NativeFileSelectComponent implements OnInit, OnChanges {
 
-  @Input() label: string | undefined;
-  @Input() mode: "files" | "folders" | "all" = "all";
+
+  @Input() mode: "files" | "folders" = "files";
   @Input() formControlName: string | undefined;
   @Input() formControl: FormControl | undefined;
   @Input() startPath: string | undefined;
@@ -21,22 +29,19 @@ export class NativeFileSelectComponent implements OnInit{
   @Output() fileSelect = new EventEmitter<string[]>();
 
   public files: string[] = [];
+  public label: string | undefined;
 
-  constructor() { }
+  constructor() {
+  }
 
   public ngOnInit(): void {
-    if (!this.label) {
-      switch (this.mode) {
-        case "all":
-          this.label = "Select Files or Folders";
-          break;
-        case "files":
-          this.label = "Select Files";
-          break;
-        case "folders":
-          this.label  = "Select a folder";
-          break;
-      }
+    this.setLabel();
+  }
+
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes["mode"]) {
+      this.setLabel();
     }
   }
 
@@ -59,10 +64,20 @@ export class NativeFileSelectComponent implements OnInit{
     });
     if (files instanceof Array) {
       this.files = files;
-    } else {
+    } else if (files) {
       this.files = [files];
     }
     this.fileSelect.emit(this.files);
   }
 
+  private setLabel(): void {
+    switch (this.mode) {
+      case "files":
+        this.label = "Select Files";
+        break;
+      case "folders":
+        this.label = "Select a folder";
+        break;
+    }
+  }
 }

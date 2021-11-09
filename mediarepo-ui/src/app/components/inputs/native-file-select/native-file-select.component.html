@@ -2,12 +2,9 @@
 
   <mat-form-field appearance="fill">
     <mat-label>{{label}}</mat-label>
-    <input #filesInput matInput [value]="files.join(', ')" (focusout)="this.setFiles(filesInput.value)" class="file-input">
+    <input #filesInput matInput [value]="files.join(', ')" (change)="this.setFiles(filesInput.value)" class="file-input">
 
     <div class="buttons-native-select">
-      <button *ngIf="mode === 'all'" (click)="openNativeFileSelectDialog(false)" mat-button>
-        <mat-icon>folder</mat-icon>
-      </button>
       <button *ngIf="mode === 'files'" (click)="openNativeFileSelectDialog(false)" mat-button>
         <mat-icon>insert_drive_file</mat-icon>
       </button>

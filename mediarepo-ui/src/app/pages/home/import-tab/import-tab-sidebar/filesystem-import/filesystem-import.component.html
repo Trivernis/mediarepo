@@ -1,5 +1,15 @@
-<app-native-file-select (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
-<button mat-stroked-button class="filled-button">{{this.fileCount}} files found</button>
+<mat-form-field>
+  <mat-label>Selection Type</mat-label>
+  <mat-select #selectionType value="files">
+    <mat-option value="folders">Folders</mat-option>
+    <mat-option value="files">Files</mat-option>
+  </mat-select>
+</mat-form-field>
+<app-native-file-select [mode]="selectionType.value" (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
+<button mat-stroked-button class="filled-button">
+  {{this.fileCount}} files found
+  <mat-progress-bar *ngIf="resolving" mode="indeterminate" color="primary"></mat-progress-bar>
+</button>
 
 <mat-divider></mat-divider>
 

@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
+import {FileOsMetadata} from "../../../../../models/FileOsMetadata";
+import {ImportService} from "../../../../../services/import/import.service";
+import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
 
 @Component({
   selector: 'app-filesystem-import',
@@ -8,14 +11,24 @@ import { Component, OnInit } from '@angular/core';
 export class FilesystemImportComponent {
 
   public fileCount: number = 0;
-  public paths: string[] = [];
+  public files: FileOsMetadata[] = [];
   public importTagsFromTxt = true;
   public deleteAfterImport = false;
 
-  constructor() { }
+  public resolving = false;
+
+  constructor(private errorBroker: ErrorBrokerService, private importService: ImportService) {
+  }
 
   public async setSelectedPaths(paths: string[]) {
-    this.paths = paths;
-    this.fileCount = paths.length;
+    this.resolving = true;
+    try {
+      this.files = await this.importService.resolvePathsToFiles(paths);
+      this.fileCount = this.files.length;
+    } catch (err) {
+      console.log(err);
+      this.errorBroker.showError(err);
+    }
+    this.resolving = false;
   }
 }
