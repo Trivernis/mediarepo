@@ -12,6 +12,7 @@ pub mod custom_schemes;
 pub mod error;
 mod settings;
 mod state;
+mod utils;
 
 use commands::*;
 
@@ -52,7 +53,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 remove_repository,
                 change_file_tags,
                 create_tags,
-                update_file_name
+                update_file_name,
+                resolve_paths_to_files
             ]),
         }
     }

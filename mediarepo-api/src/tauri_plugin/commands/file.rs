@@ -1,7 +1,13 @@
 use crate::tauri_plugin::commands::{add_once_buffer, ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
-use crate::types::files::{FileMetadataResponse, SortKey, TagQuery, ThumbnailMetadataResponse};
+use crate::tauri_plugin::utils::system_time_to_naive_date_time;
+use crate::types::files::{
+    FileMetadataResponse, FileOSMetadata, SortKey, TagQuery, ThumbnailMetadataResponse,
+};
 use crate::types::identifier::FileIdentifier;
+use std::path::PathBuf;
+use tokio::fs;
+use tokio::fs::DirEntry;
 
 #[tauri::command]
 pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMetadataResponse>> {
@@ -107,4 +113,82 @@ pub async fn update_file_name(
         .await?;
 
     Ok(metadata)
+}
+
+#[tauri::command]
+pub async fn resolve_paths_to_files(paths: Vec<String>) -> PluginResult<Vec<FileOSMetadata>> {
+    let mut files = Vec::new();
+
+    for path in paths {
+        let path = PathBuf::from(path);
+        if path.exists() {
+            files.append(&mut resolve_path_to_files(path).await?);
+        }
+    }
+
+    Ok(files)
+}
+
+/// Resolves a path into several file metadata objects
+async fn resolve_path_to_files(path: PathBuf) -> PluginResult<Vec<FileOSMetadata>> {
+    let mut files = Vec::new();
+
+    if path.is_dir() {
+        let mut read_dir = fs::read_dir(path).await?;
+
+        while let Some(entry) = read_dir.next_entry().await? {
+            let subdir_entries = resolve_subdir(entry).await?;
+            for entry in subdir_entries {
+                let metadata = retrieve_file_information(entry.path()).await?;
+                files.push(metadata);
+            }
+        }
+    } else {
+        let metadata = retrieve_file_information(path).await?;
+        files.push(metadata);
+    }
+
+    Ok(files)
+}
+
+/// Iteratively resolves a directory into its sub components
+async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
+    let mut entries = vec![entry];
+
+    for i in 0..entries.len() {
+        let entry = &entries[i];
+
+        if entry.path().is_dir() {
+            let mut read_dir = fs::read_dir(entry.path()).await?;
+            while let Some(entry) = read_dir.next_entry().await? {
+                entries.push(entry);
+            }
+        }
+    }
+
+    Ok(entries)
+}
+
+/// Retrieves information about a path that MUST be a file and returns
+/// metadata for it
+async fn retrieve_file_information(path: PathBuf) -> PluginResult<FileOSMetadata> {
+    let mime = mime_guess::from_path(&path)
+        .first()
+        .ok_or_else(|| format!("Could not guess mime for file {:?}", path))?;
+    let metadata = fs::metadata(&path).await?;
+    let creation_time = metadata.created()?;
+    let change_time = metadata.modified()?;
+    let name = path
+        .file_name()
+        .ok_or_else(|| "Could not retrieve file name")?;
+
+    let os_metadata = FileOSMetadata {
+        path: path.to_string_lossy().to_string(),
+        name: name.to_string_lossy().to_string(),
+        mime_type: mime.to_string(),
+        creation_time: system_time_to_naive_date_time(creation_time),
+        change_time: system_time_to_naive_date_time(change_time),
+    };
+
+    Ok(os_metadata)
 }

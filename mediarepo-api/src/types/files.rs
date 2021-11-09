@@ -86,6 +86,15 @@ pub struct FileMetadataResponse {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FileOSMetadata {
+    pub path: String,
+    pub name: String,
+    pub mime_type: String,
+    pub creation_time: NaiveDateTime,
+    pub change_time: NaiveDateTime,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ThumbnailMetadataResponse {
     pub id: i64,
     pub file_id: i64,
