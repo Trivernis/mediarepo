@@ -130,6 +130,7 @@ pub async fn resolve_paths_to_files(paths: Vec<String>) -> PluginResult<Vec<File
 }
 
 /// Resolves a path into several file metadata objects
+#[tracing::instrument(level = "debug")]
 async fn resolve_path_to_files(path: PathBuf) -> PluginResult<Vec<FileOSMetadata>> {
     let mut files = Vec::new();
 
@@ -152,6 +153,7 @@ async fn resolve_path_to_files(path: PathBuf) -> PluginResult<Vec<FileOSMetadata
 }
 
 /// Iteratively resolves a directory into its sub components
+#[tracing::instrument(level = "debug")]
 async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
     let mut entries = vec![entry];
 
@@ -171,6 +173,7 @@ async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
 
 /// Retrieves information about a path that MUST be a file and returns
 /// metadata for it
+#[tracing::instrument(level = "trace")]
 async fn retrieve_file_information(path: PathBuf) -> PluginResult<FileOSMetadata> {
     let mime = mime_guess::from_path(&path)
         .first()
