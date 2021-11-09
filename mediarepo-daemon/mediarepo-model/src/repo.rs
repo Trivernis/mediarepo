@@ -4,16 +4,18 @@ use crate::namespace::Namespace;
 use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
+use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
 use sea_orm::DatabaseConnection;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::io::Cursor;
 use std::iter::FromIterator;
 use std::path::PathBuf;
+use std::str::FromStr;
 use tokio::fs::OpenOptions;
 use tokio::io::BufReader;
 
@@ -129,6 +131,36 @@ impl Repo {
         File::find_by_tags(self.db.clone(), tag_ids).await
     }
 
+    /// Adds a file from bytes to the database
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn add_file(
+        &self,
+        mime_type: Option<String>,
+        content: Vec<u8>,
+        creation_time: NaiveDateTime,
+        change_time: NaiveDateTime,
+    ) -> RepoResult<File> {
+        let storage = self.get_main_storage()?;
+        let reader = Cursor::new(content);
+        let hash = storage.store_entry(reader).await?;
+
+        let (mime_type, file_type) = mime_type
+            .and_then(|m| mime::Mime::from_str(&m).ok())
+            .map(|m| (Some(m.to_string()), FileType::from(m)))
+            .unwrap_or((None, FileType::Unknown));
+
+        File::add(
+            self.db.clone(),
+            storage.id(),
+            hash.id(),
+            file_type,
+            mime_type,
+            creation_time,
+            change_time,
+        )
+        .await
+    }
+
     /// Adds a file to the database by its readable path in the file system
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
@@ -150,6 +182,8 @@ impl Repo {
             hash.id(),
             file_type,
             mime_type,
+            Local::now().naive_local(),
+            Local::now().naive_local(),
         )
         .await
     }
@@ -241,6 +275,31 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip_all)]
     pub async fn find_tags_for_hashes(&self, hashes: Vec<String>) -> RepoResult<Vec<Tag>> {
         Tag::for_hash_list(self.db.clone(), hashes).await
+    }
+
+    /// Adds all tags that are not in the database to the database and returns the ones already existing as well
+    #[tracing::instrument(level = "debug", skip_all)]
+    pub async fn add_all_tags(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
+        let mut tags_to_add = tags;
+        let mut existing_tags = self.tags_by_names(tags_to_add.clone()).await?;
+        {
+            let existing_tags_set = existing_tags
+                .iter()
+                .map(|t| (t.namespace().map(|n| n.name().clone()), t.name().clone()))
+                .collect::<HashSet<(Option<String>, String)>>();
+
+            tags_to_add.retain(|t| !existing_tags_set.contains(t));
+        }
+        for (namespace, name) in tags_to_add {
+            let tag = if let Some(namespace) = namespace {
+                self.add_namespaced_tag(namespace, name).await?
+            } else {
+                self.add_unnamespaced_tag(name).await?
+            };
+            existing_tags.push(tag);
+        }
+
+        Ok(existing_tags)
     }
 
     /// Adds or finds a tag

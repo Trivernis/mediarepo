@@ -140,16 +140,17 @@ impl File {
         hash_id: i64,
         file_type: FileType,
         mime_type: Option<String>,
+        creation_time: NaiveDateTime,
+        change_time: NaiveDateTime,
     ) -> RepoResult<Self> {
-        let now = Local::now().naive_local();
         let file = file::ActiveModel {
             hash_id: Set(hash_id),
             file_type: Set(file_type as u32),
             mime_type: Set(mime_type),
             storage_id: Set(storage_id),
-            import_time: Set(now.clone()),
-            creation_time: Set(now.clone()),
-            change_time: Set(now),
+            import_time: Set(Local::now().naive_local()),
+            creation_time: Set(creation_time),
+            change_time: Set(change_time),
             ..Default::default()
         };
         let file: file::ActiveModel = file.insert(&db).await?.into();

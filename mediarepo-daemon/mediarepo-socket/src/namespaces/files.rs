@@ -2,18 +2,18 @@ use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
 use compare::Compare;
 use mediarepo_api::types::files::{
-    AddFileRequest, FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailOfSizeRequest,
-    GetFileThumbnailsRequest, ReadFileRequest, SortDirection, SortKey, ThumbnailMetadataResponse,
-    UpdateFileNameRequest,
+    AddFileRequestHeader, FileMetadataResponse, FindFilesByTagsRequest,
+    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortDirection,
+    SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use mediarepo_core::error::RepoError;
 use mediarepo_core::rmp_ipc::prelude::*;
 use mediarepo_core::thumbnailer::ThumbnailSize;
+use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
 use mediarepo_model::file::File;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::path::PathBuf;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
@@ -95,10 +95,27 @@ impl FilesNamespace {
     /// Adds a file to the repository
     #[tracing::instrument(skip_all)]
     async fn add_file<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
-        let request = event.data::<AddFileRequest>()?;
-        let path = PathBuf::from(request.path);
+        let (request, bytes) = event
+            .data::<TandemPayload<AddFileRequestHeader, BytePayload>>()?
+            .into_inner();
+        let AddFileRequestHeader { metadata, tags } = request;
         let repo = get_repo_from_context(ctx).await;
-        let file = repo.add_file_by_path(path).await?;
+
+        let mut file = repo
+            .add_file(
+                metadata.mime_type,
+                bytes.into_inner(),
+                metadata.creation_time,
+                metadata.change_time,
+            )
+            .await?;
+        file.set_name(metadata.name).await?;
+
+        let tags = repo
+            .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
+            .await?;
+        let tag_ids: Vec<i64> = tags.into_iter().map(|t| t.id()).collect();
+        file.add_tags(tag_ids).await?;
 
         ctx.emitter
             .emit_response_to(
