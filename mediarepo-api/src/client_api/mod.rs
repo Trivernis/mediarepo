@@ -14,14 +14,13 @@ use rmp_ipc::ipc::stream_emitter::EmitMetadata;
 use rmp_ipc::payload::{EventReceivePayload, EventSendPayload};
 use rmp_ipc::prelude::{AsyncProtocolStream, AsyncStreamProtocolListener};
 use rmp_ipc::IPCBuilder;
-use std::fmt::Debug;
 
 #[async_trait]
 pub trait IPCApi<S: AsyncProtocolStream> {
     fn namespace() -> &'static str;
     fn ctx(&self) -> PoolGuard<Context<S>>;
 
-    async fn emit<T: EventSendPayload + Debug + Send>(
+    async fn emit<T: EventSendPayload + Send>(
         &self,
         event_name: &str,
         data: T,
@@ -35,7 +34,7 @@ pub trait IPCApi<S: AsyncProtocolStream> {
         Ok(meta)
     }
 
-    async fn emit_and_get<T: EventSendPayload + Debug + Send, R: EventReceivePayload + Send>(
+    async fn emit_and_get<T: EventSendPayload + Send, R: EventReceivePayload + Send>(
         &self,
         event_name: &str,
         data: T,

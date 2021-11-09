@@ -5,9 +5,16 @@ use crate::types::files::{
     FileMetadataResponse, FileOSMetadata, SortKey, TagQuery, ThumbnailMetadataResponse,
 };
 use crate::types::identifier::FileIdentifier;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tokio::fs;
 use tokio::fs::DirEntry;
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AddFileOptions {
+    pub read_tags_from_txt: bool,
+    pub delete_after_import: bool,
+}
 
 #[tauri::command]
 pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMetadataResponse>> {
@@ -15,6 +22,36 @@ pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMet
     let all_files = api.file.all_files().await?;
 
     Ok(all_files)
+}
+
+#[tauri::command]
+pub async fn add_local_file(
+    api_state: ApiAccess<'_>,
+    metadata: FileOSMetadata,
+    options: AddFileOptions,
+) -> PluginResult<FileMetadataResponse> {
+    let api = api_state.api().await?;
+    let path = PathBuf::from(&metadata.path);
+    let mut tags = Vec::new();
+
+    if options.read_tags_from_txt {
+        let txt_path = PathBuf::from(format!("{}.txt", path.to_string_lossy()));
+
+        if txt_path.exists() {
+            let content = fs::read_to_string(txt_path).await?;
+            tags.append(
+                &mut content
+                    .split('\n')
+                    .map(|line| line.to_owned())
+                    .collect::<Vec<String>>(),
+            );
+        }
+    }
+
+    let file_content = fs::read(path).await?;
+    let file = api.file.add_file(metadata, tags, file_content).await?;
+
+    Ok(file)
 }
 
 #[tauri::command]

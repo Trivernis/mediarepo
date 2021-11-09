@@ -54,7 +54,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 change_file_tags,
                 create_tags,
                 update_file_name,
-                resolve_paths_to_files
+                resolve_paths_to_files,
+                add_local_file
             ]),
         }
     }

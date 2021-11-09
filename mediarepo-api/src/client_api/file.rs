@@ -1,9 +1,9 @@
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
-    FileMetadataResponse, FindFilesByTagsRequest, GetFileThumbnailOfSizeRequest,
-    GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery, ThumbnailMetadataResponse,
-    UpdateFileNameRequest,
+    AddFileRequestHeader, FileMetadataResponse, FileOSMetadata, FindFilesByTagsRequest,
+    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery,
+    ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -131,5 +131,21 @@ where
     ) -> ApiResult<FileMetadataResponse> {
         self.emit_and_get("update_file_name", UpdateFileNameRequest { file_id, name })
             .await
+    }
+
+    /// Adds a file with predefined tags
+    #[tracing::instrument(level = "debug", skip(self, bytes))]
+    pub async fn add_file(
+        &self,
+        metadata: FileOSMetadata,
+        tags: Vec<String>,
+        bytes: Vec<u8>,
+    ) -> ApiResult<FileMetadataResponse> {
+        let payload = TandemPayload::new(
+            AddFileRequestHeader { metadata, tags },
+            BytePayload::new(bytes),
+        );
+
+        self.emit_and_get("add_file", payload).await
     }
 }

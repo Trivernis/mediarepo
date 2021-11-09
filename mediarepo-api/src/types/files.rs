@@ -3,11 +3,6 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AddFileRequest {
-    pub path: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReadFileRequest {
     pub id: FileIdentifier,
 }
@@ -108,4 +103,10 @@ pub struct ThumbnailMetadataResponse {
 pub struct UpdateFileNameRequest {
     pub file_id: FileIdentifier,
     pub name: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AddFileRequestHeader {
+    pub metadata: FileOSMetadata,
+    pub tags: Vec<String>,
 }
