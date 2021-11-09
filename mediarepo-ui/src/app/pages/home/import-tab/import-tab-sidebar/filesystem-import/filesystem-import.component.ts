@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {FileOsMetadata} from "../../../../../models/FileOsMetadata";
 import {ImportService} from "../../../../../services/import/import.service";
 import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
+import {AddFileOptions} from "../../../../../models/AddFileOptions";
+import {File} from "../../../../../models/File";
 
 @Component({
   selector: 'app-filesystem-import',
@@ -10,12 +12,15 @@ import {ErrorBrokerService} from "../../../../../services/error-broker/error-bro
 })
 export class FilesystemImportComponent {
 
+  @Output() fileImported = new EventEmitter<File>();
+
   public fileCount: number = 0;
   public files: FileOsMetadata[] = [];
-  public importTagsFromTxt = true;
-  public deleteAfterImport = false;
+  public importOptions = new AddFileOptions();
 
   public resolving = false;
+  public importing = false;
+  public importingProgress = 0;
 
   constructor(private errorBroker: ErrorBrokerService, private importService: ImportService) {
   }
@@ -30,5 +35,23 @@ export class FilesystemImportComponent {
       this.errorBroker.showError(err);
     }
     this.resolving = false;
+  }
+
+  public async import() {
+    this.importing = true;
+
+      this.importingProgress = 0;
+      for (const file of this.files) {
+        try {
+        const resultFile = await this.importService.addLocalFile(file, this.importOptions);
+        this.fileImported.emit(resultFile);
+        } catch (err) {
+          console.log(err);
+          this.errorBroker.showError(err);
+        }
+        this.importingProgress++;
+      }
+
+    this.importing = false;
   }
 }

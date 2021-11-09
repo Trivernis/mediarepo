@@ -7,7 +7,7 @@
 </mat-form-field>
 <app-native-file-select [mode]="selectionType.value" (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
 <button mat-stroked-button class="filled-button">
-  {{this.fileCount}} files found
+  {{resolving? "Searching for files..." : this.fileCount + " files found"}}
   <mat-progress-bar *ngIf="resolving" mode="indeterminate" color="primary"></mat-progress-bar>
 </button>
 
@@ -16,14 +16,17 @@
 <button mat-flat-button class="filled-button">Tag parsing options</button>
 
 <section class="binary-import-options">
-  <mat-checkbox [checked]="this.importTagsFromTxt" (change)="this.importTagsFromTxt = $event.checked">Import tags from
+  <mat-checkbox [checked]="this.importOptions.read_tags_from_txt" (change)="this.importOptions.read_tags_from_txt = $event.checked">Import tags from
     adjacent .txt tag files
   </mat-checkbox>
-  <mat-checkbox [checked]="this.deleteAfterImport" (change)="this.deleteAfterImport = $event.checked" color="warn">
+  <mat-checkbox [checked]="this.importOptions.delete_after_import" (change)="this.importOptions.delete_after_import = $event.checked" color="warn">
     Delete files from original location after import
   </mat-checkbox>
 </section>
 
 <mat-divider></mat-divider>
 
-<button mat-flat-button color="primary" class="import-button">Import</button>
+<button mat-flat-button color="primary" class="import-button" [disabled]="importing || this.fileCount === 0" (click)="import()">
+  {{importing? "Importing..." : "Import"}}
+</button>
+<mat-progress-bar *ngIf="importing" mode="determinate" color="primary" [value]="this.importingProgress"></mat-progress-bar>

@@ -6,13 +6,15 @@ import {File} from "../../../models/File";
   templateUrl: './import-tab.component.html',
   styleUrls: ['./import-tab.component.scss']
 })
-export class ImportTabComponent implements OnInit {
+export class ImportTabComponent {
 
   public files: File[] = [];
 
   constructor() { }
 
-  ngOnInit(): void {
+  public addFileFromImport(file: File) {
+    this.files.push(file);
+    this.files = [...this.files];
   }
 
 }
