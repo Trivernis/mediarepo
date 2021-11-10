@@ -35,7 +35,7 @@ pub async fn get_hashes_with_namespaced_tags(
             .as_str(),
             vec![],
         ))
-        .all(&db)
+        .all(db)
         .await?;
     let mut hash_namespaces: HashMap<i64, HashMap<String, String>> = HashMap::new();
     for hnt in hash_namespace_tags {

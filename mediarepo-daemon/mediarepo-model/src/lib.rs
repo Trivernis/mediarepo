@@ -1,5 +1,6 @@
 pub mod file;
 pub mod file_type;
+pub mod handles;
 pub mod hash;
 pub mod namespace;
 pub mod repo;

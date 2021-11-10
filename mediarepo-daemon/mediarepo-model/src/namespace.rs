@@ -1,7 +1,9 @@
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::namespace;
 use sea_orm::prelude::*;
-use sea_orm::{DatabaseConnection, Set};
+use sea_orm::{
+    Condition, ConnectionTrait, DatabaseBackend, DatabaseConnection, InsertResult, Set, Statement,
+};
 use std::fmt::Debug;
 
 #[derive(Clone)]
@@ -40,6 +42,65 @@ impl Namespace {
             .map(|model| Self::new(db, model));
 
         Ok(namespace)
+    }
+
+    /// Returns all namespaces by name
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn all_by_name(db: DatabaseConnection, names: Vec<String>) -> RepoResult<Vec<Self>> {
+        if names.is_empty() {
+            return Ok(Vec::with_capacity(0));
+        }
+        let mut condition = Condition::any();
+        for name in names {
+            condition = condition.add(namespace::Column::Name.eq(name));
+        }
+
+        let namespaces = namespace::Entity::find()
+            .filter(condition)
+            .all(&db)
+            .await?
+            .into_iter()
+            .map(|model| Self::new(db.clone(), model))
+            .collect();
+
+        Ok(namespaces)
+    }
+
+    /// Adds all namespaces to the database
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn add_all(db: DatabaseConnection, names: Vec<String>) -> RepoResult<Vec<Self>> {
+        if names.is_empty() {
+            return Ok(vec![]);
+        }
+        let models: Vec<namespace::ActiveModel> = names
+            .into_iter()
+            .map(|name| namespace::ActiveModel {
+                name: Set(name),
+                ..Default::default()
+            })
+            .collect();
+        let txn = db.begin().await?;
+        let last_id = txn
+            .query_one(Statement::from_string(
+                DatabaseBackend::Sqlite,
+                r#"SELECT MAX(id) AS "max_id" FROM namespaces;"#.to_owned(),
+            ))
+            .await?
+            .and_then(|result| result.try_get("", "max_id").ok())
+            .unwrap_or(-1);
+        let result: InsertResult<namespace::ActiveModel> =
+            namespace::Entity::insert_many(models).exec(&txn).await?;
+
+        let namespaces = namespace::Entity::find()
+            .filter(namespace::Column::Id.between(last_id, result.last_insert_id + 1))
+            .all(&txn)
+            .await?
+            .into_iter()
+            .map(|model| Self::new(db.clone(), model))
+            .collect();
+        txn.commit().await?;
+
+        Ok(namespaces)
     }
 
     /// Adds a namespace to the database

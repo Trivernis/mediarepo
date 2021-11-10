@@ -5,9 +5,10 @@ use mediarepo_database::entities::hash_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
+use sea_orm::query::ConnectionTrait;
 use sea_orm::sea_query::Expr;
-use sea_orm::QuerySelect;
-use sea_orm::{Condition, DatabaseConnection, JoinType, Set};
+use sea_orm::{Condition, DatabaseBackend, DatabaseConnection, JoinType, Set, Statement};
+use sea_orm::{InsertResult, QuerySelect};
 use std::fmt::Debug;
 
 #[derive(Clone)]
@@ -77,7 +78,7 @@ impl Tag {
         namespaces_with_names: Vec<(Option<String>, String)>,
     ) -> RepoResult<Vec<Self>> {
         if namespaces_with_names.is_empty() {
-            return Ok(Vec::new());
+            return Ok(vec![]);
         }
         let mut or_condition = Condition::any();
 
@@ -122,6 +123,46 @@ impl Tag {
             .into_iter()
             .map(|(t, n)| Self::new(db.clone(), t, n))
             .collect();
+
+        Ok(tags)
+    }
+
+    pub async fn add_all(
+        db: DatabaseConnection,
+        namespaces_with_names: Vec<(Option<i64>, String)>,
+    ) -> RepoResult<Vec<Self>> {
+        if namespaces_with_names.is_empty() {
+            return Ok(vec![]);
+        }
+        let models: Vec<tag::ActiveModel> = namespaces_with_names
+            .into_iter()
+            .map(|(namespace_id, name)| tag::ActiveModel {
+                name: Set(name),
+                namespace_id: Set(namespace_id),
+                ..Default::default()
+            })
+            .collect();
+        let txn = db.begin().await?;
+        let last_id: i64 = txn
+            .query_one(Statement::from_string(
+                DatabaseBackend::Sqlite,
+                r#"SELECT MAX(id) as "max_id" FROM tags"#.to_owned(),
+            ))
+            .await?
+            .and_then(|res| res.try_get("", "max_id").ok())
+            .unwrap_or(-1);
+
+        let result: InsertResult<tag::ActiveModel> =
+            tag::Entity::insert_many(models).exec(&txn).await?;
+        let tags: Vec<Self> = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .filter(tag::Column::Id.between(last_id, result.last_insert_id + 1))
+            .all(&txn)
+            .await?
+            .into_iter()
+            .map(|(t, n)| Self::new(db.clone(), t, n))
+            .collect();
+        txn.commit().await?;
 
         Ok(tags)
     }

@@ -6,6 +6,7 @@ use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
@@ -280,7 +281,25 @@ impl Repo {
     /// Adds all tags that are not in the database to the database and returns the ones already existing as well
     #[tracing::instrument(level = "debug", skip_all)]
     pub async fn add_all_tags(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
-        let mut tags_to_add = tags;
+        let mut tags_to_add = tags.into_iter().unique().collect_vec();
+        let mut namespaces_to_add = tags_to_add
+            .iter()
+            .filter_map(|(namespace, _)| namespace.clone())
+            .unique()
+            .collect_vec();
+
+        let mut existing_namespaces =
+            Namespace::all_by_name(self.db.clone(), namespaces_to_add.clone()).await?;
+        {
+            let existing_namespaces_set = existing_namespaces
+                .iter()
+                .map(|n| n.name().clone())
+                .collect::<HashSet<String>>();
+            namespaces_to_add.retain(|namespace| !existing_namespaces_set.contains(namespace));
+        }
+        existing_namespaces
+            .append(&mut Namespace::add_all(self.db.clone(), namespaces_to_add).await?);
+
         let mut existing_tags = self.tags_by_names(tags_to_add.clone()).await?;
         {
             let existing_tags_set = existing_tags
@@ -290,14 +309,15 @@ impl Repo {
 
             tags_to_add.retain(|t| !existing_tags_set.contains(t));
         }
-        for (namespace, name) in tags_to_add {
-            let tag = if let Some(namespace) = namespace {
-                self.add_namespaced_tag(namespace, name).await?
-            } else {
-                self.add_unnamespaced_tag(name).await?
-            };
-            existing_tags.push(tag);
-        }
+        let namespace_map = existing_namespaces
+            .into_iter()
+            .map(|namespace| (namespace.name().clone(), namespace.id()))
+            .collect::<HashMap<String, i64>>();
+        let tags_to_add = tags_to_add
+            .into_iter()
+            .map(|(nsp, name)| (nsp.and_then(|n| namespace_map.get(&n)).map(|i| *i), name))
+            .collect_vec();
+        existing_tags.append(&mut Tag::add_all(self.db.clone(), tags_to_add).await?);
 
         Ok(existing_tags)
     }

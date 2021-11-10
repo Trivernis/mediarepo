@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "Inflector"
+version = "0.11.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -24,6 +30,12 @@ dependencies = [
  "once_cell",
  "version_check",
 ]
+
+[[package]]
+name = "aliasable"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "250f629c0161ad8107cf89319e990051fae62832fd343083bea452d93e2205fd"
 
 [[package]]
 name = "arrayref"
@@ -690,6 +702,7 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "futures",
+ "itertools",
  "multibase",
  "multihash",
  "rmp-ipc",
@@ -897,6 +910,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
+name = "ouroboros"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3518a68fc597f6a42f83a31e41c039c3cbaa10fa8bb239c936c235e81cce873f"
+dependencies = [
+ "aliasable",
+ "ouroboros_macro",
+ "stable_deref_trait",
+]
+
+[[package]]
+name = "ouroboros_macro"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e23813b1bcb2d41a838849a2bbae40ae5c03c85ecabf04ba97086f438484714"
+dependencies = [
+ "Inflector",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1101,24 +1138,26 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "sea-orm"
-version = "0.2.4"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e715900921a367b557c9f5b5b5f554f514130d104c5ec1b555dfccc0e11a90e8"
+checksum = "008887f4c2d0228891facd84a2c0bfdf175671a7a727798c63c14dfe04e343b2"
 dependencies = [
  "async-stream",
  "async-trait",
  "futures",
  "futures-util",
+ "ouroboros",
  "sea-query",
  "sea-strum",
  "serde",
+ "url",
 ]
 
 [[package]]
 name = "sea-query"
-version = "0.16.5"
+version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "365da31fb7b9b77aaf655797a0e60cfb18121906c03779558035e8fd4c6be2c2"
+checksum = "0ae0ce1a7c495076a9d6401c917b564fb75e77e05432e6c86084ca453b8256d7"
 dependencies = [
  "sea-query-derive",
 ]
@@ -1299,6 +1338,12 @@ name = "sqlx-rt"
 version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d1bd069de53442e7a320f525a6d4deb8bb0621ac7a55f7eccbc2b58b57f43d0"
+
+[[package]]
+name = "stable_deref_trait"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "stringprep"

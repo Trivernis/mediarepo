@@ -7,14 +7,14 @@ use mediarepo_api::types::files::{
     SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use mediarepo_core::error::RepoError;
+use mediarepo_core::itertools::Itertools;
 use mediarepo_core::rmp_ipc::prelude::*;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
 use mediarepo_model::file::File;
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
-use std::iter::FromIterator;
+use std::collections::HashMap;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
@@ -112,11 +112,10 @@ impl FilesNamespace {
             .await?;
         file.set_name(metadata.name).await?;
 
-        let tags: HashSet<String> = HashSet::from_iter(tags.into_iter());
         let tags = repo
             .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
             .await?;
-        let tag_ids: Vec<i64> = tags.into_iter().map(|t| t.id()).collect();
+        let tag_ids: Vec<i64> = tags.into_iter().map(|t| t.id()).unique().collect();
         file.add_tags(tag_ids).await?;
 
         ctx.emitter

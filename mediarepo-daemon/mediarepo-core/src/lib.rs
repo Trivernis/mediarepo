@@ -6,5 +6,6 @@ pub mod type_keys;
 pub mod utils;
 
 pub use futures;
+pub use itertools;
 pub use rmp_ipc;
 pub use thumbnailer;

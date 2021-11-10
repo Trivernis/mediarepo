@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "Inflector"
+version = "0.11.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -24,6 +30,12 @@ dependencies = [
  "once_cell",
  "version_check",
 ]
+
+[[package]]
+name = "aliasable"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "250f629c0161ad8107cf89319e990051fae62832fd343083bea452d93e2205fd"
 
 [[package]]
 name = "arrayref"
@@ -235,12 +247,6 @@ name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
-
-[[package]]
-name = "convert_case"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 
 [[package]]
 name = "core-foundation"
@@ -764,6 +770,7 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "futures",
+ "itertools",
  "multibase",
  "multihash",
  "rmp-ipc",
@@ -792,6 +799,7 @@ dependencies = [
 name = "mediarepo-model"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "chrono",
  "mediarepo-core",
  "mediarepo-database",
@@ -1067,6 +1075,30 @@ dependencies = [
  "libc",
  "pkg-config",
  "vcpkg",
+]
+
+[[package]]
+name = "ouroboros"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3518a68fc597f6a42f83a31e41c039c3cbaa10fa8bb239c936c235e81cce873f"
+dependencies = [
+ "aliasable",
+ "ouroboros_macro",
+ "stable_deref_trait",
+]
+
+[[package]]
+name = "ouroboros_macro"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e23813b1bcb2d41a838849a2bbae40ae5c03c85ecabf04ba97086f438484714"
+dependencies = [
+ "Inflector",
+ "proc-macro-error 1.0.4",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1388,15 +1420,16 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "sea-orm"
-version = "0.2.4"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e715900921a367b557c9f5b5b5f554f514130d104c5ec1b555dfccc0e11a90e8"
+checksum = "008887f4c2d0228891facd84a2c0bfdf175671a7a727798c63c14dfe04e343b2"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
  "futures",
  "futures-util",
+ "ouroboros",
  "rust_decimal",
  "sea-orm-macros",
  "sea-query",
@@ -1404,17 +1437,17 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
+ "url",
  "uuid",
 ]
 
 [[package]]
 name = "sea-orm-macros"
-version = "0.2.4"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82b6f4cdd6d918845980bd3572f55f95d9c79a9c2352192f33bca99d91ca350a"
+checksum = "f8d4da296bdf6ab25a89e09af3a0d80e94e18580575fae3f7fbe7314604e8c8c"
 dependencies = [
  "bae",
- "convert_case",
  "heck",
  "proc-macro2",
  "quote",
@@ -1423,9 +1456,9 @@ dependencies = [
 
 [[package]]
 name = "sea-query"
-version = "0.16.5"
+version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "365da31fb7b9b77aaf655797a0e60cfb18121906c03779558035e8fd4c6be2c2"
+checksum = "0ae0ce1a7c495076a9d6401c917b564fb75e77e05432e6c86084ca453b8256d7"
 dependencies = [
  "chrono",
  "rust_decimal",
@@ -1660,6 +1693,12 @@ dependencies = [
  "tokio",
  "tokio-native-tls",
 ]
+
+[[package]]
+name = "stable_deref_trait"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "stringprep"

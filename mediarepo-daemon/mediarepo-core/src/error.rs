@@ -49,6 +49,9 @@ pub enum RepoDatabaseError {
 
     #[error(transparent)]
     SqlxMigrateError(#[from] sqlx::migrate::MigrateError),
+
+    #[error("An invalid handle {0} was used")]
+    InvalidHandle(i64),
 }
 
 #[derive(Debug)]
