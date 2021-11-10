@@ -16,5 +16,7 @@ import {File} from "../../../../models/File";
 export class ImportTabSidebarComponent {
 
   @Output() fileImported = new EventEmitter<File>();
+  @Output() importFinished = new EventEmitter<void>();
+
   constructor() { }
 }

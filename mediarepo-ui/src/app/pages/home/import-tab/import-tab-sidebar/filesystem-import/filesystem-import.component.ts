@@ -13,6 +13,7 @@ import {File} from "../../../../../models/File";
 export class FilesystemImportComponent {
 
   @Output() fileImported = new EventEmitter<File>();
+  @Output() importFinished = new EventEmitter<void>();
 
   public fileCount: number = 0;
   public files: FileOsMetadata[] = [];
@@ -40,18 +41,23 @@ export class FilesystemImportComponent {
   public async import() {
     this.importing = true;
 
-      this.importingProgress = 0;
-      for (const file of this.files) {
-        try {
-        const resultFile = await this.importService.addLocalFile(file, this.importOptions);
+    this.importingProgress = 0;
+    let count = 0;
+
+    for (const file of this.files) {
+      try {
+        const resultFile = await this.importService.addLocalFile(file,
+          this.importOptions);
         this.fileImported.emit(resultFile);
-        } catch (err) {
-          console.log(err);
-          this.errorBroker.showError(err);
-        }
-        this.importingProgress++;
+      } catch (err) {
+        console.log(err);
+        this.errorBroker.showError(err);
       }
+      count++;
+      this.importingProgress = (count / this.fileCount) * 100;
+    }
 
     this.importing = false;
+    this.importFinished.emit();
   }
 }

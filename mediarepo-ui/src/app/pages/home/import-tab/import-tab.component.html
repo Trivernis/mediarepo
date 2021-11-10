@@ -1,6 +1,6 @@
 <mat-drawer-container>
   <mat-drawer disableClose="true" mode="side" opened>
-    <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)"></app-import-tab-sidebar>
+    <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)" (importFinished)="this.refreshFileView()"></app-import-tab-sidebar>
   </mat-drawer>
   <mat-drawer-content>
     <app-file-grid [files]="this.files" ></app-file-grid>
