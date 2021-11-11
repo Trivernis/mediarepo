@@ -90,4 +90,24 @@ export class FileService {
   public async updateFileName(file: File, name: string): Promise<File> {
     return await invoke<File>("plugin:mediarepo|update_file_name", {id: file.id, name})
   }
+
+  /**
+   * Builds a safe thumbnail url that accesses custom scheme for thumbnails
+   * @param {File} file
+   * @param {number} height
+   * @param {number} width
+   * @returns {SafeResourceUrl}
+   */
+  public buildThumbnailUrl(file: File, height: number, width: number): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`thumb://${file.hash}?width=${250}&height=${250}`)
+  }
+
+  /**
+   * Builds a safe content url that accesses custom scheme for thumbnails
+   * @param {File} file
+   * @returns {SafeResourceUrl}
+   */
+  public buildContentUrl(file: File): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`content://${file.hash}`)
+  }
 }

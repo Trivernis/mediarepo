@@ -1580,12 +1580,13 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.6.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=ddebf4bf0c3e96ede64182ff52bd84f134acc33a#ddebf4bf0c3e96ede64182ff52bd84f134acc33a"
+version = "0.7.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=acda7307dc58e9ac489b12bab61561a1cbf951eb#acda7307dc58e9ac489b12bab61561a1cbf951eb"
 dependencies = [
  "async-trait",
  "chrono",
  "directories",
+ "futures",
  "mime_guess",
  "parking_lot",
  "rmp-ipc",
@@ -1597,6 +1598,7 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
+ "url",
 ]
 
 [[package]]

@@ -5,7 +5,8 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Output, SimpleChanges,
+  Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {File} from "../../../models/File";
@@ -15,45 +16,34 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {GridEntry} from "./GridEntry";
 
 @Component({
-    selector: 'app-file-grid-entry',
-    templateUrl: './file-grid-entry.component.html',
-    styleUrls: ['./file-grid-entry.component.scss']
+  selector: 'app-file-grid-entry',
+  templateUrl: './file-grid-entry.component.html',
+  styleUrls: ['./file-grid-entry.component.scss']
 })
 export class FileGridEntryComponent implements OnInit, OnChanges {
 
-    @ViewChild("card") card!: ElementRef;
-    @Input() public gridEntry!: GridEntry;
-    @Output() clickEvent = new EventEmitter<FileGridEntryComponent>();
-    @Output() dblClickEvent = new EventEmitter<FileGridEntryComponent>();
+  @ViewChild("card") card!: ElementRef;
+  @Input() public gridEntry!: GridEntry;
+  @Output() clickEvent = new EventEmitter<FileGridEntryComponent>();
+  @Output() dblClickEvent = new EventEmitter<FileGridEntryComponent>();
 
-    contentUrl: SafeResourceUrl | undefined;
-    private cachedFile: File | undefined;
+  contentUrl: SafeResourceUrl | undefined;
+  private cachedFile: File | undefined;
 
-    constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  }
+
+  async ngOnInit() {
+    this.cachedFile = this.gridEntry.file;
+    this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
+      250, 250);
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes["file"] && (!this.cachedFile || this.gridEntry.file.hash !== this.cachedFile.hash)) {
+      this.cachedFile = this.gridEntry.file;
+      this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
+        250, 250);
     }
-
-    async ngOnInit() {
-        this.cachedFile = this.gridEntry.file;
-        await this.loadImage();
-    }
-
-    async ngOnChanges(changes: SimpleChanges) {
-        if (changes["file"] && (!this.cachedFile || this.gridEntry.file.hash !== this.cachedFile.hash)) {
-            this.cachedFile = this.gridEntry.file;
-            await this.loadImage();
-        }
-    }
-
-    async loadImage() {
-        try {
-          const hash = this.gridEntry.file.hash;
-          const contentUrl = await this.fileService.getFileThumbnail(this.gridEntry.file, 250, 250);
-
-          if (this.gridEntry.file.hash === hash) {  // avoid issues with changed files
-            this.contentUrl = contentUrl;
-          }
-        } catch (err) {
-            this.errorBroker.showError(err);
-        }
-    }
+  }
 }

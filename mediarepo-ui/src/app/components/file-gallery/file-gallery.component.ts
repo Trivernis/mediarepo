@@ -89,9 +89,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
    */
   async loadSelectedFile() {
     if (this.selectedFile) {
-      this.fileContentUrl = undefined;
-      this.fileContentUrl = await this.fileService.readFile(
-        this.selectedFile.data);
+      this.fileContentUrl = this.fileService.buildContentUrl(this.selectedFile.data)
     }
   }
 
