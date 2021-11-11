@@ -1,3 +1,4 @@
+use crate::tauri_plugin::error::PluginError;
 use crate::tauri_plugin::state::{ApiState, BufferState};
 use crate::types::identifier::FileIdentifier;
 use std::borrow::Cow;
@@ -66,7 +67,9 @@ fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Res
     let buf_state = app.state::<BufferState>();
 
     let url = Url::parse(request.uri())?;
-    let hash = url.path();
+    let hash = url
+        .domain()
+        .ok_or_else(|| PluginError::from("Missing Domain"))?;
 
     let query_pairs = url
         .query_pairs()
