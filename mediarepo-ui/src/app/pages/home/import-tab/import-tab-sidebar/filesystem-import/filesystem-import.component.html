@@ -6,14 +6,12 @@
   </mat-select>
 </mat-form-field>
 <app-native-file-select [mode]="selectionType.value" (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
-<button mat-stroked-button class="filled-button">
+<button mat-flat-button>
   {{resolving? "Searching for files..." : this.fileCount + " files found"}}
   <mat-progress-bar *ngIf="resolving" mode="indeterminate" color="primary"></mat-progress-bar>
 </button>
 
 <mat-divider></mat-divider>
-
-<button mat-flat-button class="filled-button">Tag parsing options</button>
 
 <section class="binary-import-options">
   <mat-checkbox [checked]="this.importOptions.read_tags_from_txt" (change)="this.importOptions.read_tags_from_txt = $event.checked">Import tags from
