@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Repository} from "../../models/Repository";
 import {RepositoryService} from "../../services/repository/repository.service";
-import {MatTabGroup} from "@angular/material/tabs";
+import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
+import {TabService} from "../../services/tab/tab.service";
 
 @Component({
   selector: 'app-home',
@@ -16,8 +17,11 @@ export class HomeComponent implements OnInit {
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
 
-  constructor(private repoService: RepositoryService, private tagService: TagService) {
-  }
+  constructor(
+    private tabService: TabService,
+    private repoService: RepositoryService,
+    private tagService: TagService)
+  {}
 
   public async ngOnInit(): Promise<void> {
     this.selectedRepository = this.repoService.selectedRepository.getValue();
@@ -41,5 +45,9 @@ export class HomeComponent implements OnInit {
 
   async loadRepoData() {
     await this.tagService.loadTags();
+  }
+
+  public onTabSelectionChange(event: MatTabChangeEvent): void {
+    this.tabService.setSelectedTab(event.index);
   }
 }

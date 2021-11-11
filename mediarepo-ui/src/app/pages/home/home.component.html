@@ -1,5 +1,5 @@
 <div id="content">
-  <mat-tab-group #tabGroup>
+  <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)">
     <mat-tab label="Repositories">
       <app-repositories-tab></app-repositories-tab>
     </mat-tab>

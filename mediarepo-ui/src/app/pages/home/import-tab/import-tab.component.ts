@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {File} from "../../../models/File";
 import {FileService} from "../../../services/file/file.service";
+import {FileGridComponent} from "../../../components/file-grid/file-grid.component";
 
 @Component({
   selector: 'app-import-tab',
@@ -10,6 +11,8 @@ import {FileService} from "../../../services/file/file.service";
 export class ImportTabComponent {
 
   public files: File[] = [];
+
+  @ViewChild("fileGrid") fileGrid!: FileGridComponent;
 
   constructor(private fileService: FileService) {
   }
