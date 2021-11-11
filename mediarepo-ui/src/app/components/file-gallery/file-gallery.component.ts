@@ -16,6 +16,7 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {CdkDragMove} from "@angular/cdk/drag-drop";
+import {TabService} from "../../services/tab/tab.service";
 
 @Component({
   selector: 'app-file-gallery',
@@ -42,7 +43,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   public imagePosition = {x: 0, y: 0};
   public mouseInImageView = false;
 
-  constructor(private fileService: FileService) {
+  constructor(private tabService: TabService, private fileService: FileService) {
+    tabService.selectedTab.subscribe(() => this.adjustElementSizes());
   }
 
   /**
@@ -56,22 +58,28 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       this.selectedFile?.unselect();
       entry.select();
       this.selectedFile = entry;
-      const selectedIndex = this.entries.indexOf(entry);
-      //this.virtualScroll.scrollToIndex(, "smooth");
       await this.loadSelectedFile();
 
       if (this.virtualScroll) {
-        const viewportSize = this.virtualScroll.getViewportSize();
-        const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
-        this.virtualScroll.scrollToIndex(
-          Math.max(selectedIndex - indexAdjustment, 0), "smooth");
-
-        if (selectedIndex > indexAdjustment) {
-          this.virtualScroll.scrollToOffset(
-            this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
-        }
+        this.scrollToSelection();
       }
+
       this.fileSelectEvent.emit(this.selectedFile.data);
+    }
+  }
+
+  private scrollToSelection(): void {
+    if (this.selectedFile) {
+      const selectedIndex = this.entries.indexOf(this.selectedFile);
+      const viewportSize = this.virtualScroll.getViewportSize();
+      const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
+      this.virtualScroll.scrollToIndex(
+        Math.max(selectedIndex - indexAdjustment, 0), "smooth");
+
+      if (selectedIndex > indexAdjustment) {
+        this.virtualScroll.scrollToOffset(
+          this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
+      }
     }
   }
 
@@ -191,5 +199,12 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       }
     }
     return undefined;
+  }
+
+  public adjustElementSizes(): void {
+    if (this.virtualScroll) {
+      this.virtualScroll.checkViewportSize();
+      this.scrollToSelection();
+    }
   }
 }
