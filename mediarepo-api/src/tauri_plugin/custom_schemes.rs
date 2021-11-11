@@ -85,7 +85,7 @@ fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Res
         .and_then(|w| w.parse::<u32>().ok())
         .unwrap_or(250);
 
-    if let Some(buffer) = buf_state.get_entry(hash) {
+    if let Some(buffer) = buf_state.get_entry(request.uri()) {
         ResponseBuilder::new()
             .status(200)
             .mimetype(&buffer.mime)
@@ -98,7 +98,7 @@ fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Res
             ((height as f32 * 1.2) as u32, (width as f32 * 1.2) as u32),
         ))?;
         let mime = thumb.mime_type.unwrap_or(String::from("image/png"));
-        buf_state.add_entry(hash.to_string(), mime.clone(), bytes.clone());
+        buf_state.add_entry(request.uri().to_string(), mime.clone(), bytes.clone());
         ResponseBuilder::new()
             .mimetype(&mime)
             .status(200)
