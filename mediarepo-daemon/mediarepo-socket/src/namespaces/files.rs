@@ -6,6 +6,7 @@ use mediarepo_api::types::files::{
     GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortDirection,
     SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
+use mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::error::RepoError;
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::rmp_ipc::prelude::*;
@@ -27,6 +28,7 @@ impl NamespaceProvider for FilesNamespace {
     fn register<S: AsyncProtocolStream>(handler: &mut EventHandler<S>) {
         events!(handler,
             "all_files" => Self::all_files,
+            "get_file" => Self::get_file,
             "find_files" => Self::find_files,
             "add_file" => Self::add_file,
             "read_file" => Self::read_file,
@@ -52,6 +54,20 @@ impl FilesNamespace {
 
         ctx.emitter
             .emit_response_to(event.id(), Self::name(), "all_files", responses)
+            .await?;
+
+        Ok(())
+    }
+
+    /// Returns a file by id
+    #[tracing::instrument(skip_all)]
+    async fn get_file<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
+        let id = event.data::<FileIdentifier>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(id, &repo).await?;
+        let response = FileMetadataResponse::from_model(file);
+        ctx.emitter
+            .emit_response_to(event.id(), Self::name(), "get_file", response)
             .await?;
 
         Ok(())
