@@ -55,6 +55,11 @@ where
         self.emit_and_get("all_files", ()).await
     }
 
+    /// Returns a file by identifier
+    pub async fn get_file(&self, id: FileIdentifier) -> ApiResult<FileMetadataResponse> {
+        self.emit_and_get("get_file", id).await
+    }
+
     /// Searches for a file by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn find_files(

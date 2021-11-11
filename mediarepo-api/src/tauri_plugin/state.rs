@@ -54,6 +54,10 @@ impl ApiState {
             .clone()
             .ok_or_else(|| PluginError::from("Not connected"))
     }
+
+    pub fn api_sync(&self) -> PluginResult<ApiClient<ApiProtocolListener>> {
+        futures::executor::block_on(self.api())
+    }
 }
 
 #[derive(Clone)]
@@ -79,6 +83,13 @@ pub struct BufferState {
 }
 
 impl BufferState {
+    /// Adds a cached buffer to the buffer state
+    pub fn add_entry(&self, key: String, mime: String, bytes: Vec<u8>) {
+        let mut buffers = self.buffer.write();
+        let buffer = VolatileBuffer::new(mime, bytes);
+        buffers.insert(key, Mutex::new(buffer));
+    }
+
     /// Checks if an entry for the specific key exists and resets
     /// its state so that it can safely be accessed again.
     pub fn reserve_entry(&self, key: &String) -> bool {
