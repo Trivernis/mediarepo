@@ -29,21 +29,27 @@ export class FileGridEntryComponent implements OnInit, OnChanges {
 
   contentUrl: SafeResourceUrl | undefined;
   private cachedFile: File | undefined;
+  private urlSetTimeout: number | undefined;
 
   constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
   }
 
   async ngOnInit() {
     this.cachedFile = this.gridEntry.file;
-    this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
-      250, 250);
+    this.setImageDelayed();
   }
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes["file"] && (!this.cachedFile || this.gridEntry.file.hash !== this.cachedFile.hash)) {
       this.cachedFile = this.gridEntry.file;
-      this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
-        250, 250);
+      this.setImageDelayed();
     }
+  }
+
+  private setImageDelayed() {
+    this.contentUrl = undefined;
+    clearTimeout(this.urlSetTimeout);
+    this.urlSetTimeout = setTimeout(() => this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
+      250, 250), 500);
   }
 }

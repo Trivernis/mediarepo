@@ -43,6 +43,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   public imagePosition = {x: 0, y: 0};
   public mouseInImageView = false;
 
+  private scrollTimeout: number | undefined;
+
   constructor(private tabService: TabService, private fileService: FileService) {
     tabService.selectedTab.subscribe(() => this.adjustElementSizes());
   }
@@ -61,7 +63,8 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       await this.loadSelectedFile();
 
       if (this.virtualScroll) {
-        this.scrollToSelection();
+        clearTimeout(this.scrollTimeout);
+        this.scrollTimeout = setTimeout(() => this.scrollToSelection(), 0);  // we need to make sure the viewport has rendered
       }
 
       this.fileSelectEvent.emit(this.selectedFile.data);
@@ -100,15 +103,17 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    this.entries = this.files.map(
-      f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
-    const selectedIndex = this.files.findIndex(
-      f => f.hash === this.selectedFile?.data.hash);
+    if (changes["files"]) {
+      this.entries = this.files.map(
+        f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
+      const selectedIndex = this.files.findIndex(
+        f => f.hash === this.selectedFile?.data.hash);
 
-    if (!this.selectedFile || selectedIndex < 0) {
-      await this.onEntrySelect(this.getPreselectedEntry() ?? this.entries[0])
-    } else {
-      await this.onEntrySelect(this.entries[selectedIndex])
+      if (!this.selectedFile || selectedIndex < 0) {
+        await this.onEntrySelect(this.getPreselectedEntry() ?? this.entries[0])
+      } else {
+        await this.onEntrySelect(this.entries[selectedIndex])
+      }
     }
   }
 
