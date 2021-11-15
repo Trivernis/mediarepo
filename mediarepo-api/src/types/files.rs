@@ -91,7 +91,7 @@ pub struct FileOSMetadata {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ThumbnailMetadataResponse {
-    pub file_id: i64,
+    pub file_hash: String,
     pub height: u32,
     pub width: u32,
     pub mime_type: String,
