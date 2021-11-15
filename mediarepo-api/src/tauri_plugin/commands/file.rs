@@ -1,4 +1,4 @@
-use crate::tauri_plugin::commands::{add_once_buffer, ApiAccess, BufferAccess};
+use crate::tauri_plugin::commands::ApiAccess;
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
@@ -67,25 +67,6 @@ pub async fn find_files(
 }
 
 #[tauri::command]
-pub async fn read_file_by_hash(
-    api_state: ApiAccess<'_>,
-    buffer_state: BufferAccess<'_>,
-    id: i64,
-    hash: String,
-    mime_type: String,
-) -> PluginResult<String> {
-    if buffer_state.reserve_entry(&hash) {
-        Ok(format!("once://{}", hash)) // entry has been cached
-    } else {
-        let api = api_state.api().await?;
-        let content = api.file.read_file_by_hash(FileIdentifier::ID(id)).await?;
-        let uri = add_once_buffer(buffer_state, hash, mime_type, content);
-
-        Ok(uri)
-    }
-}
-
-#[tauri::command]
 pub async fn get_file_thumbnails(
     api_state: ApiAccess<'_>,
     id: i64,
@@ -94,47 +75,6 @@ pub async fn get_file_thumbnails(
     let thumbs = api.file.get_file_thumbnails(FileIdentifier::ID(id)).await?;
 
     Ok(thumbs)
-}
-
-#[tauri::command]
-pub async fn read_thumbnail(
-    hash: String,
-    mime_type: String,
-    api_state: ApiAccess<'_>,
-    buffer_state: BufferAccess<'_>,
-) -> PluginResult<String> {
-    if buffer_state.reserve_entry(&hash) {
-        Ok(format!("once://{}", hash)) // entry has been cached
-    } else {
-        let api = api_state.api().await?;
-        let content = api.file.read_thumbnail(hash.clone()).await?;
-        let uri = add_once_buffer(buffer_state, hash, mime_type, content);
-
-        Ok(uri)
-    }
-}
-
-#[tauri::command]
-pub async fn get_thumbnail_of_size(
-    api_state: ApiAccess<'_>,
-    buffer_state: BufferAccess<'_>,
-    file_id: i64,
-    min_size: (u32, u32),
-    max_size: (u32, u32),
-) -> PluginResult<String> {
-    let api = api_state.api().await?;
-    let (thumb, data) = api
-        .file
-        .get_thumbnail_of_size(FileIdentifier::ID(file_id), min_size, max_size)
-        .await?;
-    let uri = add_once_buffer(
-        buffer_state,
-        thumb.hash,
-        thumb.mime_type.unwrap_or(String::from("image/png")),
-        data,
-    );
-
-    Ok(uri)
 }
 
 #[tauri::command]

@@ -32,10 +32,7 @@ impl<R: Runtime> MediarepoPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 get_all_files,
                 find_files,
-                read_file_by_hash,
                 get_file_thumbnails,
-                read_thumbnail,
-                get_thumbnail_of_size,
                 get_repositories,
                 get_all_tags,
                 get_tags_for_file,

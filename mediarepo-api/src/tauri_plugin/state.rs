@@ -90,21 +90,6 @@ impl BufferState {
         buffers.insert(key, Mutex::new(buffer));
     }
 
-    /// Checks if an entry for the specific key exists and resets
-    /// its state so that it can safely be accessed again.
-    pub fn reserve_entry(&self, key: &String) -> bool {
-        let buffers = self.buffer.read();
-        let entry = buffers.get(key);
-
-        if let Some(entry) = entry {
-            let mut entry = entry.lock();
-            entry.valid_until = Instant::now() + Duration::from_secs(120); // reset the timer so that it can be accessed again
-            true
-        } else {
-            false
-        }
-    }
-
     /// Returns the cloned buffer entry and flags it for expiration
     pub fn get_entry(&self, key: &str) -> Option<VolatileBuffer> {
         let buffers = self.buffer.read();

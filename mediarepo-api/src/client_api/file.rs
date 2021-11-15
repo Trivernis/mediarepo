@@ -97,13 +97,6 @@ where
             .await
     }
 
-    /// Reads the thumbnail of the file and returns its contents in bytes
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn read_thumbnail(&self, hash: String) -> ApiResult<Vec<u8>> {
-        let payload: BytePayload = self.emit_and_get("read_thumbnail", hash).await?;
-        Ok(payload.into_inner())
-    }
-
     /// Returns a thumbnail of size that is within the specified range
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_thumbnail_of_size(
