@@ -97,11 +97,14 @@ fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Res
             ((height as f32 * 0.8) as u32, (width as f32 * 0.8) as u32),
             ((height as f32 * 1.2) as u32, (width as f32 * 1.2) as u32),
         ))?;
-        let mime = thumb.mime_type.unwrap_or(String::from("image/png"));
-        buf_state.add_entry(request.uri().to_string(), mime.clone(), bytes.clone());
+        buf_state.add_entry(
+            request.uri().to_string(),
+            thumb.mime_type.clone(),
+            bytes.clone(),
+        );
 
         ResponseBuilder::new()
-            .mimetype(&mime)
+            .mimetype(&thumb.mime_type)
             .status(200)
             .body(bytes)
     }
