@@ -50,6 +50,6 @@ export class FileGridEntryComponent implements OnInit, OnChanges {
     this.contentUrl = undefined;
     clearTimeout(this.urlSetTimeout);
     this.urlSetTimeout = setTimeout(() => this.contentUrl = this.fileService.buildThumbnailUrl(this.gridEntry.file,
-      250, 250), 500);
+      250, 250), 200);
   }
 }

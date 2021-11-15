@@ -45,6 +45,6 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   private setImageDelayed() {
     this.contentUrl = undefined;
     clearTimeout(this.urlSetTimeout);
-    this.urlSetTimeout = setTimeout(() => this.contentUrl = this.fileService.buildThumbnailUrl(this.file.data, 250, 250), 500);
+    this.urlSetTimeout = setTimeout(() => this.contentUrl = this.fileService.buildThumbnailUrl(this.file.data, 250, 250), 200);
   }
 }
