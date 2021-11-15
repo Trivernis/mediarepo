@@ -1,9 +1,7 @@
 use crate::file::File;
-use crate::thumbnail::Thumbnail;
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::hash;
-use mediarepo_database::entities::thumbnail;
 use sea_orm::prelude::*;
 use sea_orm::{DatabaseConnection, Set};
 use std::fmt::Debug;
@@ -79,18 +77,5 @@ impl Hash {
             .map(|file_model| File::new(self.db.clone(), file_model, self.model.clone()));
 
         Ok(file)
-    }
-
-    /// Returns the the thumbnail associated with the hash
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn thumbnail(&self) -> RepoResult<Option<Thumbnail>> {
-        let thumbnail = self
-            .model
-            .find_related(thumbnail::Entity)
-            .one(&self.db)
-            .await?
-            .map(|thumb_model| Thumbnail::new(self.db.clone(), thumb_model, self.model.clone()));
-
-        Ok(thumbnail)
     }
 }

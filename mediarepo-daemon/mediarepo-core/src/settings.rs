@@ -18,7 +18,7 @@ impl Default for Settings {
             port_range: (3400, 3500),
             database_path: "./db/repo.db".to_string(),
             default_file_store: "Main".to_string(),
-            thumbnail_store: "Thumbnails".to_string(),
+            thumbnail_store: "./thumbnails".to_string(),
         }
     }
 }

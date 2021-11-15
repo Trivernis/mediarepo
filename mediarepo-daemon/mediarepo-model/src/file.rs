@@ -20,7 +20,6 @@ use mediarepo_database::entities::tag;
 use crate::file_type::FileType;
 use crate::storage::Storage;
 use crate::tag::Tag;
-use crate::thumbnail::Thumbnail;
 
 #[derive(Clone)]
 pub struct File {
@@ -223,12 +222,6 @@ impl File {
             .expect("The FK storage_id doesn't exist?!");
 
         Ok(storage)
-    }
-
-    /// Returns a list of thumbnails for the file
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn thumbnails(&self) -> RepoResult<Vec<Thumbnail>> {
-        Thumbnail::for_file_id(self.db.clone(), self.model.id).await
     }
 
     /// Returns the list of tags of the file

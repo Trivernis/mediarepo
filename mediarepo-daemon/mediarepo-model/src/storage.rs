@@ -1,6 +1,6 @@
 use crate::hash::Hash;
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::file_hash_store::FileHashStore;
+use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_database::entities::storage;
 use mediarepo_database::entities::storage::ActiveModel as ActiveStorage;
 use mediarepo_database::entities::storage::Model as StorageModel;

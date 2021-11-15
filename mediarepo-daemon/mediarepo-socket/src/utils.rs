@@ -20,3 +20,16 @@ pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> Repo
     }?;
     file.ok_or_else(|| RepoError::from("Thumbnail not found"))
 }
+
+pub async fn hash_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<String> {
+    match identifier {
+        FileIdentifier::ID(id) => {
+            let file = repo
+                .file_by_id(id)
+                .await?
+                .ok_or_else(|| "Thumbnail not found")?;
+            Ok(file.hash().to_owned())
+        }
+        FileIdentifier::Hash(hash) => Ok(hash),
+    }
+}

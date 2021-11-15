@@ -37,12 +37,10 @@ impl FromModel<Tag> for TagResponse {
 impl FromModel<Thumbnail> for ThumbnailMetadataResponse {
     fn from_model(model: Thumbnail) -> Self {
         Self {
-            id: model.id(),
-            file_id: model.file_id(),
-            hash: model.hash().to_owned(),
-            height: model.height(),
-            width: model.width(),
-            mime_type: model.mime_type().to_owned(),
+            file_hash: model.file_hash,
+            height: model.size.height,
+            width: model.size.width,
+            mime_type: model.mime_type.to_owned(),
         }
     }
 }

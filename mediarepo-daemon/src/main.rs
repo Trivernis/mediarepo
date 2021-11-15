@@ -113,7 +113,7 @@ async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
     let mut repo = get_repo(&opt.repo.join(&settings.database_path).to_str().unwrap()).await?;
 
     repo.set_main_storage(&settings.default_file_store).await?;
-    repo.set_thumbnail_storage(&settings.thumbnail_store)
+    repo.set_thumbnail_storage(opt.repo.join(&settings.thumbnail_store))
         .await?;
     Ok((settings, repo))
 }
@@ -285,7 +285,9 @@ async fn add_tags_from_tags_file(
 
 #[tracing::instrument(skip(repo, file))]
 async fn create_file_thumbnails(repo: &Repo, file: File) -> RepoResult<()> {
-    if file.thumbnails().await?.len() == 0 {
+    let file_thumbnails = repo.get_file_thumbnails(file.hash().to_owned()).await?;
+
+    if file_thumbnails.is_empty() {
         repo.create_thumbnails_for_file(&file).await?;
     }
     Ok(())

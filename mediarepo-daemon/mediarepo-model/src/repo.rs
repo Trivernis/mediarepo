@@ -6,6 +6,7 @@ use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
@@ -24,7 +25,7 @@ use tokio::io::BufReader;
 pub struct Repo {
     db: DatabaseConnection,
     main_storage: Option<Storage>,
-    thumbnail_storage: Option<Storage>,
+    thumbnail_storage: Option<ThumbnailStore>,
 }
 
 impl Repo {
@@ -65,15 +66,15 @@ impl Repo {
 
     /// Sets the main storage
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_main_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
-        self.main_storage = Storage::by_name(self.db.clone(), path.to_string()).await?;
+    pub async fn set_main_storage<S: ToString + Debug>(&mut self, name: S) -> RepoResult<()> {
+        self.main_storage = Storage::by_name(self.db.clone(), name.to_string()).await?;
         Ok(())
     }
 
     /// Sets the default thumbnail storage
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_thumbnail_storage<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
-        self.thumbnail_storage = Storage::by_name(self.db.clone(), path.to_string()).await?;
+    pub async fn set_thumbnail_storage(&mut self, path: PathBuf) -> RepoResult<()> {
+        self.thumbnail_storage = Some(ThumbnailStore::new(path));
         Ok(())
     }
 
@@ -189,29 +190,41 @@ impl Repo {
         .await
     }
 
-    /// Returns a thumbnail by its hash
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn thumbnail_by_hash<S: AsRef<str> + Debug>(
-        &self,
-        hash: S,
-    ) -> RepoResult<Option<Thumbnail>> {
-        Thumbnail::by_hash(self.db.clone(), hash).await
+    /// Returns all thumbnails of a file
+    pub async fn get_file_thumbnails(&self, file_hash: String) -> RepoResult<Vec<Thumbnail>> {
+        let thumb_store = self.get_thumbnail_storage()?;
+        let thumbnails = thumb_store
+            .get_thumbnails(&file_hash)
+            .await?
+            .into_iter()
+            .map(|(size, path)| Thumbnail {
+                file_hash: file_hash.to_owned(),
+                path,
+                size,
+                mime_type: mime::IMAGE_PNG.to_string(),
+            })
+            .collect_vec();
+
+        Ok(thumbnails)
     }
 
     /// Creates thumbnails of all sizes for a file
     #[tracing::instrument(level = "debug", skip(self, file))]
-    pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<()> {
+    pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<Vec<Thumbnail>> {
         let thumb_storage = self.get_thumbnail_storage()?;
         let size = ThumbnailSize::Medium;
         let (height, width) = size.dimensions();
         let thumbs = file.create_thumbnail([size]).await?;
+        let mut created_thumbs = Vec::with_capacity(1);
 
         for thumb in thumbs {
-            self.store_single_thumbnail(file, thumb_storage, height, width, thumb)
+            let entry = self
+                .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
                 .await?;
+            created_thumbs.push(entry);
         }
 
-        Ok(())
+        Ok(created_thumbs)
     }
 
     #[tracing::instrument(level = "debug", skip(self, file))]
@@ -228,34 +241,34 @@ impl Repo {
             .pop()
             .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
         let thumbnail = self
-            .store_single_thumbnail(file, thumb_storage, height, width, thumb)
+            .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
             .await?;
 
         Ok(thumbnail)
     }
 
+    /// Stores a single thumbnail
     async fn store_single_thumbnail(
         &self,
-        file: &File,
-        thumb_storage: &Storage,
+        file_hash: String,
+        thumb_storage: &ThumbnailStore,
         height: u32,
         width: u32,
         thumb: mediarepo_core::thumbnailer::Thumbnail,
     ) -> RepoResult<Thumbnail> {
         let mut buf = Vec::new();
         thumb.write_png(&mut buf)?;
-        let hash = thumb_storage.store_entry(Cursor::new(buf)).await?;
+        let size = Dimensions { height, width };
+        let path = thumb_storage
+            .add_thumbnail(&file_hash, size.clone(), &buf)
+            .await?;
 
-        let thumbnail = Thumbnail::add(
-            self.db.clone(),
-            hash.id(),
-            file.id(),
-            thumb_storage.id(),
-            height as i32,
-            width as i32,
-            Some(mime::IMAGE_PNG.to_string()),
-        )
-        .await?;
+        let thumbnail = Thumbnail {
+            file_hash,
+            path,
+            size,
+            mime_type: mime::IMAGE_PNG.to_string(),
+        };
 
         Ok(thumbnail)
     }
@@ -385,7 +398,7 @@ impl Repo {
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
-    fn get_thumbnail_storage(&self) -> RepoResult<&Storage> {
+    fn get_thumbnail_storage(&self) -> RepoResult<&ThumbnailStore> {
         if let Some(storage) = &self.thumbnail_storage {
             Ok(storage)
         } else {
