@@ -327,6 +327,25 @@ impl File {
         storage.get_file_reader(&self.hash.value).await
     }
 
+    /// Retrieves the size of the file from its content
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_size(&self) -> RepoResult<u64> {
+        if let Some(size) = self.model.size {
+            Ok(size as u64)
+        } else {
+            let mut reader = self.get_reader().await?;
+            let size = {
+                let mut buf = Vec::new();
+                reader.read_to_end(&mut buf).await
+            }?;
+            let mut model = self.get_active_model();
+            model.size = Set(Some(size as i64));
+            model.update(&self.db).await?;
+
+            Ok(size as u64)
+        }
+    }
+
     /// Creates a thumbnail for the file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_thumbnail<I: IntoIterator<Item = ThumbnailSize> + Debug>(

@@ -1,5 +1,6 @@
 use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context, hash_by_identifier};
+use chrono::NaiveDateTime;
 use compare::Compare;
 use mediarepo_api::types::files::{
     AddFileRequestHeader, FileMetadataResponse, FindFilesByTagsRequest,
@@ -12,13 +13,24 @@ use mediarepo_core::itertools::Itertools;
 use mediarepo_core::rmp_ipc::prelude::*;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
-use mediarepo_database::queries::tags::get_hashes_with_namespaced_tags;
-use mediarepo_model::file::File;
+use mediarepo_database::queries::tags::{
+    get_hashes_with_namespaced_tags, get_hashes_with_tag_count,
+};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
+pub struct FileSortContext {
+    name: Option<String>,
+    size: u64,
+    mime_type: Option<String>,
+    namespaces: HashMap<String, Vec<String>>,
+    tag_count: u32,
+    import_time: NaiveDateTime,
+    create_time: NaiveDateTime,
+    change_time: NaiveDateTime,
+}
 
 impl NamespaceProvider for FilesNamespace {
     fn name() -> &'static str {
@@ -79,21 +91,36 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let tags = req.tags.into_iter().map(|t| (t.name, t.negate)).collect();
         let mut files = repo.find_files_by_tags(tags).await?;
-        let hash_ids = files.iter().map(|f| f.hash_id()).collect();
+        let hash_ids: Vec<i64> = files.iter().map(|f| f.hash_id()).collect();
 
-        let hash_nsp: HashMap<i64, HashMap<String, String>> =
-            get_hashes_with_namespaced_tags(repo.db(), hash_ids).await?;
+        let mut hash_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
+            get_hashes_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
+        let mut hash_tag_counts = get_hashes_with_tag_count(repo.db(), hash_ids).await?;
 
+        let mut contexts = HashMap::new();
+
+        for file in &files {
+            let context = FileSortContext {
+                name: file.name().to_owned(),
+                size: file.get_size().await?,
+                mime_type: file.mime_type().to_owned(),
+                namespaces: hash_nsp
+                    .remove(&file.hash_id())
+                    .unwrap_or(HashMap::with_capacity(0)),
+                tag_count: hash_tag_counts.remove(&file.hash_id()).unwrap_or(0),
+                import_time: file.import_time().to_owned(),
+                create_time: file.import_time().to_owned(),
+                change_time: file.change_time().to_owned(),
+            };
+            contexts.insert(file.id(), context);
+        }
         let sort_expression = req.sort_expression;
         tracing::debug!("sort_expression = {:?}", sort_expression);
-        let empty_map = HashMap::with_capacity(0);
 
         files.sort_by(|a, b| {
             compare_files(
-                a,
-                hash_nsp.get(&a.hash_id()).unwrap_or(&empty_map),
-                b,
-                hash_nsp.get(&b.hash_id()).unwrap_or(&empty_map),
+                contexts.get(&a.hash_id()).unwrap(),
+                contexts.get(&b.hash_id()).unwrap(),
                 &sort_expression,
             )
         });
@@ -263,55 +290,56 @@ impl FilesNamespace {
 
 #[tracing::instrument(level = "trace", skip_all)]
 fn compare_files(
-    file_a: &File,
-    nsp_a: &HashMap<String, String>,
-    file_b: &File,
-    nsp_b: &HashMap<String, String>,
+    ctx_a: &FileSortContext,
+    ctx_b: &FileSortContext,
     expression: &Vec<SortKey>,
 ) -> Ordering {
     let cmp_date = compare::natural();
+    let cmp_u64 = compare::natural();
+    let cmp_u32 = compare::natural();
 
     for sort_key in expression {
         let ordering = match sort_key {
             SortKey::Namespace(namespace) => {
-                let tag_a = nsp_a.get(&namespace.name);
-                let tag_b = nsp_b.get(&namespace.name);
+                let list_a = ctx_a.namespaces.get(&namespace.name);
+                let list_b = ctx_b.namespaces.get(&namespace.name);
 
-                if let (Some(a), Some(b)) = (
-                    tag_a.and_then(|a| a.parse::<f32>().ok()),
-                    tag_b.and_then(|b| b.parse::<f32>().ok()),
-                ) {
-                    adjust_for_dir(compare_f32(a, b), &namespace.direction)
+                let cmp_result = if let (Some(list_a), Some(list_b)) = (list_a, list_b) {
+                    compare_tag_lists(list_a, list_b)
+                } else if list_a.is_some() {
+                    Ordering::Greater
+                } else if list_b.is_some() {
+                    Ordering::Less
                 } else {
-                    adjust_for_dir(compare_opts(tag_a, tag_b), &namespace.direction)
-                }
+                    Ordering::Equal
+                };
+                adjust_for_dir(cmp_result, &namespace.direction)
             }
-            SortKey::FileName(direction) => adjust_for_dir(
-                compare_opts(file_a.name().clone(), file_b.name().clone()),
-                direction,
-            ),
-            SortKey::FileSize(_direction) => {
-                Ordering::Equal // TODO: Retrieve file size
+            SortKey::FileName(direction) => {
+                adjust_for_dir(compare_opts(&ctx_a.name, &ctx_b.name), direction)
+            }
+            SortKey::FileSize(direction) => {
+                adjust_for_dir(cmp_u64.compare(&ctx_a.size, &ctx_b.size), direction)
             }
             SortKey::FileImportedTime(direction) => adjust_for_dir(
-                cmp_date.compare(file_a.import_time(), file_b.import_time()),
+                cmp_date.compare(&ctx_a.import_time, &ctx_b.import_time),
                 direction,
             ),
             SortKey::FileCreatedTime(direction) => adjust_for_dir(
-                cmp_date.compare(file_a.creation_time(), file_b.creation_time()),
+                cmp_date.compare(&ctx_a.create_time, &ctx_b.create_time),
                 direction,
             ),
             SortKey::FileChangeTime(direction) => adjust_for_dir(
-                cmp_date.compare(file_a.change_time(), file_b.change_time()),
+                cmp_date.compare(&ctx_a.change_time, &ctx_b.change_time),
                 direction,
             ),
-            SortKey::FileType(direction) => adjust_for_dir(
-                compare_opts(file_a.mime_type().clone(), file_b.mime_type().clone()),
-                direction,
-            ),
-            SortKey::NumTags(_) => {
-                Ordering::Equal // TODO: Count tags
+            SortKey::FileType(direction) => {
+                adjust_for_dir(compare_opts(&ctx_a.mime_type, &ctx_b.mime_type), direction)
             }
+            SortKey::NumTags(direction) => adjust_for_dir(
+                cmp_u32.compare(&ctx_a.tag_count, &ctx_b.tag_count),
+                direction,
+            ),
         };
         if !ordering.is_eq() {
             return ordering;
@@ -321,9 +349,9 @@ fn compare_files(
     Ordering::Equal
 }
 
-fn compare_opts<T: Ord + Sized>(opt_a: Option<T>, opt_b: Option<T>) -> Ordering {
+fn compare_opts<T: Ord + Sized>(opt_a: &Option<T>, opt_b: &Option<T>) -> Ordering {
     let cmp = compare::natural();
-    if let (Some(a), Some(b)) = (&opt_a, &opt_b) {
+    if let (Some(a), Some(b)) = (opt_a, opt_b) {
         cmp.compare(a, b)
     } else if opt_a.is_some() {
         Ordering::Greater
@@ -349,5 +377,23 @@ fn adjust_for_dir(ordering: Ordering, direction: &SortDirection) -> Ordering {
         ordering.reverse()
     } else {
         ordering
+    }
+}
+
+fn compare_tag_lists(list_a: &Vec<String>, list_b: &Vec<String>) -> Ordering {
+    let first_diff = list_a
+        .into_iter()
+        .zip(list_b.into_iter())
+        .find(|(a, b)| *a != *b);
+    if let Some(diff) = first_diff {
+        if let (Some(num_a), Some(num_b)) = (diff.0.parse::<f32>().ok(), diff.1.parse::<f32>().ok())
+        {
+            compare_f32(num_a, num_b)
+        } else {
+            let cmp = compare::natural();
+            cmp.compare(diff.0, diff.1)
+        }
+    } else {
+        Ordering::Equal
     }
 }

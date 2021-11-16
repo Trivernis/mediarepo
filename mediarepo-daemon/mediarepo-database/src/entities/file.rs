@@ -10,6 +10,7 @@ pub struct Model {
     pub name: Option<String>,
     pub comment: Option<String>,
     pub mime_type: Option<String>,
+    pub size: Option<i64>,
     pub storage_id: i64,
     pub hash_id: i64,
     pub import_time: NaiveDateTime,
@@ -32,9 +33,6 @@ pub enum Relation {
         to = "super::storage::Column::Id"
     )]
     Storage,
-
-    #[sea_orm(has_many = "super::thumbnail::Entity")]
-    Thumbnail,
 }
 
 impl Related<super::hash::Entity> for Entity {
@@ -46,12 +44,6 @@ impl Related<super::hash::Entity> for Entity {
 impl Related<super::storage::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Storage.def()
-    }
-}
-
-impl Related<super::thumbnail::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Thumbnail.def()
     }
 }
 

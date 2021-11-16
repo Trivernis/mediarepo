@@ -6,4 +6,3 @@ pub mod namespace;
 pub mod source;
 pub mod storage;
 pub mod tag;
-pub mod thumbnail;
