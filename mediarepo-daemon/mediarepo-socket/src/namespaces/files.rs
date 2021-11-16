@@ -119,8 +119,8 @@ impl FilesNamespace {
 
         files.sort_by(|a, b| {
             compare_files(
-                contexts.get(&a.hash_id()).unwrap(),
-                contexts.get(&b.hash_id()).unwrap(),
+                contexts.get(&a.id()).unwrap(),
+                contexts.get(&b.id()).unwrap(),
                 &sort_expression,
             )
         });
