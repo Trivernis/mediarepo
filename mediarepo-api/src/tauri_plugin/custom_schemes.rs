@@ -24,6 +24,7 @@ pub fn register_custom_uri_schemes<R: Runtime>(builder: Builder<R>) -> Builder<R
 fn build_uri_runtime() -> PluginResult<TokioRuntime> {
     let runtime = TokioRuntimeBuilder::new_current_thread()
         .thread_name("custom-scheme")
+        .enable_all()
         .max_blocking_threads(1)
         .build()?;
 
