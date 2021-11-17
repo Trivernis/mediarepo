@@ -30,7 +30,7 @@ features = ["env-filter"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "3e8a415a4cf1c04e3e7ccefbcdd56b650ad40c85"
+rev = "a586585f24725d0c4b00ecf1b5f5f929cbc359cf"
 features = ["tauri-plugin"]
 
 [features]
