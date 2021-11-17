@@ -54,10 +54,6 @@ impl ApiState {
             .clone()
             .ok_or_else(|| PluginError::from("Not connected"))
     }
-
-    pub fn api_sync(&self) -> PluginResult<ApiClient<ApiProtocolListener>> {
-        futures::executor::block_on(self.api())
-    }
 }
 
 #[derive(Clone)]
