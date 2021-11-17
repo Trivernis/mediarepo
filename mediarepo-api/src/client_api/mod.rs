@@ -14,6 +14,7 @@ use rmp_ipc::ipc::stream_emitter::EmitMetadata;
 use rmp_ipc::payload::{EventReceivePayload, EventSendPayload};
 use rmp_ipc::prelude::{AsyncProtocolStream, AsyncStreamProtocolListener};
 use rmp_ipc::IPCBuilder;
+use std::time::Duration;
 
 #[async_trait]
 pub trait IPCApi<S: AsyncProtocolStream> {
@@ -82,6 +83,7 @@ where
     pub async fn connect(address: L::AddressType) -> ApiResult<Self> {
         let ctx = IPCBuilder::<L>::new()
             .address(address)
+            .timeout(Duration::from_secs(10))
             .build_pooled_client(8)
             .await?;
         let client = Self::new(ctx);
