@@ -2,6 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {File} from "../../../models/File";
 import {FileService} from "../../../services/file/file.service";
 import {FileGridComponent} from "../../../components/file-grid/file-grid.component";
+import {DialogFilter} from "@tauri-apps/api/dialog";
 
 @Component({
   selector: 'app-import-tab',
@@ -11,7 +12,6 @@ import {FileGridComponent} from "../../../components/file-grid/file-grid.compone
 export class ImportTabComponent {
 
   public files: File[] = [];
-
   @ViewChild("fileGrid") fileGrid!: FileGridComponent;
 
   constructor(private fileService: FileService) {

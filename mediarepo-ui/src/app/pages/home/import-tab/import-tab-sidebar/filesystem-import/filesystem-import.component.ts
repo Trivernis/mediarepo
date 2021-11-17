@@ -4,6 +4,7 @@ import {ImportService} from "../../../../../services/import/import.service";
 import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
 import {File} from "../../../../../models/File";
+import {DialogFilter} from "@tauri-apps/api/dialog";
 
 @Component({
   selector: 'app-filesystem-import',
@@ -18,6 +19,14 @@ export class FilesystemImportComponent {
   public fileCount: number = 0;
   public files: FileOsMetadata[] = [];
   public importOptions = new AddFileOptions();
+  public filters: DialogFilter[] = [
+    {name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "bmp"]},
+    {name: "Videos", extensions: ["mp4", "mkv", "wmv", "avi", "webm"]},
+    {name: "Documents", extensions: ["pdf", "doc", "docx", "odf"]},
+    {name: "Text", extensions: ["txt", "md"]},
+    {name: "All", extensions: ["*"]}
+  ]
+
 
   public resolving = false;
   public importing = false;

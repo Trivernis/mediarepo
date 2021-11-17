@@ -5,7 +5,7 @@
     <mat-option value="files">Files</mat-option>
   </mat-select>
 </mat-form-field>
-<app-native-file-select [mode]="selectionType.value" (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
+<app-native-file-select [filters]="this.filters" [mode]="selectionType.value" (fileSelect)="this.setSelectedPaths($event)"></app-native-file-select>
 <button mat-flat-button>
   {{resolving? "Searching for files..." : this.fileCount + " files found"}}
   <mat-progress-bar *ngIf="resolving" mode="indeterminate" color="primary"></mat-progress-bar>
