@@ -3,6 +3,7 @@ use crate::tauri_plugin::state::{ApiState, BufferState};
 use crate::types::identifier::FileIdentifier;
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tauri::http::{Request, Response, ResponseBuilder};
 use tauri::{AppHandle, Builder, Manager, Runtime};
 use tokio::runtime::{Builder as TokioRuntimeBuilder, Runtime as TokioRuntime};
@@ -11,21 +12,21 @@ use url::Url;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub fn register_custom_uri_schemes<R: Runtime>(builder: Builder<R>) -> Builder<R> {
+    let runtime =
+        Arc::new(build_uri_runtime().expect("Failed to build async runtime for custom schemes"));
     builder
         .register_uri_scheme_protocol("once", once_scheme)
-        .register_uri_scheme_protocol("content", |a, r| {
-            build_uri_runtime()?.block_on(content_scheme(a, r))
+        .register_uri_scheme_protocol("content", {
+            let runtime = Arc::clone(&runtime);
+            move |a, r| runtime.block_on(content_scheme(a, r))
         })
-        .register_uri_scheme_protocol("thumb", |a, r| {
-            build_uri_runtime()?.block_on(thumb_scheme(a, r))
-        })
+        .register_uri_scheme_protocol("thumb", move |a, r| runtime.block_on(thumb_scheme(a, r)))
 }
 
 fn build_uri_runtime() -> PluginResult<TokioRuntime> {
     let runtime = TokioRuntimeBuilder::new_current_thread()
         .thread_name("custom-scheme")
         .enable_all()
-        .max_blocking_threads(1)
         .build()?;
 
     Ok(runtime)
