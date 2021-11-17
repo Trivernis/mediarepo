@@ -7,6 +7,7 @@ use crate::types::files::{
 use crate::types::identifier::FileIdentifier;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::time::SystemTime;
 use tokio::fs;
 use tokio::fs::DirEntry;
 
@@ -33,12 +34,11 @@ pub async fn add_local_file(
     let api = api_state.api().await?;
     let path = PathBuf::from(&metadata.path);
     let mut tags = Vec::new();
+    let txt_path = PathBuf::from(format!("{}.txt", path.to_string_lossy()));
 
     if options.read_tags_from_txt {
-        let txt_path = PathBuf::from(format!("{}.txt", path.to_string_lossy()));
-
         if txt_path.exists() {
-            let content = fs::read_to_string(txt_path).await?;
+            let content = fs::read_to_string(&txt_path).await?;
             tags.append(
                 &mut content
                     .split('\n')
@@ -48,8 +48,15 @@ pub async fn add_local_file(
         }
     }
 
-    let file_content = fs::read(path).await?;
+    let file_content = fs::read(&path).await?;
     let file = api.file.add_file(metadata, tags, file_content).await?;
+    if options.delete_after_import {
+        fs::remove_file(path).await?;
+
+        if options.read_tags_from_txt {
+            fs::remove_file(txt_path).await?;
+        }
+    }
 
     Ok(file)
 }
@@ -116,7 +123,7 @@ async fn resolve_path_to_files(path: PathBuf) -> PluginResult<Vec<FileOSMetadata
 
         while let Some(entry) = read_dir.next_entry().await? {
             let subdir_entries = resolve_subdir(entry).await?;
-            for entry in subdir_entries {
+            for entry in subdir_entries.into_iter().filter(|e| !e.path().is_dir()) {
                 let metadata = retrieve_file_information(entry.path()).await?;
                 files.push(metadata);
             }
@@ -157,8 +164,8 @@ async fn resolve_subdir(entry: DirEntry) -> PluginResult<Vec<DirEntry>> {
 async fn retrieve_file_information(path: PathBuf) -> PluginResult<FileOSMetadata> {
     let mime = mime_guess::from_path(&path).first();
     let metadata = fs::metadata(&path).await?;
-    let creation_time = metadata.created()?;
-    let change_time = metadata.modified()?;
+    let creation_time = metadata.created().unwrap_or(SystemTime::now());
+    let change_time = metadata.modified().unwrap_or(SystemTime::now());
     let name = path
         .file_name()
         .ok_or_else(|| "Could not retrieve file name")?;
