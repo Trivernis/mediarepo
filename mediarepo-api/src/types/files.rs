@@ -36,7 +36,7 @@ pub struct FindFilesRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "filter_type")]
+#[serde(tag = "filter_type", content = "filter")]
 pub enum FilterExpression {
     OrExpression(Vec<TagQuery>),
     Query(TagQuery),
