@@ -1,0 +1,16 @@
+.remove-button {
+  position: absolute;
+  top: calc(0.5em - 15px);
+  right: 0;
+}
+
+mat-list {
+  height: 100%;
+  width: 100%;
+}
+
+mat-list-item.or-filter-list-item {
+  padding: 0.5em 0;
+  height: 100%;
+  width: 100%;
+}

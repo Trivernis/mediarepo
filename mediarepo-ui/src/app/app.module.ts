@@ -54,6 +54,8 @@ import { ImportTabSidebarComponent } from './pages/home/import-tab/import-tab-si
 import { NativeFileSelectComponent } from './components/inputs/native-file-select/native-file-select.component';
 import { FilesystemImportComponent } from './pages/home/import-tab/import-tab-sidebar/filesystem-import/filesystem-import.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import { FilterDialogComponent } from './components/file-search/filter-dialog/filter-dialog.component';
+import { TagFilterListItemComponent } from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,8 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
     ImportTabSidebarComponent,
     NativeFileSelectComponent,
     FilesystemImportComponent,
+    FilterDialogComponent,
+    TagFilterListItemComponent,
   ],
     imports: [
         BrowserModule,

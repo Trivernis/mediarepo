@@ -1,0 +1,22 @@
+.dialog-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+
+  button {
+    margin-left: 1em;
+  }
+}
+
+.tag-input {
+  width: 100%;
+}
+
+mat-list-item.filter-list-item {
+  height: 100%;
+  padding: 0.5em 0;
+}
+
+app-tag-filter-list-item {
+  width: 100%;
+}

@@ -23,6 +23,7 @@ import {
   FilterExpression,
   SingleFilterExpression
 } from "../../models/FilterExpression";
+import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 
 
 @Component({
@@ -70,12 +71,9 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   }
 
   public addSearchTag(tag: string) {
-    if (tag.startsWith("-")) {
-      tag = tag.replace(/^-/g, '');
-      this.filters.push(new SingleFilterExpression(new TagQuery(tag, true)));
-    } else {
-      this.filters.push(new SingleFilterExpression(new TagQuery(tag, false)));
-    }
+    this.filters.push(new SingleFilterExpression(TagQuery.fromString(tag)));
+    tag = tag.replace(/^-/g, '');
+
     if (this.filters.filter(t => t.partiallyEq(tag)).length > 1) {
       const index = this.filters.findIndex(t => t.partiallyEq(tag));
       this.filters.splice(index, 1);
@@ -142,5 +140,23 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
           f => f.eq(t)) < 0)
       .map(t => negated ? "-" + t : t)
       .slice(0, 20);
+  }
+
+  public openFilterDialog(): void {
+    const filterEntries = this.filters.map(f => f.clone());
+    const filterDialog = this.dialog.open(FilterDialogComponent, {
+      minWidth: "25vw",
+      data: {
+        filterEntries,
+        validTags: this.validTags,
+      },
+      disableClose: true,
+    });
+    filterDialog.afterClosed().subscribe(async (filterExpression) => {
+      if (filterExpression !== undefined || filterExpression?.length > 0) {
+        this.filters = filterExpression;
+        await this.searchForFiles();
+      }
+    });
   }
 }
