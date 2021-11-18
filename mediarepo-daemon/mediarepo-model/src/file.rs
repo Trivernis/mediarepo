@@ -90,36 +90,13 @@ impl File {
     #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn find_by_tags(
         db: DatabaseConnection,
-        tag_ids: Vec<(i64, bool)>,
+        tag_ids: Vec<Vec<(i64, bool)>>,
     ) -> RepoResult<Vec<Self>> {
-        let mut condition = Condition::all();
+        let main_condition = build_find_filter_conditions(tag_ids);
 
-        for (tag, negated) in tag_ids {
-            condition = if negated {
-                condition.add(
-                    hash::Column::Id.not_in_subquery(
-                        Query::select()
-                            .expr(Expr::col(hash_tag::Column::HashId))
-                            .from(hash_tag::Entity)
-                            .cond_where(hash_tag::Column::TagId.eq(tag))
-                            .to_owned(),
-                    ),
-                )
-            } else {
-                condition.add(
-                    hash::Column::Id.in_subquery(
-                        Query::select()
-                            .expr(Expr::col(hash_tag::Column::HashId))
-                            .from(hash_tag::Entity)
-                            .cond_where(hash_tag::Column::TagId.eq(tag))
-                            .to_owned(),
-                    ),
-                )
-            }
-        }
         let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
             .find_also_related(file::Entity)
-            .filter(condition)
+            .filter(main_condition)
             .group_by(file::Column::Id)
             .all(&db)
             .await?;
@@ -371,5 +348,48 @@ impl File {
             id: Set(self.id()),
             ..Default::default()
         }
+    }
+}
+
+fn build_find_filter_conditions(tag_ids: Vec<Vec<(i64, bool)>>) -> Condition {
+    let mut main_condition = Condition::all();
+
+    for mut expression in tag_ids {
+        if expression.len() == 1 {
+            let (tag_id, negated) = expression.pop().unwrap();
+            main_condition = add_single_filter_expression(main_condition, tag_id, negated)
+        } else if !expression.is_empty() {
+            let mut sub_condition = Condition::any();
+
+            for (tag, negated) in expression {
+                sub_condition = add_single_filter_expression(sub_condition, tag, negated);
+            }
+            main_condition = main_condition.add(sub_condition);
+        }
+    }
+    main_condition
+}
+
+fn add_single_filter_expression(condition: Condition, tag_id: i64, negated: bool) -> Condition {
+    if negated {
+        condition.add(
+            hash::Column::Id.not_in_subquery(
+                Query::select()
+                    .expr(Expr::col(hash_tag::Column::HashId))
+                    .from(hash_tag::Entity)
+                    .cond_where(hash_tag::Column::TagId.eq(tag_id))
+                    .to_owned(),
+            ),
+        )
+    } else {
+        condition.add(
+            hash::Column::Id.in_subquery(
+                Query::select()
+                    .expr(Expr::col(hash_tag::Column::HashId))
+                    .from(hash_tag::Entity)
+                    .cond_where(hash_tag::Column::TagId.eq(tag_id))
+                    .to_owned(),
+            ),
+        )
     }
 }

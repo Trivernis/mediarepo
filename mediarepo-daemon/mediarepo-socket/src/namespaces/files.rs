@@ -3,7 +3,7 @@ use crate::utils::{file_by_identifier, get_repo_from_context, hash_by_identifier
 use chrono::NaiveDateTime;
 use compare::Compare;
 use mediarepo_api::types::files::{
-    AddFileRequestHeader, FileMetadataResponse, FindFilesByTagsRequest,
+    AddFileRequestHeader, FileMetadataResponse, FilterExpression, FindFilesRequest,
     GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortDirection,
     SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
@@ -87,9 +87,22 @@ impl FilesNamespace {
     /// Searches for files by tags
     #[tracing::instrument(skip_all)]
     async fn find_files<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
-        let req = event.data::<FindFilesByTagsRequest>()?;
+        let req = event.data::<FindFilesRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let tags = req.tags.into_iter().map(|t| (t.name, t.negate)).collect();
+
+        let tags = req
+            .filters
+            .into_iter()
+            .map(|e| match e {
+                FilterExpression::OrExpression(tags) => {
+                    tags.into_iter().map(|t| (t.tag, t.negate)).collect_vec()
+                }
+                FilterExpression::Query(tag) => {
+                    vec![(tag.tag, tag.negate)]
+                }
+            })
+            .collect();
+
         let mut files = repo.find_files_by_tags(tags).await?;
         let hash_ids: Vec<i64> = files.iter().map(|f| f.hash_id()).collect();
 

@@ -108,25 +108,26 @@ impl Repo {
 
     /// Finds all files by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files_by_tags(&self, tags: Vec<(String, bool)>) -> RepoResult<Vec<File>> {
+    pub async fn find_files_by_tags(
+        &self,
+        tags: Vec<Vec<(String, bool)>>,
+    ) -> RepoResult<Vec<File>> {
         let parsed_tags = tags
             .iter()
-            .map(|t| parse_namespace_and_tag(t.0.clone()))
+            .flat_map(|e| e.into_iter().map(|t| parse_namespace_and_tag(t.0.clone())))
+            .unique()
             .collect();
 
         let db_tags = self.tags_by_names(parsed_tags).await?;
-        let tag_map: HashMap<String, bool> = HashMap::from_iter(tags.into_iter());
+        let tag_map: HashMap<String, i64> =
+            HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
 
-        let tag_ids: Vec<(i64, bool)> = db_tags
+        let tag_ids: Vec<Vec<(i64, bool)>> = tags
             .into_iter()
-            .map(|tag| {
-                (
-                    tag.id(),
-                    tag_map
-                        .get(&tag.normalized_name())
-                        .cloned()
-                        .unwrap_or(false),
-                )
+            .map(|expr| {
+                expr.into_iter()
+                    .filter_map(|(tag, negated)| Some((*tag_map.get(&tag)?, negated)))
+                    .collect_vec()
             })
             .collect();
 

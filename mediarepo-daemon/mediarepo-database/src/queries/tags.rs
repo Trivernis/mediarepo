@@ -65,6 +65,9 @@ pub async fn get_hashes_with_tag_count(
     db: &DatabaseConnection,
     hash_ids: Vec<i64>,
 ) -> RepoResult<HashMap<i64, u32>> {
+    if hash_ids.is_empty() {
+        return Ok(HashMap::new());
+    }
     let hash_tag_counts: Vec<HashTagCount> =
         HashTagCount::find_by_statement(Statement::from_sql_and_values(
             DbBackend::Sqlite,
@@ -94,7 +97,9 @@ fn vec_to_query_list<D: Display>(input: Vec<D>) -> String {
     let mut entries = input
         .into_iter()
         .fold(String::new(), |acc, val| format!("{}{},", acc, val));
-    entries.remove(entries.len() - 1);
+    if entries.len() > 0 {
+        entries.remove(entries.len() - 1);
+    }
 
     entries
 }
