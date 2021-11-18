@@ -45,7 +45,7 @@ pub enum FilterExpression {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TagQuery {
     pub negate: bool,
-    pub tags: String,
+    pub tag: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
