@@ -2,7 +2,7 @@ use crate::tauri_plugin::commands::ApiAccess;
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
-    FileMetadataResponse, FileOSMetadata, SortKey, TagQuery, ThumbnailMetadataResponse,
+    FileMetadataResponse, FileOSMetadata, FilterExpression, SortKey, ThumbnailMetadataResponse,
 };
 use crate::types::identifier::FileIdentifier;
 use serde::{Deserialize, Serialize};
@@ -63,12 +63,12 @@ pub async fn add_local_file(
 
 #[tauri::command]
 pub async fn find_files(
-    tags: Vec<TagQuery>,
+    filters: Vec<FilterExpression>,
     sort_by: Vec<SortKey>,
     api_state: ApiAccess<'_>,
 ) -> PluginResult<Vec<FileMetadataResponse>> {
     let api = api_state.api().await?;
-    let files = api.file.find_files(tags, sort_by).await?;
+    let files = api.file.find_files(filters, sort_by).await?;
 
     Ok(files)
 }

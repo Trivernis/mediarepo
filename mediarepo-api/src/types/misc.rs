@@ -49,7 +49,12 @@ pub fn check_apis_compatible(
     client_version: (u32, u32, u32),
     server_version: (u32, u32, u32),
 ) -> bool {
-    // the major version must be the same while the client minor version can be lower than the servers
-    // so that the client has access to all its supported functionality
-    client_version.0 == server_version.0 && client_version.1 <= server_version.1
+    if client_version.0 == 0 {
+        // For the beta and alpha (major 0) compare the minor and patch level
+        client_version.1 == server_version.1 && client_version.2 <= server_version.2
+    } else {
+        // the major version must be the same while the client minor version can be lower than the servers
+        // so that the client has access to all its supported functionality
+        client_version.0 == server_version.0 && client_version.1 <= server_version.1
+    }
 }

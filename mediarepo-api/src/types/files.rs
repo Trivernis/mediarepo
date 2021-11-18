@@ -30,15 +30,22 @@ pub struct GetFilesTagsRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FindFilesByTagsRequest {
-    pub tags: Vec<TagQuery>,
+pub struct FindFilesRequest {
+    pub filters: Vec<FilterExpression>,
     pub sort_expression: Vec<SortKey>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "filter_type")]
+pub enum FilterExpression {
+    OrExpression(Vec<TagQuery>),
+    Query(TagQuery),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TagQuery {
     pub negate: bool,
-    pub name: String,
+    pub tags: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

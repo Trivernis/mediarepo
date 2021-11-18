@@ -1,8 +1,8 @@
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
-    AddFileRequestHeader, FileMetadataResponse, FileOSMetadata, FindFilesByTagsRequest,
-    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortKey, TagQuery,
+    AddFileRequestHeader, FileMetadataResponse, FileOSMetadata, FilterExpression, FindFilesRequest,
+    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortKey,
     ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
@@ -64,13 +64,13 @@ where
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn find_files(
         &self,
-        tags: Vec<TagQuery>,
+        filters: Vec<FilterExpression>,
         sort_expression: Vec<SortKey>,
     ) -> ApiResult<Vec<FileMetadataResponse>> {
         self.emit_and_get(
             "find_files",
-            FindFilesByTagsRequest {
-                tags,
+            FindFilesRequest {
+                filters,
                 sort_expression,
             },
         )
