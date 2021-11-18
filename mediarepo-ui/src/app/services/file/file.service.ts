@@ -7,6 +7,7 @@ import {Thumbnail} from "../../models/Thumbnail";
 import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
 import {RepositoryService} from "../repository/repository.service";
+import {FilterExpression} from "../../models/FilterExpression";
 
 @Injectable({
   providedIn: 'root'
@@ -29,9 +30,10 @@ export class FileService {
     this.displayedFiles.next(all_files);
   }
 
-  public async findFiles(tags: TagQuery[], sortBy: SortKey[]) {
+  public async findFiles(filters: FilterExpression[], sortBy: SortKey[]) {
+    console.log(filters);
     let files = await invoke<File[]>("plugin:mediarepo|find_files",
-      {tags, sortBy: sortBy.map(k => k.toBackendType())});
+      {filters, sortBy: sortBy.map(k => k.toBackendType())});
     this.displayedFiles.next(files);
   }
 

@@ -30,7 +30,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {FilesTabComponent} from './pages/home/files-tab/files-tab.component';
 import {FlexModule, GridModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
-import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
+import {SortDialogComponent} from './components/file-search/sort-dialog/sort-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
 import {FileGalleryComponent} from './components/file-gallery/file-gallery.component';
@@ -65,7 +65,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
     FileGridEntryComponent,
     FileSearchComponent,
     FilesTabComponent,
-    FilterDialogComponent,
+    SortDialogComponent,
     FileGalleryComponent,
     FileGalleryEntryComponent,
     ContentAwareImageComponent,

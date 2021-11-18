@@ -1,8 +1,8 @@
 <div class="tag-input-list-and-actions">
   <div #tagInputList class="tag-input-list">
     <div class="tag-input-list-inner">
-      <div (click)="removeSearchTag(tag)" *ngFor="let tag of searchTags" class="tag-input-item"
-           mat-ripple>{{tag.getNormalizedTag()}}</div>
+      <div (click)="removeFilterExpression(filter)" *ngFor="let filter of filters" class="tag-input-item"
+           mat-ripple>{{filter.getDisplayName()}}</div>
     </div>
   </div>
   <button (click)="removeAllSearchTags()" id="delete-all-tags-button" mat-icon-button>

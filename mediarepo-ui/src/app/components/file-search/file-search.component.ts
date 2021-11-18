@@ -17,8 +17,12 @@ import {Observable} from "rxjs";
 import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
-import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
+import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
 import {ErrorBrokerService} from "../../services/error-broker/error-broker.service";
+import {
+  FilterExpression,
+  SingleFilterExpression
+} from "../../models/FilterExpression";
 
 
 @Component({
@@ -30,7 +34,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   public sortExpression: SortKey[] = [new SortKey("FileImportedTime",
     "Ascending", undefined)];
   public formControl = new FormControl();
-  public searchTags: TagQuery[] = [];
+  public filters: FilterExpression[] = [];
   public suggestionTags: Observable<string[]>;
 
   @Input() validTags: string[] = [];
@@ -58,7 +62,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   public async searchForFiles() {
     this.searchStartEvent.emit();
     try {
-      await this.fileService.findFiles(this.searchTags, this.sortExpression);
+      await this.fileService.findFiles(this.filters, this.sortExpression);
     } catch (err) {
       this.errorBroker.showError(err);
     }
@@ -68,25 +72,25 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   public addSearchTag(tag: string) {
     if (tag.startsWith("-")) {
       tag = tag.replace(/^-/g, '');
-      this.searchTags.push(new TagQuery(tag, true));
+      this.filters.push(new SingleFilterExpression(new TagQuery(tag, true)));
     } else {
-      this.searchTags.push(new TagQuery(tag, false));
+      this.filters.push(new SingleFilterExpression(new TagQuery(tag, false)));
     }
-    if (this.searchTags.filter(t => t.name === tag).length > 1) {
-      const index = this.searchTags.findIndex(t => t.name === tag);
-      this.searchTags.splice(index, 1);
+    if (this.filters.filter(t => t.partiallyEq(tag)).length > 1) {
+      const index = this.filters.findIndex(t => t.partiallyEq(tag));
+      this.filters.splice(index, 1);
     }
   }
 
   async removeAllSearchTags() {
-    this.searchTags = [];
+    this.filters = [];
     await this.searchForFiles();
   }
 
-  async removeSearchTag(tag: TagQuery) {
-    const index = this.searchTags.indexOf(tag);
+  async removeFilterExpression(expr: FilterExpression) {
+    const index = this.filters.indexOf(expr);
     if (index >= 0) {
-      this.searchTags.splice(index, 1);
+      this.filters.splice(index, 1);
     }
     await this.searchForFiles();
   }
@@ -114,7 +118,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     const sortEntries = this.sortExpression.map(
       key => JSON.parse(JSON.stringify(key))).map(
       key => new SortKey(key.sortType, key.sortDirection, key.namespaceName))
-    const openedDialog = this.dialog.open(FilterDialogComponent, {
+    const openedDialog = this.dialog.open(SortDialogComponent, {
       minWidth: "40vw",
       data: {
         sortEntries,
@@ -134,8 +138,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     const normalizedTag = tag.replace(/^-/, "");
 
     return this.validTags.filter(
-        t => t.includes(normalizedTag) && this.searchTags.findIndex(
-          s => s.getNormalizedTag() === t) < 0)
+        t => t.includes(normalizedTag) && this.filters.findIndex(
+          f => f.eq(t)) < 0)
       .map(t => negated ? "-" + t : t)
       .slice(0, 20);
   }

@@ -4,15 +4,15 @@ import {SortKey} from "../../../models/SortKey";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @Component({
-  selector: 'app-filter-dialog',
-  templateUrl: './filter-dialog.component.html',
-  styleUrls: ['./filter-dialog.component.scss']
+  selector: 'app-sort-dialog',
+  templateUrl: './sort-dialog.component.html',
+  styleUrls: ['./sort-dialog.component.scss']
 })
-export class FilterDialogComponent {
+export class SortDialogComponent {
 
   public sortEntries: SortKey[] = []
 
-  constructor(public dialogRef: MatDialogRef<FilterDialogComponent>, @Inject(
+  constructor(public dialogRef: MatDialogRef<SortDialogComponent>, @Inject(
     MAT_DIALOG_DATA) data: any) {
     this.sortEntries = data.sortEntries;
   }
