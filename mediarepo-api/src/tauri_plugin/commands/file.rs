@@ -114,7 +114,7 @@ pub async fn save_file_locally(
 }
 
 #[tauri::command]
-pub async fn delete_thumbnail(api_state: ApiAccess<'_>, id: i64) -> PluginResult<()> {
+pub async fn delete_thumbnails(api_state: ApiAccess<'_>, id: i64) -> PluginResult<()> {
     let api = api_state.api().await?;
     api.file.delete_thumbnails(FileIdentifier::ID(id)).await?;
 
