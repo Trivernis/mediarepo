@@ -15,8 +15,14 @@
 mat-list-item.filter-list-item {
   height: 100%;
   padding: 0.5em 0;
+  user-select: none;
+  cursor: pointer;
 }
 
 app-tag-filter-list-item {
   width: 100%;
+}
+
+.selected {
+  background-color: #5c5c5c;
 }

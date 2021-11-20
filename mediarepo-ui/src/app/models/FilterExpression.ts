@@ -47,6 +47,18 @@ export class OrFilterExpression implements FilterExpression{
   public removeQueryEntry(index: number) {
     this.filter.splice(index, 1);
   }
+
+  public removeDuplicates() {
+    const filters = this.filter.reverse();
+    let newEntries: TagQuery[] = [];
+
+    for (const entry of filters) {
+      if (newEntries.findIndex(f => f.tag === entry.tag) < 0) {
+        newEntries.push(entry);
+      }
+    }
+    this.filter = newEntries.reverse();
+  }
 }
 
 export class SingleFilterExpression implements FilterExpression {

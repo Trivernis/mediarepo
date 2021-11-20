@@ -1,8 +1,9 @@
 <h1 mat-dialog-title>Filters</h1>
 <div mat-dialog-content>
   <mat-list>
-    <mat-list-item class="filter-list-item" *ngFor="let expression of filters">
-      <app-tag-filter-list-item (removeClicked)="this.removeFilter($event)" [expression]="expression"></app-tag-filter-list-item>
+    <mat-list-item class="filter-list-item" *ngFor="let expression of filters" [class.selected]="expression.selected">
+      <app-tag-filter-list-item (querySelect)="this.addToSelection($event)" (queryUnselect)="this.removeFromSelection($event)" (removeClicked)="this.removeFilter($event)"
+                                (contextmenu)="contextMenu.onContextMenu($event)" [expression]="expression"></app-tag-filter-list-item>
     </mat-list-item>
   </mat-list>
   <mat-divider></mat-divider>
@@ -13,3 +14,7 @@
   <button mat-flat-button color="primary" (click)="confirmFilter()">Filter</button>
   <button mat-stroked-button color="accent" (click)="cancelFilter()">Cancel</button>
 </div>
+<app-context-menu #contextMenu>
+  <button mat-menu-item (click)="this.convertSelectionToOrExpression()">Copy to OR-Expression</button>
+  <button mat-menu-item (click)="this.convertSelectionToAndExpression()">Copy to AND-Expression</button>
+</app-context-menu>

@@ -57,6 +57,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import { FilterDialogComponent } from './components/file-search/filter-dialog/filter-dialog.component';
 import { TagFilterListItemComponent } from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
 import { TagInputComponent } from './components/inputs/tag-input/tag-input.component';
+import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { TagInputComponent } from './components/inputs/tag-input/tag-input.compo
     FilterDialogComponent,
     TagFilterListItemComponent,
     TagInputComponent,
+    ContextMenuComponent,
   ],
     imports: [
         BrowserModule,
