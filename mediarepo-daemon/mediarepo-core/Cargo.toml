@@ -15,7 +15,7 @@ serde = "1.0.130"
 rmp-ipc = "0.9.2"
 typemap_rev = "0.1.5"
 futures = "0.3.17"
-thumbnailer = "0.1.0"
+thumbnailer = "0.2.0"
 itertools = "0.10.1"
 glob = "0.3.0"
 

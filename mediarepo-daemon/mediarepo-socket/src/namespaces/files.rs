@@ -46,7 +46,8 @@ impl NamespaceProvider for FilesNamespace {
             "read_file" => Self::read_file,
             "get_thumbnails" => Self::thumbnails,
             "get_thumbnail_of_size" => Self::get_thumbnail_of_size,
-            "update_file_name" => Self::update_file_name
+            "update_file_name" => Self::update_file_name,
+            "delete_thumbnails" => Self::delete_thumbnails
         );
     }
 }
@@ -296,6 +297,24 @@ impl FilesNamespace {
                 FileMetadataResponse::from_model(file),
             )
             .await?;
+
+        Ok(())
+    }
+
+    /// Deletes all thumbnails of a file
+    #[tracing::instrument(skip_all)]
+    async fn delete_thumbnails<S: AsyncProtocolStream>(
+        ctx: &Context<S>,
+        event: Event,
+    ) -> IPCResult<()> {
+        let repo = get_repo_from_context(ctx).await;
+        let id = event.data::<FileIdentifier>()?;
+        let file = file_by_identifier(id, &repo).await?;
+        let thumbnails = repo.get_file_thumbnails(file.hash().to_owned()).await?;
+
+        for thumb in thumbnails {
+            thumb.delete().await?;
+        }
 
         Ok(())
     }
