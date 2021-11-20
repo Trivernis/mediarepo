@@ -1,0 +1,41 @@
+.dialog-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+
+  button {
+    margin-left: 1em;
+  }
+}
+
+.tag-input {
+  width: 100%;
+}
+
+mat-list-item.filter-list-item {
+  height: 100%;
+  padding: 0.5em 0;
+  user-select: none;
+  cursor: pointer;
+}
+
+app-tag-filter-list-item {
+  width: 100%;
+}
+
+.selected {
+  background-color: #5c5c5c;
+}
+
+.filter-dialog-content {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.filter-dialog-list {
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}

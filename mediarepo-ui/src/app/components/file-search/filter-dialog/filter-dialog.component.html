@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Filters</h1>
+<div mat-dialog-content fxLayout="column" class="filter-dialog-content">
+  <div fxFlex fxFlexFill class="filter-dialog-list">
+    <mat-list>
+      <mat-list-item class="filter-list-item" *ngFor="let expression of filters" [class.selected]="expression.selected">
+        <app-tag-filter-list-item (querySelect)="this.addToSelection($event)" (queryUnselect)="this.removeFromSelection($event)" (removeClicked)="this.removeFilter($event)"
+                                  (contextmenu)="contextMenu.onContextMenu($event)" [expression]="expression"></app-tag-filter-list-item>
+      </mat-list-item>
+    </mat-list>
+  </div>
+  <mat-divider fxFlex="10px"></mat-divider>
+  <app-tag-input fxFlex="5em" class="tag-input" [allowNegation]="true" [availableTags]="this.availableTags"
+                 (tagAdded)="this.addFilter($event)"></app-tag-input>
+</div>
+<div class="dialog-actions" mat-dialog-actions>
+  <button mat-flat-button color="primary" (click)="confirmFilter()">Filter</button>
+  <button mat-stroked-button color="accent" (click)="cancelFilter()">Cancel</button>
+</div>
+<app-context-menu #contextMenu>
+  <button mat-menu-item (click)="this.convertSelectionToOrExpression()">Copy to OR-Expression</button>
+  <button mat-menu-item (click)="this.convertSelectionToAndExpression()">Copy to AND-Expression</button>
+  <button mat-menu-item (click)="this.invertSelection()">Invert</button>
+</app-context-menu>

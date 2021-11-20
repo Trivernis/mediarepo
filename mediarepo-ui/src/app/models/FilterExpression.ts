@@ -9,6 +9,10 @@ export interface FilterExpression {
   partiallyEq(value: any): boolean;
 
   getDisplayName(): string;
+
+  clone(): FilterExpression;
+
+  queryList(): TagQuery[];
 }
 
 export class OrFilterExpression implements FilterExpression{
@@ -30,6 +34,31 @@ export class OrFilterExpression implements FilterExpression{
   public getDisplayName(): string {
     return this.filter.map(t => t.getNormalizedTag()).join(" OR ");
   }
+
+  public clone(): OrFilterExpression {
+    let tags = this.filter.map((t: TagQuery) => new TagQuery(t.tag, t.negate));
+    return new OrFilterExpression(tags)
+  }
+
+  public queryList(): TagQuery[] {
+    return this.filter;
+  }
+
+  public removeQueryEntry(index: number) {
+    this.filter.splice(index, 1);
+  }
+
+  public removeDuplicates() {
+    const filters = this.filter.reverse();
+    let newEntries: TagQuery[] = [];
+
+    for (const entry of filters) {
+      if (newEntries.findIndex(f => f.tag === entry.tag) < 0) {
+        newEntries.push(entry);
+      }
+    }
+    this.filter = newEntries.reverse();
+  }
 }
 
 export class SingleFilterExpression implements FilterExpression {
@@ -50,5 +79,13 @@ export class SingleFilterExpression implements FilterExpression {
 
   public getDisplayName(): string {
     return this.filter.getNormalizedTag();
+  }
+
+  public clone(): FilterExpression {
+    return new SingleFilterExpression(new TagQuery(this.filter.tag, this.filter.negate))
+  }
+
+  public queryList(): TagQuery[] {
+    return [this.filter]
   }
 }
