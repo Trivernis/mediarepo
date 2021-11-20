@@ -111,6 +111,10 @@ export class FilterDialogComponent {
     this.unselectAll();
   }
 
+  public invertSelection(): void {
+    this.selectedQueries.forEach(query => query.negate = !query.negate);
+  }
+
   private removeFilterDuplicates() {
     const filters = this.filters;
     let newFilters: Selectable<FilterExpression>[] = [];
