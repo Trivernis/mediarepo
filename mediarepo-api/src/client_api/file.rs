@@ -146,4 +146,12 @@ where
 
         self.emit_and_get("add_file", payload).await
     }
+
+    /// Deletes all thumbnails of a file to regenerate them when requested
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn delete_thumbnails(&self, file_id: FileIdentifier) -> ApiResult<()> {
+        self.emit("delete_thumbnails", file_id).await?;
+
+        Ok(())
+    }
 }

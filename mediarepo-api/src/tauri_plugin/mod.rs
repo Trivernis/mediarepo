@@ -53,7 +53,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 update_file_name,
                 resolve_paths_to_files,
                 add_local_file,
-                save_file_locally
+                save_file_locally,
+                delete_thumbnail
             ]),
         }
     }
