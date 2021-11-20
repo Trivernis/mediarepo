@@ -11,11 +11,10 @@ import {
   FilterExpression, OrFilterExpression,
   SingleFilterExpression
 } from "../../../models/FilterExpression";
-import {Observable} from "rxjs";
-import {FormControl} from "@angular/forms";
-import {last, map, startWith} from "rxjs/operators";
-import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {TagQuery} from "../../../models/TagQuery";
+import {Tag} from "../../../models/Tag";
+import {TagFilterListItemComponent} from "./tag-filter-list-item/tag-filter-list-item.component";
+import {Selectable} from "../../../models/Selectable";
 
 @Component({
   selector: 'app-filter-dialog',
@@ -24,22 +23,14 @@ import {TagQuery} from "../../../models/TagQuery";
 })
 export class FilterDialogComponent {
 
-  public filters: FilterExpression[];
-  public suggestionTags: Observable<string[]>;
-  public validTags: string[] = [];
-  public formControl = new FormControl();
+  public filters: Selectable<FilterExpression>[];
+  public availableTags: Tag[] = [];
   public mode: "AND" | "OR" = "AND";
-  @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(public dialogRef: MatDialogRef<SortDialogComponent>, @Inject(
     MAT_DIALOG_DATA) data: any) {
-    this.filters = data.filterEntries;
-    this.validTags = data.validTags;
-
-    this.suggestionTags = this.formControl.valueChanges.pipe(startWith(null),
-      map(
-        (tag: string | null) => tag ? this.filterSuggestionTag(
-          tag) : this.validTags.slice(0, 20)));
+    this.filters = data.filterEntries.map((f: FilterExpression) => new Selectable<FilterExpression>(f, false)) ?? [];
+    this.availableTags = data.availableTags ?? [];
   }
 
   public cancelFilter(): void {
@@ -47,48 +38,33 @@ export class FilterDialogComponent {
   }
 
   public confirmFilter(): void {
-    this.dialogRef.close(this.filters);
+    this.dialogRef.close(this.filters.map(f => f.data));
   }
 
-  private filterSuggestionTag(tag: string) {
-    const negated = tag.startsWith("-");
-    const normalizedTag = tag.replace(/^-/, "");
-
-    return this.validTags.filter(
-        t => t.includes(normalizedTag) && this.filters.findIndex(
-          f => f.eq(t)) < 0)
-      .map(t => negated ? "-" + t : t)
-      .slice(0, 20);
-  }
-
-  public addFilterByAutocomplete(event: MatAutocompleteSelectedEvent): void {
-    this.addFilter(event.option.value);
-    this.formControl.setValue(null);
-    this.tagInput.nativeElement.value = '';
-  }
-
-  public addFilterByInput(): void {
-    this.addFilter(this.formControl.value);
-    this.formControl.setValue(null);
-    this.tagInput.nativeElement.value = '';
+  public removeFilter(event: TagFilterListItemComponent): void {
+    const filter = event.expression;
+    const index = this.filters.findIndex(f => f === filter);
+    if (index >= 0) {
+      this.filters.splice(index, 1);
+    }
   }
 
   public addFilter(tag: string) {
     const query = TagQuery.fromString(tag);
 
-    if (this.mode === "AND") {
-      this.filters.push(new SingleFilterExpression(query));
+    if (this.mode === "AND" || this.filters.length === 0) {
+      this.filters.push(new Selectable<FilterExpression>(new SingleFilterExpression(query), false));
       tag = tag.replace(/^-/g, '');
 
-      if (this.filters.filter(t => t.partiallyEq(tag)).length > 1) {
-        const index = this.filters.findIndex(t => t.partiallyEq(tag));
+      if (this.filters.filter(t => t.data.partiallyEq(tag)).length > 1) {
+        const index = this.filters.findIndex(t => t.data.partiallyEq(tag));
         this.filters.splice(index, 1);
       }
     } else {
-      let queryList = this.filters.pop()?.queryList() ?? [];
+      let queryList = this.filters.pop()?.data.queryList() ?? [];
 
       queryList.push(query);
-      this.filters.push(new OrFilterExpression(queryList));
+      this.filters.push(new Selectable<FilterExpression>(new OrFilterExpression(queryList), false));
     }
   }
 

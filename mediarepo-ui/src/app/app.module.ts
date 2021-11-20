@@ -56,6 +56,7 @@ import { FilesystemImportComponent } from './pages/home/import-tab/import-tab-si
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { FilterDialogComponent } from './components/file-search/filter-dialog/filter-dialog.component';
 import { TagFilterListItemComponent } from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
+import { TagInputComponent } from './components/inputs/tag-input/tag-input.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { TagFilterListItemComponent } from './components/file-search/filter-dial
     FilesystemImportComponent,
     FilterDialogComponent,
     TagFilterListItemComponent,
+    TagInputComponent,
   ],
     imports: [
         BrowserModule,

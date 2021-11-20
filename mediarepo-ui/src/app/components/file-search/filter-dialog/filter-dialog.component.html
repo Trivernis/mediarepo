@@ -2,19 +2,12 @@
 <div mat-dialog-content>
   <mat-list>
     <mat-list-item class="filter-list-item" *ngFor="let expression of filters">
-      <app-tag-filter-list-item [expression]="expression"></app-tag-filter-list-item>
+      <app-tag-filter-list-item (removeClicked)="this.removeFilter($event)" [expression]="expression"></app-tag-filter-list-item>
     </mat-list-item>
   </mat-list>
   <mat-divider></mat-divider>
-  <mat-form-field   class="tag-input">
-    <mat-label>Enter tags to filter for</mat-label>
-    <input #tagInput matInput [formControl]="formControl" [matAutocomplete]="auto" (keydown.enter)="this.addFilterByInput()">
-    <mat-autocomplete #auto (optionSelected)="addFilterByAutocomplete($event)">
-      <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
-        {{tag}}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
+  <app-tag-input class="tag-input" [allowNegation]="true" [availableTags]="this.availableTags"
+                 (tagAdded)="this.addFilter($event)"></app-tag-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
   <button mat-flat-button color="primary" (click)="confirmFilter()">Filter</button>

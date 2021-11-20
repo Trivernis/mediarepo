@@ -24,6 +24,7 @@ import {
   SingleFilterExpression
 } from "../../models/FilterExpression";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
+import {Tag} from "../../models/Tag";
 
 
 @Component({
@@ -38,6 +39,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   public filters: FilterExpression[] = [];
   public suggestionTags: Observable<string[]>;
 
+  @Input() availableTags: Tag[] = [];
   @Input() validTags: string[] = [];
   @Output() searchStartEvent = new EventEmitter<void>();
   @Output() searchEndEvent = new EventEmitter<void>();
@@ -148,7 +150,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
       minWidth: "25vw",
       data: {
         filterEntries,
-        validTags: this.validTags,
+        availableTags: this.availableTags,
       },
       disableClose: true,
     });

@@ -1,14 +1,15 @@
-<span *ngIf="expression.filter_type === 'Query'">
-  {{expression.getDisplayName()}}
-  <button mat-button class="remove-button">
+<span *ngIf="expression.data.filter_type === 'Query'" [class.selected]="this.expression.selected">
+  {{expression.data.getDisplayName()}}
+  <button mat-button class="remove-button" (click)="this.removeClicked.emit(this)">
         <mat-icon>remove</mat-icon>
       </button>
 </span>
-<div *ngIf="expression.filter_type === 'OrExpression'">
+<div *ngIf="expression.data.filter_type === 'OrExpression'">
   <mat-list>
-    <mat-list-item class="or-filter-list-item" *ngFor="let query of expression.queryList()">
-      {{query.getNormalizedTag()}}
-      <button mat-button class="remove-button">
+    <mat-list-item class="or-filter-list-item" *ngFor="let entry of enumerate(this.expression.data.queryList())">
+      <span class="or-span" *ngIf="entry[0] > 0">OR</span>
+      {{entry[1].getNormalizedTag()}}
+      <button mat-button class="remove-button-inner-list" (mousedown)="this.removeOrExpression(entry[0])">
         <mat-icon>remove</mat-icon>
       </button>
     </mat-list-item>

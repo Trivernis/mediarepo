@@ -43,6 +43,10 @@ export class OrFilterExpression implements FilterExpression{
   public queryList(): TagQuery[] {
     return this.filter;
   }
+
+  public removeQueryEntry(index: number) {
+    this.filter.splice(index, 1);
+  }
 }
 
 export class SingleFilterExpression implements FilterExpression {
