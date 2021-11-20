@@ -32,6 +32,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
 
   public tagsOfFiles: Tag[] = [];
   public tags: Tag[] = [];
+  public allTags: Tag[] = [];
   public files: File[] = [];
   public tagsOfSelection: Tag[] = [];
 
@@ -43,6 +44,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     });
     this.repoService.selectedRepository.subscribe(
       async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
+    this.tagService.tags.subscribe(t => this.allTags = t);
   }
 
   async ngOnInit() {

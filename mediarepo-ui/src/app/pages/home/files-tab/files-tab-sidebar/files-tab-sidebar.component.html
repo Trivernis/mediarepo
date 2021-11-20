@@ -6,7 +6,7 @@
           <app-file-search #filesearch (searchEndEvent)="this.searchEndEvent.emit()"
                            (searchStartEvent)="this.searchStartEvent.emit()"
                            [validTags]="this.getValidTagsForSearch()"
-                           [availableTags]="this.tagsOfFiles"></app-file-search>
+                           [availableTags]="this.allTags"></app-file-search>
         </div>
         <mat-divider fxFlex="1em"></mat-divider>
         <div class="tag-list-header" fxFlex="40px">
