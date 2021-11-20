@@ -1,13 +1,15 @@
 <h1 mat-dialog-title>Filters</h1>
-<div mat-dialog-content>
-  <mat-list>
-    <mat-list-item class="filter-list-item" *ngFor="let expression of filters" [class.selected]="expression.selected">
-      <app-tag-filter-list-item (querySelect)="this.addToSelection($event)" (queryUnselect)="this.removeFromSelection($event)" (removeClicked)="this.removeFilter($event)"
-                                (contextmenu)="contextMenu.onContextMenu($event)" [expression]="expression"></app-tag-filter-list-item>
-    </mat-list-item>
-  </mat-list>
-  <mat-divider></mat-divider>
-  <app-tag-input class="tag-input" [allowNegation]="true" [availableTags]="this.availableTags"
+<div mat-dialog-content fxLayout="column" class="filter-dialog-content">
+  <div fxFlex fxFlexFill class="filter-dialog-list">
+    <mat-list>
+      <mat-list-item class="filter-list-item" *ngFor="let expression of filters" [class.selected]="expression.selected">
+        <app-tag-filter-list-item (querySelect)="this.addToSelection($event)" (queryUnselect)="this.removeFromSelection($event)" (removeClicked)="this.removeFilter($event)"
+                                  (contextmenu)="contextMenu.onContextMenu($event)" [expression]="expression"></app-tag-filter-list-item>
+      </mat-list-item>
+    </mat-list>
+  </div>
+  <mat-divider fxFlex="10px"></mat-divider>
+  <app-tag-input fxFlex="5em" class="tag-input" [allowNegation]="true" [availableTags]="this.availableTags"
                  (tagAdded)="this.addFilter($event)"></app-tag-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>

@@ -148,6 +148,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     const filterEntries = this.filters.map(f => f.clone());
     const filterDialog = this.dialog.open(FilterDialogComponent, {
       minWidth: "25vw",
+      height: "80vh",
       data: {
         filterEntries,
         availableTags: this.availableTags,

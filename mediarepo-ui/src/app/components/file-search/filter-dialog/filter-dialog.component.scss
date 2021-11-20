@@ -26,3 +26,16 @@ app-tag-filter-list-item {
 .selected {
   background-color: #5c5c5c;
 }
+
+.filter-dialog-content {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.filter-dialog-list {
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
