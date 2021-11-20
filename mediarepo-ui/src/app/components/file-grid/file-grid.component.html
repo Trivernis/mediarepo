@@ -13,4 +13,6 @@
   </cdk-virtual-scroll-viewport>
 
 </div>
-<app-file-context-menu #fileContextMenu></app-file-context-menu>
+<app-file-context-menu #fileContextMenu>
+  <button mat-menu-item (click)="this.regenerateThumbnail(fileContextMenu.file)">Regenerate thumbnail</button>
+</app-file-context-menu>

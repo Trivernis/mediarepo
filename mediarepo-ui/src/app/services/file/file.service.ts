@@ -61,7 +61,22 @@ export class FileService {
     return this.sanitizer.bypassSecurityTrustResourceUrl(`content://${file.hash}`)
   }
 
+  /**
+   * Saves a file locally
+   * @param {File} file
+   * @param {string} targetPath
+   * @returns {Promise<void>}
+   */
   public async saveFile(file: File, targetPath: string) {
     await invoke("plugin:mediarepo|save_file_locally", {id: file.id, path: targetPath})
+  }
+
+  /**
+   * Deletes all thumbnails of a file
+   * @param {File} file
+   * @returns {Promise<void>}
+   */
+  public async deleteThumbnails(file: File) {
+    await invoke("plugin:mediarepo|delete_thumbnails", {id: file.id});
   }
 }

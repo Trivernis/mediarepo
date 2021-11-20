@@ -15,6 +15,7 @@ import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.componen
 import {GridEntry} from "./file-grid-entry/GridEntry";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../services/tab/tab.service";
+import {FileService} from "../../services/file/file.service";
 
 @Component({
   selector: 'app-file-grid',
@@ -39,7 +40,10 @@ export class FileGridComponent implements OnChanges, OnInit {
   private ctrlClicked = false;
   private gridEntries: GridEntry[] = []
 
-  constructor(private tabService: TabService) {
+  constructor(
+    private tabService: TabService,
+    private fileService: FileService,
+  ) {
     tabService.selectedTab.subscribe(() => this.adjustElementSizes());
   }
 
@@ -188,5 +192,9 @@ export class FileGridComponent implements OnChanges, OnInit {
     if (this.virtualScroll) {
       this.virtualScroll.checkViewportSize();
     }
+  }
+
+  public async regenerateThumbnail(file: File) {
+    await this.fileService.deleteThumbnails(file);
   }
 }
