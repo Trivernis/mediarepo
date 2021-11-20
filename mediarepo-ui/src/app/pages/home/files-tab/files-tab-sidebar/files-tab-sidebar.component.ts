@@ -74,10 +74,6 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     await this.fileSearch.searchForFiles();
   }
 
-  getValidTagsForSearch(): string[] {
-    return this.tagsOfFiles.map(t => t.getNormalizedOutput())
-  }
-
   async showFileDetails(files: File[]) {
     this.tagsOfSelection = await this.tagService.getTagsForFiles(files.map(f => f.hash))
     this.tagsOfSelection = this.tagsOfSelection.sort(

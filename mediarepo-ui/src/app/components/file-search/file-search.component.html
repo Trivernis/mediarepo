@@ -9,20 +9,9 @@
     <mat-icon>delete-sweep</mat-icon>
   </button>
 </div>
-<mat-form-field appearance="fill" class="full-width">
-  <mat-label>Enter tags to filter for</mat-label>
-  <input #tagInput
-         (keydown)="addSearchTagByInput($event)"
-         [formControl]="formControl"
-         [matAutocomplete]="auto"
-         matInput/>
+<app-tag-input class="full-width" [allowNegation]="true" [availableTags]="getValidSearchTags()" (tagAdded)="addSearchTag($event); searchForFiles()">
   <button mat-button class="filter-dialog-button" (click)="openFilterDialog()">
     <mat-icon>filter_alt</mat-icon>
   </button>
-  <mat-autocomplete #auto (optionSelected)="addSearchTagByAutocomplete($event)">
-    <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
-      {{tag}}
-    </mat-option>
-  </mat-autocomplete>
-</mat-form-field>
+</app-tag-input>
 <button (click)="openSortDialog()" id="sort-button" mat-flat-button>Sort: {{sortExpression.join(", ")}}</button>

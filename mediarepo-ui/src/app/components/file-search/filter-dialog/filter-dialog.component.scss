@@ -10,6 +10,7 @@
 
 .tag-input {
   width: 100%;
+  height: 5em;
 }
 
 mat-list-item.filter-list-item {
@@ -29,13 +30,16 @@ app-tag-filter-list-item {
 
 .filter-dialog-content {
   overflow: hidden;
-  height: 100%;
   width: 100%;
-  margin: 0;
+  max-height: 60vh;
 }
 
 .filter-dialog-list {
+  max-height: calc(60vh - 5em);
   overflow-y: auto;
-  height: 100%;
   width: 100%;
+}
+
+mat-list.mat-filter-dialog-list {
+  padding: 0;
 }
