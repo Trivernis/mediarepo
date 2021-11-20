@@ -70,7 +70,7 @@ async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Re
         let mime = file.mime_type.unwrap_or("image/png".to_string());
         let bytes = api
             .file
-            .read_file_by_hash(FileIdentifier::Hash(hash.to_string()))
+            .read_file(FileIdentifier::Hash(hash.to_string()))
             .await?;
         buf_state.add_entry(hash.to_string(), mime.clone(), bytes.clone());
         ResponseBuilder::new()

@@ -79,7 +79,7 @@ where
 
     /// Reads the file and returns its contents as bytes
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn read_file_by_hash(&self, id: FileIdentifier) -> ApiResult<Vec<u8>> {
+    pub async fn read_file(&self, id: FileIdentifier) -> ApiResult<Vec<u8>> {
         let payload: BytePayload = self
             .emit_and_get("read_file", ReadFileRequest { id })
             .await?;

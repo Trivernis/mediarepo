@@ -99,6 +99,20 @@ pub async fn update_file_name(
     Ok(metadata)
 }
 
+/// Saves a file on the local system
+#[tauri::command]
+pub async fn save_file_locally(
+    api_state: ApiAccess<'_>,
+    id: i64,
+    path: String,
+) -> PluginResult<()> {
+    let api = api_state.api().await?;
+    let content = api.file.read_file(FileIdentifier::ID(id)).await?;
+    fs::write(PathBuf::from(path), content).await?;
+
+    Ok(())
+}
+
 #[tauri::command]
 pub async fn resolve_paths_to_files(paths: Vec<String>) -> PluginResult<Vec<FileOSMetadata>> {
     let mut files = Vec::new();
