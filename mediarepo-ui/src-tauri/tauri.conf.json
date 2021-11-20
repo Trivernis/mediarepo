@@ -49,7 +49,12 @@
       "active": false
     },
     "allowlist": {
-      "all": true
+      "dialog": {
+        "all": true
+      },
+      "path": {
+        "all": true
+      }
     },
     "windows": [
       {

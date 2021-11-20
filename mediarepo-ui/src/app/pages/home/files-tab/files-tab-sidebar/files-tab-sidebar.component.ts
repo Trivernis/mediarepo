@@ -15,6 +15,7 @@ import {File} from "../../../../models/File";
 import {FileSearchComponent} from "../../../../components/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {FileEditComponent} from "../../../../components/file-edit/file-edit.component";
+import {clipboard} from "@tauri-apps/api";
 
 @Component({
   selector: 'app-files-tab-sidebar',
@@ -35,6 +36,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
   public allTags: Tag[] = [];
   public files: File[] = [];
   public tagsOfSelection: Tag[] = [];
+  public contextMenuTag: Tag | undefined;
 
   constructor(private repoService: RepositoryService, private tagService: TagService, private fileService: FileService) {
     this.fileService.displayedFiles.subscribe(async files => {
@@ -101,5 +103,9 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
         (a, b) => a.getNormalizedOutput()
           .localeCompare(b.getNormalizedOutput()));
     }
+  }
+
+  public async copyToClipboard(text: string) {
+      await clipboard.writeText(text);
   }
 }

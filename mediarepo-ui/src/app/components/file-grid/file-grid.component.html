@@ -3,11 +3,14 @@
                                minBufferPx="500">
     <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
       <div class="file-row">
-        <app-file-grid-entry (clickEvent)="setSelectedFile($event.gridEntry)"
-                             (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"
-                             *ngFor="let gridEntry of rowEntry" [gridEntry]="gridEntry"></app-file-grid-entry>
+        <app-file-grid-entry
+          *ngFor="let gridEntry of rowEntry" (clickEvent)="setSelectedFile($event.gridEntry)"
+          (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"
+          (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
+          [gridEntry]="gridEntry"></app-file-grid-entry>
       </div>
     </div>
   </cdk-virtual-scroll-viewport>
 
 </div>
+<app-file-context-menu #fileContextMenu></app-file-context-menu>

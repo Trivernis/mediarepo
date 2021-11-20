@@ -60,4 +60,8 @@ export class FileService {
   public buildContentUrl(file: File): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(`content://${file.hash}`)
   }
+
+  public async saveFile(file: File, targetPath: string) {
+    await invoke("plugin:mediarepo|save_file_locally", {id: file.id, path: targetPath})
+  }
 }

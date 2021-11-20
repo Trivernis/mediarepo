@@ -58,6 +58,7 @@ import { FilterDialogComponent } from './components/file-search/filter-dialog/fi
 import { TagFilterListItemComponent } from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
 import { TagInputComponent } from './components/inputs/tag-input/tag-input.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { FileContextMenuComponent } from './components/context-menu/file-context-menu/file-context-menu.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     TagFilterListItemComponent,
     TagInputComponent,
     ContextMenuComponent,
+    FileContextMenuComponent,
   ],
     imports: [
         BrowserModule,

@@ -15,7 +15,8 @@
         </div>
         <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
           <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-            <div (click)="addSearchTag(tag)" *cdkVirtualFor="let tag of tags" class="selectable-tag" matRipple>
+            <div (click)="addSearchTag(tag)" *cdkVirtualFor="let tag of tags" class="selectable-tag" matRipple
+                 (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)">
               <app-tag-item [tag]="tag"></app-tag-item>
             </div>
           </cdk-virtual-scroll-viewport>
@@ -27,3 +28,10 @@
     </mat-tab>
   </mat-tab-group>
 </div>
+<app-context-menu #contextMenu>
+  <button *ngIf="this.contextMenuTag" mat-menu-item (click)="this.copyToClipboard(this.contextMenuTag!.getNormalizedOutput())">Copy "{{contextMenuTag!.getNormalizedOutput()}}"</button>
+  <button *ngIf="this.contextMenuTag?.namespace" mat-menu-item (click)="this.copyToClipboard(this.contextMenuTag!.name)">Copy "{{this.contextMenuTag!.name}}"</button>
+  <button *ngIf="this.contextMenuTag?.namespace" mat-menu-item
+          (click)="this.copyToClipboard(this.contextMenuTag!.namespace!)">Copy "{{this.contextMenuTag!.namespace!}}"
+  </button>
+</app-context-menu>
