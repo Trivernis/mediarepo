@@ -6,13 +6,9 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {FormControl} from "@angular/forms";
 import {File} from "../../models/File";
 import {Tag} from "../../models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
-import {Observable} from "rxjs";
-import {map, startWith} from "rxjs/operators";
 import {TagService} from "../../services/tag/tag.service";
 import {FileService} from "../../services/file/file.service";
 
@@ -26,11 +22,9 @@ export class FileEditComponent implements OnInit, OnChanges {
   @Input() files: File[] = [];
   public tags: Tag[] = [];
 
-  private allTags: Tag[] = [];
+  public allTags: Tag[] = [];
   private fileTags: {[key: number]: Tag[]} = {};
 
-  public suggestionTags: Observable<string[]>;
-  public tagInputForm = new FormControl("");
   public editMode: string = "Toggle";
 
   @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
@@ -40,10 +34,6 @@ export class FileEditComponent implements OnInit, OnChanges {
     private tagService: TagService,
     private fileService: FileService,
   ) {
-    this.suggestionTags = this.tagInputForm.valueChanges.pipe(startWith(null),
-      map(
-        (tag: string | null) => tag ? this.filterSuggestionTag(
-          tag) : this.allTags.slice(0, 20).map(t => t.getNormalizedOutput())));
   }
 
   async ngOnInit() {
@@ -73,11 +63,6 @@ export class FileEditComponent implements OnInit, OnChanges {
     }
   }
 
-  public async editTagByAutocomplete($event: MatAutocompleteSelectedEvent) {
-    const tag = $event.option.value.trim();
-    await this.editTag(tag);
-  }
-
   public async editTag(tag: string): Promise<void> {
     if (tag.length > 0) {
       let tagInstance = this.allTags.find(t => t.getNormalizedOutput() === tag);
@@ -97,7 +82,6 @@ export class FileEditComponent implements OnInit, OnChanges {
           await this.removeTag(tagInstance);
           break;
       }
-      this.tagInputForm.setValue("");
     }
   }
 
@@ -140,13 +124,6 @@ export class FileEditComponent implements OnInit, OnChanges {
     this.mapFileTagsToTagList();
   }
 
-  private filterSuggestionTag(tag: string) {
-    const allTags = this.allTags.map(t => t.getNormalizedOutput());
-    return allTags.filter(
-        t => t.includes(tag))
-      .slice(0, 20);
-  }
-
   private async loadFileTags() {
     for (const file of this.files) {
       this.fileTags[file.id] = await this.tagService.getTagsForFiles([file.hash]);
@@ -167,11 +144,5 @@ export class FileEditComponent implements OnInit, OnChanges {
       tags.push(...fileTags.filter(t => tags.findIndex(tag => tag.id === t.id) < 0));
     }
     this.tags = tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
-  }
-
-  public async handleTagInputKeydown($event: KeyboardEvent) {
-    if ($event.key === "Enter") {
-      await this.editTag(this.tagInputForm.value);
-    }
   }
 }

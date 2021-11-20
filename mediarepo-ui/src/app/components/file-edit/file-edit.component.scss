@@ -1,15 +1,12 @@
 .file-metadata, .tag-input {
   width: 100%;
-  mat-form-field {
+
+  mat-form-field, app-tag-input {
     width: 100%;
   }
 
   mat-form-field.form-field-mode {
     width: 10em;
-  }
-
-  mat-form-field.form-field-tag-input {
-
   }
 }
 

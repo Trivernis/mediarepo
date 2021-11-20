@@ -19,17 +19,7 @@
   <mat-divider fxFlex="1em"></mat-divider>
   <div class="tag-input" fxFlex="200px">
     <div class="tag-input-field">
-      <mat-form-field class="form-field-tag-input" appearance="fill">
-        <mat-label>{{modeSelect.value}} tag</mat-label>
-        <input [formControl]="tagInputForm" matInput [matAutocomplete]="auto" (keydown)="this.handleTagInputKeydown($event)" (submit)="this.editTag(tagInputForm.value)">
-      </mat-form-field>
-
-      <mat-autocomplete #auto (optionSelected)="editTagByAutocomplete($event)">
-        <mat-option *ngFor="let tag of suggestionTags | async" [value]="tag">
-          {{tag}}
-        </mat-option>
-
-      </mat-autocomplete>
+      <app-tag-input [availableTags]="this.allTags" [allowInvalid]="true" (tagAdded)="this.editTag($event)"></app-tag-input>
       <button mat-icon-button class="add-tag-button">
         <mat-icon *ngIf="editMode === 'Toggle'">change_circle</mat-icon>
         <mat-icon *ngIf="editMode === 'Add'">add_circle</mat-icon>
