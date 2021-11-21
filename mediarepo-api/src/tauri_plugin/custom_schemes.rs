@@ -32,6 +32,7 @@ fn build_uri_runtime() -> PluginResult<TokioRuntime> {
     Ok(runtime)
 }
 
+#[tracing::instrument(level = "debug", skip_all)]
 fn once_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Response> {
     let buf_state = app.state::<BufferState>();
     let resource_key = request.uri().trim_start_matches("once://");
@@ -51,17 +52,20 @@ fn once_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Resp
     }
 }
 
+#[tracing::instrument(level = "debug", skip_all)]
 async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Response> {
     let api_state = app.state::<ApiState>();
     let buf_state = app.state::<BufferState>();
     let hash = request.uri().trim_start_matches("content://");
 
     if let Some(buffer) = buf_state.get_entry(hash) {
+        tracing::debug!("Fetching content from cache");
         ResponseBuilder::new()
             .status(200)
             .mimetype(&buffer.mime)
             .body(buffer.buf)
     } else {
+        tracing::debug!("Fetching content from daemon");
         let api = api_state.api().await?;
         let file = api
             .file
@@ -72,6 +76,7 @@ async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Re
             .file
             .read_file(FileIdentifier::Hash(hash.to_string()))
             .await?;
+        tracing::debug!("Received {} content bytes", bytes.len());
         buf_state.add_entry(hash.to_string(), mime.clone(), bytes.clone());
         ResponseBuilder::new()
             .mimetype(&mime)
@@ -80,6 +85,7 @@ async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Re
     }
 }
 
+#[tracing::instrument(level = "debug", skip_all)]
 async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Response> {
     let api_state = app.state::<ApiState>();
     let buf_state = app.state::<BufferState>();
@@ -104,11 +110,13 @@ async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Resu
         .unwrap_or(250);
 
     if let Some(buffer) = buf_state.get_entry(request.uri()) {
+        tracing::debug!("Fetching content from cache");
         ResponseBuilder::new()
             .status(200)
             .mimetype(&buffer.mime)
             .body(buffer.buf)
     } else {
+        tracing::debug!("Fetching content from daemon");
         let api = api_state.api().await?;
         let (thumb, bytes) = api
             .file
@@ -118,6 +126,7 @@ async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Resu
                 ((height as f32 * 1.2) as u32, (width as f32 * 1.2) as u32),
             )
             .await?;
+        tracing::debug!("Received {} content bytes", bytes.len());
         buf_state.add_entry(
             request.uri().to_string(),
             thumb.mime_type.clone(),
