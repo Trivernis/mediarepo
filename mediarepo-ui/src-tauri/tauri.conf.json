@@ -13,7 +13,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "net.trivernis.mediarepo",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -24,8 +24,8 @@
       "resources": [],
       "externalBin": [],
       "copyright": "",
-      "category": "DeveloperTool",
-      "shortDescription": "",
+      "category": "Productivity",
+      "shortDescription": "A media mangagement tool",
       "longDescription": "",
       "deb": {
         "depends": [],

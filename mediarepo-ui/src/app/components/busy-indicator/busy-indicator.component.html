@@ -1,0 +1,4 @@
+<ng-content></ng-content>
+<div *ngIf="this.busy" class="busy-indicator-overlay" [class.blur]="this.blurBackground" [class.darken]="this.darkenBackground">
+  <mat-progress-spinner color="primary" [mode]="mode" [value]="value"></mat-progress-spinner>
+</div>

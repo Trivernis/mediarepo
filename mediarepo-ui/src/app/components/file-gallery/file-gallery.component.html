@@ -4,10 +4,8 @@
   </button>
   <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null" class="file-full-view"
        fxFlex="80%">
-    <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
-      <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
-    </div>
-    <app-content-viewer *ngIf="this.fileContentUrl" [contentUrl]="this.fileContentUrl" [mimeType]="this.selectedFile!.data.mime_type"></app-content-viewer>
+    <app-content-viewer
+      (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, this.selectedFile!.data)" [file]="this.selectedFile!.data"></app-content-viewer>
   </div>
   <mat-divider fxFlex></mat-divider>
   <div class="file-scroll-view" fxFlex="20%">

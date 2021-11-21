@@ -48,19 +48,23 @@ import {ConfirmDialogComponent} from './components/confirm-dialog/confirm-dialog
 import {FilesTabSidebarComponent} from './pages/home/files-tab/files-tab-sidebar/files-tab-sidebar.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {TagItemComponent} from './components/tag-item/tag-item.component';
-import { FileEditComponent } from './components/file-edit/file-edit.component';
-import { ImportTabComponent } from './pages/home/import-tab/import-tab.component';
-import { ImportTabSidebarComponent } from './pages/home/import-tab/import-tab-sidebar/import-tab-sidebar.component';
-import { NativeFileSelectComponent } from './components/inputs/native-file-select/native-file-select.component';
-import { FilesystemImportComponent } from './pages/home/import-tab/import-tab-sidebar/filesystem-import/filesystem-import.component';
+import {FileEditComponent} from './components/file-edit/file-edit.component';
+import {ImportTabComponent} from './pages/home/import-tab/import-tab.component';
+import {ImportTabSidebarComponent} from './pages/home/import-tab/import-tab-sidebar/import-tab-sidebar.component';
+import {NativeFileSelectComponent} from './components/inputs/native-file-select/native-file-select.component';
+import {FilesystemImportComponent} from './pages/home/import-tab/import-tab-sidebar/filesystem-import/filesystem-import.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import { FilterDialogComponent } from './components/file-search/filter-dialog/filter-dialog.component';
-import { TagFilterListItemComponent } from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
-import { TagInputComponent } from './components/inputs/tag-input/tag-input.component';
-import { ContextMenuComponent } from './components/context-menu/context-menu.component';
-import { FileContextMenuComponent } from './components/context-menu/file-context-menu/file-context-menu.component';
-import { ContentViewerComponent } from './components/file-gallery/content-viewer/content-viewer.component';
-import { ImageViewerComponent } from './components/file-gallery/content-viewer/image-viewer/image-viewer.component';
+import {FilterDialogComponent} from './components/file-search/filter-dialog/filter-dialog.component';
+import {TagFilterListItemComponent} from './components/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component';
+import {TagInputComponent} from './components/inputs/tag-input/tag-input.component';
+import {ContextMenuComponent} from './components/context-menu/context-menu.component';
+import {FileContextMenuComponent} from './components/context-menu/file-context-menu/file-context-menu.component';
+import {ContentViewerComponent} from './components/file-gallery/content-viewer/content-viewer.component';
+import {ImageViewerComponent} from './components/file-gallery/content-viewer/image-viewer/image-viewer.component';
+import {VideoViewerComponent} from './components/file-gallery/content-viewer/video-viewer/video-viewer.component';
+import {HttpClientModule} from "@angular/common/http";
+import { AudioViewerComponent } from './components/file-gallery/content-viewer/audio-viewer/audio-viewer.component';
+import { BusyIndicatorComponent } from './components/busy-indicator/busy-indicator.component';
 
 @NgModule({
   declarations: [
@@ -92,43 +96,47 @@ import { ImageViewerComponent } from './components/file-gallery/content-viewer/i
     FileContextMenuComponent,
     ContentViewerComponent,
     ImageViewerComponent,
+    VideoViewerComponent,
+    AudioViewerComponent,
+    BusyIndicatorComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatCardModule,
-        MatListModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatSidenavModule,
-        MatGridListModule,
-        MatProgressBarModule,
-        MatPaginatorModule,
-        ScrollingModule,
-        MatChipsModule,
-        MatIconModule,
-        MatAutocompleteModule,
-        MatTabsModule,
-        FlexModule,
-        GridModule,
-        MatRippleModule,
-        MatDialogModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        BlockUIModule,
-        PanelModule,
-        DragDropModule,
-        MatSliderModule,
-        MatTooltipModule,
-        MatMenuModule,
-        MatExpansionModule,
-        MatCheckboxModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatListModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSidenavModule,
+    MatGridListModule,
+    MatProgressBarModule,
+    MatPaginatorModule,
+    ScrollingModule,
+    MatChipsModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    MatTabsModule,
+    FlexModule,
+    GridModule,
+    MatRippleModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    BlockUIModule,
+    PanelModule,
+    DragDropModule,
+    MatSliderModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatExpansionModule,
+    MatCheckboxModule,
+    HttpClientModule,
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

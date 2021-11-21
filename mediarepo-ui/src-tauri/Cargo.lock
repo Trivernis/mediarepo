@@ -1473,8 +1473,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.11.1"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=d56e2c7406e9b8b15b22bc2714eebff00f63d778#d56e2c7406e9b8b15b22bc2714eebff00f63d778"
+version = "0.12.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=16b892eab0b3446198601a8f5829d0bd54d2efdf#16b892eab0b3446198601a8f5829d0bd54d2efdf"
 dependencies = [
  "async-trait",
  "chrono",
@@ -2309,9 +2309,9 @@ dependencies = [
 
 [[package]]
 name = "rmp-ipc"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc14d76d6718bdbdf12596ed68f5db46f4fa46fca0bd3acf85f7e347788df3c2"
+checksum = "573eb3e2e1008f550b7b5a53053d5ed8378fbda57731fa3739c3cfb18ad667f6"
 dependencies = [
  "async-trait",
  "byteorder",

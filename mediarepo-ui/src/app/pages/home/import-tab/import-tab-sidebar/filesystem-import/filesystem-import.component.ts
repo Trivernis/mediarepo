@@ -22,6 +22,7 @@ export class FilesystemImportComponent {
   public filters: DialogFilter[] = [
     {name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "bmp"]},
     {name: "Videos", extensions: ["mp4", "mkv", "wmv", "avi", "webm"]},
+    {name: "Audio", extensions: ["mp3", "ogg", "wav", "flac", "aac"]},
     {name: "Documents", extensions: ["pdf", "doc", "docx", "odf"]},
     {name: "Text", extensions: ["txt", "md"]},
     {name: "All", extensions: ["*"]}

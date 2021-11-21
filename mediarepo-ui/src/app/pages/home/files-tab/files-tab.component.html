@@ -5,16 +5,17 @@
                            [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
   </mat-drawer>
   <mat-drawer-content>
-    <div *ngIf="contentLoading" class="spinner-overlay">
-      <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
-    </div>
-    <app-file-grid (fileDblClickEvent)="openGallery($event)" (fileMultiselectEvent)="onFileMultiSelect($event)" (fileSelectEvent)="onFileSelect($event)"
-                   *ngIf="!this.showGallery"
-                   [files]="files"
-                   [preselectedFile]="this.preselectedFile"
-    ></app-file-grid>
-    <app-file-gallery (closeEvent)="this.closeGallery($event.selectedFile?.data)" (fileSelectEvent)="onFileSelect($event)" *ngIf="this.showGallery"
-                      [files]="files"
-                      [preselectedFile]="this.preselectedFile"></app-file-gallery>
+    <app-busy-indicator [busy]="contentLoading" [blurBackground]="true">
+      <app-file-grid (fileDblClickEvent)="openGallery($event)" (fileMultiselectEvent)="onFileMultiSelect($event)"
+                     (fileSelectEvent)="onFileSelect($event)"
+                     *ngIf="!this.showGallery"
+                     [files]="files"
+                     [preselectedFile]="this.preselectedFile"
+      ></app-file-grid>
+      <app-file-gallery (closeEvent)="this.closeGallery($event.selectedFile?.data)"
+                        (fileSelectEvent)="onFileSelect($event)" *ngIf="this.showGallery"
+                        [files]="files"
+                        [preselectedFile]="this.preselectedFile"></app-file-gallery>
+    </app-busy-indicator>
   </mat-drawer-content>
 </mat-drawer-container>

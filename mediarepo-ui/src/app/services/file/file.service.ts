@@ -8,6 +8,9 @@ import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
 import {RepositoryService} from "../repository/repository.service";
 import {FilterExpression} from "../../models/FilterExpression";
+import {HttpClient} from "@angular/common/http";
+import {map} from "rxjs/operators";
+import {http} from "@tauri-apps/api";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +20,11 @@ export class FileService {
   displayedFiles = new BehaviorSubject<File[]>([]);
   thumbnailCache: {[key: number]: Thumbnail[]} = {};
 
-  constructor(@Inject(DomSanitizer) private sanitizer: DomSanitizer, private repoService: RepositoryService) {
+  constructor(
+    @Inject(DomSanitizer) private sanitizer: DomSanitizer,
+    private repoService: RepositoryService,
+    private http: HttpClient,
+  ) {
     repoService.selectedRepository.subscribe(_ => this.clearCache());
   }
 
@@ -78,5 +85,17 @@ export class FileService {
    */
   public async deleteThumbnails(file: File) {
     await invoke("plugin:mediarepo|delete_thumbnails", {id: file.id});
+  }
+
+  /**
+   * Reads the contents of a file and returns the object url for it
+   * @param {File} file
+   * @returns {Promise<SafeResourceUrl>}
+   */
+  public async readFile(file: File): Promise<SafeResourceUrl> {
+    const data = await invoke<number[]>("plugin:mediarepo|read_file", {hash: file.hash, mimeType: file.mime_type});
+    const blob = new Blob([new Uint8Array(data)], {type: file.mime_type});
+    const url = URL?.createObjectURL(blob);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 }

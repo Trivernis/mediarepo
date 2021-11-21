@@ -32,9 +32,10 @@ app-file-gallery-entry {
   overflow: hidden;
 }
 
-app-content-aware-image {
+app-content-viewer{
   height: 100%;
   width: 100%;
+  display: block;
 }
 
 .close-button {

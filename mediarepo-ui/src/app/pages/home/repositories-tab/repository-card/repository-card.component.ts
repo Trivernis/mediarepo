@@ -1,10 +1,11 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Repository} from "../../../../models/Repository";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {Router} from "@angular/router";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../../../components/confirm-dialog/confirm-dialog.component";
+import {BusyIndicatorComponent} from "../../../../components/busy-indicator/busy-indicator.component";
 
 @Component({
   selector: 'app-repository-card',
@@ -14,6 +15,7 @@ import {ConfirmDialogComponent} from "../../../../components/confirm-dialog/conf
 export class RepositoryCardComponent implements OnInit, OnDestroy {
 
   @Input() repository!: Repository;
+  @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
 
   public daemonRunning: boolean = false;
 
@@ -95,11 +97,13 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
   }
 
   public async selectRepository() {
+    this.busyIndicator.setBusy(true);
     try {
       await this.repoService.setRepository(this.repository);
     } catch (err) {
       this.errorBroker.showError(err);
     }
+    this.busyIndicator.setBusy(false);
   }
 
   async checkRemoteRepositoryStatus() {
