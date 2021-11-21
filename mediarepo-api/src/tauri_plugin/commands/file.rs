@@ -1,4 +1,4 @@
-use crate::tauri_plugin::commands::ApiAccess;
+use crate::tauri_plugin::commands::{ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
@@ -97,6 +97,27 @@ pub async fn update_file_name(
         .await?;
 
     Ok(metadata)
+}
+
+#[tauri::command]
+pub async fn read_file(
+    api_state: ApiAccess<'_>,
+    buffer_state: BufferAccess<'_>,
+    hash: String,
+    mime_type: String,
+) -> PluginResult<Vec<u8>> {
+    if let Some(buffer) = buffer_state.get_entry(&hash) {
+        Ok(buffer.buf)
+    } else {
+        let api = api_state.api().await?;
+        let content = api
+            .file
+            .read_file(FileIdentifier::Hash(hash.clone()))
+            .await?;
+        buffer_state.add_entry(hash, mime_type, content.clone());
+
+        Ok(content)
+    }
 }
 
 /// Saves a file on the local system
