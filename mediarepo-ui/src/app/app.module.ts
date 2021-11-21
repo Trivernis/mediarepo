@@ -59,6 +59,8 @@ import { TagFilterListItemComponent } from './components/file-search/filter-dial
 import { TagInputComponent } from './components/inputs/tag-input/tag-input.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { FileContextMenuComponent } from './components/context-menu/file-context-menu/file-context-menu.component';
+import { ContentViewerComponent } from './components/file-gallery/content-viewer/content-viewer.component';
+import { ImageViewerComponent } from './components/file-gallery/content-viewer/image-viewer/image-viewer.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +90,8 @@ import { FileContextMenuComponent } from './components/context-menu/file-context
     TagInputComponent,
     ContextMenuComponent,
     FileContextMenuComponent,
+    ContentViewerComponent,
+    ImageViewerComponent,
   ],
     imports: [
         BrowserModule,

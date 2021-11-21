@@ -1,6 +1,5 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   HostListener,
   Input,
@@ -15,7 +14,6 @@ import {FileService} from "../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {CdkDragMove} from "@angular/cdk/drag-drop";
 import {TabService} from "../../services/tab/tab.service";
 
 @Component({
@@ -33,15 +31,9 @@ export class FileGalleryComponent implements OnChanges, OnInit {
   entries: Selectable<File>[] = [];
 
   @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
-  @ViewChild("scaledImage") scaledImage: ElementRef<HTMLDivElement> | undefined;
-  @ViewChild(
-    "imageDragContainer") imageDragContainer: ElementRef<HTMLDivElement> | undefined;
 
   public selectedFile: Selectable<File> | undefined;
   public fileContentUrl: SafeResourceUrl | undefined;
-  public imageZoom = 1;
-  public imagePosition = {x: 0, y: 0};
-  public mouseInImageView = false;
 
   private scrollTimeout: number | undefined;
 
@@ -56,7 +48,6 @@ export class FileGalleryComponent implements OnChanges, OnInit {
    */
   async onEntrySelect(entry: Selectable<File>) {
     if (entry) {
-      this.resetImage();
       this.selectedFile?.unselect();
       entry.select();
       this.selectedFile = entry;
@@ -149,15 +140,6 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     }
   }
 
-  public resetImage() {
-    this.imageZoom = 1;
-    this.imagePosition = {x: 0, y: 0};
-  }
-
-  public onDragMoved($event: CdkDragMove<HTMLDivElement>): void {
-    this.imagePosition.x += $event.delta.x;
-    this.imagePosition.y += $event.delta.y;
-  }
 
   @HostListener("window:keydown", ["$event"])
   private async handleKeydownEvent(event: KeyboardEvent) {
@@ -168,28 +150,6 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       case "ArrowLeft":
         await this.previousItem();
         break;
-      case "Escape":
-        this.resetImage();
-        break;
-    }
-  }
-
-  @HostListener("mousewheel", ["$event"])
-  private handleScroll(event: any) {
-    if (this.mouseInImageView) {
-      const delta = event.wheelDelta ?? event.detail;
-
-      if (delta > 0) {
-        this.imageZoom += 0.2
-        if (this.imageZoom > 4) {
-          this.imageZoom = 4;
-        }
-      } else if (delta < 0) {
-        this.imageZoom -= 0.2
-        if (this.imageZoom < 0.5) {
-          this.imageZoom = 0.5;
-        }
-      }
     }
   }
 

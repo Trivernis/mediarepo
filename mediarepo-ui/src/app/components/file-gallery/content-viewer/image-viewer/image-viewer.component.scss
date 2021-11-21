@@ -1,0 +1,35 @@
+
+.image-drag-container, .image-scale-container {
+  height: 100%;
+  width: 100%;
+}
+
+.image-scale-container {
+  display: block;
+}
+
+.zoom-slider {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  right: 1em;
+  bottom: 1em;
+  z-index: 10;
+  opacity: 0.5;
+  padding: 1em 0.5em;
+  transition-duration: 0.2s;
+}
+
+.zoom-slider:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 1em;
+}
+
+
+.image-full-view-inner {
+  height: 100%;
+  width: 100%;
+  display: block;
+  position: relative;
+}

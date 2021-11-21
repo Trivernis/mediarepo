@@ -4,25 +4,10 @@
   </button>
   <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null" class="file-full-view"
        fxFlex="80%">
-    <div (mouseenter)="this.mouseInImageView = true" (mouseleave)="this.mouseInImageView = false"
-         class="file-full-view-inner">
-      <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
-        <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
-      </div>
-      <div class="zoom-slider">
-        <mat-slider (input)="this.imageZoom=$event.value ?? 1" [value]="this.imageZoom" max="4"
-                    min="0.5" step="0.1" vertical></mat-slider>
-        <button (click)="this.resetImage()" mat-icon-button>
-          <mat-icon>refresh</mat-icon>
-        </button>
-      </div>
-      <div #imageDragContainer (cdkDragMoved)="this.onDragMoved($event)" *ngIf="this.fileContentUrl"
-           [cdkDragFreeDragPosition]="this.imagePosition" cdkDrag class="image-drag-container">
-        <div #scaledImage [style]="{scale: this.imageZoom}" class="image-scale-container">
-          <app-content-aware-image (contextmenu)="fileContextMenu.onContextMenu($event, this.selectedFile!.data)" [imageSrc]="this.fileContentUrl" decoding="sync"></app-content-aware-image>
-        </div>
-      </div>
+    <div *ngIf="!this.fileContentUrl" class="url-loading-backdrop">
+      <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
     </div>
+    <app-content-viewer *ngIf="this.fileContentUrl" [contentUrl]="this.fileContentUrl" [mimeType]="this.selectedFile!.data.mime_type"></app-content-viewer>
   </div>
   <mat-divider fxFlex></mat-divider>
   <div class="file-scroll-view" fxFlex="20%">
