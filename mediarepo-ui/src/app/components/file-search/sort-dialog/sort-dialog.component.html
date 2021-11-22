@@ -4,7 +4,7 @@
     <div *ngFor="let sortKey of sortEntries" cdkDrag class="sort-input-row">
       <div *cdkDragPlaceholder class="drag-placeholder"></div>
       <div cdkDragHandle class="drag-handle">
-        <mat-icon>drag_handle</mat-icon>
+        <ng-icon name="mat-drag-handle"></ng-icon>
       </div>
       <mat-form-field>
         <mat-label>Key</mat-label>
@@ -33,11 +33,11 @@
         </mat-select>
       </mat-form-field>
       <button (click)="addNewSortKey()" *ngIf="sortEntries.indexOf(sortKey) === sortEntries.length -1" mat-flat-button>
-        <mat-icon>add</mat-icon>
+        <ng-icon name="mat-add"></ng-icon>
       </button>
       <button (click)="removeSortKey(sortKey)" *ngIf="sortEntries.indexOf(sortKey) !== sortEntries.length -1"
               mat-flat-button>
-        <mat-icon>remove</mat-icon>
+        <ng-icon name="mat-remove"></ng-icon>
       </button>
     </div>
   </div>

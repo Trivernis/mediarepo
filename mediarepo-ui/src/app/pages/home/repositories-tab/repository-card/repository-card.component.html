@@ -26,7 +26,7 @@
               mat-flat-button>Disconnect
       </button>
       <button [mat-menu-trigger-for]="menu" class="menu-button" mat-button>
-        <mat-icon>more_vert</mat-icon>
+        <ng-icon name="mat-more-vert"></ng-icon>
       </button>
       <mat-menu #menu="matMenu">
         <button (click)="removeRepository()" *ngIf="repository.local" mat-menu-item>Delete</button>

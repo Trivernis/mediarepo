@@ -1331,6 +1331,27 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
+"@ng-icons/core@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@ng-icons/core/-/core-13.1.1.tgz#e462e84c4777fc04cf9de75f0ad2957f6134ffb0"
+  integrity sha512-1bGXH8uNH+5NF6dP/niw35BsPHa8cpROEABmvJSfxdenRlNpOK7mGEh51HsO5/8Txq4vpxz9UjjTATgToDfxsQ==
+  dependencies:
+    tslib "^2.2.0"
+
+"@ng-icons/feather-icons@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@ng-icons/feather-icons/-/feather-icons-13.1.1.tgz#c263daef9628813b90b3e03bc32dc4f2b4cb2e89"
+  integrity sha512-8bR6UGo/VHA3fhTEiOYB/mWJZcSdn1DQfTqJrmxL22jIAC5qDW8sG8jq3nbPSixGBPq7iqjqxMrBH5vAqwYhKQ==
+  dependencies:
+    tslib "^2.2.0"
+
+"@ng-icons/material-icons@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@ng-icons/material-icons/-/material-icons-13.1.1.tgz#e4bd78276b68c0b9fbf0d4a076a51750b4deb98d"
+  integrity sha512-G9Tn2w/a1PgnARea294J8pieBD52MCEp7zbi9N7hhvuFaRlvyXdLtdqNw/GEb0dy8CEJkp258XZQepnKd6Z6kQ==
+  dependencies:
+    tslib "^2.2.0"
+
 "@ngtools/webpack@12.2.9":
   version "12.2.9"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-12.2.9.tgz#e13d815d35e155bea6e2b13f6f54bc3275ed0670"

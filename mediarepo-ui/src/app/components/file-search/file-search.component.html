@@ -6,12 +6,12 @@
     </div>
   </div>
   <button (click)="removeAllSearchTags()" id="delete-all-tags-button" mat-icon-button>
-    <mat-icon>delete-sweep</mat-icon>
+    <ng-icon name="mat-delete-sweep"></ng-icon>
   </button>
 </div>
 <app-tag-input class="full-width" [allowNegation]="true" [availableTags]="getValidSearchTags()" (tagAdded)="addSearchTag($event); searchForFiles()">
   <button mat-button class="filter-dialog-button" (click)="openFilterDialog()">
-    <mat-icon>filter_alt</mat-icon>
+    <ng-icon name="mat-filter-alt"></ng-icon>
   </button>
 </app-tag-input>
 <button (click)="openSortDialog()" id="sort-button" mat-flat-button>Sort: {{sortExpression.join(", ")}}</button>

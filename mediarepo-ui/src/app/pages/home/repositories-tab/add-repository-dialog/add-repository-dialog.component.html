@@ -21,7 +21,7 @@
                     matTooltip="Path where the repository is located or should be created"
                     matTooltipShowDelay="1000">
       <button (click)="openFolderDialog()" class="button-folder-select" mat-button>
-        <mat-icon>folder</mat-icon>
+        <ng-icon name="mat-folder"></ng-icon>
       </button>
       <mat-label>Path</mat-label>
       <input (change)="this.checkLocalRepoExists()" formControlName="path" matInput>

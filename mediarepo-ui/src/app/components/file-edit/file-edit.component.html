@@ -11,7 +11,7 @@
       <div class="editable-tag" *cdkVirtualFor="let tag of tags">
         <app-tag-item [tag]="tag"></app-tag-item>
         <button class="tag-remove-button" mat-icon-button (click)="removeTag(tag)">
-          <mat-icon>remove</mat-icon>
+          <ng-icon name="mat-remove"></ng-icon>
         </button>
       </div>
     </cdk-virtual-scroll-viewport>
@@ -21,9 +21,9 @@
     <div class="tag-input-field">
       <app-tag-input [availableTags]="this.allTags" [allowInvalid]="true" (tagAdded)="this.editTag($event)"></app-tag-input>
       <button mat-icon-button class="add-tag-button">
-        <mat-icon *ngIf="editMode === 'Toggle'">change_circle</mat-icon>
-        <mat-icon *ngIf="editMode === 'Add'">add_circle</mat-icon>
-        <mat-icon *ngIf="editMode === 'Remove'">remove_circle</mat-icon>
+        <ng-icon *ngIf="editMode === 'Toggle'" name="mat-change-circle"></ng-icon>
+        <ng-icon *ngIf="editMode === 'Add'" name="mat-add-circle"></ng-icon>
+        <ng-icon *ngIf="editMode === 'Remove'" name="mat-remove-circle"></ng-icon>
       </button>
     </div>
     <mat-form-field class="form-field-mode" appearance="fill">

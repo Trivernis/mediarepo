@@ -6,10 +6,10 @@
 
     <div class="buttons-native-select">
       <button *ngIf="mode === 'files'" (click)="openNativeFileSelectDialog(false)" mat-button>
-        <mat-icon>insert_drive_file</mat-icon>
+        <ng-icon name="mat-insert-drive-file"></ng-icon>
       </button>
       <button *ngIf="mode === 'folders'" (click)="openNativeFileSelectDialog(true)" mat-button>
-        <mat-icon>folder</mat-icon>
+        <ng-icon name="mat-folder"></ng-icon>
       </button>
     </div>
 

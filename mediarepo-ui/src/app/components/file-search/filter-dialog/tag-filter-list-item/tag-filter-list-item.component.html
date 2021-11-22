@@ -1,7 +1,7 @@
 <div *ngIf="expression.data.filter_type === 'Query'" (click)="onSelect()">
   {{expression.data.getDisplayName()}}
   <button mat-button class="remove-button" (click)="this.removeClicked.emit(this)">
-        <mat-icon>remove</mat-icon>
+        <ng-icon name="mat-remove"></ng-icon>
       </button>
 </div>
 <div *ngIf="expression.data.filter_type === 'OrExpression'">
@@ -11,7 +11,7 @@
       <span class="or-span" *ngIf="entry[0] > 0">OR</span>
       {{entry[1].getNormalizedTag()}}
       <button mat-button class="remove-button-inner-list" (mousedown)="$event.button === 0 && this.removeOrExpression(entry[0])">
-        <mat-icon>remove</mat-icon>
+        <ng-icon name="mat-remove"></ng-icon>
       </button>
     </mat-list-item>
   </mat-list>

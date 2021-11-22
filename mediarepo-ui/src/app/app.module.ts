@@ -23,7 +23,6 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {MatChipsModule} from "@angular/material/chips";
-import {MatIconModule} from "@angular/material/icon";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {FileSearchComponent} from './components/file-search/file-search.component';
 import {MatTabsModule} from "@angular/material/tabs";
@@ -66,6 +65,8 @@ import {HttpClientModule} from "@angular/common/http";
 import { AudioViewerComponent } from './components/file-gallery/content-viewer/audio-viewer/audio-viewer.component';
 import { BusyIndicatorComponent } from './components/busy-indicator/busy-indicator.component';
 import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
+import {NgIconsModule} from "@ng-icons/core";
+import * as materialIcons from "@ng-icons/material-icons";
 
 @NgModule({
   declarations: [
@@ -120,7 +121,6 @@ import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbna
     MatPaginatorModule,
     ScrollingModule,
     MatChipsModule,
-    MatIconModule,
     MatAutocompleteModule,
     MatTabsModule,
     FlexModule,
@@ -138,6 +138,7 @@ import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbna
     MatExpansionModule,
     MatCheckboxModule,
     HttpClientModule,
+    NgIconsModule.withIcons({...materialIcons}),
   ],
   providers: [],
   bootstrap: [AppComponent]

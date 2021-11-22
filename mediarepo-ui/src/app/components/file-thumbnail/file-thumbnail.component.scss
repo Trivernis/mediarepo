@@ -12,7 +12,7 @@ app-content-aware-image {
   width: 100%;
   display: flex;
 
-  mat-icon {
+  ng-icon {
     align-self: center;
     margin: auto;
   }
@@ -24,13 +24,13 @@ app-content-aware-image {
   right: 0;
 }
 
-mat-icon.gif-icon {
+ng-icon.gif-icon {
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 0.1em;
 }
 
-mat-icon {
+ng-icon {
   font-size: 4em;
   height: 1em;
   width: 1em;
