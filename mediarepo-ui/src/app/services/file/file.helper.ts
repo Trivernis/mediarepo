@@ -27,6 +27,25 @@ export class FileHelper {
   }
 
   /**
+   * Parses a mime into its two components
+   * @param {string | undefined} mimeType
+   * @returns {[string, string] | undefined}
+   */
+  public static parseMime(mimeType: string | undefined): [string, string] | undefined {
+    if (!mimeType) {
+      return undefined;
+    }
+    let mimeParts = mimeType.split("/");
+    if (mimeParts.length < 2) {
+      return undefined;
+    }
+    const type = mimeParts[0];
+    const subtype = mimeParts[1];
+
+    return [type, subtype];
+  }
+
+  /**
    * Returns the extension for a mime type
    * @param {string} mime
    * @returns {string | undefined}

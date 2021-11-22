@@ -65,6 +65,7 @@ import {VideoViewerComponent} from './components/file-gallery/content-viewer/vid
 import {HttpClientModule} from "@angular/common/http";
 import { AudioViewerComponent } from './components/file-gallery/content-viewer/audio-viewer/audio-viewer.component';
 import { BusyIndicatorComponent } from './components/busy-indicator/busy-indicator.component';
+import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
 
 @NgModule({
   declarations: [
@@ -99,6 +100,7 @@ import { BusyIndicatorComponent } from './components/busy-indicator/busy-indicat
     VideoViewerComponent,
     AudioViewerComponent,
     BusyIndicatorComponent,
+    FileThumbnailComponent,
   ],
   imports: [
     BrowserModule,

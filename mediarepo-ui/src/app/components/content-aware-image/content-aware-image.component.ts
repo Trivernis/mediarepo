@@ -11,6 +11,7 @@ export class ContentAwareImageComponent implements OnInit {
   @Input() imageSrc!: string | SafeResourceUrl;
   @Input() maximizeHeight: boolean = true;
   @Input() maximizeWidth: boolean = true;
+  @Input() borderRadius: string | undefined;
   @Input() decoding: "async" | "sync" | "auto" = "auto";
 
   @ViewChild("image") image: ElementRef<HTMLImageElement> | undefined;

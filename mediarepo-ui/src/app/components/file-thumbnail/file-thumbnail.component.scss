@@ -1,0 +1,37 @@
+app-content-aware-image {
+  height: 100%;
+  width: 100%;
+}
+
+.file-type-icon {
+  background-color: #303030;
+}
+
+.file-type-icon, .file-icon-overlay {
+  height: 100%;
+  width: 100%;
+  display: flex;
+
+  mat-icon {
+    align-self: center;
+    margin: auto;
+  }
+}
+
+.file-icon-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+mat-icon.gif-icon {
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.1em;
+}
+
+mat-icon {
+  font-size: 4em;
+  height: 1em;
+  width: 1em;
+}

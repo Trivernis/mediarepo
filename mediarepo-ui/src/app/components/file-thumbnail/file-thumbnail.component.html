@@ -1,0 +1,12 @@
+<app-content-aware-image borderRadius="0.25em" *ngIf="this.getThumbnailSupported() && this.thumbUrl"
+                         [imageSrc]="this.thumbUrl"></app-content-aware-image>
+<div class="file-icon-overlay" *ngIf="this.getThumbnailSupported() && this.thumbUrl">
+  <mat-icon *ngIf="getFileType() === 'video'">movie</mat-icon>
+  <mat-icon *ngIf="this.file.mime_type === 'image/gif'" class="gif-icon">gif</mat-icon>
+</div>
+<div class="file-type-icon" *ngIf="!this.getThumbnailSupported() || !this.thumbUrl">
+  <mat-icon *ngIf="getFileType() === 'image'">image</mat-icon>
+  <mat-icon *ngIf="getFileType() === 'video'">movie</mat-icon>
+  <mat-icon *ngIf="getFileType() === 'audio'">audiotrack</mat-icon>
+  <mat-icon *ngIf="getFileType() === 'text'">description</mat-icon>
+</div>
