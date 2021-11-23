@@ -38,3 +38,7 @@ features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 [dependencies.tracing-subscriber]
 version="0.2.3"
 features = ["env-filter"]
+
+[features]
+default = ["ffmpeg"]
+ffmpeg = ["mediarepo-core/ffmpeg", "mediarepo-model/ffmpeg"]

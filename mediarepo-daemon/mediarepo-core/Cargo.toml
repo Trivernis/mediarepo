@@ -15,9 +15,12 @@ serde = "1.0.130"
 rmp-ipc = "0.11.0"
 typemap_rev = "0.1.5"
 futures = "0.3.17"
-thumbnailer = "0.2.2"
 itertools = "0.10.1"
 glob = "0.3.0"
+
+[dependencies.thumbnailer]
+version = "0.2.3"
+default-features = false
 
 [dependencies.sea-orm]
 version = "0.3.2"
@@ -31,3 +34,8 @@ features = ["migrate"]
 [dependencies.tokio]
 version = "1.12.0"
 features = ["fs", "io-util", "io-std"]
+
+
+[features]
+default = []
+ffmpeg = ["thumbnailer/ffmpeg"]

@@ -1613,9 +1613,9 @@ dependencies = [
 
 [[package]]
 name = "thumbnailer"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2345fd46082ff316fc9b5c85cce6972de39b1772c38297c0b2b11a18397013ef"
+checksum = "75e5a2f440c232c23ba04c40b76cb64e09f71fa96e38e3ad26c765763d690af9"
 dependencies = [
  "ffmpeg-next",
  "image",

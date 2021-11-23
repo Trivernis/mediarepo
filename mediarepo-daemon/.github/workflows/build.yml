@@ -29,11 +29,9 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
-      - name: Setup ffmpeg
-        uses: FedericoCarboni/setup-ffmpeg@v1
 
       - name: Build
-        run: cargo build --release
+        run: cargo build --release --no-default-features
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
