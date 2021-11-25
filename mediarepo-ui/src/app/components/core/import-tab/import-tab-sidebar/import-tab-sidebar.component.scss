@@ -1,35 +1,35 @@
 mat-tab-group, mat-tab {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 
 .import-tab-inner {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .import-type-select-wrapper {
-  width: 100%;
+    width: 100%;
 
-  .import-type-select {
-    width: calc(100% - 2em);
-    height: calc(100% - 2em);
-    margin: 1em;
+    .import-type-select {
+        width: calc(100% - 2em);
+        height: calc(100% - 2em);
+        margin: 1em;
 
-    mat-select {
-      height: 100%;
+        mat-select {
+            height: 100%;
+        }
     }
-  }
 }
 
 .import-sidebar-tab-inner {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .import-configuration {
-  padding: 1em;
+    padding: 1em;
 }

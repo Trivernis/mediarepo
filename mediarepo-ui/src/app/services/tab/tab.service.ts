@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: "root"
 })
 export class TabService {
 
-  public selectedTab = new BehaviorSubject<number>(0);
+    public selectedTab = new BehaviorSubject<number>(0);
 
-  constructor() {
-  }
+    constructor() {
+    }
 
-  public setSelectedTab(index: number) {
-    this.selectedTab.next(index);
-  }
+    public setSelectedTab(index: number) {
+        this.selectedTab.next(index);
+    }
 }

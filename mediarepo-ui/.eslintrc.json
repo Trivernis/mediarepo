@@ -34,7 +34,9 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "quotes": ["warn", "double", {"avoidEscape": true}],
+        "indent": ["error", 4, {"SwitchCase":  1}]
       }
     },
     {

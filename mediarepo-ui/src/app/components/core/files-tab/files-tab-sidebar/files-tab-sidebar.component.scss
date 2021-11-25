@@ -1,70 +1,70 @@
 app-file-search {
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 }
 
 #file-search-input {
-  width: 100%;
-  overflow: hidden;
+    width: 100%;
+    overflow: hidden;
 }
 
 mat-tab-group, mat-tab, .file-tag-list, app-file-edit {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
 }
 
 mat-selection-list {
-  height: 100%;
-  user-select: none;
+    height: 100%;
+    user-select: none;
 }
 
 .sidebar-inner, .search-tab-inner {
-  height: 100%;
-  width: 100%;
-  display: block;
+    height: 100%;
+    width: 100%;
+    display: block;
 }
 
 .selectable-tag {
-  height: 50px;
-  display: flex;
-  font-size: 1.2em;
-  cursor: pointer;
-  transition-duration: 0.1s;
-  user-select: none;
+    height: 50px;
+    display: flex;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition-duration: 0.1s;
+    user-select: none;
 
-  app-tag-item {
-    margin: auto auto auto 0.25em;
-  }
+    app-tag-item {
+        margin: auto auto auto 0.25em;
+    }
 }
 
 .selectable-tag:hover {
-  background-color: darken(dimgrey, 10);
+    background-color: darken(dimgrey, 10);
 }
 
 .selectable-tag:active {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 cdk-virtual-scroll-viewport {
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
-
-  ::ng-deep .cdk-virtual-scroll-content-wrapper {
+    height: 100%;
     width: 100%;
-  }
+    overflow-y: auto;
+
+    ::ng-deep .cdk-virtual-scroll-content-wrapper {
+        width: 100%;
+    }
 }
 
 mat-divider {
-  width: 100%;
+    width: 100%;
 }
 
 .tag-list-header {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 
-  h2 {
-    margin: auto;
-  }
+    h2 {
+        margin: auto;
+    }
 }

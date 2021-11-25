@@ -1,35 +1,35 @@
 <mat-form-field>
-  <mat-label>Selection Type</mat-label>
-  <mat-select #selectionType value="files">
-    <mat-option value="folders">Folders</mat-option>
-    <mat-option value="files">Files</mat-option>
-  </mat-select>
+    <mat-label>Selection Type</mat-label>
+    <mat-select #selectionType value="files">
+        <mat-option value="folders">Folders</mat-option>
+        <mat-option value="files">Files</mat-option>
+    </mat-select>
 </mat-form-field>
 <app-native-file-select (fileSelect)="this.setSelectedPaths($event)" [filters]="this.filters"
                         [mode]="selectionType.value"></app-native-file-select>
 <button mat-flat-button>
-  {{resolving ? "Searching for files..." : this.fileCount + " files found"}}
-  <mat-progress-bar *ngIf="resolving" color="primary" mode="indeterminate"></mat-progress-bar>
+    {{resolving ? "Searching for files..." : this.fileCount + " files found"}}
+    <mat-progress-bar *ngIf="resolving" color="primary" mode="indeterminate"></mat-progress-bar>
 </button>
 
 <mat-divider></mat-divider>
 
 <section class="binary-import-options">
-  <mat-checkbox (change)="this.importOptions.read_tags_from_txt = $event.checked"
-                [checked]="this.importOptions.read_tags_from_txt">Import tags from
-    adjacent .txt tag files
-  </mat-checkbox>
-  <mat-checkbox (change)="this.importOptions.delete_after_import = $event.checked"
-                [checked]="this.importOptions.delete_after_import" color="warn">
-    Delete files from original location after import
-  </mat-checkbox>
+    <mat-checkbox (change)="this.importOptions.read_tags_from_txt = $event.checked"
+                  [checked]="this.importOptions.read_tags_from_txt">Import tags from
+        adjacent .txt tag files
+    </mat-checkbox>
+    <mat-checkbox (change)="this.importOptions.delete_after_import = $event.checked"
+                  [checked]="this.importOptions.delete_after_import" color="warn">
+        Delete files from original location after import
+    </mat-checkbox>
 </section>
 
 <mat-divider></mat-divider>
 
 <button (click)="import()" [disabled]="importing || this.fileCount === 0" class="import-button" color="primary"
         mat-flat-button>
-  {{importing ? "Importing..." : "Import"}}
+    {{importing ? "Importing..." : "Import"}}
 </button>
 <mat-progress-bar *ngIf="importing" [value]="this.importingProgress" color="primary"
                   mode="determinate"></mat-progress-bar>

@@ -1,62 +1,62 @@
 .full-width {
-  min-width: 100%;
-  width: auto;
+    min-width: 100%;
+    width: auto;
 }
 
 .tag-input-list {
-  height: 2.7em;
-  padding: 0.5em 0;
-  width: calc(100% - 64px);
-  overflow-x: auto;
-  overflow-y: hidden;
-  box-shadow: 0 0 1em 0.1em rgba(0, 0, 0, 0.05) inset;
+    height: 2.7em;
+    padding: 0.5em 0;
+    width: calc(100% - 64px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 0 1em 0.1em rgba(0, 0, 0, 0.05) inset;
 }
 
 .tag-input-list-and-actions {
-  display: block;
-  height: calc(3em + 10px);
-  width: 100%;
-  position: relative;
+    display: block;
+    height: calc(3em + 10px);
+    width: 100%;
+    position: relative;
 }
 
 #delete-all-tags-button {
-  font-size: 0.5em;
-  width: 64px;
-  height: 100%;
-  padding: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+    font-size: 0.5em;
+    width: 64px;
+    height: 100%;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 #sort-button {
-  width: 100%;
+    width: 100%;
 }
 
 ::ng-deep #sort-button {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .tag-input-list-inner {
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  width: auto;
-  height: 2.2em;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: auto;
+    height: 2.2em;
 }
 
 .tag-input-item {
-  width: auto;
-  padding: 0.5em;
-  margin: 0 0.5em;
-  cursor: pointer;
-  white-space: nowrap;
+    width: auto;
+    padding: 0.5em;
+    margin: 0 0.5em;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .filter-dialog-button {
-  position: absolute;
-  right: -13px;
-  top: -17px;
+    position: absolute;
+    right: -13px;
+    top: -17px;
 }

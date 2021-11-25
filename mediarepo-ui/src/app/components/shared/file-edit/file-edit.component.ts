@@ -1,12 +1,12 @@
 import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    ViewChild
+} from "@angular/core";
 import {File} from "../../../models/File";
 import {Tag} from "../../../models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
@@ -14,138 +14,145 @@ import {TagService} from "../../../services/tag/tag.service";
 import {FileService} from "../../../services/file/file.service";
 
 @Component({
-  selector: 'app-file-edit',
-  templateUrl: './file-edit.component.html',
-  styleUrls: ['./file-edit.component.scss']
+    selector: "app-file-edit",
+    templateUrl: "./file-edit.component.html",
+    styleUrls: ["./file-edit.component.scss"]
 })
 export class FileEditComponent implements OnInit, OnChanges {
 
-  @Input() files: File[] = [];
-  public tags: Tag[] = [];
+    @Input() files: File[] = [];
+    public tags: Tag[] = [];
 
-  public allTags: Tag[] = [];
-  public editMode: string = "Toggle";
-  @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
-  @ViewChild("fileNameInput") fileNameInput!: ElementRef<HTMLInputElement>;
-  private fileTags: { [key: number]: Tag[] } = {};
+    public allTags: Tag[] = [];
+    public editMode: string = "Toggle";
+    @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
+    @ViewChild("fileNameInput") fileNameInput!: ElementRef<HTMLInputElement>;
+    private fileTags: { [key: number]: Tag[] } = {};
 
-  constructor(
-    private tagService: TagService,
-    private fileService: FileService,
-  ) {
-  }
-
-  async ngOnInit() {
-    this.tagService.tags.subscribe(tags => this.allTags = tags);
-    await this.tagService.loadTags();
-    await this.loadFileTags();
-    this.resetFileNameInput();
-  }
-
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes["files"]) {
-      await this.loadFileTags()
-      this.resetFileNameInput();
+    constructor(
+        private tagService: TagService,
+        private fileService: FileService,
+    ) {
     }
-  }
 
-  public async changeFileName(value: string) {
-    const name = value.trim();
-
-    if (name.length > 0) {
-      const file = this.files[0];
-      console.log("Updating name to", name);
-      const responseFile = await this.fileService.updateFileName(file, name);
-      console.log("Updated name");
-      file.name = responseFile.name;
-      this.resetFileNameInput();
+    async ngOnInit() {
+        this.tagService.tags.subscribe(tags => this.allTags = tags);
+        await this.tagService.loadTags();
+        await this.loadFileTags();
+        this.resetFileNameInput();
     }
-  }
 
-  public async editTag(tag: string): Promise<void> {
-    if (tag.length > 0) {
-      let tagInstance = this.allTags.find(t => t.getNormalizedOutput() === tag);
-
-      if (!tagInstance) {
-        tagInstance = (await this.tagService.createTags([tag]))[0];
-        this.allTags.push(tagInstance);
-      }
-      switch (this.editMode) {
-        case "Toggle":
-          await this.toggleTag(tagInstance);
-          break;
-        case "Add":
-          await this.addTag(tagInstance);
-          break;
-        case "Remove":
-          await this.removeTag(tagInstance);
-          break;
-      }
+    async ngOnChanges(changes: SimpleChanges) {
+        if (changes["files"]) {
+            await this.loadFileTags()
+            this.resetFileNameInput();
+        }
     }
-  }
 
-  async toggleTag(tag: Tag) {
-    for (const file of this.files) {
-      const fileTags = this.fileTags[file.id];
-      let addedTags = [];
-      let removedTags = [];
-      if (fileTags.findIndex(i => i.id === tag.id) < 0) {
-        addedTags.push(tag.id);
-      } else {
-        removedTags.push(tag.id);
-      }
-      this.fileTags[file.id] = await this.tagService.changeFileTags(file.id,
-        addedTags, removedTags);
-    }
-    this.mapFileTagsToTagList();
-    const index = this.tags.indexOf(tag);
-    index >= 0 && this.tagScroll.scrollToIndex(index);
-  }
+    public async changeFileName(value: string) {
+        const name = value.trim();
 
-  async addTag(tag: Tag) {
-    for (const file of this.files) {
-      if (this.fileTags[file.id].findIndex(t => t.id === tag.id) < 0) {
-        this.fileTags[file.id] = await this.tagService.changeFileTags(file.id,
-          [tag.id], []);
-      }
+        if (name.length > 0) {
+            const file = this.files[0];
+            console.log("Updating name to", name);
+            const responseFile = await this.fileService.updateFileName(file,
+                name);
+            console.log("Updated name");
+            file.name = responseFile.name;
+            this.resetFileNameInput();
+        }
     }
-    this.mapFileTagsToTagList();
-    const index = this.tags.indexOf(tag);
-    index >= 0 && this.tagScroll.scrollToIndex(index);
-  }
 
-  public async removeTag(tag: Tag) {
-    for (const file of this.files) {
-      if (this.fileTags[file.id].findIndex(t => t.id === tag.id) >= 0) {
-        this.fileTags[file.id] = await this.tagService.changeFileTags(file.id,
-          [], [tag.id]);
-      }
-    }
-    this.mapFileTagsToTagList();
-  }
+    public async editTag(tag: string): Promise<void> {
+        if (tag.length > 0) {
+            let tagInstance = this.allTags.find(
+                t => t.getNormalizedOutput() === tag);
 
-  private async loadFileTags() {
-    for (const file of this.files) {
-      this.fileTags[file.id] = await this.tagService.getTagsForFiles(
-        [file.hash]);
+            if (!tagInstance) {
+                tagInstance = (await this.tagService.createTags([tag]))[0];
+                this.allTags.push(tagInstance);
+            }
+            switch (this.editMode) {
+                case "Toggle":
+                    await this.toggleTag(tagInstance);
+                    break;
+                case "Add":
+                    await this.addTag(tagInstance);
+                    break;
+                case "Remove":
+                    await this.removeTag(tagInstance);
+                    break;
+            }
+        }
     }
-    this.mapFileTagsToTagList();
-  }
 
-  private resetFileNameInput() {
-    if (this.files.length === 1) {
-      this.fileNameInput.nativeElement.value = this.files[0].name ?? "";
+    async toggleTag(tag: Tag) {
+        for (const file of this.files) {
+            const fileTags = this.fileTags[file.id];
+            let addedTags = [];
+            let removedTags = [];
+            if (fileTags.findIndex(i => i.id === tag.id) < 0) {
+                addedTags.push(tag.id);
+            } else {
+                removedTags.push(tag.id);
+            }
+            this.fileTags[file.id] = await this.tagService.changeFileTags(
+                file.id,
+                addedTags, removedTags);
+        }
+        this.mapFileTagsToTagList();
+        const index = this.tags.indexOf(tag);
+        index >= 0 && this.tagScroll.scrollToIndex(index);
     }
-  }
 
-  private mapFileTagsToTagList() {
-    let tags: Tag[] = [];
-    for (const file of this.files) {
-      const fileTags = this.fileTags[file.id];
-      tags.push(
-        ...fileTags.filter(t => tags.findIndex(tag => tag.id === t.id) < 0));
+    async addTag(tag: Tag) {
+        for (const file of this.files) {
+            if (this.fileTags[file.id].findIndex(t => t.id === tag.id) < 0) {
+                this.fileTags[file.id] = await this.tagService.changeFileTags(
+                    file.id,
+                    [tag.id], []);
+            }
+        }
+        this.mapFileTagsToTagList();
+        const index = this.tags.indexOf(tag);
+        index >= 0 && this.tagScroll.scrollToIndex(index);
     }
-    this.tags = tags.sort(
-      (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
-  }
+
+    public async removeTag(tag: Tag) {
+        for (const file of this.files) {
+            if (this.fileTags[file.id].findIndex(t => t.id === tag.id) >= 0) {
+                this.fileTags[file.id] = await this.tagService.changeFileTags(
+                    file.id,
+                    [], [tag.id]);
+            }
+        }
+        this.mapFileTagsToTagList();
+    }
+
+    private async loadFileTags() {
+        for (const file of this.files) {
+            this.fileTags[file.id] = await this.tagService.getTagsForFiles(
+                [file.hash]);
+        }
+        this.mapFileTagsToTagList();
+    }
+
+    private resetFileNameInput() {
+        if (this.files.length === 1) {
+            this.fileNameInput.nativeElement.value = this.files[0].name ?? "";
+        }
+    }
+
+    private mapFileTagsToTagList() {
+        let tags: Tag[] = [];
+        for (const file of this.files) {
+            const fileTags = this.fileTags[file.id];
+            tags.push(
+                ...fileTags.filter(
+                    t => tags.findIndex(tag => tag.id === t.id) < 0));
+        }
+        this.tags = tags.sort(
+            (a, b) => a.getNormalizedOutput()
+                .localeCompare(b.getNormalizedOutput()));
+    }
 }

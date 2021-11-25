@@ -1,16 +1,16 @@
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from "@angular/core/testing";
 
-import {ErrorBrokerService} from './error-broker.service';
+import {ErrorBrokerService} from "./error-broker.service";
 
-describe('ErrorBrokerService', () => {
-  let service: ErrorBrokerService;
+describe("ErrorBrokerService", () => {
+    let service: ErrorBrokerService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ErrorBrokerService);
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+        service = TestBed.inject(ErrorBrokerService);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it("should be created", () => {
+        expect(service).toBeTruthy();
+    });
 });

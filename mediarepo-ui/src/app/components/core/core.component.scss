@@ -1,19 +1,19 @@
 #content {
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  left: 0;
-  top: 0;
-  margin: 0;
-  overflow: hidden
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    overflow: hidden
 }
 
 mat-tab-group {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
 }
 
 ::ng-deep .mat-tab-body-wrapper {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
 }

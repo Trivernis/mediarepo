@@ -1,26 +1,26 @@
 form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .dialog-buttons {
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 
-  button {
-    margin-left: 1em;
-    float: right
-  }
+    button {
+        margin-left: 1em;
+        float: right
+    }
 
-  .check-connection-button {
-    justify-self: right;
-    margin: 0;
-    float: left;
-  }
+    .check-connection-button {
+        justify-self: right;
+        margin: 0;
+        float: left;
+    }
 }
 
 .button-folder-select {
-  position: absolute;
-  top: -10px;
-  right: 0;
+    position: absolute;
+    top: -10px;
+    right: 0;
 }

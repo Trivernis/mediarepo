@@ -3,7 +3,7 @@
 <app-audio-viewer *ngIf="getContentType() === 'audio' && this.blobUrl" [blobUrl]="this.blobUrl!"></app-audio-viewer>
 
 <div *ngIf="getContentType() === 'other'" class="download-prompt">
-  <span>Unsupported content type <b>{{this.file.mime_type}}</b></span>
-  <button (click)="this.downloadContent()" color="primary" mat-flat-button>Download</button>
+    <span>Unsupported content type <b>{{this.file.mime_type}}</b></span>
+    <button (click)="this.downloadContent()" color="primary" mat-flat-button>Download</button>
 </div>
 <app-busy-indicator></app-busy-indicator>

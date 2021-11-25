@@ -1,22 +1,22 @@
 .file-select-inner, mat-form-field {
-  width: 100%;
+    width: 100%;
 }
 
 
 .file-input {
-  width: calc(100% - 3em);
-  float: left;
-  text-overflow: ellipsis;
+    width: calc(100% - 3em);
+    float: left;
+    text-overflow: ellipsis;
 }
 
 .buttons-native-select {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: -19px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -19px;
 
-  button {
-    width: 3em;
-    height: 3em;
-  }
+    button {
+        width: 3em;
+        height: 3em;
+    }
 }

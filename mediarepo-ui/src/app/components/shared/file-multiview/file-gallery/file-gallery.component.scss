@@ -1,62 +1,62 @@
 .file-scroll-viewport {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 ::ng-deep .file-scroll-viewport > .cdk-virtual-scroll-content-wrapper {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
 }
 
 .gallery-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  user-select: none;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    user-select: none;
 }
 
 app-file-gallery-entry, .file-item {
-  width: 250px;
-  height: calc(100% - 10px);
-  padding: 5px;
+    width: 250px;
+    height: calc(100% - 10px);
+    padding: 5px;
 }
 
 app-file-gallery-entry {
-  display: block;
+    display: block;
 }
 
 .file-full-view {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 app-content-viewer {
-  height: 100%;
-  width: 100%;
-  display: block;
+    height: 100%;
+    width: 100%;
+    display: block;
 }
 
 .close-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 3em;
-  height: 3em;
-  z-index: 999;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3em;
+    height: 3em;
+    z-index: 999;
 }
 
 .url-loading-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
 
-  mat-progress-spinner {
-    margin: auto;
-  }
+    mat-progress-spinner {
+        margin: auto;
+    }
 }

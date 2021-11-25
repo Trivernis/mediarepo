@@ -1,25 +1,25 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {RepositoriesTabComponent} from './repositories-tab.component';
+import {RepositoriesTabComponent} from "./repositories-tab.component";
 
-describe('RepositoriesComponent', () => {
-  let component: RepositoriesTabComponent;
-  let fixture: ComponentFixture<RepositoriesTabComponent>;
+describe("RepositoriesComponent", () => {
+    let component: RepositoriesTabComponent;
+    let fixture: ComponentFixture<RepositoriesTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-        declarations: [RepositoriesTabComponent]
-      })
-      .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [RepositoriesTabComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RepositoriesTabComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RepositoriesTabComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it("should create", () => {
+        expect(component).toBeTruthy();
+    });
 });

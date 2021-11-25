@@ -1,26 +1,27 @@
 <h1 mat-dialog-title>Filters</h1>
 <div class="filter-dialog-content" mat-dialog-content>
-  <div class="filter-dialog-list">
-    <mat-list class="mat-filter-dialog-list">
-      <mat-list-item *ngFor="let expression of filters" [class.selected]="expression.selected" class="filter-list-item">
-        <app-tag-filter-list-item (contextmenu)="contextMenu.onContextMenu($event)"
-                                  (querySelect)="this.addToSelection($event)"
-                                  (queryUnselect)="this.removeFromSelection($event)"
-                                  (removeClicked)="this.removeFilter($event)"
-                                  [expression]="expression"></app-tag-filter-list-item>
-      </mat-list-item>
-    </mat-list>
-  </div>
-  <mat-divider></mat-divider>
-  <app-tag-input (tagAdded)="this.addFilter($event)" [allowNegation]="true" [availableTags]="this.availableTags"
-                 class="tag-input"></app-tag-input>
+    <div class="filter-dialog-list">
+        <mat-list class="mat-filter-dialog-list">
+            <mat-list-item *ngFor="let expression of filters" [class.selected]="expression.selected"
+                           class="filter-list-item">
+                <app-tag-filter-list-item (contextmenu)="contextMenu.onContextMenu($event)"
+                                          (querySelect)="this.addToSelection($event)"
+                                          (queryUnselect)="this.removeFromSelection($event)"
+                                          (removeClicked)="this.removeFilter($event)"
+                                          [expression]="expression"></app-tag-filter-list-item>
+            </mat-list-item>
+        </mat-list>
+    </div>
+    <mat-divider></mat-divider>
+    <app-tag-input (tagAdded)="this.addFilter($event)" [allowNegation]="true" [availableTags]="this.availableTags"
+                   class="tag-input"></app-tag-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
-  <button (click)="confirmFilter()" color="primary" mat-flat-button>Filter</button>
-  <button (click)="cancelFilter()" color="accent" mat-stroked-button>Cancel</button>
+    <button (click)="confirmFilter()" color="primary" mat-flat-button>Filter</button>
+    <button (click)="cancelFilter()" color="accent" mat-stroked-button>Cancel</button>
 </div>
 <app-context-menu #contextMenu>
-  <button (click)="this.convertSelectionToOrExpression()" mat-menu-item>Copy to OR-Expression</button>
-  <button (click)="this.convertSelectionToAndExpression()" mat-menu-item>Copy to AND-Expression</button>
-  <button (click)="this.invertSelection()" mat-menu-item>Invert</button>
+    <button (click)="this.convertSelectionToOrExpression()" mat-menu-item>Copy to OR-Expression</button>
+    <button (click)="this.convertSelectionToAndExpression()" mat-menu-item>Copy to AND-Expression</button>
+    <button (click)="this.invertSelection()" mat-menu-item>Invert</button>
 </app-context-menu>

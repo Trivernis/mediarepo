@@ -1,16 +1,16 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Output} from "@angular/core";
 import {File} from "../../../../models/File";
 
 @Component({
-  selector: 'app-import-tab-sidebar',
-  templateUrl: './import-tab-sidebar.component.html',
-  styleUrls: ['./import-tab-sidebar.component.scss']
+    selector: "app-import-tab-sidebar",
+    templateUrl: "./import-tab-sidebar.component.html",
+    styleUrls: ["./import-tab-sidebar.component.scss"]
 })
 export class ImportTabSidebarComponent {
 
-  @Output() fileImported = new EventEmitter<File>();
-  @Output() importFinished = new EventEmitter<void>();
+    @Output() fileImported = new EventEmitter<File>();
+    @Output() importFinished = new EventEmitter<void>();
 
-  constructor() {
-  }
+    constructor() {
+    }
 }

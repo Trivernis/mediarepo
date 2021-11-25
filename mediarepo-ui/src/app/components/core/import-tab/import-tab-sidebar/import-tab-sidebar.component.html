@@ -1,21 +1,21 @@
 <div class="import-tab-inner">
-  <mat-tab-group headerPosition="below">
-    <mat-tab label="Import">
-      <div class="import-sidebar-tab-inner" fxLayout="column">
-        <div class="import-type-select-wrapper" fxFlex="6em">
-          <mat-form-field class="import-type-select">
-            <mat-label>Import Type</mat-label>
-            <mat-select value="filesystem">
-              <mat-option value="filesystem">Filesystem</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-divider></mat-divider>
-        </div>
-        <div class="import-configuration" fxFlex fxFlexFill>
-          <app-filesystem-import (fileImported)="this.fileImported.emit($event)"
-                                 (importFinished)="importFinished.emit()"></app-filesystem-import>
-        </div>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
+    <mat-tab-group headerPosition="below">
+        <mat-tab label="Import">
+            <div class="import-sidebar-tab-inner" fxLayout="column">
+                <div class="import-type-select-wrapper" fxFlex="6em">
+                    <mat-form-field class="import-type-select">
+                        <mat-label>Import Type</mat-label>
+                        <mat-select value="filesystem">
+                            <mat-option value="filesystem">Filesystem</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-divider></mat-divider>
+                </div>
+                <div class="import-configuration" fxFlex fxFlexFill>
+                    <app-filesystem-import (fileImported)="this.fileImported.emit($event)"
+                                           (importFinished)="importFinished.emit()"></app-filesystem-import>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 </div>

@@ -1,37 +1,37 @@
 app-content-aware-image {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
 }
 
 .file-type-icon {
-  background-color: #303030;
+    background-color: #303030;
 }
 
 .file-type-icon, .file-icon-overlay {
-  height: 100%;
-  width: 100%;
-  display: flex;
+    height: 100%;
+    width: 100%;
+    display: flex;
 
-  ng-icon {
-    align-self: center;
-    margin: auto;
-  }
+    ng-icon {
+        align-self: center;
+        margin: auto;
+    }
 }
 
 .file-icon-overlay {
-  position: absolute;
-  top: 0;
-  right: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 ng-icon.gif-icon {
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 0.1em;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.1em;
 }
 
 ng-icon {
-  font-size: 4em;
-  height: 1em;
-  width: 1em;
+    font-size: 4em;
+    height: 1em;
+    width: 1em;
 }

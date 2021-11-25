@@ -2,53 +2,53 @@
 @use '~@angular/material' as mat;
 
 @mixin color($theme) {
-  $color-config: mat.get-color-config($theme);
-  $primary-palette: map.get($color-config, 'primary');
-  $warn-palette: map.get($color-config, 'warn');
+    $color-config: mat.get-color-config($theme);
+    $primary-palette: map.get($color-config, 'primary');
+    $warn-palette: map.get($color-config, 'warn');
 
-  body {
-    background-color: darken(#303030, 5);
-    color: white
-  }
-  ::ng-deep ::-webkit-scrollbar {
-    width: 15px;
-    height: 15px;
-    background: #272727;
-  }
+    body {
+        background-color: darken(#303030, 5);
+        color: white
+    }
+    ::ng-deep ::-webkit-scrollbar {
+        width: 15px;
+        height: 15px;
+        background: #272727;
+    }
 
-  ::ng-deep ::-webkit-scrollbar-thumb {
-    background: mat.get-color-from-palette($primary-palette, 'darker');
-    border-radius: 1px;
-  }
+    ::ng-deep ::-webkit-scrollbar-thumb {
+        background: mat.get-color-from-palette($primary-palette, 'darker');
+        border-radius: 1px;
+    }
 
-  ::ng-deep ::-webkit-scrollbar-thumb:hover {
-    background: mat.get-color-from-palette($primary-palette);
-  }
+    ::ng-deep ::-webkit-scrollbar-thumb:hover {
+        background: mat.get-color-from-palette($primary-palette);
+    }
 
-  .warn {
-    background-color: mat.get-color-from-palette($warn-palette);
-    color: white
-  }
+    .warn {
+        background-color: mat.get-color-from-palette($warn-palette);
+        color: white
+    }
 }
 
 @mixin typography($theme) {
-  // Get the typography config from the theme.
-  $typography-config: mat.get-typography-config($theme);
+    // Get the typography config from the theme.
+    $typography-config: mat.get-typography-config($theme);
 
-  body {
-    font-family: mat.font-family($typography-config);
-  }
+    body {
+        font-family: mat.font-family($typography-config);
+    }
 }
 
 @mixin theme($theme) {
-  $color-config: mat.get-color-config($theme);
-  @if $color-config != null {
-    @include color($theme);
-  }
+    $color-config: mat.get-color-config($theme);
+    @if $color-config != null {
+        @include color($theme);
+    }
 
-  $typography-config: mat.get-typography-config($theme);
-  @if $typography-config != null {
-    @include typography($theme);
-  }
+    $typography-config: mat.get-typography-config($theme);
+    @if $typography-config != null {
+        @include typography($theme);
+    }
 }
 

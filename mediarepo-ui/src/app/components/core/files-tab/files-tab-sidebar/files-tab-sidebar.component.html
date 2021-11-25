@@ -1,41 +1,43 @@
 <div class="sidebar-inner">
-  <mat-tab-group headerPosition="below">
-    <mat-tab label="Search">
-      <div class="search-tab-inner" fxLayout="column">
-        <div id="file-search-input">
-          <app-file-search #filesearch (searchEndEvent)="this.searchEndEvent.emit()"
-                           (searchStartEvent)="this.searchStartEvent.emit()"
-                           [availableTags]="this.allTags"></app-file-search>
-        </div>
-        <mat-divider fxFlex="1em"></mat-divider>
-        <div class="tag-list-header" fxFlex="40px">
-          <h2>Tags</h2>
-          <mat-divider></mat-divider>
-        </div>
-        <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
-          <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-            <div (click)="addSearchTag(tag)" (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)" *cdkVirtualFor="let tag of tags" class="selectable-tag"
-                 matRipple>
-              <app-tag-item [tag]="tag"></app-tag-item>
+    <mat-tab-group headerPosition="below">
+        <mat-tab label="Search">
+            <div class="search-tab-inner" fxLayout="column">
+                <div id="file-search-input">
+                    <app-file-search #filesearch (searchEndEvent)="this.searchEndEvent.emit()"
+                                     (searchStartEvent)="this.searchStartEvent.emit()"
+                                     [availableTags]="this.allTags"></app-file-search>
+                </div>
+                <mat-divider fxFlex="1em"></mat-divider>
+                <div class="tag-list-header" fxFlex="40px">
+                    <h2>Tags</h2>
+                    <mat-divider></mat-divider>
+                </div>
+                <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
+                    <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
+                        <div (click)="addSearchTag(tag)"
+                             (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
+                             *cdkVirtualFor="let tag of tags" class="selectable-tag"
+                             matRipple>
+                            <app-tag-item [tag]="tag"></app-tag-item>
+                        </div>
+                    </cdk-virtual-scroll-viewport>
+                </div>
             </div>
-          </cdk-virtual-scroll-viewport>
-        </div>
-      </div>
-    </mat-tab>
-    <mat-tab *ngIf="this.selectedFiles.length > 0" label="Edit">
-      <app-file-edit #fileedit [files]="this.selectedFiles"></app-file-edit>
-    </mat-tab>
-  </mat-tab-group>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedFiles.length > 0" label="Edit">
+            <app-file-edit #fileedit [files]="this.selectedFiles"></app-file-edit>
+        </mat-tab>
+    </mat-tab-group>
 </div>
 <app-context-menu #contextMenu>
-  <button (click)="this.copyToClipboard(this.contextMenuTag!.getNormalizedOutput())" *ngIf="this.contextMenuTag"
-          mat-menu-item>Copy
-    "{{contextMenuTag!.getNormalizedOutput()}}"
-  </button>
-  <button (click)="this.copyToClipboard(this.contextMenuTag!.name)" *ngIf="this.contextMenuTag?.namespace"
-          mat-menu-item>Copy "{{this.contextMenuTag!.name}}"
-  </button>
-  <button (click)="this.copyToClipboard(this.contextMenuTag!.namespace!)" *ngIf="this.contextMenuTag?.namespace"
-          mat-menu-item>Copy "{{this.contextMenuTag!.namespace!}}"
-  </button>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.getNormalizedOutput())" *ngIf="this.contextMenuTag"
+            mat-menu-item>Copy
+        "{{contextMenuTag!.getNormalizedOutput()}}"
+    </button>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.name)" *ngIf="this.contextMenuTag?.namespace"
+            mat-menu-item>Copy "{{this.contextMenuTag!.name}}"
+    </button>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.namespace!)" *ngIf="this.contextMenuTag?.namespace"
+            mat-menu-item>Copy "{{this.contextMenuTag!.namespace!}}"
+    </button>
 </app-context-menu>

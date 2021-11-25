@@ -1,18 +1,18 @@
 <div class="file-select-inner" fxLayout="row">
 
-  <mat-form-field appearance="fill">
-    <mat-label>{{label}}</mat-label>
-    <input #filesInput (change)="this.setFiles(filesInput.value)" [value]="files.join(', ')" class="file-input"
-           matInput>
+    <mat-form-field appearance="fill">
+        <mat-label>{{label}}</mat-label>
+        <input #filesInput (change)="this.setFiles(filesInput.value)" [value]="files.join(', ')" class="file-input"
+               matInput>
 
-    <div class="buttons-native-select">
-      <button (click)="openNativeFileSelectDialog(false)" *ngIf="mode === 'files'" mat-button>
-        <ng-icon name="mat-insert-drive-file"></ng-icon>
-      </button>
-      <button (click)="openNativeFileSelectDialog(true)" *ngIf="mode === 'folders'" mat-button>
-        <ng-icon name="mat-folder"></ng-icon>
-      </button>
-    </div>
+        <div class="buttons-native-select">
+            <button (click)="openNativeFileSelectDialog(false)" *ngIf="mode === 'files'" mat-button>
+                <ng-icon name="mat-insert-drive-file"></ng-icon>
+            </button>
+            <button (click)="openNativeFileSelectDialog(true)" *ngIf="mode === 'folders'" mat-button>
+                <ng-icon name="mat-folder"></ng-icon>
+            </button>
+        </div>
 
-  </mat-form-field>
+    </mat-form-field>
 </div>

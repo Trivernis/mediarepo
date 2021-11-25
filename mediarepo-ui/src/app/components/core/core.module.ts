@@ -1,5 +1,5 @@
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {NgModule} from "@angular/core";
+import {CommonModule} from "@angular/common";
 import {CoreComponent} from "./core.component";
 import {RepositoriesTabComponent} from "./repositories-tab/repositories-tab.component";
 import {FilesTabComponent} from "./files-tab/files-tab.component";
@@ -24,35 +24,35 @@ import {MatMenuModule} from "@angular/material/menu";
 
 
 @NgModule({
-  declarations: [
-    RepositoriesTabComponent,
-    CoreComponent,
-    FilesTabComponent,
-    FilesTabSidebarComponent,
-    ImportTabComponent,
-    ImportTabSidebarComponent,
-    FilesystemImportComponent,
-  ],
-  exports: [
-    CoreComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    MatTabsModule,
-    MatSidenavModule,
-    MatOptionModule,
-    MatSelectModule,
-    MatDividerModule,
-    MatProgressBarModule,
-    MatCheckboxModule,
-    ScrollingModule,
-    NgIconsModule.withIcons({...materialIcons}),
-    FlexModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatRippleModule,
-  ]
+    declarations: [
+        RepositoriesTabComponent,
+        CoreComponent,
+        FilesTabComponent,
+        FilesTabSidebarComponent,
+        ImportTabComponent,
+        ImportTabSidebarComponent,
+        FilesystemImportComponent,
+    ],
+    exports: [
+        CoreComponent
+    ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        MatTabsModule,
+        MatSidenavModule,
+        MatOptionModule,
+        MatSelectModule,
+        MatDividerModule,
+        MatProgressBarModule,
+        MatCheckboxModule,
+        ScrollingModule,
+        NgIconsModule.withIcons({...materialIcons}),
+        FlexModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatRippleModule,
+    ]
 })
 export class CoreModule {
 }

@@ -1,13 +1,13 @@
 <div id="content">
-  <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)">
-    <mat-tab label="Repositories">
-      <app-repositories-tab></app-repositories-tab>
-    </mat-tab>
-    <mat-tab *ngIf="this.selectedRepository" label="Files">
-      <app-files-tab></app-files-tab>
-    </mat-tab>
-    <mat-tab *ngIf="this.selectedRepository" label="Import">
-      <app-import-tab></app-import-tab>
-    </mat-tab>
-  </mat-tab-group>
+    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)">
+        <mat-tab label="Repositories">
+            <app-repositories-tab></app-repositories-tab>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedRepository" label="Files">
+            <app-files-tab></app-files-tab>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedRepository" label="Import">
+            <app-import-tab></app-import-tab>
+        </mat-tab>
+    </mat-tab-group>
 </div>

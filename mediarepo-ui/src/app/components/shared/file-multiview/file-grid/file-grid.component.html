@@ -1,18 +1,19 @@
 <div class="file-gallery-inner">
-  <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="250" maxBufferPx="2000"
-                               minBufferPx="500">
-    <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
-      <div class="file-row">
-        <app-file-grid-entry
-          (clickEvent)="setSelectedFile($event.gridEntry)" (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
-          (dblClickEvent)="fileOpenEvent.emit($event.gridEntry.file)"
-          *ngFor="let gridEntry of rowEntry"
-          [gridEntry]="gridEntry"></app-file-grid-entry>
-      </div>
-    </div>
-  </cdk-virtual-scroll-viewport>
+    <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="250" maxBufferPx="2000"
+                                 minBufferPx="500">
+        <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
+            <div class="file-row">
+                <app-file-grid-entry
+                    (clickEvent)="setSelectedFile($event.gridEntry)"
+                    (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
+                    (dblClickEvent)="fileOpenEvent.emit($event.gridEntry.file)"
+                    *ngFor="let gridEntry of rowEntry"
+                    [gridEntry]="gridEntry"></app-file-grid-entry>
+            </div>
+        </div>
+    </cdk-virtual-scroll-viewport>
 
 </div>
 <app-file-context-menu #fileContextMenu>
-  <button (click)="this.regenerateThumbnail(fileContextMenu.file)" mat-menu-item>Regenerate thumbnail</button>
+    <button (click)="this.regenerateThumbnail(fileContextMenu.file)" mat-menu-item>Regenerate thumbnail</button>
 </app-file-context-menu>

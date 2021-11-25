@@ -4,65 +4,65 @@ import {File} from "../../models/File";
 
 export class FileHelper {
 
-  /**
-   * Opens a dialog to get a download location for the given file
-   * @param {File} file
-   */
-  public static async getFileDownloadLocation(file: File): Promise<string | undefined> {
-    let extension;
+    /**
+     * Opens a dialog to get a download location for the given file
+     * @param {File} file
+     */
+    public static async getFileDownloadLocation(file: File): Promise<string | undefined> {
+        let extension;
 
-    if (file.mime_type) {
-      extension = FileHelper.getExtensionForMime(file.mime_type);
+        if (file.mime_type) {
+            extension = FileHelper.getExtensionForMime(file.mime_type);
+        }
+        const downloadDirectory = await downloadDir();
+        const suggestionPath = downloadDirectory + file.hash + "." + extension;
+
+        return await dialog.save({
+            defaultPath: suggestionPath,
+            filters: [{
+                name: file.mime_type ?? "All",
+                extensions: [extension ?? "*"]
+            }, {name: "All", extensions: ["*"]}]
+        })
     }
-    const downloadDirectory = await downloadDir();
-    const suggestionPath = downloadDirectory + file.hash + "." + extension;
 
-    return await dialog.save({
-      defaultPath: suggestionPath,
-      filters: [{
-        name: file.mime_type ?? "All",
-        extensions: [extension ?? "*"]
-      }, {name: "All", extensions: ["*"]}]
-    })
-  }
+    /**
+     * Parses a mime into its two components
+     * @param {string | undefined} mimeType
+     * @returns {[string, string] | undefined}
+     */
+    public static parseMime(mimeType: string | undefined): [string, string] | undefined {
+        if (!mimeType) {
+            return undefined;
+        }
+        let mimeParts = mimeType.split("/");
+        if (mimeParts.length < 2) {
+            return undefined;
+        }
+        const type = mimeParts[0];
+        const subtype = mimeParts[1];
 
-  /**
-   * Parses a mime into its two components
-   * @param {string | undefined} mimeType
-   * @returns {[string, string] | undefined}
-   */
-  public static parseMime(mimeType: string | undefined): [string, string] | undefined {
-    if (!mimeType) {
-      return undefined;
+        return [type, subtype];
     }
-    let mimeParts = mimeType.split("/");
-    if (mimeParts.length < 2) {
-      return undefined;
+
+    /**
+     * Returns the extension for a mime type
+     * @param {string} mime
+     * @returns {string | undefined}
+     * @private
+     */
+    public static getExtensionForMime(mime: string): string | undefined {
+        let parts = mime.split("/");
+
+        if (parts.length === 2) {
+            const type = parts[0];
+            const subtype = parts[1];
+            return FileHelper.convertMimeSubtypeToExtension(subtype);
+        }
+        return undefined;
     }
-    const type = mimeParts[0];
-    const subtype = mimeParts[1];
 
-    return [type, subtype];
-  }
-
-  /**
-   * Returns the extension for a mime type
-   * @param {string} mime
-   * @returns {string | undefined}
-   * @private
-   */
-  public static getExtensionForMime(mime: string): string | undefined {
-    let parts = mime.split("/");
-
-    if (parts.length === 2) {
-      const type = parts[0];
-      const subtype = parts[1];
-      return FileHelper.convertMimeSubtypeToExtension(subtype);
+    private static convertMimeSubtypeToExtension(subtype: string): string {
+        return subtype;
     }
-    return undefined;
-  }
-
-  private static convertMimeSubtypeToExtension(subtype: string): string {
-    return subtype;
-  }
 }
