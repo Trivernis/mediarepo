@@ -13,13 +13,14 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {MatTabsModule} from "@angular/material/tabs";
 import {FlexModule} from "@angular/flex-layout";
-import {MatOptionModule} from "@angular/material/core";
+import {MatOptionModule, MatRippleModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {SharedModule} from "../shared/shared.module";
 import {MatDividerModule} from "@angular/material/divider";
 import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
+import {MatMenuModule} from "@angular/material/menu";
 
 
 @NgModule({
@@ -49,6 +50,8 @@ import * as materialIcons from "@ng-icons/material-icons";
     NgIconsModule.withIcons({...materialIcons}),
     FlexModule,
     MatButtonModule,
+    MatMenuModule,
+    MatRippleModule,
   ]
 })
 export class CoreModule {

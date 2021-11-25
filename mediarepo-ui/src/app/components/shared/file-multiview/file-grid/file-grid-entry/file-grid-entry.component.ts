@@ -31,7 +31,7 @@ export class FileGridEntryComponent implements OnInit, OnChanges {
   private cachedFile: File | undefined;
   private urlSetTimeout: number | undefined;
 
-  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  constructor(private fileService: FileService) {
   }
 
   async ngOnInit() {

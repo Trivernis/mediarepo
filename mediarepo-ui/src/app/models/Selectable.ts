@@ -9,8 +9,4 @@ export class Selectable<T> {
   public unselect() {
     this.selected = false;
   }
-
-  public toggle() {
-    this.selected = !this.selected;
-  }
 }

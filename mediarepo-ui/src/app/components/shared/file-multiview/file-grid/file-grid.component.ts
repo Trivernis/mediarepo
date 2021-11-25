@@ -68,8 +68,6 @@ export class FileGridComponent implements OnChanges, OnInit {
    * @param {FileGridEntryComponent} clickedEntry
    */
   setSelectedFile(clickedEntry: GridEntry) {
-    const previousSelectionSize = this.selectedEntries.length;
-
     if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
       this.selectedEntries.forEach(entry => {
         if (entry !== clickedEntry) entry.selected = false

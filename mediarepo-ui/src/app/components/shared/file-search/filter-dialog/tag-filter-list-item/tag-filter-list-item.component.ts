@@ -29,7 +29,7 @@ export class TagFilterListItemComponent implements OnChanges {
 
   public selectedIndices: number[] = [];
 
-  constructor(private changeDetector: ChangeDetectorRef) {
+  constructor() {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
