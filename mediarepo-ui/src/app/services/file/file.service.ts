@@ -4,13 +4,10 @@ import {File} from "../../models/File";
 import {invoke} from "@tauri-apps/api/tauri";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {Thumbnail} from "../../models/Thumbnail";
-import {TagQuery} from "../../models/TagQuery";
 import {SortKey} from "../../models/SortKey";
 import {RepositoryService} from "../repository/repository.service";
 import {FilterExpression} from "../../models/FilterExpression";
-import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs/operators";
-import {http} from "@tauri-apps/api";
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +20,6 @@ export class FileService {
   constructor(
     @Inject(DomSanitizer) private sanitizer: DomSanitizer,
     private repoService: RepositoryService,
-    private http: HttpClient,
   ) {
     repoService.selectedRepository.subscribe(_ => this.clearCache());
   }

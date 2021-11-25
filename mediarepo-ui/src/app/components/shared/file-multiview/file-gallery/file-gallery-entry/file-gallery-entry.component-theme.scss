@@ -1,0 +1,27 @@
+@use 'sass:map';
+@use '../../../../../../../node_modules/@angular/material/index' as mat;
+
+@mixin color($theme) {
+  $color-config: mat.get-color-config($theme);
+  $primary-palette: map.get($color-config, 'primary');
+
+  div.image-wrapper.selected {
+    background-color: mat.get-color-from-palette($primary-palette, 'darker');
+  }
+}
+
+@mixin typography($theme) {
+}
+
+@mixin theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  @if $color-config != null {
+    @include color($theme);
+  }
+
+  $typography-config: mat.get-typography-config($theme);
+  @if $typography-config != null {
+    @include typography($theme);
+  }
+}
+
