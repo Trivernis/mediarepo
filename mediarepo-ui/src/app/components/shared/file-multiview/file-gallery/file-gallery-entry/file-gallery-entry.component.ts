@@ -1,6 +1,7 @@
 import {
   Component,
-  EventEmitter, Inject,
+  EventEmitter,
+  Inject,
   Input,
   OnChanges,
   OnInit,
@@ -27,7 +28,8 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   private cachedFile: File | undefined;
   private urlSetTimeout: number | undefined;
 
-  constructor(@Inject(DomSanitizer) private sanitizer: DomSanitizer, private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  constructor(@Inject(
+    DomSanitizer) private sanitizer: DomSanitizer, private fileService: FileService, private errorBroker: ErrorBrokerService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -45,6 +47,8 @@ export class FileGalleryEntryComponent implements OnInit, OnChanges {
   private setImageDelayed() {
     this.contentUrl = undefined;
     clearTimeout(this.urlSetTimeout);
-    this.urlSetTimeout = setTimeout(() => this.contentUrl = this.fileService.buildThumbnailUrl(this.file.data, 250, 250), 200);
+    this.urlSetTimeout = setTimeout(
+      () => this.contentUrl = this.fileService.buildThumbnailUrl(this.file.data,
+        250, 250), 200);
   }
 }

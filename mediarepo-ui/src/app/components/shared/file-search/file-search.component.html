@@ -9,8 +9,9 @@
     <ng-icon name="mat-delete-sweep"></ng-icon>
   </button>
 </div>
-<app-tag-input class="full-width" [allowNegation]="true" [availableTags]="getValidSearchTags()" (tagAdded)="addSearchTag($event); searchForFiles()">
-  <button mat-button class="filter-dialog-button" (click)="openFilterDialog()">
+<app-tag-input (tagAdded)="addSearchTag($event); searchForFiles()" [allowNegation]="true" [availableTags]="getValidSearchTags()"
+               class="full-width">
+  <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>
     <ng-icon name="mat-filter-alt"></ng-icon>
   </button>
 </app-tag-input>

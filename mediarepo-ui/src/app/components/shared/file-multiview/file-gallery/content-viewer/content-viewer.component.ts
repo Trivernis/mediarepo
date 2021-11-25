@@ -1,11 +1,11 @@
 import {
-  AfterContentInit, AfterViewInit,
+  AfterViewInit,
   Component,
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
-  SimpleChanges, ViewChild
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {File} from "../../../../../models/File";
@@ -43,9 +43,10 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
     }
   }
 
-  public async ngOnChanges(changes:SimpleChanges) {
+  public async ngOnChanges(changes: SimpleChanges) {
     if (changes["file"]) {
-      if (["audio", "video"].includes(this.getContentType()) && this.busyIndicator) {
+      if (["audio", "video"].includes(
+        this.getContentType()) && this.busyIndicator) {
         await this.loadBlobUrl();
       } else {
         this.contentUrl = this.fileService.buildContentUrl(this.file);

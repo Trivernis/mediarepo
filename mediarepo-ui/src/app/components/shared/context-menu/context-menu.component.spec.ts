@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ContextMenuComponent } from './context-menu.component';
+import {ContextMenuComponent} from './context-menu.component';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -8,9 +8,9 @@ describe('ContextMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ContextMenuComponent ]
-    })
-    .compileComponents();
+        declarations: [ContextMenuComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

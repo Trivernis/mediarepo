@@ -1,7 +1,4 @@
-import {
-  Component,
-  ViewChild,
-} from '@angular/core';
+import {Component, ViewChild,} from '@angular/core';
 import {MatMenuTrigger} from "@angular/material/menu";
 
 @Component({

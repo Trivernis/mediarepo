@@ -1,16 +1,18 @@
-<div *ngIf="expression.data.filter_type === 'Query'" (click)="onSelect()">
+<div (click)="onSelect()" *ngIf="expression.data.filter_type === 'Query'">
   {{expression.data.getDisplayName()}}
-  <button mat-button class="remove-button" (click)="this.removeClicked.emit(this)">
-        <ng-icon name="mat-remove"></ng-icon>
-      </button>
+  <button (click)="this.removeClicked.emit(this)" class="remove-button" mat-button>
+    <ng-icon name="mat-remove"></ng-icon>
+  </button>
 </div>
 <div *ngIf="expression.data.filter_type === 'OrExpression'">
   <mat-list>
-    <mat-list-item class="or-filter-list-item" *ngFor="let entry of enumerate(this.expression.data.queryList())"
-                   (mousedown)="$event.button === 0 && this.selectInnerIndex(entry[0])" [class.selected]="this.selectedIndices.includes(entry[0])">
-      <span class="or-span" *ngIf="entry[0] > 0">OR</span>
+    <mat-list-item (mousedown)="$event.button === 0 && this.selectInnerIndex(entry[0])" *ngFor="let entry of enumerate(this.expression.data.queryList())"
+                   [class.selected]="this.selectedIndices.includes(entry[0])"
+                   class="or-filter-list-item">
+      <span *ngIf="entry[0] > 0" class="or-span">OR</span>
       {{entry[1].getNormalizedTag()}}
-      <button mat-button class="remove-button-inner-list" (mousedown)="$event.button === 0 && this.removeOrExpression(entry[0])">
+      <button (mousedown)="$event.button === 0 && this.removeOrExpression(entry[0])" class="remove-button-inner-list"
+              mat-button>
         <ng-icon name="mat-remove"></ng-icon>
       </button>
     </mat-list-item>

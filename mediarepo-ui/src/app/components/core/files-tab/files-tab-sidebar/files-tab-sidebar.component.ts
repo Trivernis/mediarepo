@@ -75,10 +75,15 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
   }
 
   async showFileDetails(files: File[]) {
-    this.tagsOfSelection = await this.tagService.getTagsForFiles(files.map(f => f.hash))
+    this.tagsOfSelection = await this.tagService.getTagsForFiles(
+      files.map(f => f.hash))
     this.tagsOfSelection = this.tagsOfSelection.sort(
       (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
     this.tags = this.tagsOfSelection;
+  }
+
+  public async copyToClipboard(text: string) {
+    await clipboard.writeText(text);
   }
 
   private async refreshFileSelection() {
@@ -99,9 +104,5 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
         (a, b) => a.getNormalizedOutput()
           .localeCompare(b.getNormalizedOutput()));
     }
-  }
-
-  public async copyToClipboard(text: string) {
-      await clipboard.writeText(text);
   }
 }

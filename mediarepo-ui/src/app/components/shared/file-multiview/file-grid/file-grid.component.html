@@ -4,9 +4,9 @@
     <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
       <div class="file-row">
         <app-file-grid-entry
-          *ngFor="let gridEntry of rowEntry" (clickEvent)="setSelectedFile($event.gridEntry)"
+          (clickEvent)="setSelectedFile($event.gridEntry)" (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
           (dblClickEvent)="fileOpenEvent.emit($event.gridEntry.file)"
-          (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
+          *ngFor="let gridEntry of rowEntry"
           [gridEntry]="gridEntry"></app-file-grid-entry>
       </div>
     </div>
@@ -14,5 +14,5 @@
 
 </div>
 <app-file-context-menu #fileContextMenu>
-  <button mat-menu-item (click)="this.regenerateThumbnail(fileContextMenu.file)">Regenerate thumbnail</button>
+  <button (click)="this.regenerateThumbnail(fileContextMenu.file)" mat-menu-item>Regenerate thumbnail</button>
 </app-file-context-menu>

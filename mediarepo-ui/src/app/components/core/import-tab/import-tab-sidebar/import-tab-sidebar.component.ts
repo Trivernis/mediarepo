@@ -1,11 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
-import {MatTabGroup} from "@angular/material/tabs";
+import {Component, EventEmitter, Output} from '@angular/core';
 import {File} from "../../../../models/File";
 
 @Component({
@@ -18,5 +11,6 @@ export class ImportTabSidebarComponent {
   @Output() fileImported = new EventEmitter<File>();
   @Output() importFinished = new EventEmitter<void>();
 
-  constructor() { }
+  constructor() {
+  }
 }

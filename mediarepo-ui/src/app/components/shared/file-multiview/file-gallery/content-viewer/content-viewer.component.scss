@@ -8,10 +8,12 @@ app-image-viewer, app-video-viewer, app-audio-viewer {
   height: 100%;
   display: flex;
   flex-direction: column;
+
   button {
     margin: 1em 0 auto;
     align-self: center;
   }
+
   span {
     margin: auto 0 0;
     align-self: center;

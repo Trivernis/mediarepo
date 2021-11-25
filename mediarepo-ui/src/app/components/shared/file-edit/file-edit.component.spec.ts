@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileEditComponent } from './file-edit.component';
+import {FileEditComponent} from './file-edit.component';
 
 describe('FileEditComponent', () => {
   let component: FileEditComponent;
@@ -8,9 +8,9 @@ describe('FileEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileEditComponent ]
-    })
-    .compileComponents();
+        declarations: [FileEditComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

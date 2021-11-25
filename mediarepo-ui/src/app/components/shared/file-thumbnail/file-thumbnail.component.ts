@@ -1,4 +1,10 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {File} from "../../../models/File";
 import {FileService} from "../../../services/file/file.service";
 import {FileHelper} from "../../../services/file/file.helper";

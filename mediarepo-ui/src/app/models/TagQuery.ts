@@ -1,5 +1,3 @@
-import {SingleFilterExpression} from "./FilterExpression";
-
 export class TagQuery {
   constructor(public tag: string, public negate: boolean) {
   }

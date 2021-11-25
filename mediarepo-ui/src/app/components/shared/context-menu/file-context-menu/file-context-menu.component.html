@@ -1,5 +1,5 @@
 <app-context-menu #contextMenu>
-  <button mat-menu-item (click)="this.copyFileHash()">Copy Hash</button>
-  <button mat-menu-item (click)="this.exportFile()">Save As...</button>
+  <button (click)="this.copyFileHash()" mat-menu-item>Copy Hash</button>
+  <button (click)="this.exportFile()" mat-menu-item>Save As...</button>
   <ng-content></ng-content>
 </app-context-menu>

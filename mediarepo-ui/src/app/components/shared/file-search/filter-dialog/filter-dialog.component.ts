@@ -35,6 +35,24 @@ export class FilterDialogComponent {
     this.availableTags = data.availableTags ?? [];
   }
 
+  private static checkFiltersEqual(l: FilterExpression, r: FilterExpression): boolean {
+    const lTags = l.queryList().map(q => q.getNormalizedTag()).sort();
+    const rTags = r.queryList().map(q => q.getNormalizedTag()).sort();
+    let match = false;
+
+    if (lTags.length == rTags.length) {
+      match = true;
+
+      for (const tag of lTags) {
+        match = rTags.includes(tag);
+        if (!match) {
+          break;
+        }
+      }
+    }
+    return match;
+  }
+
   public cancelFilter(): void {
     this.dialogRef.close();
   }
@@ -97,7 +115,9 @@ export class FilterDialogComponent {
 
   public convertSelectionToAndExpression(): void {
     for (const query of this.selectedQueries) {
-      this.filters.push(new Selectable<FilterExpression>(new SingleFilterExpression(query), false));
+      this.filters.push(
+        new Selectable<FilterExpression>(new SingleFilterExpression(query),
+          false));
     }
     this.removeFilterDuplicates();
     this.unselectAll();
@@ -123,32 +143,17 @@ export class FilterDialogComponent {
       if (filterItem.data.filter_type == "OrExpression") {
         (filterItem.data as OrFilterExpression).removeDuplicates();
       }
-      if (newFilters.findIndex(f => FilterDialogComponent.checkFiltersEqual(f.data, filterItem.data)) < 0) {
+      if (newFilters.findIndex(
+        f => FilterDialogComponent.checkFiltersEqual(f.data,
+          filterItem.data)) < 0) {
         if (filterItem.data.filter_type == "OrExpression" && filterItem.data.queryList().length === 1) {
-          filterItem.data = new SingleFilterExpression(filterItem.data.queryList()[0]);
+          filterItem.data = new SingleFilterExpression(
+            filterItem.data.queryList()[0]);
         }
         newFilters.push(filterItem);
       }
     }
     this.filters = newFilters;
-  }
-
-  private static checkFiltersEqual(l: FilterExpression, r: FilterExpression): boolean {
-    const lTags = l.queryList().map(q => q.getNormalizedTag()).sort();
-    const rTags = r.queryList().map(q => q.getNormalizedTag()).sort();
-    let match = false;
-
-    if (lTags.length == rTags.length) {
-      match = true;
-
-      for (const tag of lTags) {
-        match = rTags.includes(tag);
-        if (!match) {
-          break;
-        }
-      }
-    }
-    return match;
   }
 
   @HostListener("window:keydown", ["$event"])

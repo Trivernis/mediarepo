@@ -1,23 +1,25 @@
 import {
-  Component, ElementRef,
+  Component,
+  ElementRef,
   EventEmitter,
-  Input, OnChanges,
-  OnInit,
-  Output, SimpleChanges,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Tag} from "../../../../models/Tag";
 import {FormControl} from "@angular/forms";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
-import {debounceTime, delay, map, startWith} from "rxjs/operators";
+import {debounceTime, map, startWith} from "rxjs/operators";
 
 @Component({
   selector: 'app-tag-input',
   templateUrl: './tag-input.component.html',
   styleUrls: ['./tag-input.component.scss']
 })
-export class TagInputComponent implements OnChanges{
+export class TagInputComponent implements OnChanges {
 
   @Input() availableTags: Tag[] = [];
   @Input() allowNegation: boolean = false;
@@ -30,16 +32,19 @@ export class TagInputComponent implements OnChanges{
   private tagsForAutocomplete: string[] = [];
 
   constructor() {
-    this.tagsForAutocomplete = this.availableTags.map(t => t.getNormalizedOutput());
+    this.tagsForAutocomplete = this.availableTags.map(
+      t => t.getNormalizedOutput());
     this.autosuggestTags = this.formControl.valueChanges.pipe(
       startWith(null),
       debounceTime(250),
-      map((tag: string | null) => tag ? this.filterSuggestionTag(tag) : this.tagsForAutocomplete.slice(0, 20)));
+      map((tag: string | null) => tag ? this.filterSuggestionTag(
+        tag) : this.tagsForAutocomplete.slice(0, 20)));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["availableTags"]) {
-      this.tagsForAutocomplete = this.availableTags.map(t => t.getNormalizedOutput());
+      this.tagsForAutocomplete = this.availableTags.map(
+        t => t.getNormalizedOutput());
     }
   }
 
@@ -63,11 +68,12 @@ export class TagInputComponent implements OnChanges{
   private filterSuggestionTag(tag: string) {
     let normalizedTag = this.normalizeTag(tag);
     const negated = normalizedTag.startsWith("-") && this.allowNegation;
-    normalizedTag = this.allowNegation? normalizedTag.replace(/^-/, "") : normalizedTag;
+    normalizedTag = this.allowNegation ? normalizedTag.replace(/^-/,
+      "") : normalizedTag;
 
     return this.tagsForAutocomplete.filter(
         t => t.includes(normalizedTag))
-      .map(t => negated ? "-" + t: t)
+      .map(t => negated ? "-" + t : t)
       .sort((l, r) => this.compareSuggestionTags(normalizedTag, l, r))
       .slice(0, 20);
   }
@@ -105,7 +111,7 @@ export class TagInputComponent implements OnChanges{
       return 1;
     } else if (l.length < r.length) {
       return -1;
-    }  else if (l.length > r.length) {
+    } else if (l.length > r.length) {
       return 1;
     } else {
       return l.localeCompare(r)

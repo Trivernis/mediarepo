@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BusyIndicatorComponent } from './busy-indicator.component';
+import {BusyIndicatorComponent} from './busy-indicator.component';
 
 describe('BusyIndicatorComponent', () => {
   let component: BusyIndicatorComponent;
@@ -8,9 +8,9 @@ describe('BusyIndicatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BusyIndicatorComponent ]
-    })
-    .compileComponents();
+        declarations: [BusyIndicatorComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

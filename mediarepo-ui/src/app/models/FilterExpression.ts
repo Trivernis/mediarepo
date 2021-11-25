@@ -15,7 +15,7 @@ export interface FilterExpression {
   queryList(): TagQuery[];
 }
 
-export class OrFilterExpression implements FilterExpression{
+export class OrFilterExpression implements FilterExpression {
   public filter_type: "OrExpression" = "OrExpression";
   public filter: TagQuery[] = [];
 
@@ -82,7 +82,8 @@ export class SingleFilterExpression implements FilterExpression {
   }
 
   public clone(): FilterExpression {
-    return new SingleFilterExpression(new TagQuery(this.filter.tag, this.filter.negate))
+    return new SingleFilterExpression(
+      new TagQuery(this.filter.tag, this.filter.negate))
   }
 
   public queryList(): TagQuery[] {

@@ -21,7 +21,8 @@
       </mat-form-field>
       <mat-form-field *ngIf="sortKey.sortType === 'Namespace'">
         <mat-label>Namespace Name</mat-label>
-        <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value" [value]="sortKey.namespaceName ?? ''" matInput
+        <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value"
+               [value]="sortKey.namespaceName ?? ''" matInput
                required>
       </mat-form-field>
       <div *ngIf="sortKey.sortType !== 'Namespace'" class="filler"></div>

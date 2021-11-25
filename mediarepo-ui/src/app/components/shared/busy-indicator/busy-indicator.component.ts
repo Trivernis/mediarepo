@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ProgressSpinnerMode} from "@angular/material/progress-spinner";
 
 @Component({
@@ -14,7 +14,8 @@ export class BusyIndicatorComponent {
   @Input() mode: ProgressSpinnerMode = "indeterminate";
   @Input() value: number | undefined;
 
-  constructor() { }
+  constructor() {
+  }
 
   public setBusy(busy: boolean) {
     this.busy = busy;

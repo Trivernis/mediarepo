@@ -20,8 +20,8 @@ export class CoreComponent implements OnInit {
   constructor(
     private tabService: TabService,
     private repoService: RepositoryService,
-    private tagService: TagService)
-  {}
+    private tagService: TagService) {
+  }
 
   public async ngOnInit(): Promise<void> {
     this.selectedRepository = this.repoService.selectedRepository.getValue();

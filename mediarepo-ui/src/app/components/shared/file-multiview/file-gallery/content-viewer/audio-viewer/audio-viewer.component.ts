@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
@@ -6,9 +6,10 @@ import {SafeResourceUrl} from "@angular/platform-browser";
   templateUrl: './audio-viewer.component.html',
   styleUrls: ['./audio-viewer.component.scss']
 })
-export class AudioViewerComponent  {
+export class AudioViewerComponent {
 
   @Input() blobUrl!: SafeResourceUrl;
 
-  constructor() { }
+  constructor() {
+  }
 }

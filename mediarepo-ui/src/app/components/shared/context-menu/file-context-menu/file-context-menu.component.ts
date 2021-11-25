@@ -1,10 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 import {File} from "../../../../models/File";
 import {ContextMenuComponent} from "../context-menu.component";
-import {clipboard, dialog} from "@tauri-apps/api";
+import {clipboard} from "@tauri-apps/api";
 import {FileService} from "../../../../services/file/file.service";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
-import {downloadDir} from "@tauri-apps/api/path";
 import {FileHelper} from "../../../../services/file/file.helper";
 
 @Component({
@@ -18,7 +17,8 @@ export class FileContextMenuComponent {
 
   @ViewChild("contextMenu") contextMenu!: ContextMenuComponent;
 
-  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) { }
+  constructor(private fileService: FileService, private errorBroker: ErrorBrokerService) {
+  }
 
   public onContextMenu(event: MouseEvent, file: File) {
     this.file = file;

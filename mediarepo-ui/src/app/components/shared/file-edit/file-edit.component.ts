@@ -1,5 +1,6 @@
 import {
-  Component, ElementRef,
+  Component,
+  ElementRef,
   Input,
   OnChanges,
   OnInit,
@@ -23,12 +24,10 @@ export class FileEditComponent implements OnInit, OnChanges {
   public tags: Tag[] = [];
 
   public allTags: Tag[] = [];
-  private fileTags: {[key: number]: Tag[]} = {};
-
   public editMode: string = "Toggle";
-
   @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
   @ViewChild("fileNameInput") fileNameInput!: ElementRef<HTMLInputElement>;
+  private fileTags: { [key: number]: Tag[] } = {};
 
   constructor(
     private tagService: TagService,
@@ -95,7 +94,8 @@ export class FileEditComponent implements OnInit, OnChanges {
       } else {
         removedTags.push(tag.id);
       }
-      this.fileTags[file.id] = await this.tagService.changeFileTags(file.id, addedTags, removedTags);
+      this.fileTags[file.id] = await this.tagService.changeFileTags(file.id,
+        addedTags, removedTags);
     }
     this.mapFileTagsToTagList();
     const index = this.tags.indexOf(tag);
@@ -126,7 +126,8 @@ export class FileEditComponent implements OnInit, OnChanges {
 
   private async loadFileTags() {
     for (const file of this.files) {
-      this.fileTags[file.id] = await this.tagService.getTagsForFiles([file.hash]);
+      this.fileTags[file.id] = await this.tagService.getTagsForFiles(
+        [file.hash]);
     }
     this.mapFileTagsToTagList();
   }
@@ -141,8 +142,10 @@ export class FileEditComponent implements OnInit, OnChanges {
     let tags: Tag[] = [];
     for (const file of this.files) {
       const fileTags = this.fileTags[file.id];
-      tags.push(...fileTags.filter(t => tags.findIndex(tag => tag.id === t.id) < 0));
+      tags.push(
+        ...fileTags.filter(t => tags.findIndex(tag => tag.id === t.id) < 0));
     }
-    this.tags = tags.sort((a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
+    this.tags = tags.sort(
+      (a, b) => a.getNormalizedOutput().localeCompare(b.getNormalizedOutput()));
   }
 }

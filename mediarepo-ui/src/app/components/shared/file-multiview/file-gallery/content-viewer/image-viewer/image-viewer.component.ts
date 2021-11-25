@@ -1,10 +1,9 @@
 import {
   Component,
-  ElementRef,
   HostListener,
-  Input, OnChanges,
-  OnInit, SimpleChanges,
-  ViewChild
+  Input,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import {CdkDragMove} from "@angular/cdk/drag-drop";
 import {SafeResourceUrl} from "@angular/platform-browser";
@@ -20,7 +19,8 @@ export class ImageViewerComponent implements OnChanges {
   public imagePosition = {x: 0, y: 0};
   public mouseInImageView = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes["imageUrl"]) {

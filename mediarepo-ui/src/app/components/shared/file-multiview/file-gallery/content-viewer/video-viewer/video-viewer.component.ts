@@ -1,7 +1,4 @@
-import {
-  Component,
-  Input,
-} from '@angular/core';
+import {Component, Input,} from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({

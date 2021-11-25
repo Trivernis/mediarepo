@@ -43,7 +43,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     private errorBroker: ErrorBrokerService,
     private fileService: FileService,
     public dialog: MatDialog
-  ) {}
+  ) {
+  }
 
   public async ngOnInit() {
     await this.searchForFiles();
@@ -74,7 +75,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
   }
 
   public getValidSearchTags(): Tag[] {
-    return this.availableTags.filter(t => this.filters.findIndex(f => f.partiallyEq(t.getNormalizedOutput())) < 0);
+    return this.availableTags.filter(t => this.filters.findIndex(
+      f => f.partiallyEq(t.getNormalizedOutput())) < 0);
   }
 
   public async removeAllSearchTags() {

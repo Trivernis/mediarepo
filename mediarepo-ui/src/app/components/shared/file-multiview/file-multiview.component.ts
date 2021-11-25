@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {File} from "../../../models/File";
 
 @Component({
@@ -17,7 +17,8 @@ export class FileMultiviewComponent {
   public selectedFiles: File[] = [];
   public preselectedFile: File | undefined;
 
-  constructor() { }
+  constructor() {
+  }
 
   public onFileSelect(files: File[]): void {
     this.selectedFiles = files;

@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {AppComponent} from "../../app.component";
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {RepositoryCardComponent} from "../core/repositories-tab/repository-card/repository-card.component";
 import {FileGridComponent} from "./file-multiview/file-grid/file-grid.component";
 import {FileGridEntryComponent} from "./file-multiview/file-grid/file-grid-entry/file-grid-entry.component";
@@ -58,7 +57,6 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import {AppRoutingModule} from "../../app-routing.module";
 import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
-
 
 
 @NgModule({
@@ -135,4 +133,5 @@ import * as materialIcons from "@ng-icons/material-icons";
     NgIconsModule.withIcons({...materialIcons}),
   ]
 })
-export class SharedModule { }
+export class SharedModule {
+}

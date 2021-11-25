@@ -92,6 +92,16 @@ export class FileGridComponent implements OnChanges, OnInit {
     this.fileSelectEvent.emit(this.selectedEntries.map(g => g.file));
   }
 
+  public adjustElementSizes(): void {
+    if (this.virtualScroll) {
+      this.virtualScroll.checkViewportSize();
+    }
+  }
+
+  public async regenerateThumbnail(file: File) {
+    await this.fileService.deleteThumbnails(file);
+  }
+
   private setPartitionedGridEntries() {
     this.partitionedGridEntries = [];
     let scrollToIndex = -1;
@@ -177,15 +187,5 @@ export class FileGridComponent implements OnChanges, OnInit {
         this.ctrlClicked = false;
         break;
     }
-  }
-
-  public adjustElementSizes(): void {
-    if (this.virtualScroll) {
-      this.virtualScroll.checkViewportSize();
-    }
-  }
-
-  public async regenerateThumbnail(file: File) {
-    await this.fileService.deleteThumbnails(file);
   }
 }

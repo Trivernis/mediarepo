@@ -62,28 +62,14 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     }
   }
 
-  private scrollToSelection(): void {
-    if (this.selectedFile) {
-      const selectedIndex = this.entries.indexOf(this.selectedFile);
-      const viewportSize = this.virtualScroll.getViewportSize();
-      const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
-      this.virtualScroll.scrollToIndex(
-        Math.max(selectedIndex - indexAdjustment, 0), "smooth");
-
-      if (selectedIndex > indexAdjustment) {
-        this.virtualScroll.scrollToOffset(
-          this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
-      }
-    }
-  }
-
   /**
    * Loads the content url of the selected file
    * @returns {Promise<void>}
    */
   async loadSelectedFile() {
     if (this.selectedFile) {
-      this.fileContentUrl = this.fileService.buildContentUrl(this.selectedFile.data)
+      this.fileContentUrl = this.fileService.buildContentUrl(
+        this.selectedFile.data)
     }
   }
 
@@ -140,6 +126,27 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     }
   }
 
+  public adjustElementSizes(): void {
+    if (this.virtualScroll) {
+      this.virtualScroll.checkViewportSize();
+      this.scrollToSelection();
+    }
+  }
+
+  private scrollToSelection(): void {
+    if (this.selectedFile) {
+      const selectedIndex = this.entries.indexOf(this.selectedFile);
+      const viewportSize = this.virtualScroll.getViewportSize();
+      const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
+      this.virtualScroll.scrollToIndex(
+        Math.max(selectedIndex - indexAdjustment, 0), "smooth");
+
+      if (selectedIndex > indexAdjustment) {
+        this.virtualScroll.scrollToOffset(
+          this.virtualScroll.measureScrollOffset("left") + 130, "smooth");
+      }
+    }
+  }
 
   @HostListener("window:keydown", ["$event"])
   private async handleKeydownEvent(event: KeyboardEvent) {
@@ -162,12 +169,5 @@ export class FileGalleryComponent implements OnChanges, OnInit {
       }
     }
     return undefined;
-  }
-
-  public adjustElementSizes(): void {
-    if (this.virtualScroll) {
-      this.virtualScroll.checkViewportSize();
-      this.scrollToSelection();
-    }
   }
 }

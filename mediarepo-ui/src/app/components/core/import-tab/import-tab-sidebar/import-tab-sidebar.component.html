@@ -12,7 +12,8 @@
           <mat-divider></mat-divider>
         </div>
         <div class="import-configuration" fxFlex fxFlexFill>
-          <app-filesystem-import (fileImported)="this.fileImported.emit($event)" (importFinished)="importFinished.emit()"></app-filesystem-import>
+          <app-filesystem-import (fileImported)="this.fileImported.emit($event)"
+                                 (importFinished)="importFinished.emit()"></app-filesystem-import>
         </div>
       </div>
     </mat-tab>

@@ -27,6 +27,7 @@ cdk-virtual-scroll-viewport {
   height: 100%;
   width: 100%;
   overflow-y: auto;
+
   ::ng-deep .cdk-virtual-scroll-content-wrapper {
     width: 100%;
   }
@@ -56,6 +57,7 @@ cdk-virtual-scroll-viewport {
 .tag-input-field {
   display: flex;
   flex-direction: row;
+
   .add-tag-button {
     width: 65px;
     height: 65px;

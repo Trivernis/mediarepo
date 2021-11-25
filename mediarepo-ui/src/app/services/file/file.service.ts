@@ -15,7 +15,7 @@ import {FilterExpression} from "../../models/FilterExpression";
 export class FileService {
 
   displayedFiles = new BehaviorSubject<File[]>([]);
-  thumbnailCache: {[key: number]: Thumbnail[]} = {};
+  thumbnailCache: { [key: number]: Thumbnail[] } = {};
 
   constructor(
     @Inject(DomSanitizer) private sanitizer: DomSanitizer,
@@ -41,7 +41,8 @@ export class FileService {
   }
 
   public async updateFileName(file: File, name: string): Promise<File> {
-    return await invoke<File>("plugin:mediarepo|update_file_name", {id: file.id, name})
+    return await invoke<File>("plugin:mediarepo|update_file_name",
+      {id: file.id, name})
   }
 
   /**
@@ -52,7 +53,8 @@ export class FileService {
    * @returns {SafeResourceUrl}
    */
   public buildThumbnailUrl(file: File, height: number, width: number): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`thumb://${file.hash}?width=${250}&height=${250}`)
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `thumb://${file.hash}?width=${250}&height=${250}`)
   }
 
   /**
@@ -61,7 +63,8 @@ export class FileService {
    * @returns {SafeResourceUrl}
    */
   public buildContentUrl(file: File): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`content://${file.hash}`)
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `content://${file.hash}`)
   }
 
   /**
@@ -71,7 +74,8 @@ export class FileService {
    * @returns {Promise<void>}
    */
   public async saveFile(file: File, targetPath: string) {
-    await invoke("plugin:mediarepo|save_file_locally", {id: file.id, path: targetPath})
+    await invoke("plugin:mediarepo|save_file_locally",
+      {id: file.id, path: targetPath})
   }
 
   /**
@@ -89,7 +93,8 @@ export class FileService {
    * @returns {Promise<SafeResourceUrl>}
    */
   public async readFile(file: File): Promise<SafeResourceUrl> {
-    const data = await invoke<number[]>("plugin:mediarepo|read_file", {hash: file.hash, mimeType: file.mime_type});
+    const data = await invoke<number[]>("plugin:mediarepo|read_file",
+      {hash: file.hash, mimeType: file.mime_type});
     const blob = new Blob([new Uint8Array(data)], {type: file.mime_type});
     const url = URL?.createObjectURL(blob);
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);

@@ -1,26 +1,26 @@
 <h1 mat-dialog-title>Filters</h1>
-<div mat-dialog-content class="filter-dialog-content">
+<div class="filter-dialog-content" mat-dialog-content>
   <div class="filter-dialog-list">
     <mat-list class="mat-filter-dialog-list">
-      <mat-list-item class="filter-list-item" *ngFor="let expression of filters" [class.selected]="expression.selected">
-        <app-tag-filter-list-item (querySelect)="this.addToSelection($event)"
+      <mat-list-item *ngFor="let expression of filters" [class.selected]="expression.selected" class="filter-list-item">
+        <app-tag-filter-list-item (contextmenu)="contextMenu.onContextMenu($event)"
+                                  (querySelect)="this.addToSelection($event)"
                                   (queryUnselect)="this.removeFromSelection($event)"
                                   (removeClicked)="this.removeFilter($event)"
-                                  (contextmenu)="contextMenu.onContextMenu($event)"
                                   [expression]="expression"></app-tag-filter-list-item>
       </mat-list-item>
     </mat-list>
   </div>
   <mat-divider></mat-divider>
-  <app-tag-input class="tag-input" [allowNegation]="true" [availableTags]="this.availableTags"
-                 (tagAdded)="this.addFilter($event)"></app-tag-input>
+  <app-tag-input (tagAdded)="this.addFilter($event)" [allowNegation]="true" [availableTags]="this.availableTags"
+                 class="tag-input"></app-tag-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
-  <button mat-flat-button color="primary" (click)="confirmFilter()">Filter</button>
-  <button mat-stroked-button color="accent" (click)="cancelFilter()">Cancel</button>
+  <button (click)="confirmFilter()" color="primary" mat-flat-button>Filter</button>
+  <button (click)="cancelFilter()" color="accent" mat-stroked-button>Cancel</button>
 </div>
 <app-context-menu #contextMenu>
-  <button mat-menu-item (click)="this.convertSelectionToOrExpression()">Copy to OR-Expression</button>
-  <button mat-menu-item (click)="this.convertSelectionToAndExpression()">Copy to AND-Expression</button>
-  <button mat-menu-item (click)="this.invertSelection()">Invert</button>
+  <button (click)="this.convertSelectionToOrExpression()" mat-menu-item>Copy to OR-Expression</button>
+  <button (click)="this.convertSelectionToAndExpression()" mat-menu-item>Copy to AND-Expression</button>
+  <button (click)="this.invertSelection()" mat-menu-item>Invert</button>
 </app-context-menu>

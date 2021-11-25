@@ -3,14 +3,14 @@
     <h1>Edit File</h1>
     <mat-form-field *ngIf="this.files.length === 1" appearance="fill">
       <mat-label>Name</mat-label>
-      <input #fileNameInput matInput (focusout)="this.changeFileName(fileNameInput.value)">
+      <input #fileNameInput (focusout)="this.changeFileName(fileNameInput.value)" matInput>
     </mat-form-field>
   </div>
-  <div class="tag-edit-list" fxFlex fxFlexFill fxFlexAlign="start">
+  <div class="tag-edit-list" fxFlex fxFlexAlign="start" fxFlexFill>
     <cdk-virtual-scroll-viewport #tagScroll itemSize="50" maxBufferPx="2000" minBufferPx="1000">
-      <div class="editable-tag" *cdkVirtualFor="let tag of tags">
+      <div *cdkVirtualFor="let tag of tags" class="editable-tag">
         <app-tag-item [tag]="tag"></app-tag-item>
-        <button class="tag-remove-button" mat-icon-button (click)="removeTag(tag)">
+        <button (click)="removeTag(tag)" class="tag-remove-button" mat-icon-button>
           <ng-icon name="mat-remove"></ng-icon>
         </button>
       </div>
@@ -19,14 +19,15 @@
   <mat-divider fxFlex="1em"></mat-divider>
   <div class="tag-input" fxFlex="200px">
     <div class="tag-input-field">
-      <app-tag-input [availableTags]="this.allTags" [allowInvalid]="true" (tagAdded)="this.editTag($event)"></app-tag-input>
-      <button mat-icon-button class="add-tag-button">
+      <app-tag-input (tagAdded)="this.editTag($event)" [allowInvalid]="true"
+                     [availableTags]="this.allTags"></app-tag-input>
+      <button class="add-tag-button" mat-icon-button>
         <ng-icon *ngIf="editMode === 'Toggle'" name="mat-change-circle"></ng-icon>
         <ng-icon *ngIf="editMode === 'Add'" name="mat-add-circle"></ng-icon>
         <ng-icon *ngIf="editMode === 'Remove'" name="mat-remove-circle"></ng-icon>
       </button>
     </div>
-    <mat-form-field class="form-field-mode" appearance="fill">
+    <mat-form-field appearance="fill" class="form-field-mode">
       <mat-label>Mode</mat-label>
       <mat-select #modeSelect [(value)]="editMode">
         <mat-option value="Toggle">Toggle</mat-option>

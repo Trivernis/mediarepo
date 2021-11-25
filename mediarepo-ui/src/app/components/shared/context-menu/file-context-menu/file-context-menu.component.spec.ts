@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileContextMenuComponent } from './file-context-menu.component';
+import {FileContextMenuComponent} from './file-context-menu.component';
 
 describe('FileContextMenuComponent', () => {
   let component: FileContextMenuComponent;
@@ -8,9 +8,9 @@ describe('FileContextMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileContextMenuComponent ]
-    })
-    .compileComponents();
+        declarations: [FileContextMenuComponent]
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

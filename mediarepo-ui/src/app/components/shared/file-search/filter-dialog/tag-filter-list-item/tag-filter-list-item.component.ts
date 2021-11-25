@@ -2,14 +2,15 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
-  Input, OnChanges,
-  OnInit,
-  Output, SimpleChanges
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {
   FilterExpression,
-  OrFilterExpression, SingleFilterExpression
+  OrFilterExpression,
+  SingleFilterExpression
 } from "../../../../../models/FilterExpression";
 import {TagQuery} from "../../../../../models/TagQuery";
 import {Selectable} from "../../../../../models/Selectable";
@@ -28,7 +29,8 @@ export class TagFilterListItemComponent implements OnChanges {
 
   public selectedIndices: number[] = [];
 
-  constructor(private changeDetector: ChangeDetectorRef) { }
+  constructor(private changeDetector: ChangeDetectorRef) {
+  }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes["expression"]) {
