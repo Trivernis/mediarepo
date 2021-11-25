@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '~@angular/material' as mat;
+@use '../../../../../../node_modules/@angular/material/index' as mat;
 
 @mixin color($theme) {
   $color-config: mat.get-color-config($theme);

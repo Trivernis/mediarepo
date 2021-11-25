@@ -6,16 +6,7 @@
   </mat-drawer>
   <mat-drawer-content>
     <app-busy-indicator [busy]="contentLoading" [blurBackground]="true">
-      <app-file-grid (fileDblClickEvent)="openGallery($event)" (fileMultiselectEvent)="onFileMultiSelect($event)"
-                     (fileSelectEvent)="onFileSelect($event)"
-                     *ngIf="!this.showGallery"
-                     [files]="files"
-                     [preselectedFile]="this.preselectedFile"
-      ></app-file-grid>
-      <app-file-gallery (closeEvent)="this.closeGallery($event.selectedFile?.data)"
-                        (fileSelectEvent)="onFileSelect($event)" *ngIf="this.showGallery"
-                        [files]="files"
-                        [preselectedFile]="this.preselectedFile"></app-file-gallery>
+      <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)" [files]="this.files"></app-file-multiview>
     </app-busy-indicator>
   </mat-drawer-content>
 </mat-drawer-container>

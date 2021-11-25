@@ -8,11 +8,11 @@ import {
   SimpleChanges, ViewChild
 } from '@angular/core';
 import {SafeResourceUrl} from "@angular/platform-browser";
-import {File} from "../../../models/File";
-import {FileService} from "../../../services/file/file.service";
-import {FileHelper} from "../../../services/file/file.helper";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
-import {BusyIndicatorComponent} from "../../busy-indicator/busy-indicator.component";
+import {File} from "../../../../models/File";
+import {FileService} from "../../../../services/file/file.service";
+import {FileHelper} from "../../../../services/file/file.helper";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {BusyIndicatorComponent} from "../../../busy-indicator/busy-indicator.component";
 
 type ContentType = "image" | "video" | "audio" | "other";
 

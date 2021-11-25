@@ -20,11 +20,7 @@ mat-drawer-container {
   overflow: hidden;
 }
 
-app-file-grid {
-  padding: 0;
-}
-
-app-file-gallery, app-files-tab-sidebar {
+app-file-multiview {
   padding: 0;
   height: 100%;
   width: 100%;

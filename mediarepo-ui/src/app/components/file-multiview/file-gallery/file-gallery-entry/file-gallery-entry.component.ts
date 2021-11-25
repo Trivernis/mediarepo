@@ -7,11 +7,11 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {File} from "../../../models/File";
-import {FileService} from "../../../services/file/file.service";
+import {File} from "../../../../models/File";
+import {FileService} from "../../../../services/file/file.service";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
-import {Selectable} from "../../../models/Selectable";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {Selectable} from "../../../../models/Selectable";
 
 @Component({
   selector: 'app-file-gallery-entry',

@@ -15,10 +15,10 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
-import {FileGridComponent} from './components/file-grid/file-grid.component';
+import {FileGridComponent} from './components/file-multiview/file-grid/file-grid.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatGridListModule} from "@angular/material/grid-list";
-import {FileGridEntryComponent} from './components/file-grid/file-grid-entry/file-grid-entry.component';
+import {FileGridEntryComponent} from './components/file-multiview/file-grid/file-grid-entry/file-grid-entry.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {ScrollingModule} from "@angular/cdk/scrolling";
@@ -32,8 +32,8 @@ import {MatRippleModule} from "@angular/material/core";
 import {SortDialogComponent} from './components/file-search/sort-dialog/sort-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatSelectModule} from "@angular/material/select";
-import {FileGalleryComponent} from './components/file-gallery/file-gallery.component';
-import {FileGalleryEntryComponent} from './components/file-gallery/file-gallery-entry/file-gallery-entry.component';
+import {FileGalleryComponent} from './components/file-multiview/file-gallery/file-gallery.component';
+import {FileGalleryEntryComponent} from './components/file-multiview/file-gallery/file-gallery-entry/file-gallery-entry.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {BlockUIModule} from "primeng/blockui";
 import {PanelModule} from "primeng/panel";
@@ -58,15 +58,16 @@ import {TagFilterListItemComponent} from './components/file-search/filter-dialog
 import {TagInputComponent} from './components/inputs/tag-input/tag-input.component';
 import {ContextMenuComponent} from './components/context-menu/context-menu.component';
 import {FileContextMenuComponent} from './components/context-menu/file-context-menu/file-context-menu.component';
-import {ContentViewerComponent} from './components/file-gallery/content-viewer/content-viewer.component';
-import {ImageViewerComponent} from './components/file-gallery/content-viewer/image-viewer/image-viewer.component';
-import {VideoViewerComponent} from './components/file-gallery/content-viewer/video-viewer/video-viewer.component';
+import {ContentViewerComponent} from './components/file-multiview/file-gallery/content-viewer/content-viewer.component';
+import {ImageViewerComponent} from './components/file-multiview/file-gallery/content-viewer/image-viewer/image-viewer.component';
+import {VideoViewerComponent} from './components/file-multiview/file-gallery/content-viewer/video-viewer/video-viewer.component';
 import {HttpClientModule} from "@angular/common/http";
-import { AudioViewerComponent } from './components/file-gallery/content-viewer/audio-viewer/audio-viewer.component';
+import { AudioViewerComponent } from './components/file-multiview/file-gallery/content-viewer/audio-viewer/audio-viewer.component';
 import { BusyIndicatorComponent } from './components/busy-indicator/busy-indicator.component';
 import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
 import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
+import { FileMultiviewComponent } from './components/file-multiview/file-multiview.component';
 
 @NgModule({
   declarations: [
@@ -102,6 +103,7 @@ import * as materialIcons from "@ng-icons/material-icons";
     AudioViewerComponent,
     BusyIndicatorComponent,
     FileThumbnailComponent,
+    FileMultiviewComponent,
   ],
   imports: [
     BrowserModule,

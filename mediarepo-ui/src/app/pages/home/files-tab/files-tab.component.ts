@@ -13,8 +13,6 @@ export class FilesTabComponent implements OnInit {
 
 
   files: File[] = [];
-  showGallery = false;
-  preselectedFile: File | undefined;
   contentLoading = false;
   selectedFiles: File[] = [];
 
@@ -30,26 +28,7 @@ export class FilesTabComponent implements OnInit {
     });
   }
 
-  async onFileMultiSelect(files: File[]) {
+  async onFileSelect(files: File[]) {
     this.selectedFiles = files;
-  }
-
-
-  async onFileSelect(file: File | undefined) {
-    if (file) {
-      this.selectedFiles = [file];
-    } else {
-      this.selectedFiles = [];
-    }
-  }
-
-  async openGallery(preselectedFile: File) {
-    this.preselectedFile = preselectedFile;
-    this.showGallery = true;
-  }
-
-  async closeGallery(preselectedFile: File | undefined) {
-    this.preselectedFile = preselectedFile;
-    this.showGallery = false;
   }
 }

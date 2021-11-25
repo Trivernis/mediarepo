@@ -10,12 +10,12 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {File} from "../../models/File";
+import {File} from "../../../models/File";
 import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.component";
 import {GridEntry} from "./file-grid-entry/GridEntry";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {TabService} from "../../services/tab/tab.service";
-import {FileService} from "../../services/file/file.service";
+import {TabService} from "../../../services/tab/tab.service";
+import {FileService} from "../../../services/file/file.service";
 
 @Component({
   selector: 'app-file-grid',
@@ -27,9 +27,8 @@ export class FileGridComponent implements OnChanges, OnInit {
   @Input() files: File[] = [];
   @Input() columns: number = 6;
   @Input() preselectedFile: File | undefined;
-  @Output() fileDblClickEvent = new EventEmitter<File>();
-  @Output() fileMultiselectEvent = new EventEmitter<File[]>();
-  @Output() fileSelectEvent = new EventEmitter<File | undefined>();
+  @Output() fileOpenEvent = new EventEmitter<File>();
+  @Output() fileSelectEvent = new EventEmitter<File[]>();
 
   @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
   @ViewChild("galleryWrapper") galleryWrapper!: ElementRef<HTMLDivElement>;
@@ -90,15 +89,7 @@ export class FileGridComponent implements OnChanges, OnInit {
         this.selectedEntries.push(clickedEntry);
       }
     }
-    if (this.selectedEntries.length == 1) {
-      this.fileSelectEvent.emit(
-        this.selectedEntries.map(entry => entry.file)[0]);
-    } else if (this.selectedEntries.length == 0 && previousSelectionSize == 1) {
-      this.fileSelectEvent.emit(undefined);
-    } else {
-      this.fileMultiselectEvent.emit(
-        this.selectedEntries.map(entry => entry.file));
-    }
+    this.fileSelectEvent.emit(this.selectedEntries.map(g => g.file));
   }
 
   private setPartitionedGridEntries() {

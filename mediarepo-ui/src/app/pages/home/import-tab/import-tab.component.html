@@ -3,6 +3,6 @@
     <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)" (importFinished)="this.refreshFileView()"></app-import-tab-sidebar>
   </mat-drawer>
   <mat-drawer-content>
-    <app-file-grid #fileGrid [files]="this.files" ></app-file-grid>
+    <app-file-multiview [files]="this.files" ></app-file-multiview>
   </mat-drawer-content>
 </mat-drawer-container>

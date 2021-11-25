@@ -5,7 +5,7 @@
       <div class="file-row">
         <app-file-grid-entry
           *ngFor="let gridEntry of rowEntry" (clickEvent)="setSelectedFile($event.gridEntry)"
-          (dblClickEvent)="fileDblClickEvent.emit($event.gridEntry.file)"
+          (dblClickEvent)="fileOpenEvent.emit($event.gridEntry.file)"
           (contextmenu)="fileContextMenu.onContextMenu($event, gridEntry.file)"
           [gridEntry]="gridEntry"></app-file-grid-entry>
       </div>

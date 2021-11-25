@@ -1,0 +1,4 @@
+<app-file-grid *ngIf="this.mode === 'grid'" [files]="this.files" [preselectedFile]="this.preselectedFile"
+               (fileSelectEvent)="this.onFileSelect($event)" (fileOpenEvent)="this.onFileOpen($event)"></app-file-grid>
+<app-file-gallery *ngIf="this.mode === 'gallery'" [files]="this.files" [preselectedFile]="this.preselectedFile"
+                  (fileSelectEvent)="this.onSinglefileSelect($event)" (closeEvent)="this.mode = 'grid'"></app-file-gallery>
