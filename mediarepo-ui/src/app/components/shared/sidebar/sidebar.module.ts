@@ -21,6 +21,10 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {AppCommonModule} from "../app-common/app-common.module";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {TagModule} from "../tag/tag.module";
+import { FileImportComponent } from "./file-import/file-import.component";
+import {FilesystemImportComponent} from "./file-import/filesystem-import/filesystem-import.component";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 
 @NgModule({
@@ -30,10 +34,13 @@ import {TagModule} from "../tag/tag.module";
         TagFilterListItemComponent,
         SortDialogComponent,
         FilterDialogComponent,
+        FileImportComponent,
+        FilesystemImportComponent,
     ],
     exports: [
         FileEditComponent,
-        FileSearchComponent
+        FileSearchComponent,
+        FileImportComponent
     ],
     imports: [
         CommonModule,
@@ -59,6 +66,8 @@ import {TagModule} from "../tag/tag.module";
         AppCommonModule,
         DragDropModule,
         TagModule,
+        MatCheckboxModule,
+        MatProgressBarModule,
     ]
 })
 export class SidebarModule {

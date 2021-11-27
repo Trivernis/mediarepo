@@ -6,7 +6,7 @@ import {FilesTabComponent} from "./files-tab/files-tab.component";
 import {FilesTabSidebarComponent} from "./files-tab/files-tab-sidebar/files-tab-sidebar.component";
 import {ImportTabComponent} from "./import-tab/import-tab.component";
 import {ImportTabSidebarComponent} from "./import-tab/import-tab-sidebar/import-tab-sidebar.component";
-import {FilesystemImportComponent} from "./import-tab/import-tab-sidebar/filesystem-import/filesystem-import.component";
+import {FilesystemImportComponent} from "../shared/sidebar/file-import/filesystem-import/filesystem-import.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
@@ -43,12 +43,11 @@ import {TagModule} from "../shared/tag/tag.module";
         FilesTabSidebarComponent,
         ImportTabComponent,
         ImportTabSidebarComponent,
-        FilesystemImportComponent,
         RepositoryCardComponent,
         AddRepositoryDialogComponent,
     ],
     exports: [
-        CoreComponent
+        CoreComponent,
     ],
     imports: [
         CommonModule,
