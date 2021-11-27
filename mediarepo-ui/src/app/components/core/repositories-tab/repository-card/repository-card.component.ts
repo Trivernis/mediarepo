@@ -1,7 +1,6 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {Repository} from "../../../../models/Repository";
 import {RepositoryService} from "../../../../services/repository/repository.service";
-import {Router} from "@angular/router";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
@@ -23,7 +22,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
 
     constructor(
         public repoService: RepositoryService,
-        private router: Router,
         private errorBroker: ErrorBrokerService,
         public dialog: MatDialog) {
     }

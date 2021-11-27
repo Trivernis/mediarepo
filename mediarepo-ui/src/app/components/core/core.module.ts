@@ -16,7 +16,6 @@ import {FlexModule} from "@angular/flex-layout";
 import {MatOptionModule, MatRippleModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import {SharedModule} from "../shared/shared.module";
 import {MatDividerModule} from "@angular/material/divider";
 import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
@@ -25,8 +24,7 @@ import {InputModule} from "../shared/input/input.module";
 import {SidebarModule} from "../shared/sidebar/sidebar.module";
 import {FileModule} from "../shared/file/file.module";
 import {AppCommonModule} from "../shared/app-common/app-common.module";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {RepositoryCardComponent} from "./repositories-tab/repository-card/repository-card.component";
 import {AddRepositoryDialogComponent} from "./repositories-tab/add-repository-dialog/add-repository-dialog.component";
 import {MatCardModule} from "@angular/material/card";
@@ -34,6 +32,7 @@ import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatInputModule} from "@angular/material/input";
+import {TagModule} from "../shared/tag/tag.module";
 
 
 @NgModule({
@@ -53,7 +52,6 @@ import {MatInputModule} from "@angular/material/input";
     ],
     imports: [
         CommonModule,
-        SharedModule,
         MatTabsModule,
         MatSidenavModule,
         MatOptionModule,
@@ -77,6 +75,7 @@ import {MatInputModule} from "@angular/material/input";
         MatDialogModule,
         MatTooltipModule,
         MatInputModule,
+        TagModule,
     ]
 })
 export class CoreModule {

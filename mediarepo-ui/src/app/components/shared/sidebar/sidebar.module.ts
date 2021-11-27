@@ -9,7 +9,6 @@ import {MatButtonModule} from "@angular/material/button";
 import {InputModule} from "../input/input.module";
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {MatFormFieldModule} from "@angular/material/form-field";
-import {SharedModule} from "../shared.module";
 import {MatDividerModule} from "@angular/material/divider";
 import {FlexModule} from "@angular/flex-layout";
 import {MatSelectModule} from "@angular/material/select";
@@ -21,6 +20,7 @@ import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
 import {AppCommonModule} from "../app-common/app-common.module";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import {TagModule} from "../tag/tag.module";
 
 
 @NgModule({
@@ -50,7 +50,6 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
         InputModule,
         ScrollingModule,
         MatFormFieldModule,
-        SharedModule,
         MatDividerModule,
         FlexModule,
         MatSelectModule,
@@ -59,6 +58,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
         MatDialogModule,
         AppCommonModule,
         DragDropModule,
+        TagModule,
     ]
 })
 export class SidebarModule {

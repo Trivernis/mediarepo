@@ -1,5 +1,4 @@
 import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
 import {RepositoryService} from "./services/repository/repository.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ErrorBrokerService} from "./services/error-broker/error-broker.service";
@@ -13,7 +12,6 @@ export class AppComponent implements OnInit {
     title = "mediarepo-ui";
 
     constructor(
-        private router: Router,
         private snackBar: MatSnackBar,
         private errorBroker: ErrorBrokerService,
         private repoService: RepositoryService,
