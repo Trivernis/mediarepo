@@ -1,6 +1,6 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {FileEditComponent} from "./file-edit/file-edit.component";
+import {TagEditComponent} from "./tag-edit/tag-edit.component";
 import {FileSearchComponent} from "./file-search/file-search.component";
 import {NgIconsModule} from "@ng-icons/core";
 import {MatRemove, MatChangeCircle, MatAddCircle, MatRemoveCircle, MatDeleteSweep, MatFilterAlt} from "@ng-icons/material-icons";
@@ -29,7 +29,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
     declarations: [
-        FileEditComponent,
+        TagEditComponent,
         FileSearchComponent,
         TagFilterListItemComponent,
         SortDialogComponent,
@@ -38,7 +38,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         FilesystemImportComponent,
     ],
     exports: [
-        FileEditComponent,
+        TagEditComponent,
         FileSearchComponent,
         FileImportComponent
     ],

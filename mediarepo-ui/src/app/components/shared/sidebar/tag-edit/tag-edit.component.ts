@@ -14,11 +14,11 @@ import {TagService} from "../../../../services/tag/tag.service";
 import {FileService} from "../../../../services/file/file.service";
 
 @Component({
-    selector: "app-file-edit",
-    templateUrl: "./file-edit.component.html",
-    styleUrls: ["./file-edit.component.scss"]
+    selector: "app-tag-edit",
+    templateUrl: "./tag-edit.component.html",
+    styleUrls: ["./tag-edit.component.scss"]
 })
-export class FileEditComponent implements OnInit, OnChanges {
+export class TagEditComponent implements OnInit, OnChanges {
 
     @Input() files: File[] = [];
     public tags: Tag[] = [];

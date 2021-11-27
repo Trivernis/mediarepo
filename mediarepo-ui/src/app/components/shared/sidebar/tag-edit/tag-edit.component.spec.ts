@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {FileEditComponent} from "./file-edit.component";
+import {TagEditComponent} from "./tag-edit.component";
 
 describe("FileEditComponent", () => {
-    let component: FileEditComponent;
-    let fixture: ComponentFixture<FileEditComponent>;
+    let component: TagEditComponent;
+    let fixture: ComponentFixture<TagEditComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [FileEditComponent]
+            declarations: [TagEditComponent]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(FileEditComponent);
+        fixture = TestBed.createComponent(TagEditComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

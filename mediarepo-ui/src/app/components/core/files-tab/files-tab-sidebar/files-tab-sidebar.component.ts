@@ -14,7 +14,7 @@ import {FileService} from "../../../../services/file/file.service";
 import {File} from "../../../../models/File";
 import {FileSearchComponent} from "../../../shared/sidebar/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
-import {FileEditComponent} from "../../../shared/sidebar/file-edit/file-edit.component";
+import {TagEditComponent} from "../../../shared/sidebar/tag-edit/tag-edit.component";
 import {clipboard} from "@tauri-apps/api";
 
 @Component({
@@ -29,7 +29,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     @Output() searchEndEvent = new EventEmitter<void>();
 
     @ViewChild("filesearch") fileSearch!: FileSearchComponent;
-    @ViewChild("fileedit") fileEdit: FileEditComponent | undefined;
+    @ViewChild("fileedit") fileEdit: TagEditComponent | undefined;
 
     public tagsOfFiles: Tag[] = [];
     public tags: Tag[] = [];
