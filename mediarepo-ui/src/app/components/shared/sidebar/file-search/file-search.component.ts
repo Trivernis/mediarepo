@@ -8,18 +8,18 @@ import {
     Output,
     ViewChild
 } from "@angular/core";
-import {FileService} from "../../../services/file/file.service";
-import {TagQuery} from "../../../models/TagQuery";
-import {SortKey} from "../../../models/SortKey";
+import {FileService} from "../../../../services/file/file.service";
+import {TagQuery} from "../../../../models/TagQuery";
+import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {
     FilterExpression,
     SingleFilterExpression
-} from "../../../models/FilterExpression";
+} from "../../../../models/FilterExpression";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
-import {Tag} from "../../../models/Tag";
+import {Tag} from "../../../../models/Tag";
 
 
 @Component({

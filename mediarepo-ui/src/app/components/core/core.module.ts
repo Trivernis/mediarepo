@@ -22,6 +22,7 @@ import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
 import {MatMenuModule} from "@angular/material/menu";
 import {InputModule} from "../shared/input/input.module";
+import {SidebarModule} from "../shared/sidebar/sidebar.module";
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import {InputModule} from "../shared/input/input.module";
         MatMenuModule,
         MatRippleModule,
         InputModule,
+        SidebarModule,
     ]
 })
 export class CoreModule {

@@ -7,11 +7,11 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../models/File";
-import {Tag} from "../../../models/Tag";
+import {File} from "../../../../models/File";
+import {Tag} from "../../../../models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {TagService} from "../../../services/tag/tag.service";
-import {FileService} from "../../../services/file/file.service";
+import {TagService} from "../../../../services/tag/tag.service";
+import {FileService} from "../../../../services/file/file.service";
 
 @Component({
     selector: "app-file-edit",

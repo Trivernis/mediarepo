@@ -2,7 +2,7 @@
 @use "~@angular/material" as mat;
 @use 'src/app/app.component-theme' as app;
 @use 'app/components/shared/file-multiview/file-grid/file-grid-entry/file-grid-entry.component-theme' as file-grid-entry;
-@use 'app/components/shared/file-search/file-search.component-theme' as file-search;
+@use 'app/components/shared/sidebar/file-search/file-search.component-theme' as file-search;
 @use "app/components/shared/file-multiview/file-gallery/file-gallery-entry/file-gallery-entry.component-theme" as gallery-entry;
 
 @include mat.core();

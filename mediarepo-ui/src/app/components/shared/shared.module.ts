@@ -3,17 +3,17 @@ import {CommonModule} from "@angular/common";
 import {RepositoryCardComponent} from "../core/repositories-tab/repository-card/repository-card.component";
 import {FileGridComponent} from "./file-multiview/file-grid/file-grid.component";
 import {FileGridEntryComponent} from "./file-multiview/file-grid/file-grid-entry/file-grid-entry.component";
-import {FileSearchComponent} from "./file-search/file-search.component";
-import {SortDialogComponent} from "./file-search/sort-dialog/sort-dialog.component";
+import {FileSearchComponent} from "./sidebar/file-search/file-search.component";
+import {SortDialogComponent} from "./sidebar/file-search/sort-dialog/sort-dialog.component";
 import {FileGalleryComponent} from "./file-multiview/file-gallery/file-gallery.component";
 import {FileGalleryEntryComponent} from "./file-multiview/file-gallery/file-gallery-entry/file-gallery-entry.component";
 import {ContentAwareImageComponent} from "./content-aware-image/content-aware-image.component";
 import {AddRepositoryDialogComponent} from "../core/repositories-tab/add-repository-dialog/add-repository-dialog.component";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {TagItemComponent} from "./tag-item/tag-item.component";
-import {FileEditComponent} from "./file-edit/file-edit.component";
-import {FilterDialogComponent} from "./file-search/filter-dialog/filter-dialog.component";
-import {TagFilterListItemComponent} from "./file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
+import {FileEditComponent} from "./sidebar/file-edit/file-edit.component";
+import {FilterDialogComponent} from "./sidebar/file-search/filter-dialog/filter-dialog.component";
+import {TagFilterListItemComponent} from "./sidebar/file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
 import {ContextMenuComponent} from "./context-menu/context-menu.component";
 import {FileContextMenuComponent} from "./context-menu/file-context-menu/file-context-menu.component";
 import {ContentViewerComponent} from "./file-multiview/file-gallery/content-viewer/content-viewer.component";
@@ -63,7 +63,6 @@ import {InputModule} from "./input/input.module";
         RepositoryCardComponent,
         FileGridComponent,
         FileGridEntryComponent,
-        FileSearchComponent,
         SortDialogComponent,
         FileGalleryComponent,
         FileGalleryEntryComponent,
@@ -71,7 +70,6 @@ import {InputModule} from "./input/input.module";
         AddRepositoryDialogComponent,
         ConfirmDialogComponent,
         TagItemComponent,
-        FileEditComponent,
         FilterDialogComponent,
         TagFilterListItemComponent,
         ContextMenuComponent,
@@ -87,9 +85,7 @@ import {InputModule} from "./input/input.module";
     exports: [
         FileMultiviewComponent,
         BusyIndicatorComponent,
-        FileSearchComponent,
         TagItemComponent,
-        FileEditComponent,
         ContextMenuComponent,
         RepositoryCardComponent
     ],

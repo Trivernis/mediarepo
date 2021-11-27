@@ -12,9 +12,9 @@ import {Tag} from "../../../../models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
 import {FileService} from "../../../../services/file/file.service";
 import {File} from "../../../../models/File";
-import {FileSearchComponent} from "../../../shared/file-search/file-search.component";
+import {FileSearchComponent} from "../../../shared/sidebar/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
-import {FileEditComponent} from "../../../shared/file-edit/file-edit.component";
+import {FileEditComponent} from "../../../shared/sidebar/file-edit/file-edit.component";
 import {clipboard} from "@tauri-apps/api";
 
 @Component({

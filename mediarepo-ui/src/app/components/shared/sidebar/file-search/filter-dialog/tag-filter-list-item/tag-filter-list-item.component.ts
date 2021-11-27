@@ -10,9 +10,9 @@ import {
     FilterExpression,
     OrFilterExpression,
     SingleFilterExpression
-} from "../../../../../models/FilterExpression";
-import {TagQuery} from "../../../../../models/TagQuery";
-import {Selectable} from "../../../../../models/Selectable";
+} from "../../../../../../models/FilterExpression";
+import {TagQuery} from "../../../../../../models/TagQuery";
+import {Selectable} from "../../../../../../models/Selectable";
 
 @Component({
     selector: "app-tag-filter-list-item",
