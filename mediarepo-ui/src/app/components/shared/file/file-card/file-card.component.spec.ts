@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {FileGridEntryComponent} from "./file-grid-entry.component";
+import {FileCardComponent} from "./file-card.component";
 
 describe("FileGridEntryComponent", () => {
-    let component: FileGridEntryComponent;
-    let fixture: ComponentFixture<FileGridEntryComponent>;
+    let component: FileCardComponent;
+    let fixture: ComponentFixture<FileCardComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [FileGridEntryComponent]
+            declarations: [FileCardComponent]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(FileGridEntryComponent);
+        fixture = TestBed.createComponent(FileCardComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

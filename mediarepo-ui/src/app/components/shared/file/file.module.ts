@@ -3,8 +3,7 @@ import { CommonModule } from "@angular/common";
 import {FileMultiviewComponent} from "./file-multiview/file-multiview.component";
 import {FileGridComponent} from "./file-multiview/file-grid/file-grid.component";
 import {FileGalleryComponent} from "./file-multiview/file-gallery/file-gallery.component";
-import {FileGalleryEntryComponent} from "./file-multiview/file-gallery/file-gallery-entry/file-gallery-entry.component";
-import {FileGridEntryComponent} from "./file-multiview/file-grid/file-grid-entry/file-grid-entry.component";
+import {FileCardComponent} from "./file-card/file-card.component";
 import {FileContextMenuComponent} from "./file-context-menu/file-context-menu.component";
 import {FileThumbnailComponent} from "./file-thumbnail/file-thumbnail.component";
 import {ContentViewerComponent} from "./content-viewer/content-viewer.component";
@@ -30,10 +29,9 @@ import {MatCardModule} from "@angular/material/card";
         FileMultiviewComponent,
         FileGridComponent,
         FileGalleryComponent,
-        FileGalleryEntryComponent,
-        FileGridEntryComponent,
+        FileCardComponent,
         FileContextMenuComponent,
-        FileThumbnailComponent, 
+        FileThumbnailComponent,
         ContentViewerComponent,
         AudioViewerComponent,
         ImageViewerComponent,

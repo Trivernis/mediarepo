@@ -1,6 +1,0 @@
-<mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)"
-          [ngClass]="{'selected': gridEntry.selected}">
-    <mat-card-content *ngIf="contentUrl !== undefined">
-        <app-file-thumbnail [file]="this.gridEntry.file" class=".entry-image"></app-file-thumbnail>
-    </mat-card-content>
-</mat-card>

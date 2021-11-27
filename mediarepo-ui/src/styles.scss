@@ -1,9 +1,8 @@
 @use 'sass:map';
 @use "~@angular/material" as mat;
 @use 'src/app/app.component-theme' as app;
-@use 'app/components/shared/file/file-multiview/file-grid/file-grid-entry/file-grid-entry.component-theme' as file-grid-entry;
+@use 'app/components/shared/file/file-card/file-card.component-theme' as file-card;
 @use 'app/components/shared/sidebar/file-search/file-search.component-theme' as file-search;
-@use "app/components/shared/file/file-multiview/file-gallery/file-gallery-entry/file-gallery-entry.component-theme" as gallery-entry;
 
 @include mat.core();
 
@@ -21,6 +20,5 @@ $theme: mat.define-dark-theme((
 
 @include mat.all-component-themes($theme);
 @include app.theme($theme);
-@include file-grid-entry.theme($theme);
+@include file-card.theme($theme);
 @include file-search.theme($theme);
-@include gallery-entry.theme($theme);

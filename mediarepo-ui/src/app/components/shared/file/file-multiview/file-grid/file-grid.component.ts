@@ -11,11 +11,11 @@ import {
     ViewChild
 } from "@angular/core";
 import {File} from "../../../../../models/File";
-import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.component";
-import {GridEntry} from "./file-grid-entry/GridEntry";
+import {FileCardComponent} from "../../file-card/file-card.component";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
 import {FileService} from "../../../../../services/file/file.service";
+import {Selectable} from "../../../../../models/Selectable";
 
 @Component({
     selector: "app-file-grid",
@@ -33,11 +33,11 @@ export class FileGridComponent implements OnChanges, OnInit {
     @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
     @ViewChild("galleryWrapper") galleryWrapper!: ElementRef<HTMLDivElement>;
 
-    selectedEntries: GridEntry[] = [];
-    partitionedGridEntries: GridEntry[][] = [];
+    selectedEntries: Selectable<File>[] = [];
+    partitionedGridEntries: Selectable<File>[][] = [];
     private shiftClicked = false;
     private ctrlClicked = false;
-    private gridEntries: GridEntry[] = []
+    private gridEntries: Selectable<File>[] = []
 
     constructor(
         private tabService: TabService,
@@ -47,17 +47,15 @@ export class FileGridComponent implements OnChanges, OnInit {
     }
 
     public ngOnInit(): void {
-        this.gridEntries = this.files.map(file => {
-            return {file, selected: false}
-        });
+        this.gridEntries = this.files.map(
+            file => new Selectable<File>(file, false));
         this.setPartitionedGridEntries();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes["files"]) {
-            this.gridEntries = this.files.map(file => {
-                return {file, selected: false}
-            });
+            this.gridEntries = this.files.map(
+                file => new Selectable<File>(file, false));
             this.refreshFileSelections();
             this.setPartitionedGridEntries();
         }
@@ -65,9 +63,9 @@ export class FileGridComponent implements OnChanges, OnInit {
 
     /**
      * File selector logic
-     * @param {FileGridEntryComponent} clickedEntry
+     * @param {FileCardComponent} clickedEntry
      */
-    setSelectedFile(clickedEntry: GridEntry) {
+    setSelectedFile(clickedEntry: Selectable<File>) {
         if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
             this.selectedEntries.forEach(entry => {
                 if (entry !== clickedEntry) entry.selected = false
@@ -87,7 +85,7 @@ export class FileGridComponent implements OnChanges, OnInit {
                 this.selectedEntries.push(clickedEntry);
             }
         }
-        this.fileSelectEvent.emit(this.selectedEntries.map(g => g.file));
+        this.fileSelectEvent.emit(this.selectedEntries.map(g => g.data));
     }
 
     public adjustElementSizes(): void {
@@ -103,7 +101,7 @@ export class FileGridComponent implements OnChanges, OnInit {
     private setPartitionedGridEntries() {
         this.partitionedGridEntries = [];
         let scrollToIndex = -1;
-        let selectedEntry: GridEntry | undefined = undefined;
+        let selectedEntry: Selectable<File> | undefined = undefined;
 
         for (let i = 0; i < (Math.ceil(
             this.gridEntries.length / this.columns)); i++) {
@@ -111,7 +109,7 @@ export class FileGridComponent implements OnChanges, OnInit {
                 Math.min(this.gridEntries.length, (i + 1) * this.columns));
             this.partitionedGridEntries.push(entries);
             const preselectedEntry = entries.find(
-                e => e.file.hash == this.preselectedFile?.hash);
+                e => e.data.hash == this.preselectedFile?.hash);
 
             if (preselectedEntry) {
                 scrollToIndex = i;
@@ -132,14 +130,14 @@ export class FileGridComponent implements OnChanges, OnInit {
     }
 
     private refreshFileSelections() {
-        const newSelection: GridEntry[] = this.gridEntries.filter(
+        const newSelection: Selectable<File>[] = this.gridEntries.filter(
             entry => this.selectedEntries.findIndex(
-                e => e.file.id == entry.file.id) >= 0);
+                e => e.data.id == entry.data.id) >= 0);
         newSelection.forEach(entry => entry.selected = true);
         this.selectedEntries = newSelection;
     }
 
-    private handleShiftSelect(clickedEntry: GridEntry): void {
+    private handleShiftSelect(clickedEntry: Selectable<File>): void {
         const lastEntry = this.selectedEntries[this.selectedEntries.length - 1];
         let found = false;
         if (clickedEntry == lastEntry) {
