@@ -1,4 +1,5 @@
 <app-context-menu #contextMenu>
+    <ng-content select="[content-before]"></ng-content>
     <button (click)="this.copyFileHash()" mat-menu-item>Copy Hash</button>
     <button (click)="this.exportFile()" mat-menu-item>Save As...</button>
     <ng-content></ng-content>
