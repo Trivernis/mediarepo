@@ -1,4 +1,4 @@
-.file-metadata, .tag-input {
+.file-edit-header, .tag-input {
     width: 100%;
 
     mat-form-field, app-tag-input {
@@ -7,6 +7,13 @@
 
     mat-form-field.form-field-mode {
         width: 10em;
+    }
+}
+
+.file-edit-header {
+    text-align: center;
+    h1 {
+        margin-top: 20px;
     }
 }
 

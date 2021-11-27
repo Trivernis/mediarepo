@@ -1,10 +1,7 @@
 <div class="file-edit-inner" fxLayout="column">
-    <div class="file-metadata" fxFlex="150px">
-        <h1>Edit File</h1>
-        <mat-form-field *ngIf="this.files.length === 1" appearance="fill">
-            <mat-label>Name</mat-label>
-            <input #fileNameInput (focusout)="this.changeFileName(fileNameInput.value)" matInput>
-        </mat-form-field>
+    <div class="file-edit-header" fxFlex="100px">
+        <h1>Edit Tags</h1>
+        <mat-divider></mat-divider>
     </div>
     <div class="tag-edit-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <cdk-virtual-scroll-viewport #tagScroll itemSize="50" maxBufferPx="2000" minBufferPx="1000">

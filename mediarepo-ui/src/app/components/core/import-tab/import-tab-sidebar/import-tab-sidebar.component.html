@@ -3,5 +3,8 @@
         <mat-tab label="Import">
             <app-file-import (importFinished)="importFinished.emit($event)" (fileImported)="fileImported.emit($event)"></app-file-import>
         </mat-tab>
+        <mat-tab label="Edit Tags" *ngIf="selectedFiles.length > 0">
+            <app-file-edit [files]="selectedFiles"></app-file-edit>
+        </mat-tab>
     </mat-tab-group>
 </div>

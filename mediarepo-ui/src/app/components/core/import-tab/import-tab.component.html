@@ -1,9 +1,9 @@
 <mat-drawer-container autosize>
     <mat-drawer disableClose="true" mode="side" opened>
-        <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)"
+        <app-import-tab-sidebar [selectedFiles]="selectedFiles" (fileImported)="this.addFileFromImport($event)"
                                 (importFinished)="this.refreshFileView()"></app-import-tab-sidebar>
     </mat-drawer>
     <mat-drawer-content>
-        <app-file-multiview [files]="this.files"></app-file-multiview>
+        <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)" [files]="this.files"></app-file-multiview>
     </mat-drawer-content>
 </mat-drawer-container>

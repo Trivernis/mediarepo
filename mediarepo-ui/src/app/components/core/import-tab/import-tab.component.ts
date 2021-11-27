@@ -9,6 +9,7 @@ import {File} from "../../../models/File";
 export class ImportTabComponent {
 
     public files: File[] = [];
+    public selectedFiles: File[] = [];
 
     constructor() {
     }
@@ -31,5 +32,9 @@ export class ImportTabComponent {
      */
     public refreshFileView() {
         this.files = [...this.files];
+    }
+
+    public onFileSelect(files: File[]) {
+        this.selectedFiles = files;
     }
 }
