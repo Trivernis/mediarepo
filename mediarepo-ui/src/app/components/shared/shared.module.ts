@@ -12,10 +12,8 @@ import {AddRepositoryDialogComponent} from "../core/repositories-tab/add-reposit
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {TagItemComponent} from "./tag-item/tag-item.component";
 import {FileEditComponent} from "./file-edit/file-edit.component";
-import {NativeFileSelectComponent} from "./inputs/native-file-select/native-file-select.component";
 import {FilterDialogComponent} from "./file-search/filter-dialog/filter-dialog.component";
 import {TagFilterListItemComponent} from "./file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
-import {TagInputComponent} from "./inputs/tag-input/tag-input.component";
 import {ContextMenuComponent} from "./context-menu/context-menu.component";
 import {FileContextMenuComponent} from "./context-menu/file-context-menu/file-context-menu.component";
 import {ContentViewerComponent} from "./file-multiview/file-gallery/content-viewer/content-viewer.component";
@@ -57,6 +55,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import {AppRoutingModule} from "../../app-routing.module";
 import {NgIconsModule} from "@ng-icons/core";
 import * as materialIcons from "@ng-icons/material-icons";
+import {InputModule} from "./input/input.module";
 
 
 @NgModule({
@@ -73,10 +72,8 @@ import * as materialIcons from "@ng-icons/material-icons";
         ConfirmDialogComponent,
         TagItemComponent,
         FileEditComponent,
-        NativeFileSelectComponent,
         FilterDialogComponent,
         TagFilterListItemComponent,
-        TagInputComponent,
         ContextMenuComponent,
         FileContextMenuComponent,
         ContentViewerComponent,
@@ -89,7 +86,6 @@ import * as materialIcons from "@ng-icons/material-icons";
     ],
     exports: [
         FileMultiviewComponent,
-        NativeFileSelectComponent,
         BusyIndicatorComponent,
         FileSearchComponent,
         TagItemComponent,
@@ -131,6 +127,7 @@ import * as materialIcons from "@ng-icons/material-icons";
         MatCheckboxModule,
         AppRoutingModule,
         NgIconsModule.withIcons({...materialIcons}),
+        InputModule,
     ]
 })
 export class SharedModule {
