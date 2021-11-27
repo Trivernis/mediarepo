@@ -1,6 +1,6 @@
 import {Component, ViewChild} from "@angular/core";
 import {File} from "../../../../models/File";
-import {ContextMenuComponent} from "../context-menu.component";
+import {ContextMenuComponent} from "../../app-common/context-menu/context-menu.component";
 import {clipboard} from "@tauri-apps/api";
 import {FileService} from "../../../../services/file/file.service";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";

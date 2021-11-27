@@ -9,12 +9,12 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../models/File";
-import {FileService} from "../../../../services/file/file.service";
+import {File} from "../../../../../models/File";
+import {FileService} from "../../../../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
-import {Selectable} from "../../../../models/Selectable";
+import {Selectable} from "../../../../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {TabService} from "../../../../services/tab/tab.service";
+import {TabService} from "../../../../../services/tab/tab.service";
 
 @Component({
     selector: "app-file-gallery",

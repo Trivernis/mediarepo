@@ -23,6 +23,17 @@ import * as materialIcons from "@ng-icons/material-icons";
 import {MatMenuModule} from "@angular/material/menu";
 import {InputModule} from "../shared/input/input.module";
 import {SidebarModule} from "../shared/sidebar/sidebar.module";
+import {FileModule} from "../shared/file/file.module";
+import {AppCommonModule} from "../shared/app-common/app-common.module";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {RepositoryCardComponent} from "./repositories-tab/repository-card/repository-card.component";
+import {AddRepositoryDialogComponent} from "./repositories-tab/add-repository-dialog/add-repository-dialog.component";
+import {MatCardModule} from "@angular/material/card";
+import {MatListModule} from "@angular/material/list";
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatInputModule} from "@angular/material/input";
 
 
 @NgModule({
@@ -34,6 +45,8 @@ import {SidebarModule} from "../shared/sidebar/sidebar.module";
         ImportTabComponent,
         ImportTabSidebarComponent,
         FilesystemImportComponent,
+        RepositoryCardComponent,
+        AddRepositoryDialogComponent,
     ],
     exports: [
         CoreComponent
@@ -56,6 +69,14 @@ import {SidebarModule} from "../shared/sidebar/sidebar.module";
         MatRippleModule,
         InputModule,
         SidebarModule,
+        FileModule,
+        AppCommonModule,
+        ReactiveFormsModule,
+        MatCardModule,
+        MatListModule,
+        MatDialogModule,
+        MatTooltipModule,
+        MatInputModule,
     ]
 })
 export class CoreModule {

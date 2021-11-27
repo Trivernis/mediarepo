@@ -5,9 +5,9 @@ import {
     OnInit,
     SimpleChanges
 } from "@angular/core";
-import {File} from "../../../models/File";
-import {FileService} from "../../../services/file/file.service";
-import {FileHelper} from "../../../services/file/file.helper";
+import {File} from "../../../../models/File";
+import {FileService} from "../../../../services/file/file.service";
+import {FileHelper} from "../../../../services/file/file.helper";
 import {SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({

@@ -14,12 +14,22 @@ import {MatDividerModule} from "@angular/material/divider";
 import {FlexModule} from "@angular/flex-layout";
 import {MatSelectModule} from "@angular/material/select";
 import {MatInputModule} from "@angular/material/input";
+import {TagFilterListItemComponent} from "./file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
+import {SortDialogComponent} from "./file-search/sort-dialog/sort-dialog.component";
+import {FilterDialogComponent} from "./file-search/filter-dialog/filter-dialog.component";
+import {MatListModule} from "@angular/material/list";
+import {MatDialogModule} from "@angular/material/dialog";
+import {AppCommonModule} from "../app-common/app-common.module";
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 
 @NgModule({
     declarations: [
         FileEditComponent,
         FileSearchComponent,
+        TagFilterListItemComponent,
+        SortDialogComponent,
+        FilterDialogComponent,
     ],
     exports: [
         FileEditComponent,
@@ -45,6 +55,10 @@ import {MatInputModule} from "@angular/material/input";
         FlexModule,
         MatSelectModule,
         MatInputModule,
+        MatListModule,
+        MatDialogModule,
+        AppCommonModule,
+        DragDropModule,
     ]
 })
 export class SidebarModule {

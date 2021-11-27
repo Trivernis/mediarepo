@@ -10,12 +10,12 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../models/File";
+import {File} from "../../../../../models/File";
 import {FileGridEntryComponent} from "./file-grid-entry/file-grid-entry.component";
 import {GridEntry} from "./file-grid-entry/GridEntry";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {TabService} from "../../../../services/tab/tab.service";
-import {FileService} from "../../../../services/file/file.service";
+import {TabService} from "../../../../../services/tab/tab.service";
+import {FileService} from "../../../../../services/file/file.service";
 
 @Component({
     selector: "app-file-grid",

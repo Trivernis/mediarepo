@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {File} from "../../../models/File";
+import {File} from "../../../../models/File";
 
 @Component({
     selector: "app-file-multiview",

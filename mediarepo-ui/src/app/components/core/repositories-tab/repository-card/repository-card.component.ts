@@ -4,8 +4,8 @@ import {RepositoryService} from "../../../../services/repository/repository.serv
 import {Router} from "@angular/router";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmDialogComponent} from "../../../shared/confirm-dialog/confirm-dialog.component";
-import {BusyIndicatorComponent} from "../../../shared/busy-indicator/busy-indicator.component";
+import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
+import {BusyIndicatorComponent} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
 
 @Component({
     selector: "app-repository-card",

@@ -9,8 +9,8 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../../models/File";
-import {FileService} from "../../../../../services/file/file.service";
+import {File} from "../../../../../../models/File";
+import {FileService} from "../../../../../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {GridEntry} from "./GridEntry";
 
