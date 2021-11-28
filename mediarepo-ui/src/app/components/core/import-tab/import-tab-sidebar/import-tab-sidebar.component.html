@@ -6,5 +6,8 @@
         <mat-tab label="Edit Tags" *ngIf="selectedFiles.length > 0">
             <app-tag-edit [files]="selectedFiles"></app-tag-edit>
         </mat-tab>
+        <mat-tab label="File Metadata" *ngIf="selectedFiles.length === 1">
+            <app-file-metadata [file]="selectedFiles[0]"></app-file-metadata>
+        </mat-tab>
     </mat-tab-group>
 </div>

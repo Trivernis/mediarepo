@@ -26,6 +26,8 @@ import {FilesystemImportComponent} from "./file-import/filesystem-import/filesys
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatMenuModule} from "@angular/material/menu";
+import { FileMetadataComponent } from "./file-metadata/file-metadata.component";
+import { MetadataEntryComponent } from './file-metadata/metadata-entry/metadata-entry.component';
 
 
 @NgModule({
@@ -37,11 +39,14 @@ import {MatMenuModule} from "@angular/material/menu";
         FilterDialogComponent,
         FileImportComponent,
         FilesystemImportComponent,
+        FileMetadataComponent,
+        MetadataEntryComponent,
     ],
     exports: [
         TagEditComponent,
         FileSearchComponent,
-        FileImportComponent
+        FileImportComponent,
+        FileMetadataComponent
     ],
     imports: [
         CommonModule,

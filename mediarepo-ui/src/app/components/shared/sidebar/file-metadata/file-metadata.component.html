@@ -1,0 +1,19 @@
+<div class="file-metadata-inner">
+    <div class="file-metadata-header">
+        <h1>File Metadata</h1>
+        <mat-divider></mat-divider>
+    </div>
+    <div class="file-metadata-entries-scroll-container">
+        <div class="file-metadata-entries">
+
+            <app-metadata-entry attributeName="Name" [value]="file.name ?? ''"></app-metadata-entry>
+            <app-metadata-entry attributeName="Hash" [value]="file.hash"></app-metadata-entry>
+            <app-metadata-entry attributeName="Mime Type" [value]="file.mime_type ?? 'unknown'"></app-metadata-entry>
+            <app-metadata-entry attributeName="Imported at" [value]="file.import_time.toLocaleString()"></app-metadata-entry>
+            <app-metadata-entry attributeName="Created at" [value]="file.creation_time.toLocaleString()"></app-metadata-entry>
+            <app-metadata-entry attributeName="Changed at" [value]="file.change_time.toLocaleString()"></app-metadata-entry>
+            <app-metadata-entry attributeName="Comment" [value]="file.comment ?? ''"></app-metadata-entry>
+
+        </div>
+    </div>
+</div>
