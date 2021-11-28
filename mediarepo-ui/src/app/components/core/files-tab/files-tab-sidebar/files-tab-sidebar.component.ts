@@ -36,7 +36,6 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     public allTags: Tag[] = [];
     public files: File[] = [];
     public tagsOfSelection: Tag[] = [];
-    public contextMenuTag: Tag | undefined;
 
     constructor(private repoService: RepositoryService, private tagService: TagService, private fileService: FileService) {
         this.fileService.displayedFiles.subscribe(async files => {
@@ -69,11 +68,6 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
         this.showAllTagsFallback();
     }
 
-    async addSearchTag(tag: Tag) {
-        this.fileSearch.addSearchTag(tag.getNormalizedOutput());
-        await this.fileSearch.searchForFiles();
-    }
-
     async showFileDetails(files: File[]) {
         this.tagsOfSelection = await this.tagService.getTagsForFiles(
             files.map(f => f.hash))
@@ -81,10 +75,6 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
             (a, b) => a.getNormalizedOutput()
                 .localeCompare(b.getNormalizedOutput()));
         this.tags = this.tagsOfSelection;
-    }
-
-    public async copyToClipboard(text: string) {
-        await clipboard.writeText(text);
     }
 
     private async refreshFileSelection() {

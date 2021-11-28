@@ -25,6 +25,7 @@ import { FileImportComponent } from "./file-import/file-import.component";
 import {FilesystemImportComponent} from "./file-import/filesystem-import/filesystem-import.component";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatMenuModule} from "@angular/material/menu";
 
 
 @NgModule({
@@ -68,6 +69,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         TagModule,
         MatCheckboxModule,
         MatProgressBarModule,
+        MatMenuModule,
     ]
 })
 export class SidebarModule {

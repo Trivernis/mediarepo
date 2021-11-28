@@ -3,9 +3,9 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    Input,
+    Input, OnChanges,
     OnInit,
-    Output,
+    Output, SimpleChanges,
     ViewChild
 } from "@angular/core";
 import {FileService} from "../../../../services/file/file.service";
@@ -20,6 +20,7 @@ import {
 } from "../../../../models/FilterExpression";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../models/Tag";
+import {clipboard} from "@tauri-apps/api";
 
 
 @Component({
@@ -33,11 +34,14 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public filters: FilterExpression[] = [];
 
     @Input() availableTags: Tag[] = [];
+    @Input() contextTags: Tag[] = [];
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();
 
     @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
     @ViewChild("tagInputList") inputList!: ElementRef;
+
+    public contextMenuTag: Tag | undefined;
 
     constructor(
         private errorBroker: ErrorBrokerService,
@@ -72,6 +76,11 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             const index = this.filters.findIndex(t => t.partiallyEq(tag));
             this.filters.splice(index, 1);
         }
+    }
+
+    public async addSearchTagAndSearch(tag: string) {
+        this.addSearchTag(tag);
+        await this.searchForFiles();
     }
 
     public getValidSearchTags(): Tag[] {
@@ -129,5 +138,9 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
                 await this.searchForFiles();
             }
         });
+    }
+
+    public async copyToClipboard(text: string) {
+        await clipboard.writeText(text);
     }
 }
