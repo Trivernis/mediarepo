@@ -3,7 +3,7 @@ import {CommonModule} from "@angular/common";
 import {TagEditComponent} from "./tag-edit/tag-edit.component";
 import {FileSearchComponent} from "./file-search/file-search.component";
 import {NgIconsModule} from "@ng-icons/core";
-import {MatRemove, MatChangeCircle, MatAddCircle, MatRemoveCircle, MatDeleteSweep, MatFilterAlt} from "@ng-icons/material-icons";
+import {MatRemove, MatChangeCircle, MatAddCircle, MatRemoveCircle, MatDeleteSweep, MatFilterAlt, MatSave, MatEdit} from "@ng-icons/material-icons";
 import {MatRippleModule} from "@angular/material/core";
 import {MatButtonModule} from "@angular/material/button";
 import {InputModule} from "../input/input.module";
@@ -27,7 +27,9 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatMenuModule} from "@angular/material/menu";
 import { FileMetadataComponent } from "./file-metadata/file-metadata.component";
-import { MetadataEntryComponent } from './file-metadata/metadata-entry/metadata-entry.component';
+import { MetadataEntryComponent } from "./file-metadata/metadata-entry/metadata-entry.component";
+import { EditableMetadataEntryComponent } from "./file-metadata/editable-metadata-entry/editable-metadata-entry.component";
+import {ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -41,6 +43,7 @@ import { MetadataEntryComponent } from './file-metadata/metadata-entry/metadata-
         FilesystemImportComponent,
         FileMetadataComponent,
         MetadataEntryComponent,
+        EditableMetadataEntryComponent,
     ],
     exports: [
         TagEditComponent,
@@ -75,6 +78,7 @@ import { MetadataEntryComponent } from './file-metadata/metadata-entry/metadata-
         MatCheckboxModule,
         MatProgressBarModule,
         MatMenuModule,
+        ReactiveFormsModule,
     ]
 })
 export class SidebarModule {

@@ -6,30 +6,22 @@ import {
     SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../models/File";
+import {FileService} from "../../../../services/file/file.service";
 
 @Component({
     selector: "app-file-metadata",
     templateUrl: "./file-metadata.component.html",
     styleUrls: ["./file-metadata.component.scss"]
 })
-export class FileMetadataComponent implements OnInit, OnChanges {
+export class FileMetadataComponent {
 
     @Input() file!: File;
 
-    constructor() {
+    constructor(private fileService: FileService) {
     }
 
-    public async ngOnInit(): Promise<void> {
-        await this.loadFileInformation();
-    }
-
-    public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes["file"]) {
-            await this.loadFileInformation();
-        }
-    }
-
-    private async loadFileInformation() {
-
+    public async saveFileName(name: string) {
+        const newFile = await this.fileService.updateFileName(this.file, name);
+        this.file.name = newFile.name;
     }
 }

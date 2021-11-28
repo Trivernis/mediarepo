@@ -1,0 +1,17 @@
+.metadata-inner {
+    display: flex;
+    flex-direction: row;
+}
+
+button {
+    float: right;
+}
+
+app-metadata-entry {
+    width: calc(100% - 4em);
+    display: block;
+}
+
+mat-form-field {
+    width: calc(100% - 4em);
+}

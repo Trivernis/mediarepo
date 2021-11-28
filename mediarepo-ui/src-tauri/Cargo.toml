@@ -19,14 +19,14 @@ tauri = { version = "1.0.0-beta.8", features = ["dialog-all", "path-all"] }
 thiserror = "1.0.30"
 typemap_rev = "0.1.5"
 
-  [dependencies.tracing-subscriber]
-  version = "0.3.0"
-  features = [ "env-filter" ]
+[dependencies.tracing-subscriber]
+version = "0.3.0"
+features = [ "env-filter" ]
 
-  [dependencies.mediarepo-api]
-  git = "https://github.com/Trivernis/mediarepo-api.git"
-  rev = "16b892eab0b3446198601a8f5829d0bd54d2efdf"
-  features = [ "tauri-plugin" ]
+[dependencies.mediarepo-api]
+git = "https://github.com/Trivernis/mediarepo-api.git"
+rev = "914292532e562eed389a1a49e0bb802a9f9327e1"
+features = [ "tauri-plugin" ]
 
 [features]
 default = [ "custom-protocol" ]
