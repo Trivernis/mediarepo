@@ -16,6 +16,8 @@ mod utils;
 
 use commands::*;
 
+const MAX_BUFFER_SIZE: usize = 2 * 1024 * 1024 * 1024;
+
 pub fn register_plugin<R: Runtime>(builder: Builder<R>) -> Builder<R> {
     let repo_plugin = MediarepoPlugin::new();
 
@@ -84,6 +86,7 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(10));
             buffer_state.clear_expired();
+            buffer_state.trim_to_size(MAX_BUFFER_SIZE);
         });
 
         Ok(())

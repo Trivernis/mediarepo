@@ -104,7 +104,6 @@ pub async fn read_file(
     api_state: ApiAccess<'_>,
     buffer_state: BufferAccess<'_>,
     hash: String,
-    mime_type: String,
 ) -> PluginResult<Vec<u8>> {
     if let Some(buffer) = buffer_state.get_entry(&hash) {
         Ok(buffer.buf)
@@ -114,7 +113,6 @@ pub async fn read_file(
             .file
             .read_file(FileIdentifier::Hash(hash.clone()))
             .await?;
-        buffer_state.add_entry(hash, mime_type, content.clone());
 
         Ok(content)
     }

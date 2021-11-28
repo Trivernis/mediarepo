@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::mem;
+use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -119,6 +120,42 @@ impl BufferState {
                 buffer.remove(&key);
             }
         }
+    }
+
+    /// Trims the buffer to the given target size
+    pub fn trim_to_size(&self, target_size: usize) {
+        let mut size = self.get_size();
+        if size < target_size {
+            return;
+        }
+
+        let mut keys: Vec<String> = {
+            let buffer = self.buffer.read();
+            buffer.keys().cloned().collect()
+        };
+        keys.reverse();
+
+        while size > target_size && keys.len() > 0 {
+            let key = keys.pop().unwrap();
+            let mut buffers = self.buffer.write();
+
+            if let Some(entry) = buffers.remove(&key) {
+                size -= entry.lock().buf.len();
+            }
+        }
+    }
+
+    /// Calculates the size of the whole buffer
+    pub fn get_size(&self) -> usize {
+        let buffer = self.buffer.read();
+        let mut size = 0;
+
+        for value in buffer.deref().values() {
+            let value = value.lock();
+            size += value.buf.len();
+        }
+
+        size
     }
 }
 
