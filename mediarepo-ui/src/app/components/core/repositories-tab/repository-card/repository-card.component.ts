@@ -54,6 +54,13 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
             }
         }).afterClosed().subscribe(async confirmation => {
             if (confirmation === true) {
+                if (this.isSelectedRepository()) {
+                    if (this.repository.local) {
+                        await this.repoService.closeSelectedRepository();
+                    } else {
+                        await this.repoService.disconnectSelectedRepository();
+                    }
+                }
                 await this.repoService.removeRepository(this.repository.name);
             }
         });

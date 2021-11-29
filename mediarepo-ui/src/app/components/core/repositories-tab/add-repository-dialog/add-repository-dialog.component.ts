@@ -57,7 +57,11 @@ export class AddRepositoryDialogComponent implements OnInit {
 
     public async initLocalRepository() {
         const path = this.formGroup.value.path;
-        await this.repoService.initRepository(path);
+        try {
+            await this.repoService.initRepository(path);
+        } catch (err) {
+            this.errorBroker.showError(err);
+        }
         await this.checkLocalRepoExists();
     }
 
