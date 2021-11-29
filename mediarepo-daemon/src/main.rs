@@ -67,11 +67,12 @@ enum SubCommand {
 
 fn main() -> RepoResult<()> {
     let mut opt: Opt = Opt::from_args();
-    opt.repo = env::current_dir()
-        .unwrap()
-        .join(opt.repo)
-        .canonicalize()
-        .unwrap();
+    opt.repo = env::current_dir().unwrap().join(opt.repo);
+
+    if opt.repo.exists() {
+        opt.repo = opt.repo.canonicalize().unwrap();
+    }
+
     let mut _guard = None;
     if opt.profile {
         _guard = Some(logging::init_tracing_flame());
