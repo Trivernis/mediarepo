@@ -82,6 +82,29 @@ pub async fn remove_repository(app_state: AppAccess<'_>, name: String) -> Plugin
 }
 
 #[tauri::command]
+pub async fn delete_repository(app_state: AppAccess<'_>, name: String) -> PluginResult<()> {
+    let settings = app_state.settings.read().await;
+
+    if let Some(repository) = settings.repositories.get(&name) {
+        if let Some(path) = &repository.path {
+            fs::remove_dir_all(PathBuf::from(path)).await?;
+
+            Ok(())
+        } else {
+            Err(PluginError::from(format!(
+                "The repository '{}' is a remote repository",
+                name
+            )))
+        }
+    } else {
+        Err(PluginError::from(format!(
+            "The repository '{}' does not exist.",
+            name
+        )))
+    }
+}
+
+#[tauri::command]
 pub async fn check_local_repository_exists(path: String) -> PluginResult<bool> {
     let config_path = PathBuf::from(path).join(REPO_CONFIG_FILE);
 

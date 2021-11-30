@@ -57,7 +57,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 add_local_file,
                 save_file_locally,
                 delete_thumbnails,
-                read_file
+                read_file,
+                delete_repository
             ]),
         }
     }
