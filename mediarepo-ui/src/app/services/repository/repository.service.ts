@@ -119,6 +119,16 @@ export class RepositoryService {
     }
 
     /**
+     * Deletes a local repository from the filesystem
+     * @param {string} name
+     * @returns {Promise<void>}
+     */
+    public async deleteRepository(name: string): Promise<void> {
+        await invoke("plugin:mediarepo|delete_repository", {name});
+        await this.removeRepository(name);
+    }
+
+    /**
      * Starts a daemon for the given repository path
      * @param {string} repoPath
      * @returns {Promise<void>}

@@ -45,25 +45,46 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
     }
 
     public async removeRepository() {
-        await this.dialog.open(ConfirmDialogComponent, {
+        const confirmation = await this.dialog.open(ConfirmDialogComponent, {
             data: {
                 title: "Remove repository",
                 message: `Do you really want to remove the repository "${this.repository.name}"?`,
                 confirmAction: "Remove",
                 confirmColor: "warn"
             }
-        }).afterClosed().subscribe(async confirmation => {
-            if (confirmation === true) {
-                if (this.isSelectedRepository()) {
-                    if (this.repository.local) {
-                        await this.repoService.closeSelectedRepository();
-                    } else {
-                        await this.repoService.disconnectSelectedRepository();
-                    }
+        }).afterClosed().toPromise();
+        if (confirmation === true) {
+            if (this.isSelectedRepository()) {
+                if (this.repository.local) {
+                    await this.repoService.closeSelectedRepository();
+                } else {
+                    await this.repoService.disconnectSelectedRepository();
                 }
+            }
+            await this.promtDeleteRepository();
+        }
+    }
+
+    private async promtDeleteRepository() {
+        if (this.repository.local) {
+            const deleteContents = await this.dialog.open(
+                ConfirmDialogComponent, {
+                    data: {
+                        title: "Delete repository content",
+                        message: "Do you want to remove the contents of the repository as well?",
+                        confirmAction: "Delete",
+                        confirmColor: "warn",
+                        denyAction: "No",
+                    }
+                }).afterClosed().toPromise();
+            if (deleteContents) {
+                await this.repoService.deleteRepository(this.repository.name);
+            } else {
                 await this.repoService.removeRepository(this.repository.name);
             }
-        });
+        } else {
+            await this.repoService.removeRepository(this.repository.name);
+        }
     }
 
     public getDaemonStatusText(): string {
