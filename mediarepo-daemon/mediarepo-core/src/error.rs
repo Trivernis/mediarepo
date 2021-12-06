@@ -1,4 +1,3 @@
-use rmp_ipc::error::Error;
 use sea_orm::DbErr;
 use std::fmt::{Display, Formatter};
 use thiserror::Error;
@@ -24,7 +23,7 @@ pub enum RepoError {
     TomlSer(#[from] toml::ser::Error),
 
     #[error(transparent)]
-    IPC(#[from] rmp_ipc::error::Error),
+    IPC(#[from] mediarepo_api::bromine::error::Error),
 
     #[error(transparent)]
     Raw(StringError),
@@ -77,8 +76,8 @@ impl From<&str> for RepoError {
     }
 }
 
-impl From<RepoError> for rmp_ipc::error::Error {
-    fn from(e: RepoError) -> Error {
-        rmp_ipc::error::Error::Message(format!("{:?}", e))
+impl From<RepoError> for mediarepo_api::bromine::error::Error {
+    fn from(e: RepoError) -> mediarepo_api::bromine::error::Error {
+        mediarepo_api::bromine::error::Error::Message(format!("{:?}", e))
     }
 }

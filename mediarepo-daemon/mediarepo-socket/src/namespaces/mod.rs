@@ -1,5 +1,5 @@
-use mediarepo_core::rmp_ipc::prelude::AsyncStreamProtocolListener;
-use mediarepo_core::rmp_ipc::{namespace, namespace::Namespace, IPCBuilder};
+use mediarepo_core::bromine::prelude::AsyncStreamProtocolListener;
+use mediarepo_core::bromine::{namespace, namespace::Namespace, IPCBuilder};
 
 pub mod files;
 pub mod tags;

@@ -12,7 +12,6 @@ multibase = "0.9.1"
 base64 = "0.13.0"
 toml = "0.5.8"
 serde = "1.0.130"
-rmp-ipc = "0.11.0"
 typemap_rev = "0.1.5"
 futures = "0.3.17"
 itertools = "0.10.1"
@@ -35,6 +34,10 @@ features = ["migrate"]
 version = "1.12.0"
 features = ["fs", "io-util", "io-std"]
 
+[dependencies.mediarepo-api]
+git = "https://github.com/Trivernis/mediarepo-api.git"
+rev = "d64787c36e6cf68567db1c480860cd95b7c20e3f"
+features = ["bromine"]
 
 [features]
 default = []

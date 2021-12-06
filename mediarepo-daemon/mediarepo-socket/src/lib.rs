@@ -1,6 +1,6 @@
-use mediarepo_api::types::misc::InfoResponse;
+use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::rmp_ipc::prelude::*;
+use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::type_keys::SettingsKey;
 use mediarepo_model::repo::Repo;
@@ -68,14 +68,12 @@ fn get_builder<L: AsyncStreamProtocolListener>(address: L::AddressType) -> IPCBu
 }
 
 #[tracing::instrument(skip_all)]
-async fn info<S: AsyncProtocolStream>(ctx: &Context<S>, event: Event) -> IPCResult<()> {
+async fn info(ctx: &Context, _: Event) -> IPCResult<()> {
     let response = InfoResponse::new(
         env!("CARGO_PKG_NAME").to_string(),
         env!("CARGO_PKG_VERSION").to_string(),
     );
-    ctx.emitter
-        .emit_response(event.id(), "info", response)
-        .await?;
+    ctx.emit("info", response).await?;
 
     Ok(())
 }

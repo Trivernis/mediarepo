@@ -1,5 +1,7 @@
-use mediarepo_api::types::files::{FileMetadataResponse, ThumbnailMetadataResponse};
-use mediarepo_api::types::tags::TagResponse;
+use mediarepo_core::mediarepo_api::types::files::{
+    FileMetadataResponse, ThumbnailMetadataResponse,
+};
+use mediarepo_core::mediarepo_api::types::tags::TagResponse;
 use mediarepo_model::file::File;
 use mediarepo_model::tag::Tag;
 use mediarepo_model::thumbnail::Thumbnail;

@@ -157,6 +157,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 
 [[package]]
+name = "bincode"
+version = "1.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "bindgen"
 version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -232,6 +241,24 @@ name = "block-padding"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d696c370c750c948ada61c69a0ee2cbbb9c50b1019ddb86d9317157a99c2cae"
+
+[[package]]
+name = "bromine"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "913d14c7bfcf3b8ea8a6fc9fc2217dc734a9557c54ebe2dd4a3cc8e769ffffc4"
+dependencies = [
+ "async-trait",
+ "bincode",
+ "byteorder",
+ "futures 0.3.17",
+ "lazy_static",
+ "serde",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "typemap_rev",
+]
 
 [[package]]
 name = "bumpalo"
@@ -936,9 +963,10 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.12.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=16b892eab0b3446198601a8f5829d0bd54d2efdf#16b892eab0b3446198601a8f5829d0bd54d2efdf"
+version = "0.13.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=d64787c36e6cf68567db1c480860cd95b7c20e3f#d64787c36e6cf68567db1c480860cd95b7c20e3f"
 dependencies = [
+ "bromine",
  "chrono",
  "serde",
  "serde_piecewise_default",
@@ -954,9 +982,9 @@ dependencies = [
  "futures 0.3.17",
  "glob",
  "itertools",
+ "mediarepo-api",
  "multibase",
  "multihash",
- "rmp-ipc",
  "sea-orm",
  "serde",
  "sqlx",
@@ -1020,7 +1048,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "compare",
- "mediarepo-api",
  "mediarepo-core",
  "mediarepo-database",
  "mediarepo-model",
@@ -1642,45 +1669,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3acd125665422973a33ac9d3dd2df85edad0f4ae9b00dafb1a05e43a9f5ef8e7"
 dependencies = [
  "winapi",
-]
-
-[[package]]
-name = "rmp"
-version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f55e5fa1446c4d5dd1f5daeed2a4fe193071771a2636274d0d7a3b082aa7ad6"
-dependencies = [
- "byteorder",
- "num-traits",
-]
-
-[[package]]
-name = "rmp-ipc"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "573eb3e2e1008f550b7b5a53053d5ed8378fbda57731fa3739c3cfb18ad667f6"
-dependencies = [
- "async-trait",
- "byteorder",
- "futures 0.3.17",
- "lazy_static",
- "rmp-serde",
- "serde",
- "thiserror",
- "tokio",
- "tracing",
- "typemap_rev",
-]
-
-[[package]]
-name = "rmp-serde"
-version = "0.15.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "723ecff9ad04f4ad92fe1c8ca6c20d2196d9286e9c60727c4cb5511629260e9d"
-dependencies = [
- "byteorder",
- "rmp",
- "serde",
 ]
 
 [[package]]

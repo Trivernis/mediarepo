@@ -1,6 +1,7 @@
 pub use futures;
 pub use itertools;
-pub use rmp_ipc;
+pub use mediarepo_api;
+pub use mediarepo_api::bromine;
 pub use thumbnailer;
 
 pub mod context;
