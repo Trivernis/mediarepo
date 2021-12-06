@@ -160,6 +160,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
+name = "bromine"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "913d14c7bfcf3b8ea8a6fc9fc2217dc734a9557c54ebe2dd4a3cc8e769ffffc4"
+dependencies = [
+ "async-trait",
+ "bincode",
+ "byteorder",
+ "futures",
+ "lazy_static",
+ "serde",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "typemap_rev",
+]
+
+[[package]]
 name = "bstr"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1473,16 +1491,16 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.12.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=e5b5158635191af5188e8bee7fd623328b28ab3b#e5b5158635191af5188e8bee7fd623328b28ab3b"
+version = "0.13.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=d64787c36e6cf68567db1c480860cd95b7c20e3f#d64787c36e6cf68567db1c480860cd95b7c20e3f"
 dependencies = [
  "async-trait",
+ "bromine",
  "chrono",
  "directories",
  "futures",
  "mime_guess",
  "parking_lot",
- "rmp-ipc",
  "serde",
  "serde_json",
  "serde_piecewise_default",
@@ -2295,45 +2313,6 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winapi",
-]
-
-[[package]]
-name = "rmp"
-version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f55e5fa1446c4d5dd1f5daeed2a4fe193071771a2636274d0d7a3b082aa7ad6"
-dependencies = [
- "byteorder",
- "num-traits",
-]
-
-[[package]]
-name = "rmp-ipc"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "573eb3e2e1008f550b7b5a53053d5ed8378fbda57731fa3739c3cfb18ad667f6"
-dependencies = [
- "async-trait",
- "byteorder",
- "futures",
- "lazy_static",
- "rmp-serde",
- "serde",
- "thiserror",
- "tokio",
- "tracing",
- "typemap_rev",
-]
-
-[[package]]
-name = "rmp-serde"
-version = "0.15.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "723ecff9ad04f4ad92fe1c8ca6c20d2196d9286e9c60727c4cb5511629260e9d"
-dependencies = [
- "byteorder",
- "rmp",
- "serde",
 ]
 
 [[package]]
