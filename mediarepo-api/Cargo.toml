@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2018"
 license = "gpl-3"
 
@@ -10,7 +10,6 @@ license = "gpl-3"
 tracing = "0.1.29"
 thiserror = "1.0.30"
 async-trait = {version = "0.1.51", optional=true}
-rmp-ipc = {version = "0.11.0", optional=true}
 parking_lot = {version="0.11.2", optional=true}
 serde_json = {version="1.0.68", optional=true}
 directories = {version="4.0.1", optional=true}
@@ -18,6 +17,11 @@ mime_guess = {version = "2.0.3", optional=true}
 serde_piecewise_default = "0.2.0"
 futures = {version = "0.3.17", optional=true}
 url = {version = "2.2.2", optional=true }
+
+[dependencies.bromine]
+version = "0.16.1"
+optional = true
+features = ["serialize_bincode"]
 
 [dependencies.serde]
 version = "1.0.130"
@@ -43,5 +47,5 @@ version = "0.5.8"
 optional = true
 
 [features]
-tauri-plugin = ["client-api","tauri", "rmp-ipc", "parking_lot", "serde_json", "tokio", "toml", "directories", "mime_guess", "futures", "url"]
-client-api = ["rmp-ipc", "async-trait", "tokio"]
+tauri-plugin = ["client-api","tauri", "parking_lot", "serde_json", "tokio", "toml", "directories", "mime_guess", "futures", "url"]
+client-api = ["bromine", "async-trait", "tokio"]

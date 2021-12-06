@@ -1,7 +1,7 @@
 use crate::tauri_plugin::commands::AppAccess;
 use crate::tauri_plugin::error::PluginResult;
-use rmp_ipc::prelude::{IPCError, IPCResult};
-use rmp_ipc::IPCBuilder;
+use bromine::prelude::{IPCError, IPCResult};
+use bromine::IPCBuilder;
 use std::io::ErrorKind;
 use std::net::{SocketAddr, ToSocketAddrs};
 use tokio::net::TcpListener;
@@ -43,11 +43,7 @@ async fn try_connect_daemon(address: String) -> IPCResult<()> {
         .address(address)
         .build_client()
         .await?;
-    ctx.emitter
-        .emit("info", ())
-        .await?
-        .await_reply(&ctx)
-        .await?;
+    ctx.emit("info", ()).await?.await_reply(&ctx).await?;
     ctx.stop().await?;
     Ok(())
 }

@@ -8,34 +8,27 @@ use crate::client_api::file::FileApi;
 use crate::client_api::tag::TagApi;
 use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
 use async_trait::async_trait;
-use rmp_ipc::context::{PoolGuard, PooledContext};
-use rmp_ipc::ipc::context::Context;
-use rmp_ipc::ipc::stream_emitter::EmitMetadata;
-use rmp_ipc::payload::{EventReceivePayload, EventSendPayload};
-use rmp_ipc::prelude::{AsyncProtocolStream, AsyncStreamProtocolListener};
-use rmp_ipc::IPCBuilder;
+use bromine::ipc::stream_emitter::EmitMetadata;
+use bromine::prelude::*;
 use std::time::Duration;
 
 #[async_trait]
-pub trait IPCApi<S: AsyncProtocolStream> {
+pub trait IPCApi {
     fn namespace() -> &'static str;
-    fn ctx(&self) -> PoolGuard<Context<S>>;
+    fn ctx(&self) -> PoolGuard<Context>;
 
-    async fn emit<T: EventSendPayload + Send>(
+    async fn emit<T: IntoPayload + Send>(
         &self,
         event_name: &str,
         data: T,
     ) -> ApiResult<EmitMetadata> {
         let ctx = self.ctx();
-        let meta = ctx
-            .emitter
-            .emit_to(Self::namespace(), event_name, data)
-            .await?;
+        let meta = ctx.emit_to(Self::namespace(), event_name, data).await?;
 
         Ok(meta)
     }
 
-    async fn emit_and_get<T: EventSendPayload + Send, R: EventReceivePayload + Send>(
+    async fn emit_and_get<T: IntoPayload + Send, R: FromPayload + Send>(
         &self,
         event_name: &str,
         data: T,
@@ -43,19 +36,16 @@ pub trait IPCApi<S: AsyncProtocolStream> {
         let meta = self.emit(event_name, data).await?;
         let response = meta.await_reply(&self.ctx()).await?;
 
-        Ok(response.data()?)
+        Ok(response.payload()?)
     }
 }
-pub struct ApiClient<L: AsyncStreamProtocolListener> {
-    ctx: PooledContext<L::Stream>,
-    pub file: FileApi<L::Stream>,
-    pub tag: TagApi<L::Stream>,
+pub struct ApiClient {
+    ctx: PooledContext,
+    pub file: FileApi,
+    pub tag: TagApi,
 }
 
-impl<L> Clone for ApiClient<L>
-where
-    L: AsyncStreamProtocolListener,
-{
+impl Clone for ApiClient {
     fn clone(&self) -> Self {
         Self {
             ctx: self.ctx.clone(),
@@ -65,12 +55,9 @@ where
     }
 }
 
-impl<L> ApiClient<L>
-where
-    L: AsyncStreamProtocolListener,
-{
+impl ApiClient {
     /// Creates a new client from an existing ipc context
-    pub fn new(ctx: PooledContext<L::Stream>) -> Self {
+    pub fn new(ctx: PooledContext) -> Self {
         Self {
             file: FileApi::new(ctx.clone()),
             tag: TagApi::new(ctx.clone()),
@@ -80,7 +67,9 @@ where
 
     /// Connects to the ipc Socket
     #[tracing::instrument(level = "debug")]
-    pub async fn connect(address: L::AddressType) -> ApiResult<Self> {
+    pub async fn connect<L: AsyncStreamProtocolListener>(
+        address: L::AddressType,
+    ) -> ApiResult<Self> {
         let ctx = IPCBuilder::<L>::new()
             .address(address)
             .timeout(Duration::from_secs(10))
@@ -109,13 +98,8 @@ where
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn info(&self) -> ApiResult<InfoResponse> {
         let ctx = self.ctx.acquire();
-        let res = ctx
-            .emitter
-            .emit("info", ())
-            .await?
-            .await_reply(&ctx)
-            .await?;
-        Ok(res.data::<InfoResponse>()?)
+        let res = ctx.emit("info", ()).await?.await_reply(&ctx).await?;
+        Ok(res.payload::<InfoResponse>()?)
     }
 
     #[tracing::instrument(level = "debug", skip(self))]

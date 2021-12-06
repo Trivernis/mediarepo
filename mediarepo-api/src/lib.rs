@@ -8,3 +8,5 @@ pub mod daemon_management;
 
 #[cfg(feature = "tauri-plugin")]
 pub mod tauri_plugin;
+
+pub use bromine;

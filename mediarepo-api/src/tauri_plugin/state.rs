@@ -9,14 +9,13 @@ use parking_lot::RwLock as ParkingRwLock;
 use tauri::async_runtime::RwLock;
 use tokio::time::Instant;
 
-use crate::client_api::protocol::ApiProtocolListener;
 use crate::client_api::ApiClient;
 use crate::daemon_management::cli::DaemonCli;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{load_settings, Repository, Settings};
 
 pub struct ApiState {
-    inner: Arc<RwLock<Option<ApiClient<ApiProtocolListener>>>>,
+    inner: Arc<RwLock<Option<ApiClient>>>,
 }
 
 unsafe impl Send for ApiState {}
@@ -30,7 +29,7 @@ impl ApiState {
     }
 
     /// Sets the active api client and disconnects the old one
-    pub async fn set_api(&self, client: ApiClient<ApiProtocolListener>) {
+    pub async fn set_api(&self, client: ApiClient) {
         let mut inner = self.inner.write().await;
         let old_client = mem::replace(&mut *inner, Some(client));
 
@@ -49,7 +48,7 @@ impl ApiState {
         }
     }
 
-    pub async fn api(&self) -> PluginResult<ApiClient<ApiProtocolListener>> {
+    pub async fn api(&self) -> PluginResult<ApiClient> {
         let inner = self.inner.read().await;
         inner
             .clone()

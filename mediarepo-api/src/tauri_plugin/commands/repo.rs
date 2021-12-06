@@ -1,3 +1,4 @@
+use crate::client_api::protocol::ApiProtocolListener;
 use crate::client_api::ApiClient;
 use crate::tauri_plugin::commands::{ApiAccess, AppAccess};
 use crate::tauri_plugin::error::{PluginError, PluginResult};
@@ -165,7 +166,7 @@ pub async fn select_repository(
             .ok_or_else(|| PluginError::from("Missing repo path or address in config."))?;
         get_repo_address(path).await?
     };
-    let client = ApiClient::connect(address).await?;
+    let client = ApiClient::connect::<ApiProtocolListener>(address).await?;
     api_state.set_api(client).await;
 
     let mut active_repo = app_state.active_repo.write().await;

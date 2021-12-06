@@ -1,6 +1,6 @@
 use crate::client_api::error::ApiError;
 use crate::daemon_management::error::DaemonError;
-use rmp_ipc::error::Error;
+use bromine::error::Error;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
 

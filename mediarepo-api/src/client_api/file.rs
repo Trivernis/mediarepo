@@ -7,18 +7,15 @@ use crate::types::files::{
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
-use rmp_ipc::context::{PoolGuard, PooledContext};
-use rmp_ipc::payload::{BytePayload, EventSendPayload};
-use rmp_ipc::prelude::*;
+use bromine::context::{PoolGuard, PooledContext};
+use bromine::payload::BytePayload;
+use bromine::prelude::*;
 
-pub struct FileApi<S: AsyncProtocolStream> {
-    ctx: PooledContext<S>,
+pub struct FileApi {
+    ctx: PooledContext,
 }
 
-impl<S> Clone for FileApi<S>
-where
-    S: AsyncProtocolStream,
-{
+impl Clone for FileApi {
     fn clone(&self) -> Self {
         Self {
             ctx: self.ctx.clone(),
@@ -27,25 +24,19 @@ where
 }
 
 #[async_trait]
-impl<S> IPCApi<S> for FileApi<S>
-where
-    S: AsyncProtocolStream,
-{
+impl IPCApi for FileApi {
     fn namespace() -> &'static str {
         "files"
     }
 
-    fn ctx(&self) -> PoolGuard<Context<S>> {
+    fn ctx(&self) -> PoolGuard<Context> {
         self.ctx.acquire()
     }
 }
 
-impl<S> FileApi<S>
-where
-    S: AsyncProtocolStream,
-{
+impl FileApi {
     /// Creates a new file api client
-    pub fn new(ctx: PooledContext<S>) -> Self {
+    pub fn new(ctx: PooledContext) -> Self {
         Self { ctx }
     }
 
@@ -84,7 +75,7 @@ where
             .emit_and_get("read_file", ReadFileRequest { id })
             .await?;
 
-        Ok(payload.to_payload_bytes()?)
+        Ok(payload.into_inner())
     }
 
     /// Returns a list of all thumbnails of the file
@@ -105,7 +96,7 @@ where
         min_size: (u32, u32),
         max_size: (u32, u32),
     ) -> ApiResult<(ThumbnailMetadataResponse, Vec<u8>)> {
-        let payload: TandemPayload<ThumbnailMetadataResponse, BytePayload> = self
+        let payload: TandemPayload<SerdePayload<ThumbnailMetadataResponse>, BytePayload> = self
             .emit_and_get(
                 "get_thumbnail_of_size",
                 GetFileThumbnailOfSizeRequest {
@@ -117,7 +108,7 @@ where
             .await?;
         let (metadata, bytes) = payload.into_inner();
 
-        Ok((metadata, bytes.into_inner()))
+        Ok((metadata.data(), bytes.into_inner()))
     }
 
     /// Updates a files name

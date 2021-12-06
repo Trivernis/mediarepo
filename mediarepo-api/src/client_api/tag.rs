@@ -4,18 +4,14 @@ use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
 use crate::types::identifier::FileIdentifier;
 use crate::types::tags::{ChangeFileTagsRequest, TagResponse};
 use async_trait::async_trait;
-use rmp_ipc::context::{PoolGuard, PooledContext};
-use rmp_ipc::ipc::context::Context;
-use rmp_ipc::protocol::AsyncProtocolStream;
+use bromine::context::{PoolGuard, PooledContext};
+use bromine::ipc::context::Context;
 
-pub struct TagApi<S: AsyncProtocolStream> {
-    ctx: PooledContext<S>,
+pub struct TagApi {
+    ctx: PooledContext,
 }
 
-impl<S> Clone for TagApi<S>
-where
-    S: AsyncProtocolStream,
-{
+impl Clone for TagApi {
     fn clone(&self) -> Self {
         Self {
             ctx: self.ctx.clone(),
@@ -24,24 +20,18 @@ where
 }
 
 #[async_trait]
-impl<S> IPCApi<S> for TagApi<S>
-where
-    S: AsyncProtocolStream,
-{
+impl IPCApi for TagApi {
     fn namespace() -> &'static str {
         "tags"
     }
 
-    fn ctx(&self) -> PoolGuard<Context<S>> {
+    fn ctx(&self) -> PoolGuard<Context> {
         self.ctx.acquire()
     }
 }
 
-impl<S> TagApi<S>
-where
-    S: AsyncProtocolStream,
-{
-    pub fn new(ctx: PooledContext<S>) -> Self {
+impl TagApi {
+    pub fn new(ctx: PooledContext) -> Self {
         Self { ctx }
     }
 
