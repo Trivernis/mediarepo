@@ -33,6 +33,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatInputModule} from "@angular/material/input";
 import {TagModule} from "../shared/tag/tag.module";
+import { RepositoryFormComponent } from './repositories-tab/repository-form/repository-form.component';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import {TagModule} from "../shared/tag/tag.module";
         ImportTabSidebarComponent,
         RepositoryCardComponent,
         AddRepositoryDialogComponent,
+        RepositoryFormComponent,
     ],
     exports: [
         CoreComponent,

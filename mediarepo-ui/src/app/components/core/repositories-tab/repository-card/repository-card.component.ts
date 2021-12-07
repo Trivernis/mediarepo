@@ -40,6 +40,7 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
         }
     }
 
+
     public isSelectedRepository(): boolean {
         return this.repoService.selectedRepository.getValue()?.name === this.repository.name
     }
