@@ -11,3 +11,6 @@ pub mod tauri_plugin;
 
 #[cfg(feature = "bromine")]
 pub use bromine;
+
+#[cfg(test)]
+mod test;

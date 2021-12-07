@@ -45,3 +45,6 @@ jobs:
 
       - name: Build Plugin
         run: cargo build --features=tauri-plugin
+
+      - name: Test
+        run: cargo test --all-features
