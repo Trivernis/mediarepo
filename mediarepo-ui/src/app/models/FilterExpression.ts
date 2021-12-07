@@ -1,4 +1,5 @@
 import {TagQuery} from "./TagQuery";
+import {createRustEnum, RustEnum} from "./rust-types";
 
 export interface FilterExpression {
     filter_type: "OrExpression" | "Query";
@@ -13,6 +14,8 @@ export interface FilterExpression {
     clone(): FilterExpression;
 
     queryList(): TagQuery[];
+
+    toBackendType(): RustEnum<TagQuery | TagQuery[]>;
 }
 
 export class OrFilterExpression implements FilterExpression {
@@ -60,6 +63,10 @@ export class OrFilterExpression implements FilterExpression {
         }
         this.filter = newEntries.reverse();
     }
+
+    public toBackendType(): RustEnum<TagQuery | TagQuery[]> {
+        return createRustEnum(this.filter_type, this.filter);
+    }
 }
 
 export class SingleFilterExpression implements FilterExpression {
@@ -89,5 +96,9 @@ export class SingleFilterExpression implements FilterExpression {
 
     public queryList(): TagQuery[] {
         return [this.filter]
+    }
+
+    public toBackendType(): RustEnum<TagQuery | TagQuery[]> {
+        return createRustEnum(this.filter_type, this.filter);
     }
 }

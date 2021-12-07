@@ -35,8 +35,9 @@ export class FileService {
 
     public async findFiles(filters: FilterExpression[], sortBy: SortKey[]) {
         console.log(filters);
+        let backendFilters = filters.map(f => f.toBackendType());
         let files = await invoke<File[]>("plugin:mediarepo|find_files",
-            {filters, sortBy: sortBy.map(k => k.toBackendType())});
+            {filters: backendFilters, sortBy: sortBy.map(k => k.toBackendType())});
         this.displayedFiles.next(files);
     }
 
