@@ -1,72 +1,73 @@
 {
-  "package": {
-    "productName": "mediarepo-ui",
-    "version": "0.1.0"
-  },
-  "build": {
-    "distDir": "../dist/mediarepo-ui",
-    "devPath": "http://localhost:4200",
-    "beforeDevCommand": "yarn start",
-    "beforeBuildCommand": "yarn build"
-  },
-  "tauri": {
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "net.trivernis.mediarepo",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "resources": [],
-      "externalBin": [],
-      "copyright": "",
-      "category": "Productivity",
-      "shortDescription": "A media mangagement tool",
-      "longDescription": "",
-      "deb": {
-        "depends": [],
-        "useBootstrapper": false
-      },
-      "macOS": {
-        "frameworks": [],
-        "minimumSystemVersion": "",
-        "useBootstrapper": false,
-        "exceptionDomain": "",
-        "signingIdentity": null,
-        "entitlements": null
-      },
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
+    "package": {
+        "productName": "mediarepo-ui",
+        "version": "0.1.0"
     },
-    "updater": {
-      "active": false
+    "build": {
+        "distDir": "../dist/mediarepo-ui",
+        "devPath": "http://localhost:4200",
+        "beforeDevCommand": "yarn start",
+        "beforeBuildCommand": "yarn build"
     },
-    "allowlist": {
-      "dialog": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      }
-    },
-    "windows": [
-      {
-        "title": "Mediarepo",
-        "width": 1920,
-        "height": 1080,
-        "resizable": true,
-        "fullscreen": false
-      }
-    ],
-    "security": {
-      "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self' once: thumb: content:"
+    "tauri": {
+        "bundle": {
+            "active": true,
+            "targets": "all",
+            "identifier": "net.trivernis.mediarepo",
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico",
+                "icons/icon.svg"
+            ],
+            "resources": [],
+            "externalBin": [],
+            "copyright": "",
+            "category": "Productivity",
+            "shortDescription": "A media mangagement tool",
+            "longDescription": "",
+            "deb": {
+                "depends": [],
+                "useBootstrapper": false
+            },
+            "macOS": {
+                "frameworks": [],
+                "minimumSystemVersion": "",
+                "useBootstrapper": false,
+                "exceptionDomain": "",
+                "signingIdentity": null,
+                "entitlements": null
+            },
+            "windows": {
+                "certificateThumbprint": null,
+                "digestAlgorithm": "sha256",
+                "timestampUrl": ""
+            }
+        },
+        "updater": {
+            "active": false
+        },
+        "allowlist": {
+            "dialog": {
+                "all": true
+            },
+            "path": {
+                "all": true
+            }
+        },
+        "windows": [
+            {
+                "title": "Mediarepo",
+                "width": 1920,
+                "height": 1080,
+                "resizable": true,
+                "fullscreen": false
+            }
+        ],
+        "security": {
+            "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self' once: thumb: content:"
+        }
     }
-  }
 }
