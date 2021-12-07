@@ -1,6 +1,9 @@
 <h1 align="center">
 mediarepo-daemon
 </h1>
+<p align="center">
+<img src="https://github.com/Trivernis/mediarepo-ui/raw/main/src-tauri/icons/64x64.png"/>
+</p>
 <h3 align="center" style="color:red">This repository is a work in progress</h3>
 
 - - -
