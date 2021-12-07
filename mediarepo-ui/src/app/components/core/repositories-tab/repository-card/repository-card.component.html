@@ -29,6 +29,7 @@
                 <ng-icon name="mat-more-vert"></ng-icon>
             </button>
             <mat-menu #menu="matMenu">
+                <button (click)="openEditRepositoryDialog()" mat-menu-item>Edit</button>
                 <button (click)="removeRepository()" *ngIf="repository.local" mat-menu-item>Delete</button>
                 <button (click)="removeRepository()" *ngIf="!repository.local" mat-menu-item>Remove</button>
             </mat-menu>

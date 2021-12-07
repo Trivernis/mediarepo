@@ -5,6 +5,9 @@ import {ErrorBrokerService} from "../../../../services/error-broker/error-broker
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
 import {BusyIndicatorComponent} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
+import {
+    EditRepositoryDialogComponent
+} from "../edit-repository-dialog/edit-repository-dialog.component";
 
 @Component({
     selector: "app-repository-card",
@@ -39,7 +42,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
             clearInterval(this.statusRefreshInterval);
         }
     }
-
 
     public isSelectedRepository(): boolean {
         return this.repoService.selectedRepository.getValue()?.name === this.repository.name
@@ -136,5 +138,16 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
     async checkRemoteRepositoryStatus() {
         this.daemonRunning = await this.repoService.checkDaemonRunning(
             this.repository.address!);
+    }
+
+    public openEditRepositoryDialog(): void {
+        this.dialog.open(EditRepositoryDialogComponent, {
+            disableClose: true,
+            minWidth: "30%",
+            minHeight: "30%",
+            data: {
+                repository: this.repository
+            }
+        })
     }
 }

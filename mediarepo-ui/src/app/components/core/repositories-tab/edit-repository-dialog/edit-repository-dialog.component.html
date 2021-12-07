@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Edit {{this.selectedRepository.name}}</h1>
+<div mat-dialog-content>
+    <app-repository-form #repoForm [name]="selectedRepository.name" [address]="selectedRepository.address ?? ''"
+                         [repositoryType]="selectedRepository.local? 'local' : 'remote'"
+                         [path]="selectedRepository.path ?? ''" [validateNameDuplicate]="false"></app-repository-form>
+</div>
+<div class="dialog-buttons" mat-dialog-actions>
+    <button (click)="closeDialog()" color="accent" mat-stroked-button>Cancel</button>
+    <button (click)="addRepository()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote' || repoForm.localRepoExists"
+            [disabled]="!repoForm.formGroup.valid" color="primary" mat-flat-button
+            matTooltip="Save the existing repository">Save
+    </button>
+    <button (click)="this.initLocalRepository()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'local' && !repoForm.localRepoExists"
+            [disabled]="!repoForm.formGroup.valid"
+            color="accent" mat-flat-button
+            matTooltip="Initialize the repository in the specified path">Init
+    </button>
+    <button (click)="repoForm.checkRepositoryStatus()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote'" [disabled]="!repoForm.formGroup.valid"
+            class="check-connection-button" mat-stroked-button>Check Connection
+    </button>
+</div>

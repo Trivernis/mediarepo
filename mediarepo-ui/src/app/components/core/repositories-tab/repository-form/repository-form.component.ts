@@ -13,6 +13,7 @@ import {dialog} from "@tauri-apps/api";
 import {
     ErrorBrokerService
 } from "../../../../services/error-broker/error-broker.service";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: "app-repository-form",
@@ -25,6 +26,7 @@ export class RepositoryFormComponent implements OnInit {
     @Input() repositoryType: "local" | "remote" = "local";
     @Input() path: string = "";
     @Input() address: string = "";
+    @Input() validateNameDuplicate: boolean = false;
 
     @Output() formGroup = new FormGroup({
         name: new FormControl(this.name, [Validators.required]),
@@ -38,13 +40,19 @@ export class RepositoryFormComponent implements OnInit {
 
     repositories: Repository[] = [];
 
-    constructor(public repoService: RepositoryService, private errorBroker: ErrorBrokerService) {
+    constructor(public repoService: RepositoryService, public dialog: MatDialog) {
 
     }
 
     ngOnInit(): void {
         this.repoService.repositories.subscribe(
-            repositories => this.repositories = repositories)
+            repositories => this.repositories = repositories);
+        this.formGroup.setValue({
+            name: this.name,
+            repositoryType: this.repositoryType,
+            path: this.path,
+            address: this.address
+        });
     }
 
     public async checkRepositoryStatus() {
@@ -94,7 +102,7 @@ export class RepositoryFormComponent implements OnInit {
         const control = this.formGroup.get("name");
         const value = control?.value;
 
-        if (this.repositories.find(r => r.name === value)) {
+        if (this.validateNameDuplicate && this.repositories.find(r => r.name === value)) {
             control?.setErrors({nameAlreadyExists: value});
         }
     }

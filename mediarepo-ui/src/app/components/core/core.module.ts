@@ -34,6 +34,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatInputModule} from "@angular/material/input";
 import {TagModule} from "../shared/tag/tag.module";
 import { RepositoryFormComponent } from './repositories-tab/repository-form/repository-form.component';
+import { EditRepositoryDialogComponent } from './repositories-tab/edit-repository-dialog/edit-repository-dialog.component';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import { RepositoryFormComponent } from './repositories-tab/repository-form/repo
         RepositoryCardComponent,
         AddRepositoryDialogComponent,
         RepositoryFormComponent,
+        EditRepositoryDialogComponent,
     ],
     exports: [
         CoreComponent,

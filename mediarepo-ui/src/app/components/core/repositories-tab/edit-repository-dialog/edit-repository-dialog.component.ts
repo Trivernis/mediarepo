@@ -1,25 +1,38 @@
-import {Component, Inject, ViewChild} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {RepositoryService} from "../../../../services/repository/repository.service";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {Component, Inject, OnInit, ViewChild} from "@angular/core";
 import {
     RepositoryFormComponent
 } from "../repository-form/repository-form.component";
+import {
+    RepositoryService
+} from "../../../../services/repository/repository.service";
+import {
+    ErrorBrokerService
+} from "../../../../services/error-broker/error-broker.service";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {
+    AddRepositoryDialogComponent
+} from "../add-repository-dialog/add-repository-dialog.component";
+import {Repository} from "../../../../models/Repository";
 
 @Component({
-    selector: "app-add-repository-dialog",
-    templateUrl: "./add-repository-dialog.component.html",
-    styleUrls: ["./add-repository-dialog.component.scss"]
+    selector: "app-edit-repository-dialog",
+    templateUrl: "./edit-repository-dialog.component.html",
+    styleUrls: ["./edit-repository-dialog.component.scss"]
 })
-export class AddRepositoryDialogComponent {
+export class EditRepositoryDialogComponent {
 
     @ViewChild(RepositoryFormComponent) repositoryForm!: RepositoryFormComponent;
+
+    public selectedRepository: Repository;
+    public originalName: string;
 
     constructor(
         public repoService: RepositoryService,
         public errorBroker: ErrorBrokerService,
         public dialogRef: MatDialogRef<AddRepositoryDialogComponent>,
         @Inject(MAT_DIALOG_DATA) data: any) {
+        this.selectedRepository = data.repository;
+        this.originalName = this.selectedRepository.name;
     }
 
     public async checkLocalRepoExists() {
@@ -41,9 +54,22 @@ export class AddRepositoryDialogComponent {
         let {name, repositoryType, path, address} = this.repositoryForm.formGroup.value;
         path = repositoryType === "local" ? path : undefined;
         address = repositoryType === "remote" ? address : undefined;
+
+        if (this.originalName === this.repoService.selectedRepository.getValue()?.name) {
+            await this.repoService.closeSelectedRepository();
+        }
+
         try {
+            if (name != this.originalName) {
+                await this.repoService.removeRepository(this.originalName);
+            }
             await this.repoService.addRepository(name, path, address,
                 repositoryType === "local");
+            this.selectedRepository.name = name;
+            this.selectedRepository.local = repositoryType === "local";
+            this.selectedRepository.path = path;
+            this.selectedRepository.address = address;
+
             this.dialogRef.close();
         } catch (err) {
             this.errorBroker.showError(err);

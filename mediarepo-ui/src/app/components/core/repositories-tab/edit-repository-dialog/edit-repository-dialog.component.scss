@@ -1,0 +1,20 @@
+app-repository-form {
+    width: 100%;
+    height: 100%;
+}
+
+.dialog-buttons {
+    display: block;
+    width: 100%;
+
+    button {
+        margin-left: 1em;
+        float: right
+    }
+
+    .check-connection-button {
+        justify-self: right;
+        margin: 0;
+        float: left;
+    }
+}
