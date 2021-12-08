@@ -140,6 +140,8 @@ export class FileGridComponent implements OnChanges, OnInit {
     private handleShiftSelect(clickedEntry: Selectable<File>): void {
         const lastEntry = this.selectedEntries[this.selectedEntries.length - 1];
         let found = false;
+
+
         if (clickedEntry == lastEntry) {
             return;
         }
@@ -161,27 +163,91 @@ export class FileGridComponent implements OnChanges, OnInit {
         }
     }
 
+    private selectAll() {
+        this.selectedEntries = this.gridEntries;
+        this.gridEntries.forEach(g => g.select());
+    }
+
+    private selectNone() {
+        this.selectedEntries = [];
+        this.gridEntries.forEach(g => g.unselect());
+    }
+
+    private handleArrowSelect(direction: "up" | "down" | "left" | "right") {
+        if (this.gridEntries.length === 0) {
+            return;
+        }
+        const lastSelectedEntry = this.selectedEntries[this.selectedEntries.length - 1] ?? this.gridEntries[0];
+        let selectedIndex = this.gridEntries.indexOf(lastSelectedEntry);
+
+        if (this.selectedEntries.length > 0) {
+            switch (direction) {
+                case "up":
+                    selectedIndex -= this.columns;
+                    break;
+                case "down":
+                    selectedIndex += this.columns;
+                    break;
+                case "left":
+                    selectedIndex --;
+                    break;
+                case "right":
+                    selectedIndex++
+                    break;
+            }
+            while (selectedIndex < 0) {
+                selectedIndex = this.gridEntries.length + selectedIndex
+            }
+            if (selectedIndex > this.gridEntries.length) {
+                selectedIndex %= this.gridEntries.length;
+            }
+        }
+
+        this.setSelectedFile(this.gridEntries[selectedIndex]);
+
+        if (this.virtualScroll) {
+            this.virtualScroll.scrollToIndex(Math.floor(selectedIndex / this.columns) - 1);
+        }
+    }
+
     @HostListener("window:keydown", ["$event"])
     private handleKeydownEvent(event: KeyboardEvent) {
+        this.shiftClicked ||= event.shiftKey;
+        this.ctrlClicked ||= event.ctrlKey;
+
         switch (event.key) {
-            case "Shift":
-                this.shiftClicked = true;
+            case "ArrowRight":
+                this.handleArrowSelect("right");
                 break;
-            case "Control":
-                this.ctrlClicked = true;
+            case "ArrowLeft":
+                this.handleArrowSelect("left");
+                break;
+            case "ArrowDown":
+                this.handleArrowSelect("down");
+                break;
+            case "ArrowUp":
+                this.handleArrowSelect("up");
+                break;
+            case "a":
+            case "A":
+                if (this.shiftClicked && this.ctrlClicked) {
+                    this.selectNone();
+                } else if (this.ctrlClicked) {
+                    event.preventDefault();
+                    this.selectAll();
+                }
+                break;
+            case "Enter":
+                if (this.selectedEntries.length === 1) {
+                    this.fileOpenEvent.emit(this.selectedEntries[0].data)
+                }
                 break;
         }
     }
 
     @HostListener("window:keyup", ["$event"])
     private handleKeyupEvent(event: KeyboardEvent) {
-        switch (event.key) {
-            case "Shift":
-                this.shiftClicked = false;
-                break;
-            case "Control":
-                this.ctrlClicked = false;
-                break;
-        }
+        this.shiftClicked = event.shiftKey? false : this.shiftClicked;
+        this.ctrlClicked = event.ctrlKey? false : this.ctrlClicked;
     }
 }

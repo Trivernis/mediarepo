@@ -36,6 +36,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     public fileContentUrl: SafeResourceUrl | undefined;
 
     private scrollTimeout: number | undefined;
+    private escapeCount = 0;
 
     constructor(private tabService: TabService, private fileService: FileService) {
         tabService.selectedTab.subscribe(() => this.adjustElementSizes());
@@ -153,17 +154,6 @@ export class FileGalleryComponent implements OnChanges, OnInit {
         }
     }
 
-    @HostListener("window:keydown", ["$event"])
-    private async handleKeydownEvent(event: KeyboardEvent) {
-        switch (event.key) {
-            case "ArrowRight":
-                await this.nextItem();
-                break;
-            case "ArrowLeft":
-                await this.previousItem();
-                break;
-        }
-    }
 
     private getPreselectedEntry(): Selectable<File> | undefined {
         if (this.preselectedFile) {
@@ -175,4 +165,29 @@ export class FileGalleryComponent implements OnChanges, OnInit {
         }
         return undefined;
     }
+
+    private onEscapeClick(): void {
+        if (this.escapeCount === 1) {
+            this.closeEvent.emit(this);
+        } else {
+            this.escapeCount++;
+            setTimeout(() => this.escapeCount--, 500);
+        }
+    }
+
+    @HostListener("window:keydown", ["$event"])
+    private async handleKeydownEvent(event: KeyboardEvent) {
+        switch (event.key) {
+            case "ArrowRight":
+                await this.nextItem();
+                break;
+            case "ArrowLeft":
+                await this.previousItem();
+                break;
+            case "Escape":
+                this.onEscapeClick();
+                break;
+        }
+    }
+
 }
