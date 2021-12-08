@@ -108,8 +108,9 @@ export class FileGridComponent implements OnChanges, OnInit {
             const entries = this.gridEntries.slice(i * this.columns,
                 Math.min(this.gridEntries.length, (i + 1) * this.columns));
             this.partitionedGridEntries.push(entries);
+
             const preselectedEntry = entries.find(
-                e => e.data.hash == this.preselectedFile?.hash);
+                e => e.data.id == this.preselectedFile?.id);
 
             if (preselectedEntry) {
                 scrollToIndex = i;
@@ -120,6 +121,7 @@ export class FileGridComponent implements OnChanges, OnInit {
             setTimeout(() => {  // add timeout to avoid being stuck in the update loop
                 if (this.virtualScroll) {
                     this.virtualScroll?.scrollToIndex(scrollToIndex);
+
                     if (selectedEntry) {
                         selectedEntry.selected = true;
                         this.selectedEntries.push(selectedEntry);
@@ -206,7 +208,33 @@ export class FileGridComponent implements OnChanges, OnInit {
         this.setSelectedFile(this.gridEntries[selectedIndex]);
 
         if (this.virtualScroll) {
-            this.virtualScroll.scrollToIndex(Math.floor(selectedIndex / this.columns) - 1);
+            const viewportSize = this.virtualScroll.getViewportSize();
+            let offsetTop = this.virtualScroll.measureScrollOffset("top");
+            const contentOffset = Math.floor(selectedIndex / this.columns) * 260;
+            console.log(offsetTop, contentOffset, viewportSize);
+
+            if (contentOffset > offsetTop + viewportSize - 300 || contentOffset < offsetTop) {
+                this.virtualScroll.scrollToIndex(Math.floor(selectedIndex / this.columns));
+
+                offsetTop = this.virtualScroll.measureScrollOffset("top");
+                if (contentOffset < offsetTop + (viewportSize / 2)) {
+                    this.virtualScroll.scrollToOffset((offsetTop + 130) -  viewportSize/ 2)
+                }
+            }
+        }
+    }
+
+    private pageDown() {
+        if (this.virtualScroll) {
+            const offsetTop = this.virtualScroll.measureScrollOffset("top");
+            this.virtualScroll.scrollToOffset(offsetTop + this.virtualScroll.getViewportSize());
+        }
+    }
+
+    private pageUp() {
+        if (this.virtualScroll) {
+            const offsetTop = this.virtualScroll.measureScrollOffset("top");
+            this.virtualScroll.scrollToOffset(offsetTop - this.virtualScroll.getViewportSize());
         }
     }
 
@@ -227,6 +255,12 @@ export class FileGridComponent implements OnChanges, OnInit {
                 break;
             case "ArrowUp":
                 this.handleArrowSelect("up");
+                break;
+            case "PageDown":
+                this.pageDown();
+                break;
+            case "PageUp":
+                this.pageUp();
                 break;
             case "a":
             case "A":

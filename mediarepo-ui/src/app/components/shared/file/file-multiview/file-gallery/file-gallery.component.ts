@@ -42,6 +42,30 @@ export class FileGalleryComponent implements OnChanges, OnInit {
         tabService.selectedTab.subscribe(() => this.adjustElementSizes());
     }
 
+    async ngOnInit(): Promise<void> {
+        if (!this.selectedFile || this.files.indexOf(
+            this.selectedFile.data) < 0) {
+            await this.onEntrySelect(
+                this.getPreselectedEntry() ?? this.entries[0])
+        }
+    }
+
+    public async ngOnChanges(changes: SimpleChanges): Promise<void> {
+        if (changes["files"]) {
+            this.entries = this.files.map(
+                f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
+            const selectedIndex = this.files.findIndex(
+                f => f.hash === this.selectedFile?.data.hash);
+
+            if (!this.selectedFile || selectedIndex < 0) {
+                await this.onEntrySelect(
+                    this.getPreselectedEntry() ?? this.entries[0])
+            } else {
+                await this.onEntrySelect(this.entries[selectedIndex])
+            }
+        }
+    }
+
     /**
      * Called when a new entry is selected
      * @param {Selectable<File>} entry
@@ -72,30 +96,6 @@ export class FileGalleryComponent implements OnChanges, OnInit {
         if (this.selectedFile) {
             this.fileContentUrl = this.fileService.buildContentUrl(
                 this.selectedFile.data)
-        }
-    }
-
-    async ngOnInit(): Promise<void> {
-        if (!this.selectedFile || this.files.indexOf(
-            this.selectedFile.data) < 0) {
-            await this.onEntrySelect(
-                this.getPreselectedEntry() ?? this.entries[0])
-        }
-    }
-
-    public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes["files"]) {
-            this.entries = this.files.map(
-                f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
-            const selectedIndex = this.files.findIndex(
-                f => f.hash === this.selectedFile?.data.hash);
-
-            if (!this.selectedFile || selectedIndex < 0) {
-                await this.onEntrySelect(
-                    this.getPreselectedEntry() ?? this.entries[0])
-            } else {
-                await this.onEntrySelect(this.entries[selectedIndex])
-            }
         }
     }
 
