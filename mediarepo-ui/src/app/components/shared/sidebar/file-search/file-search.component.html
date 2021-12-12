@@ -33,7 +33,7 @@
 
     <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-            <div (click)="addSearchTagAndSearch(tag.getNormalizedOutput())"
+            <div (click)="addSearchTag(tag.getNormalizedOutput())"
                  (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
                  *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
                 <app-tag-item [tag]="tag"></app-tag-item>

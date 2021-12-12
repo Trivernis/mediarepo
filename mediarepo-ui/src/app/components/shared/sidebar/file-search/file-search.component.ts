@@ -31,8 +31,7 @@ import {TabState} from "../../../../models/TabState.rs";
     styleUrls: ["./file-search.component.scss"]
 })
 export class FileSearchComponent implements AfterViewChecked, OnInit {
-    public sortExpression: SortKey[] = [new SortKey("FileImportedTime",
-        "Ascending", undefined)];
+    public sortExpression: SortKey[] = [];
     public filters: FilterExpression[] = [];
 
     @Input() availableTags: Tag[] = [];
@@ -54,6 +53,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     }
 
     public async ngOnInit() {
+        this.state.filters.subscribe(f => this.filters = f);
+        this.state.sortKeys.subscribe(s => this.sortExpression = s);
         await this.searchForFiles();
     }
 
@@ -64,7 +65,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public async searchForFiles() {
         this.searchStartEvent.emit();
         try {
-            await this.state.findFiles(this.filters, this.sortExpression);
+            await this.state.findFiles();
         } catch (err) {
             this.errorBroker.showError(err);
         }
@@ -79,11 +80,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             const index = this.filters.findIndex(t => t.partiallyEq(tag));
             this.filters.splice(index, 1);
         }
-    }
-
-    public async addSearchTagAndSearch(tag: string) {
-        this.addSearchTag(tag);
-        await this.searchForFiles();
+        this.state.setFilters(this.filters);
     }
 
     public getValidSearchTags(): Tag[] {
@@ -93,7 +90,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     public async removeAllSearchTags() {
         this.filters = [];
-        await this.searchForFiles();
+        this.state.setFilters([]);
     }
 
     public async removeFilterExpression(expr: FilterExpression) {
@@ -101,7 +98,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         if (index >= 0) {
             this.filters.splice(index, 1);
         }
-        await this.searchForFiles();
+        this.state.setFilters(this.filters);
     }
 
     public openSortDialog() {
@@ -119,7 +116,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         openedDialog.afterClosed().subscribe(async (sortExpression) => {
             if (sortExpression) {
                 this.sortExpression = sortExpression;
-                await this.searchForFiles();
+                this.state.setSortKeys(this.sortExpression);
             }
         });
     }
@@ -138,7 +135,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         filterDialog.afterClosed().subscribe(async (filterExpression) => {
             if (filterExpression !== undefined || filterExpression?.length > 0) {
                 this.filters = filterExpression;
-                await this.searchForFiles();
+                this.state.setFilters(this.filters);
             }
         });
     }
