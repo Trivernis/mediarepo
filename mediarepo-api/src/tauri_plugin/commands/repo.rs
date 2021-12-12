@@ -3,6 +3,7 @@ use crate::client_api::ApiClient;
 use crate::tauri_plugin::commands::{ApiAccess, AppAccess};
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{save_settings, Repository};
+use crate::types::repo::FrontendState;
 use serde::{Deserialize, Serialize};
 use std::mem;
 use std::path::PathBuf;
@@ -179,6 +180,22 @@ pub async fn select_repository(
 
     *active_repo = Some(repo.clone());
     save_settings(&settings)?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_frontend_state(api_state: ApiAccess<'_>) -> PluginResult<String> {
+    let api = api_state.api().await?;
+    let state = api.repo.get_frontend_state().await?;
+
+    Ok(state.state)
+}
+
+#[tauri::command]
+pub async fn set_frontend_state(api_state: ApiAccess<'_>, state: String) -> PluginResult<()> {
+    let api = api_state.api().await?;
+    api.repo.set_frontend_state(FrontendState { state }).await?;
 
     Ok(())
 }

@@ -59,7 +59,9 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 delete_thumbnails,
                 read_file,
                 delete_repository,
-                has_executable
+                has_executable,
+                get_frontend_state,
+                set_frontend_state
             ]),
         }
     }
