@@ -1,5 +1,7 @@
+use crate::daemon_management::find_daemon_executable;
 use crate::tauri_plugin::commands::AppAccess;
 use crate::tauri_plugin::error::PluginResult;
+use crate::tauri_plugin::settings::save_settings;
 use bromine::prelude::{IPCError, IPCResult};
 use bromine::IPCBuilder;
 use std::io::ErrorKind;
@@ -8,7 +10,12 @@ use tokio::net::TcpListener;
 
 #[tauri::command]
 pub async fn has_executable(app_state: AppAccess<'_>) -> PluginResult<bool> {
-    let settings = app_state.settings.read().await;
+    let mut settings = app_state.settings.write().await;
+
+    if settings.daemon_path.is_none() {
+        settings.daemon_path = find_daemon_executable().map(|e| e.to_string_lossy().to_string());
+        save_settings(&settings)?;
+    }
 
     Ok(settings.daemon_path.is_some())
 }
