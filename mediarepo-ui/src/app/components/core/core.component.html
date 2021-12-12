@@ -22,7 +22,7 @@
                 <button mat-flat-button (click)="this.addImportTab()" color="primary">Import</button>
             </div>
         </mat-tab>
-        <mat-tab disabled>
+        <mat-tab *ngIf="this.selectedRepository" disabled>
             <ng-template mat-tab-label>
                 <button class="new-tab-button" mat-icon-button (click)="this.addTab()">
                     <ng-icon name="mat-plus"></ng-icon>

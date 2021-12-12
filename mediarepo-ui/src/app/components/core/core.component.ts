@@ -30,7 +30,14 @@ export class CoreComponent implements OnInit {
         this.selectedRepository = this.repoService.selectedRepository.getValue();
         this.repoService.selectedRepository.subscribe(async (selected) => {
             this.selectedRepository = selected;
-            await this.loadRepoData();
+
+            if (this.selectedRepository) {
+                await this.loadRepoData();
+                this.addTab();
+            } else {
+                this.newTab = false;
+                this.tabService.closeAllTabs();
+            }
         });
         this.tabService.tabs.subscribe(tabs => {
             this.tabs = tabs;
@@ -67,7 +74,11 @@ export class CoreComponent implements OnInit {
         this.tabService.closeTab(tab.uuid);
 
         if (previousIndex) {
-            this.tabGroup.selectedIndex = previousIndex - 1;
+            if (previousIndex === 1 && this.tabs.length >= 1) {
+                this.tabGroup.selectedIndex = previousIndex;
+            } else {
+                this.tabGroup.selectedIndex = previousIndex - 1;
+            }
         } else {
             this.tabGroup.selectedIndex = 0;
         }

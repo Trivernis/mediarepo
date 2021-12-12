@@ -6,7 +6,6 @@ import {FilesTabComponent} from "./files-tab/files-tab.component";
 import {FilesTabSidebarComponent} from "./files-tab/files-tab-sidebar/files-tab-sidebar.component";
 import {ImportTabComponent} from "./import-tab/import-tab.component";
 import {ImportTabSidebarComponent} from "./import-tab/import-tab-sidebar/import-tab-sidebar.component";
-import {FilesystemImportComponent} from "../shared/sidebar/file-import/filesystem-import/filesystem-import.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
@@ -33,9 +32,9 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatInputModule} from "@angular/material/input";
 import {TagModule} from "../shared/tag/tag.module";
-import { RepositoryFormComponent } from './repositories-tab/repository-form/repository-form.component';
-import { EditRepositoryDialogComponent } from './repositories-tab/edit-repository-dialog/edit-repository-dialog.component';
-import { DownloadDaemonDialogComponent } from './repositories-tab/download-daemon-dialog/download-daemon-dialog.component';
+import { RepositoryFormComponent } from "./repositories-tab/repository-form/repository-form.component";
+import { EditRepositoryDialogComponent } from "./repositories-tab/edit-repository-dialog/edit-repository-dialog.component";
+import { DownloadDaemonDialogComponent } from "./repositories-tab/download-daemon-dialog/download-daemon-dialog.component";
 
 
 @NgModule({

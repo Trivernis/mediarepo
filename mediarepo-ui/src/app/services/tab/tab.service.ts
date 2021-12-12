@@ -32,4 +32,8 @@ export class TabService {
         tabs.splice(index, 1)
         this.tabs.next(tabs);
     }
+
+    public closeAllTabs() {
+        this.tabs.next([]);
+    }
 }
