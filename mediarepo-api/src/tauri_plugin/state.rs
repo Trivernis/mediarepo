@@ -11,8 +11,9 @@ use tokio::time::Instant;
 
 use crate::client_api::ApiClient;
 use crate::daemon_management::cli::DaemonCli;
+use crate::daemon_management::find_daemon_executable;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
-use crate::tauri_plugin::settings::{load_settings, Repository, Settings};
+use crate::tauri_plugin::settings::{load_settings, save_settings, Repository, Settings};
 
 pub struct ApiState {
     inner: Arc<RwLock<Option<ApiClient>>>,
@@ -180,7 +181,12 @@ impl AppState {
 
     /// Returns the daemon cli client
     pub async fn get_daemon_cli(&self, repo_path: String) -> PluginResult<DaemonCli> {
-        let settings = self.settings.read().await;
+        let mut settings = self.settings.write().await;
+        if settings.daemon_path.is_none() {
+            settings.daemon_path =
+                find_daemon_executable().map(|p| p.to_string_lossy().to_string());
+            save_settings(&settings)?;
+        }
         let path = settings
             .daemon_path
             .clone()
