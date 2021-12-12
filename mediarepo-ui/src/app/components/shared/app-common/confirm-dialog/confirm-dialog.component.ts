@@ -19,7 +19,7 @@ export class ConfirmDialogComponent {
     constructor(
         public dialogRef: MatDialogRef<ConfirmDialogComponent>,
         @Inject(
-            MAT_DIALOG_DATA) data: { title: string, message: string, confirmAction: string, denyAction?: string, confirmColor?: ThemePalette, denyColor?: ThemePalette }
+            MAT_DIALOG_DATA) data: { title: string, message: string, confirmAction: string, denyAction?: string, confirmColor?: ThemePalette, denyColor?: ThemePalette}
     ) {
         this.title = data.title;
         this.message = data.message;

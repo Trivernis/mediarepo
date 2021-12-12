@@ -1492,7 +1492,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "mediarepo-api"
 version = "0.14.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=14f2675f5fe1a11ea3302a623d040e77dcc78080#14f2675f5fe1a11ea3302a623d040e77dcc78080"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=5991f5d3038386c921a901a05c4a72e4ce00b418#5991f5d3038386c921a901a05c4a72e4ce00b418"
 dependencies = [
  "async-trait",
  "bromine",
@@ -1501,6 +1501,7 @@ dependencies = [
  "futures",
  "mime_guess",
  "parking_lot",
+ "pathsearch",
  "serde",
  "serde_json",
  "serde_piecewise_default",
@@ -1767,6 +1768,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
 
 [[package]]
+name = "open"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "176ee4b630d174d2da8241336763bb459281dddc0f4d87f72c3b1efc9a6109b7"
+dependencies = [
+ "pathdiff",
+ "winapi",
+]
+
+[[package]]
 name = "openssl"
 version = "0.10.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1853,6 +1864,22 @@ dependencies = [
  "redox_syscall",
  "smallvec",
  "winapi",
+]
+
+[[package]]
+name = "pathdiff"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
+
+[[package]]
+name = "pathsearch"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da983bc5e582ab17179c190b4b66c7d76c5943a69c6d34df2a2b6bf8a2977b05"
+dependencies = [
+ "anyhow",
+ "libc",
 ]
 
 [[package]]
@@ -2778,6 +2805,7 @@ dependencies = [
  "http",
  "ignore",
  "once_cell",
+ "open",
  "percent-encoding",
  "rand 0.8.4",
  "raw-window-handle",

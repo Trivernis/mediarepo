@@ -27,6 +27,14 @@ export class RepositoryService {
     }
 
     /**
+     * Checks if a daemon is configured in the settings or can be found on the system
+     * @returns {Promise<boolean>}
+     */
+    public async checkDameonConfigured(): Promise<boolean> {
+        return await invoke<boolean>("plugin:mediarepo|has_executable");
+    }
+
+    /**
      * Loads all repositories stored in the settings
      * @returns {Promise<void>}
      */

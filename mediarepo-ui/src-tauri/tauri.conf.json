@@ -53,6 +53,9 @@
             },
             "path": {
                 "all": true
+            },
+            "shell": {
+                "open": true
             }
         },
         "windows": [

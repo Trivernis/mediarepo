@@ -35,6 +35,7 @@ import {MatInputModule} from "@angular/material/input";
 import {TagModule} from "../shared/tag/tag.module";
 import { RepositoryFormComponent } from './repositories-tab/repository-form/repository-form.component';
 import { EditRepositoryDialogComponent } from './repositories-tab/edit-repository-dialog/edit-repository-dialog.component';
+import { DownloadDaemonDialogComponent } from './repositories-tab/download-daemon-dialog/download-daemon-dialog.component';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import { EditRepositoryDialogComponent } from './repositories-tab/edit-repositor
         AddRepositoryDialogComponent,
         RepositoryFormComponent,
         EditRepositoryDialogComponent,
+        DownloadDaemonDialogComponent,
     ],
     exports: [
         CoreComponent,

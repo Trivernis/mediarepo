@@ -1,0 +1,15 @@
+.download-dialog-actions {
+    display: block;
+
+    button {
+        float: right;
+        margin-left: 1em;
+    }
+}
+
+button.download-button {
+    margin: 2em auto auto;
+    align-self: center;
+    display: flex;
+}
+
