@@ -6,6 +6,7 @@ import {TagService} from "../../services/tag/tag.service";
 import {TabService} from "../../services/tab/tab.service";
 import {TabCategory} from "../../models/TabCategory";
 import {TabState} from "../../models/TabState.rs";
+import {AppState} from "../../models/AppState";
 
 @Component({
     selector: "app-core",
@@ -16,6 +17,8 @@ export class CoreComponent implements OnInit {
 
     public selectedRepository: Repository | undefined;
     public tabs: TabState[] = [];
+    public appState: AppState = new AppState();
+    private stateInterval?: number;
 
     @ViewChild("tabGroup") tabGroup!: MatTabGroup;
     public newTab = false;
@@ -33,10 +36,14 @@ export class CoreComponent implements OnInit {
 
             if (this.selectedRepository) {
                 await this.loadRepoData();
-                this.addTab();
+                if (this.appState.tabs.length === 0) {
+                    this.addTab();
+                }
             } else {
+                clearInterval(this.stateInterval);
                 this.newTab = false;
                 this.tabService.closeAllTabs();
+                this.appState = new AppState();
             }
         });
         this.tabService.tabs.subscribe(tabs => {
@@ -46,6 +53,9 @@ export class CoreComponent implements OnInit {
 
     async loadRepoData() {
         await this.tagService.loadTags();
+        this.appState = await this.repoService.getFrontendState();
+        this.tabService.restoreFromState(this.appState);
+        this.startStateSaveRoutine();
     }
 
     public onTabSelectionChange(event: MatTabChangeEvent): void {
@@ -89,5 +99,14 @@ export class CoreComponent implements OnInit {
         if (event.button === 1) { // middle mouse button
             this.closeTab(tab);
         }
+    }
+
+    private startStateSaveRoutine() {
+        clearInterval(this.stateInterval);
+        this.stateInterval = setInterval(async () => this.saveState(), 10000);
+    }
+
+    private async saveState() {
+        await this.repoService.setFrontendState(this.appState);
     }
 }

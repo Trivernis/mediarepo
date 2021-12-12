@@ -13,19 +13,10 @@ import {FilterExpression} from "../../models/FilterExpression";
 })
 export class FileService {
 
-    thumbnailCache: { [key: number]: Thumbnail[] } = {};
-
     constructor(
         @Inject(DomSanitizer) private sanitizer: DomSanitizer,
-        private repoService: RepositoryService,
     ) {
-        repoService.selectedRepository.subscribe(_ => this.clearCache());
     }
-
-    public clearCache() {
-        this.thumbnailCache = {};
-    }
-
     public async getAllFiles(): Promise<File[]> {
         return await invoke<File[]>("plugin:mediarepo|get_all_files");
     }

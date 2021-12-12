@@ -2,9 +2,14 @@ import {BehaviorSubject} from "rxjs";
 import {TabCategory} from "./TabCategory";
 import {FileService} from "../services/file/file.service";
 import {File} from "./File";
-import {FilterExpression} from "./FilterExpression";
+import {
+    FilterExpression,
+    OrFilterExpression,
+    SingleFilterExpression
+} from "./FilterExpression";
 import {SortKey} from "./SortKey";
 import {debounceTime} from "rxjs/operators";
+import {TagQuery} from "./TagQuery";
 
 export class TabState {
     public uuid: number;
@@ -39,5 +44,32 @@ export class TabState {
 
     public setSortKeys(keys: SortKey[]) {
         this.sortKeys.next(keys)
+    }
+
+    public static fromDTO(dto: any, fileService: FileService): TabState {
+        const state = new TabState(dto.uuid, dto.category, fileService);
+        const filters = dto.filters.map((f: {filter: any, filter_type: any}) => {
+            if (f.filter_type === "OrExpression") {
+                return new OrFilterExpression(f.filter.map((f: any) => new TagQuery(f.tag, f.negate)))
+            } else {
+                return new SingleFilterExpression(new TagQuery(f.filter.tag, f.filter.negate))
+            }
+        })
+        const sortKeys = dto.sortKeys.map((s: {sortType: any, sortDirection: any, namespaceName: any}) =>
+            new SortKey(s.sortType, s.sortDirection, s.namespaceName)
+        );
+        state.filters.next(filters);
+        state.sortKeys.next(sortKeys);
+
+        return state
+    }
+
+    public getDTO(): any {
+        return {
+            uuid: this.uuid,
+            category: this.category,
+            filters: this.filters.value,
+            sortKeys: this.sortKeys.value,
+        };
     }
 }
