@@ -1,8 +1,8 @@
 import {
-    Component, EventEmitter,
+    Component,
     Input,
     OnChanges,
-    OnInit, Output,
+    OnInit,
     SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../models/File";

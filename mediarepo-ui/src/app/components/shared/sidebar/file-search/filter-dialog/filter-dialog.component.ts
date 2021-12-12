@@ -8,7 +8,9 @@ import {
 } from "../../../../../models/FilterExpression";
 import {TagQuery} from "../../../../../models/TagQuery";
 import {Tag} from "../../../../../models/Tag";
-import {TagFilterListItemComponent} from "./tag-filter-list-item/tag-filter-list-item.component";
+import {
+    TagFilterListItemComponent
+} from "./tag-filter-list-item/tag-filter-list-item.component";
 import {Selectable} from "../../../../../models/Selectable";
 
 @Component({

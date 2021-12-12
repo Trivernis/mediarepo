@@ -1,11 +1,12 @@
 import {AfterViewInit, Component, OnInit} from "@angular/core";
 import {Repository} from "../../../models/Repository";
-import {RepositoryService} from "../../../services/repository/repository.service";
-import {MatDialog} from "@angular/material/dialog";
-import {AddRepositoryDialogComponent} from "./add-repository-dialog/add-repository-dialog.component";
 import {
-    ConfirmDialogComponent
-} from "../../shared/app-common/confirm-dialog/confirm-dialog.component";
+    RepositoryService
+} from "../../../services/repository/repository.service";
+import {MatDialog} from "@angular/material/dialog";
+import {
+    AddRepositoryDialogComponent
+} from "./add-repository-dialog/add-repository-dialog.component";
 import {
     DownloadDaemonDialogComponent
 } from "./download-daemon-dialog/download-daemon-dialog.component";

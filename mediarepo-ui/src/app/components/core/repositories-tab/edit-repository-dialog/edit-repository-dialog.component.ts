@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ViewChild} from "@angular/core";
+import {Component, Inject, ViewChild} from "@angular/core";
 import {
     RepositoryFormComponent
 } from "../repository-form/repository-form.component";

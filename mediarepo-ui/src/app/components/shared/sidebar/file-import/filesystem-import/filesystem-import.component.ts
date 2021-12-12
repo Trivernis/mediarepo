@@ -1,7 +1,9 @@
 import {Component, EventEmitter, Output} from "@angular/core";
 import {FileOsMetadata} from "../../../../../models/FileOsMetadata";
 import {ImportService} from "../../../../../services/import/import.service";
-import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
+import {
+    ErrorBrokerService
+} from "../../../../../services/error-broker/error-broker.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
 import {File} from "../../../../../models/File";
 import {DialogFilter} from "@tauri-apps/api/dialog";

@@ -2,9 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {File} from "../../models/File";
 import {invoke} from "@tauri-apps/api/tauri";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {Thumbnail} from "../../models/Thumbnail";
 import {SortKey} from "../../models/SortKey";
-import {RepositoryService} from "../repository/repository.service";
 import {FilterExpression} from "../../models/FilterExpression";
 
 

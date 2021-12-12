@@ -1,10 +1,18 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {Repository} from "../../../../models/Repository";
-import {RepositoryService} from "../../../../services/repository/repository.service";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {
+    RepositoryService
+} from "../../../../services/repository/repository.service";
+import {
+    ErrorBrokerService
+} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
-import {BusyIndicatorComponent} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
+import {
+    ConfirmDialogComponent
+} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
+import {
+    BusyIndicatorComponent
+} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
 import {
     EditRepositoryDialogComponent
 } from "../edit-repository-dialog/edit-repository-dialog.component";

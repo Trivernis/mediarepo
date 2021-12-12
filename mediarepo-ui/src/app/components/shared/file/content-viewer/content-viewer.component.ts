@@ -11,8 +11,12 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {File} from "../../../../models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
-import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
+import {
+    ErrorBrokerService
+} from "../../../../services/error-broker/error-broker.service";
+import {
+    BusyIndicatorComponent
+} from "../../app-common/busy-indicator/busy-indicator.component";
 
 type ContentType = "image" | "video" | "audio" | "other";
 

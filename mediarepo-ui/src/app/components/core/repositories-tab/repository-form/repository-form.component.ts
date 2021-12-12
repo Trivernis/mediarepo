@@ -2,7 +2,8 @@ import {Component, Input, OnInit, Output} from "@angular/core";
 import {
     AbstractControl,
     FormControl,
-    FormGroup, ValidationErrors,
+    FormGroup,
+    ValidationErrors,
     Validators
 } from "@angular/forms";
 import {Repository} from "../../../../models/Repository";
@@ -10,9 +11,6 @@ import {
     RepositoryService
 } from "../../../../services/repository/repository.service";
 import {dialog} from "@tauri-apps/api";
-import {
-    ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
 
 @Component({

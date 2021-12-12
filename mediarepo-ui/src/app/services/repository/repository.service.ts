@@ -5,7 +5,6 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
-import {AppState} from "../../models/AppState";
 import {FileService} from "../file/file.service";
 
 @Injectable({
@@ -154,28 +153,6 @@ export class RepositoryService {
      */
     public async initRepository(repoPath: string): Promise<void> {
         await invoke("plugin:mediarepo|init_repository", {repoPath});
-    }
-
-    /**
-     * Returns the state of the frontend
-     * @returns {Promise<AppState>}
-     */
-    public async getFrontendState(): Promise<AppState> {
-        let stateString = await invoke<string | undefined>("plugin:mediarepo|get_frontend_state");
-        if (stateString) {
-            return AppState.deserializeJson(stateString, this.fileService)
-        } else {
-            return new AppState();
-        }
-    }
-
-    /**
-     * Sets the state of the frontend
-     * @param {AppState} state
-     * @returns {Promise<void>}
-     */
-    public async setFrontendState(state: AppState): Promise<void> {
-        await invoke("plugin:mediarepo|set_frontend_state", {state: state.serializeJson()})
     }
 
     async loadSelectedRepository() {

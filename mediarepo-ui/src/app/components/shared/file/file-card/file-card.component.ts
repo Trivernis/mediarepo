@@ -10,7 +10,6 @@ import {
     ViewChild
 } from "@angular/core";
 import {File} from "../../../../models/File";
-import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../../../models/Selectable";
 
 @Component({
