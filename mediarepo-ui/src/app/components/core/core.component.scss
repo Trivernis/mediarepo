@@ -17,3 +17,43 @@ mat-tab-group {
     height: 100%;
     width: 100%;
 }
+
+::ng-deep .main-tab-group .mat-tab-label.mat-tab-disabled {
+    width: 2em;
+    min-width: 0;
+    color: white;
+}
+
+::ng-deep .main-tab-group .mat-tab-label {
+    ng-icon {
+        margin-top: -0.5em;
+        --ng-icon__size: 1em;
+    }
+
+    .close-tab-button {
+        float: right;
+        position: absolute;
+        right: 0;
+        top: 4px;
+        ng-icon {
+            font-size: 1.5em;
+            margin-top: -1.1em;
+            --ng-icon__size: 0.4em;
+        }
+    }
+}
+
+.new-tab-content {
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    button {
+        display: flex;
+        margin: 1em auto auto;
+    }
+}
+
+.tab-label-div {
+    display: flex;
+}

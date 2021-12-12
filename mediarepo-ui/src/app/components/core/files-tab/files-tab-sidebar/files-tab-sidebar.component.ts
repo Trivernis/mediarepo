@@ -10,12 +10,17 @@ import {
 } from "@angular/core";
 import {Tag} from "../../../../models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
-import {FileService} from "../../../../services/file/file.service";
 import {File} from "../../../../models/File";
-import {FileSearchComponent} from "../../../shared/sidebar/file-search/file-search.component";
-import {RepositoryService} from "../../../../services/repository/repository.service";
-import {TagEditComponent} from "../../../shared/sidebar/tag-edit/tag-edit.component";
-import {clipboard} from "@tauri-apps/api";
+import {
+    FileSearchComponent
+} from "../../../shared/sidebar/file-search/file-search.component";
+import {
+    RepositoryService
+} from "../../../../services/repository/repository.service";
+import {
+    TagEditComponent
+} from "../../../shared/sidebar/tag-edit/tag-edit.component";
+import {TabState} from "../../../../models/TabState.rs";
 
 @Component({
     selector: "app-files-tab-sidebar",
@@ -24,6 +29,7 @@ import {clipboard} from "@tauri-apps/api";
 })
 export class FilesTabSidebarComponent implements OnInit, OnChanges {
 
+    @Input() state!: TabState;
     @Input() selectedFiles: File[] = [];
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();
@@ -37,19 +43,20 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     public files: File[] = [];
     public tagsOfSelection: Tag[] = [];
 
-    constructor(private repoService: RepositoryService, private tagService: TagService, private fileService: FileService) {
-        this.fileService.displayedFiles.subscribe(async files => {
-            this.files = files;
-            await this.loadTagsForDisplayedFiles();
-            await this.refreshFileSelection();
-        });
+    constructor(private repoService: RepositoryService, private tagService: TagService) {
         this.repoService.selectedRepository.subscribe(
             async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
         this.tagService.tags.subscribe(t => this.allTags = t);
     }
 
     async ngOnInit() {
-        this.fileSearch && await this.fileSearch.searchForFiles();
+        this.state.files.subscribe(async (files) => {
+            this.files = files;
+            await this.onDisplayedFilesChange();
+        })
+        if (this.fileSearch) {
+            await this.fileSearch.searchForFiles();
+        }
         if (this.tags.length === 0) {
             this.tags = this.tagsOfFiles;
         }
@@ -60,6 +67,11 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
             await this.showFileDetails(this.selectedFiles);
             this.showAllTagsFallback();
         }
+    }
+
+    public async onDisplayedFilesChange() {
+        await this.loadTagsForDisplayedFiles();
+        await this.refreshFileSelection();
     }
 
     async loadTagsForDisplayedFiles() {

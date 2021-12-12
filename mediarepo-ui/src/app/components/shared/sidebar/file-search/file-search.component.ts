@@ -3,17 +3,18 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    Input, OnChanges,
+    Input,
     OnInit,
-    Output, SimpleChanges,
+    Output,
     ViewChild
 } from "@angular/core";
-import {FileService} from "../../../../services/file/file.service";
 import {TagQuery} from "../../../../models/TagQuery";
 import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {
+    ErrorBrokerService
+} from "../../../../services/error-broker/error-broker.service";
 import {
     FilterExpression,
     SingleFilterExpression
@@ -21,6 +22,7 @@ import {
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../models/Tag";
 import {clipboard} from "@tauri-apps/api";
+import {TabState} from "../../../../models/TabState.rs";
 
 
 @Component({
@@ -35,6 +37,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     @Input() availableTags: Tag[] = [];
     @Input() contextTags: Tag[] = [];
+    @Input() state!: TabState;
+
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();
 
@@ -45,7 +49,6 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     constructor(
         private errorBroker: ErrorBrokerService,
-        private fileService: FileService,
         public dialog: MatDialog
     ) {
     }
@@ -61,7 +64,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public async searchForFiles() {
         this.searchStartEvent.emit();
         try {
-            await this.fileService.findFiles(this.filters, this.sortExpression);
+            await this.state.findFiles(this.filters, this.sortExpression);
         } catch (err) {
             this.errorBroker.showError(err);
         }

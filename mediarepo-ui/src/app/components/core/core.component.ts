@@ -4,6 +4,8 @@ import {RepositoryService} from "../../services/repository/repository.service";
 import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
 import {TabService} from "../../services/tab/tab.service";
+import {TabCategory} from "../../models/TabCategory";
+import {TabState} from "../../models/TabState.rs";
 
 @Component({
     selector: "app-core",
@@ -13,9 +15,10 @@ import {TabService} from "../../services/tab/tab.service";
 export class CoreComponent implements OnInit {
 
     public selectedRepository: Repository | undefined;
+    public tabs: TabState[] = [];
 
     @ViewChild("tabGroup") tabGroup!: MatTabGroup;
-
+    public newTab = false;
 
     constructor(
         private tabService: TabService,
@@ -27,20 +30,11 @@ export class CoreComponent implements OnInit {
         this.selectedRepository = this.repoService.selectedRepository.getValue();
         this.repoService.selectedRepository.subscribe(async (selected) => {
             this.selectedRepository = selected;
-            this.updateSelectedTab();
             await this.loadRepoData();
         });
-    }
-
-    public updateSelectedTab() {
-        if (!this.tabGroup) {
-            return;
-        }
-        if (!this.selectedRepository) {
-            this.tabGroup.selectedIndex = 0;
-        } else if (this.tabGroup.selectedIndex === 0) {
-            this.tabGroup.selectedIndex = 1;
-        }
+        this.tabService.tabs.subscribe(tabs => {
+            this.tabs = tabs;
+        });
     }
 
     async loadRepoData() {
@@ -49,5 +43,40 @@ export class CoreComponent implements OnInit {
 
     public onTabSelectionChange(event: MatTabChangeEvent): void {
         this.tabService.setSelectedTab(event.index);
+    }
+
+    public addFilesTab(): void {
+        this.tabService.addTab(TabCategory.Files);
+        this.tabGroup.selectedIndex = this.tabs.length;
+        this.newTab = false;
+    }
+
+    public addImportTab(): void {
+        this.tabService.addTab(TabCategory.Import);
+        this.tabGroup.selectedIndex = this.tabs.length;
+        this.newTab = false;
+    }
+
+    public addTab(): void {
+        this.newTab = true;
+        this.tabGroup.selectedIndex = this.tabs.length + 1;
+    }
+
+    public closeTab(tab: TabState): void {
+        const previousIndex = this.tabGroup.selectedIndex;
+        this.tabService.closeTab(tab.uuid);
+
+        if (previousIndex) {
+            this.tabGroup.selectedIndex = previousIndex - 1;
+        } else {
+            this.tabGroup.selectedIndex = 0;
+        }
+    }
+
+    public onMouseClickTabLabel(tab: TabState, event: MouseEvent): void {
+        console.log(event);
+        if (event.button === 1) { // middle mouse button
+            this.closeTab(tab);
+        }
     }
 }

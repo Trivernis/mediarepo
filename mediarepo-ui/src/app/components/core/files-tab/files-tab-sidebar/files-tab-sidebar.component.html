@@ -1,9 +1,9 @@
 <div class="sidebar-inner">
     <mat-tab-group headerPosition="below">
         <mat-tab label="Search">
-            <app-file-search [availableTags]="this.allTags" [contextTags]="this.tags"
+            <app-file-search [state]="this.state" [availableTags]="this.allTags" [contextTags]="this.tags"
                              (searchStartEvent)="this.searchStartEvent.emit($event)"
-                             (searchEndEvent)="this.searchEndEvent.emit($event)"></app-file-search>
+                             (searchEndEvent)="this.onDisplayedFilesChange(); this.searchEndEvent.emit($event);"></app-file-search>
         </mat-tab>
         <mat-tab *ngIf="this.selectedFiles.length > 0" label="Edit Tags">
             <app-tag-edit #fileedit [files]="this.selectedFiles"></app-tag-edit>

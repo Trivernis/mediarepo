@@ -1,5 +1,4 @@
 import {Inject, Injectable} from "@angular/core";
-import {BehaviorSubject} from "rxjs";
 import {File} from "../../models/File";
 import {invoke} from "@tauri-apps/api/tauri";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
@@ -14,7 +13,6 @@ import {FilterExpression} from "../../models/FilterExpression";
 })
 export class FileService {
 
-    displayedFiles = new BehaviorSubject<File[]>([]);
     thumbnailCache: { [key: number]: Thumbnail[] } = {};
 
     constructor(
@@ -28,17 +26,18 @@ export class FileService {
         this.thumbnailCache = {};
     }
 
-    public async getFiles() {
-        let all_files = await invoke<File[]>("plugin:mediarepo|get_all_files");
-        this.displayedFiles.next(all_files);
+    public async getAllFiles(): Promise<File[]> {
+        return await invoke<File[]>("plugin:mediarepo|get_all_files");
     }
 
-    public async findFiles(filters: FilterExpression[], sortBy: SortKey[]) {
+    public async findFiles(filters: FilterExpression[], sortBy: SortKey[]): Promise<File[]> {
         console.log(filters);
         let backendFilters = filters.map(f => f.toBackendType());
-        let files = await invoke<File[]>("plugin:mediarepo|find_files",
-            {filters: backendFilters, sortBy: sortBy.map(k => k.toBackendType())});
-        this.displayedFiles.next(files);
+        return await invoke<File[]>("plugin:mediarepo|find_files",
+            {
+                filters: backendFilters,
+                sortBy: sortBy.map(k => k.toBackendType())
+            });
     }
 
     public async updateFileName(file: File, name: string): Promise<File> {

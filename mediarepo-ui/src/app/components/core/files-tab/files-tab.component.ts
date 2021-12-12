@@ -1,8 +1,6 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../models/File";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
-import {FileService} from "../../../services/file/file.service";
-import {RepositoryService} from "../../../services/repository/repository.service";
+import {TabState} from "../../../models/TabState.rs";
 
 @Component({
     selector: "app-files-tab",
@@ -11,21 +9,17 @@ import {RepositoryService} from "../../../services/repository/repository.service
 })
 export class FilesTabComponent implements OnInit {
 
+    @Input() state!: TabState;
 
     files: File[] = [];
     contentLoading = false;
     selectedFiles: File[] = [];
 
-    constructor(
-        private errorBroker: ErrorBrokerService,
-        private repoService: RepositoryService,
-        private fileService: FileService,) {
+    constructor() {
     }
 
     async ngOnInit() {
-        this.fileService.displayedFiles.subscribe(async (files) => {
-            this.files = files;
-        });
+        this.state.files.subscribe(files => this.files = files);
     }
 
     async onFileSelect(files: File[]) {

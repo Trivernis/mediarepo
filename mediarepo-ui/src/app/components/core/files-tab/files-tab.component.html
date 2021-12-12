@@ -1,7 +1,7 @@
 <mat-drawer-container autosize>
     <mat-drawer disableClose mode="side" opened>
-        <app-files-tab-sidebar (searchEndEvent)="this.contentLoading = false"
-                               (searchStartEvent)="this.contentLoading = true"
+        <app-files-tab-sidebar [state]="this.state" (searchEndEvent)="this.contentLoading = false;"
+                               (searchStartEvent)="this.contentLoading = true;"
                                [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
     </mat-drawer>
     <mat-drawer-content>

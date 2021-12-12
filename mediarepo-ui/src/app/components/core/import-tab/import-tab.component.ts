@@ -1,5 +1,6 @@
-import {Component} from "@angular/core";
+import {Component, Input} from "@angular/core";
 import {File} from "../../../models/File";
+import {TabState} from "../../../models/TabState.rs";
 
 @Component({
     selector: "app-import-tab",
@@ -7,6 +8,8 @@ import {File} from "../../../models/File";
     styleUrls: ["./import-tab.component.scss"]
 })
 export class ImportTabComponent {
+
+    @Input() state!: TabState;
 
     public files: File[] = [];
     public selectedFiles: File[] = [];
