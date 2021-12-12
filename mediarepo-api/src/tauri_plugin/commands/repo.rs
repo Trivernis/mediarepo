@@ -185,7 +185,7 @@ pub async fn select_repository(
 }
 
 #[tauri::command]
-pub async fn get_frontend_state(api_state: ApiAccess<'_>) -> PluginResult<String> {
+pub async fn get_frontend_state(api_state: ApiAccess<'_>) -> PluginResult<Option<String>> {
     let api = api_state.api().await?;
     let state = api.repo.get_frontend_state().await?;
 
@@ -195,7 +195,9 @@ pub async fn get_frontend_state(api_state: ApiAccess<'_>) -> PluginResult<String
 #[tauri::command]
 pub async fn set_frontend_state(api_state: ApiAccess<'_>, state: String) -> PluginResult<()> {
     let api = api_state.api().await?;
-    api.repo.set_frontend_state(FrontendState { state }).await?;
+    api.repo
+        .set_frontend_state(FrontendState { state: Some(state) })
+        .await?;
 
     Ok(())
 }
