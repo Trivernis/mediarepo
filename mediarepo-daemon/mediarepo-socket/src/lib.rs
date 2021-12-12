@@ -2,10 +2,11 @@ use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::Settings;
-use mediarepo_core::type_keys::SettingsKey;
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::net::{IpAddr, SocketAddr};
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
@@ -18,6 +19,7 @@ mod utils;
 pub fn start_tcp_server(
     ip: IpAddr,
     port_range: (u16, u16),
+    repo_path: PathBuf,
     settings: Settings,
     repo: Repo,
 ) -> RepoResult<(String, JoinHandle<()>)> {
@@ -30,6 +32,7 @@ pub fn start_tcp_server(
         get_builder::<TcpListener>(address)
             .insert::<RepoKey>(Arc::new(repo))
             .insert::<SettingsKey>(settings)
+            .insert::<RepoPathKey>(repo_path)
             .build_server()
             .await
             .expect("Failed to start tcp server")
@@ -42,6 +45,7 @@ pub fn start_tcp_server(
 #[tracing::instrument(skip(settings, repo))]
 pub fn create_unix_socket(
     path: std::path::PathBuf,
+    repo_path: PathBuf,
     settings: Settings,
     repo: Repo,
 ) -> RepoResult<JoinHandle<()>> {
@@ -55,6 +59,7 @@ pub fn create_unix_socket(
         get_builder::<UnixListener>(path)
             .insert::<RepoKey>(Arc::new(repo))
             .insert::<SettingsKey>(settings)
+            .insert::<RepoPathKey>(repo_path)
             .build_server()
             .await
             .expect("Failed to create unix domain socket");

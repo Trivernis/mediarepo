@@ -127,14 +127,19 @@ async fn start_server(opt: Opt) -> RepoResult<()> {
     #[cfg(unix)]
     {
         let socket_path = opt.repo.join("repo.sock");
-        let handle =
-            mediarepo_socket::create_unix_socket(socket_path, settings.clone(), repo.clone())?;
+        let handle = mediarepo_socket::create_unix_socket(
+            socket_path,
+            opt.repo.clone(),
+            settings.clone(),
+            repo.clone(),
+        )?;
         handles.push(handle);
     }
 
     let (address, tcp_handle) = start_tcp_server(
         settings.listen_address.clone(),
         settings.port_range,
+        opt.repo.clone(),
         settings,
         repo,
     )?;
