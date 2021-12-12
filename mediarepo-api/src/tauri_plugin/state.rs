@@ -179,11 +179,15 @@ impl AppState {
     }
 
     /// Returns the daemon cli client
-    pub async fn get_daemon_cli(&self, repo_path: String) -> DaemonCli {
+    pub async fn get_daemon_cli(&self, repo_path: String) -> PluginResult<DaemonCli> {
         let settings = self.settings.read().await;
-        let path = settings.daemon_path.clone();
+        let path = settings
+            .daemon_path
+            .clone()
+            .ok_or_else(|| PluginError::from("Missing daemon executable"))?;
+        let cli = DaemonCli::new(path, repo_path);
 
-        DaemonCli::new(path, repo_path)
+        Ok(cli)
     }
 
     /// Adds a started daemon to the running daemons

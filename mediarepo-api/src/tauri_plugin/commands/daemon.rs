@@ -7,8 +7,15 @@ use std::net::{SocketAddr, ToSocketAddrs};
 use tokio::net::TcpListener;
 
 #[tauri::command]
+pub async fn has_executable(app_state: AppAccess<'_>) -> PluginResult<bool> {
+    let settings = app_state.settings.read().await;
+
+    Ok(settings.daemon_path.is_some())
+}
+
+#[tauri::command]
 pub async fn init_repository(app_state: AppAccess<'_>, repo_path: String) -> PluginResult<()> {
-    let daemon = app_state.get_daemon_cli(repo_path).await;
+    let daemon = app_state.get_daemon_cli(repo_path).await?;
     daemon.init_repo().await?;
 
     Ok(())
@@ -16,7 +23,7 @@ pub async fn init_repository(app_state: AppAccess<'_>, repo_path: String) -> Plu
 
 #[tauri::command]
 pub async fn start_daemon(app_state: AppAccess<'_>, repo_path: String) -> PluginResult<()> {
-    let mut daemon = app_state.get_daemon_cli(repo_path).await;
+    let mut daemon = app_state.get_daemon_cli(repo_path).await?;
     daemon.start_daemon()?;
     app_state.add_started_daemon(daemon).await;
 

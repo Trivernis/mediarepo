@@ -1,3 +1,4 @@
+use crate::daemon_management::find_daemon_executable;
 use crate::tauri_plugin::error::PluginResult;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
@@ -19,14 +20,14 @@ pub struct Repository {
 
 #[derive(DeserializePiecewiseDefault, Debug, Serialize)]
 pub struct Settings {
-    pub daemon_path: String,
+    pub daemon_path: Option<String>,
     pub repositories: HashMap<String, Repository>,
 }
 
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            daemon_path: String::from("mediarepo-daemon"),
+            daemon_path: find_daemon_executable().map(|e| e.to_string_lossy().to_string()),
             repositories: HashMap::new(),
         }
     }
