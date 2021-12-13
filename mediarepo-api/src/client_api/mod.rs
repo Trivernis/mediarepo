@@ -77,7 +77,7 @@ impl ApiClient {
     ) -> ApiResult<Self> {
         let ctx = IPCBuilder::<L>::new()
             .address(address)
-            .timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(30))
             .build_pooled_client(8)
             .await?;
         let client = Self::new(ctx);

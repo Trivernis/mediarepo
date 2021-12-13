@@ -122,6 +122,12 @@ impl BufferState {
         }
     }
 
+    /// Clears the buffer completely
+    pub fn clear(&self) {
+        let mut buffer = self.buffer.write();
+        buffer.clear();
+    }
+
     /// Trims the buffer to the given target size
     pub fn trim_to_size(&self, target_size: usize) {
         let mut size = self.get_size();

@@ -1,6 +1,6 @@
 use crate::client_api::protocol::ApiProtocolListener;
 use crate::client_api::ApiClient;
-use crate::tauri_plugin::commands::{ApiAccess, AppAccess};
+use crate::tauri_plugin::commands::{ApiAccess, AppAccess, BufferAccess};
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{save_settings, Repository};
 use crate::types::repo::FrontendState;
@@ -121,10 +121,12 @@ pub async fn check_local_repository_exists(path: String) -> PluginResult<bool> {
 pub async fn disconnect_repository(
     app_state: AppAccess<'_>,
     api_state: ApiAccess<'_>,
+    buffer_state: BufferAccess<'_>,
 ) -> PluginResult<()> {
     api_state.disconnect().await;
     let mut active_repo = app_state.active_repo.write().await;
     mem::take(&mut *active_repo);
+    buffer_state.clear();
 
     Ok(())
 }
@@ -133,12 +135,16 @@ pub async fn disconnect_repository(
 pub async fn close_local_repository(
     app_state: AppAccess<'_>,
     api_state: ApiAccess<'_>,
+    buffer_state: BufferAccess<'_>,
 ) -> PluginResult<()> {
     let mut active_repo = app_state.active_repo.write().await;
+
     if let Some(path) = mem::take(&mut *active_repo).and_then(|r| r.path) {
         app_state.stop_running_daemon(&path).await?;
     }
     api_state.disconnect().await;
+    mem::take(&mut *active_repo);
+    buffer_state.clear();
 
     Ok(())
 }
