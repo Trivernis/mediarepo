@@ -1,4 +1,4 @@
-<div class="file-gallery-inner">
+<div class="file-gallery-inner" #inner appInputReceiver (keyDownEvent)="handleKeydownEvent($event)" (keyUpEvent)="handleKeyupEvent($event)">
     <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="260" maxBufferPx="2000"
                                  minBufferPx="500">
         <div *cdkVirtualFor="let rowEntry of partitionedGridEntries">
@@ -15,7 +15,7 @@
 
 </div>
 <app-file-context-menu #fileContextMenu>
-    <button (click)="this.fileOpenEvent.emit(fileContextMenu.file)" mat-menu-item content-before>Open</button>
+    <button (click)="this.fileOpenEvent.emit(fileContextMenu.file)" mat-menu-item content-before="">Open</button>
     <button (click)="this.regenerateThumbnail(fileContextMenu.file)" mat-menu-item>Regenerate thumbnail</button>
 </app-file-context-menu>
 

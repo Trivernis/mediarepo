@@ -1,4 +1,4 @@
-<div class="gallery-container" fxLayout="column">
+<div class="gallery-container" #inner fxLayout="column" appInputReceiver (keyDownEvent)="handleKeydownEvent($event)">
     <button (click)="this.closeEvent.emit(this)" class="close-button" mat-icon-button>
         <ng-icon name="mat-close"></ng-icon>
     </button>

@@ -15,6 +15,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {
     ContentAwareImageComponent
 } from "./content-aware-image/content-aware-image.component";
+import { InputReceiverDirective } from "./input-receiver/input-receiver.directive";
 
 
 @NgModule({
@@ -23,12 +24,14 @@ import {
         BusyIndicatorComponent,
         ContextMenuComponent,
         ContentAwareImageComponent,
+        InputReceiverDirective,
     ],
     exports: [
         ConfirmDialogComponent,
         BusyIndicatorComponent,
         ContextMenuComponent,
         ContentAwareImageComponent,
+        InputReceiverDirective,
     ],
     imports: [
         CommonModule,

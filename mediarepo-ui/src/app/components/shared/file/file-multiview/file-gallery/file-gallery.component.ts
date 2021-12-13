@@ -1,5 +1,6 @@
 import {
-    Component,
+    AfterContentInit, AfterViewInit,
+    Component, ElementRef,
     EventEmitter,
     HostListener,
     Input,
@@ -21,7 +22,7 @@ import {TabService} from "../../../../../services/tab/tab.service";
     templateUrl: "./file-gallery.component.html",
     styleUrls: ["./file-gallery.component.scss"]
 })
-export class FileGalleryComponent implements OnChanges, OnInit {
+export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     @Input() files: File[] = [];
     @Input() preselectedFile: File | undefined;
@@ -31,6 +32,7 @@ export class FileGalleryComponent implements OnChanges, OnInit {
     entries: Selectable<File>[] = [];
 
     @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
+    @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
 
     public selectedFile: Selectable<File> | undefined;
     public fileContentUrl: SafeResourceUrl | undefined;
@@ -48,6 +50,10 @@ export class FileGalleryComponent implements OnChanges, OnInit {
             await this.onEntrySelect(
                 this.getPreselectedEntry() ?? this.entries[0])
         }
+    }
+
+    public ngAfterViewInit(): void {
+        this.focus();
     }
 
     public async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -138,6 +144,24 @@ export class FileGalleryComponent implements OnChanges, OnInit {
         }
     }
 
+    public focus() {
+        this.inner.nativeElement.focus();
+    }
+
+    public async handleKeydownEvent(event: KeyboardEvent) {
+        switch (event.key) {
+            case "ArrowRight":
+                await this.nextItem();
+                break;
+            case "ArrowLeft":
+                await this.previousItem();
+                break;
+            case "Escape":
+                this.onEscapeClick();
+                break;
+        }
+    }
+
     private scrollToSelection(): void {
         if (this.selectedFile) {
             const selectedIndex = this.entries.indexOf(this.selectedFile);
@@ -174,20 +198,4 @@ export class FileGalleryComponent implements OnChanges, OnInit {
             setTimeout(() => this.escapeCount--, 500);
         }
     }
-
-    @HostListener("window:keydown", ["$event"])
-    private async handleKeydownEvent(event: KeyboardEvent) {
-        switch (event.key) {
-            case "ArrowRight":
-                await this.nextItem();
-                break;
-            case "ArrowLeft":
-                await this.previousItem();
-                break;
-            case "Escape":
-                this.onEscapeClick();
-                break;
-        }
-    }
-
 }

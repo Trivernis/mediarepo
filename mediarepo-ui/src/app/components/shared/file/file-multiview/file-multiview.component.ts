@@ -1,5 +1,14 @@
-import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
+    ViewChild
+} from "@angular/core";
 import {File} from "../../../../models/File";
+import {FileGalleryComponent} from "./file-gallery/file-gallery.component";
+import {FileGridComponent} from "./file-grid/file-grid.component";
 
 @Component({
     selector: "app-file-multiview",
@@ -13,6 +22,9 @@ export class FileMultiviewComponent {
 
     @Output() fileOpenEvent = new EventEmitter<File>();
     @Output() fileSelectEvent = new EventEmitter<File[]>();
+
+    @ViewChild(FileGalleryComponent) fileGallery!: FileGalleryComponent;
+    @ViewChild(FileGridComponent) fileGrid!: FileGridComponent;
 
     public selectedFiles: File[] = [];
     public preselectedFile: File | undefined;

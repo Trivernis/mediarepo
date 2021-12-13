@@ -20,7 +20,6 @@ export class FileService {
     }
 
     public async findFiles(filters: FilterExpression[], sortBy: SortKey[]): Promise<File[]> {
-        console.log(filters);
         let backendFilters = filters.map(f => f.toBackendType());
         return await invoke<File[]>("plugin:mediarepo|find_files",
             {

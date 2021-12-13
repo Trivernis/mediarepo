@@ -43,14 +43,12 @@ export class CoreComponent {
 
         this.stateService.state.subscribe(state => {
             this.appState = state;
-            console.log("new state", state);
             if (this.appState.tabs.value.length === 0) {
                 this.addTab();
             }
             state.tabs.subscribe(tabs => {
-                console.log("new tabs", tabs);
                 this.tabs = tabs;
-                console.log(tabs);
+
                 if (this.tabs.length === 0) {
                     this.addTab();
                 }
@@ -101,7 +99,6 @@ export class CoreComponent {
     }
 
     public async onMouseClickTabLabel(tab: TabState, event: MouseEvent) {
-        console.log(event);
         if (event.button === 1) { // middle mouse button
             await this.closeTab(tab);
         }
