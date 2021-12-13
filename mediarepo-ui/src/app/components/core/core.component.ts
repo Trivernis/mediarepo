@@ -45,6 +45,8 @@ export class CoreComponent {
             this.appState = state;
             if (this.appState.tabs.value.length === 0) {
                 this.addTab();
+            } else {
+                this.tabGroup.selectedIndex = 1;
             }
             state.tabs.subscribe(tabs => {
                 this.tabs = tabs;
