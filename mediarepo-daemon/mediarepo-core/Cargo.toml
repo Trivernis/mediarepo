@@ -18,7 +18,7 @@ itertools = "0.10.1"
 glob = "0.3.0"
 
 [dependencies.thumbnailer]
-version = "0.2.3"
+version = "0.2.4"
 default-features = false
 
 [dependencies.sea-orm]

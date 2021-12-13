@@ -1814,9 +1814,9 @@ dependencies = [
 
 [[package]]
 name = "thumbnailer"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75e5a2f440c232c23ba04c40b76cb64e09f71fa96e38e3ad26c765763d690af9"
+checksum = "8981b60fe29b8213c829340b7d5bea9d0bfb145fc460450ea3db01cf54d8643a"
 dependencies = [
  "image",
  "mime",
