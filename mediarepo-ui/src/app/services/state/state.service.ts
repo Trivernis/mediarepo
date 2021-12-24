@@ -29,7 +29,8 @@ export class StateService {
                 this.state.next(state);
             }
         });
-        this.stateChange.pipe(debounceTime(1000)).subscribe(async () => this.saveState());
+        this.stateChange.pipe(debounceTime(1000))
+            .subscribe(async () => this.saveState());
     }
 
     /**
@@ -63,6 +64,10 @@ export class StateService {
             .subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(tab.sortKeys
             .subscribe(() => this.stateChange.next()));
+        this.tabSubscriptions.push(
+            tab.selectedFileHash.subscribe(() => this.stateChange.next()));
+        this.tabSubscriptions.push(
+            tab.mode.subscribe(() => this.stateChange.next()))
     }
 
     /**

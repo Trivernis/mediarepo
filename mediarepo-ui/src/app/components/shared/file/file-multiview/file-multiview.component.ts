@@ -22,12 +22,13 @@ export class FileMultiviewComponent {
 
     @Output() fileOpenEvent = new EventEmitter<File>();
     @Output() fileSelectEvent = new EventEmitter<File[]>();
+    @Output() modeChangeEvent = new EventEmitter<"grid"|"gallery">();
 
     @ViewChild(FileGalleryComponent) fileGallery!: FileGalleryComponent;
     @ViewChild(FileGridComponent) fileGrid!: FileGridComponent;
 
     public selectedFiles: File[] = [];
-    public preselectedFile: File | undefined;
+    @Input() public preselectedFile: File | undefined;
 
     constructor() {
     }
@@ -38,7 +39,7 @@ export class FileMultiviewComponent {
         this.fileSelectEvent.emit(this.selectedFiles);
     }
 
-    public onSinglefileSelect(file: File | undefined): void {
+    public onSingleFileSelect(file: File | undefined): void {
         if (file) {
             this.selectedFiles = [file];
             this.preselectedFile = file;
@@ -50,7 +51,12 @@ export class FileMultiviewComponent {
 
     public onFileOpen(file: File): void {
         this.preselectedFile = file;
-        this.mode = "gallery";
+        this.setMode("gallery")
         this.fileOpenEvent.emit(file);
+    }
+
+    public setMode(mode: "grid" | "gallery") {
+        this.mode = mode;
+        this.modeChangeEvent.emit(mode);
     }
 }

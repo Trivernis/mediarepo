@@ -12,8 +12,10 @@
                     </button>
                 </div>
             </ng-template>
-            <app-files-tab *ngIf="tab.category === 'Files'" [state]="tab"></app-files-tab>
-            <app-import-tab *ngIf="tab.category === 'Import'" [state]="tab"></app-import-tab>
+            <ng-template matTabContent>
+                <app-files-tab *ngIf="tab.category === 'Files'" [state]="tab"></app-files-tab>
+                <app-import-tab *ngIf="tab.category === 'Import'" [state]="tab"></app-import-tab>
+            </ng-template>
         </mat-tab>
         <mat-tab *ngIf="this.newTab" label="New Tab">
             <div class="new-tab-content">

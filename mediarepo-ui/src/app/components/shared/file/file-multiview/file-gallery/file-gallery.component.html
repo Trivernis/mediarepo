@@ -5,7 +5,7 @@
     <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null"
          class="file-full-view"
          fxFlex="80%">
-        <app-content-viewer
+        <app-content-viewer *ngIf="this.selectedFile"
             (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, this.selectedFile!.data)"
             [file]="this.selectedFile!.data"></app-content-viewer>
     </div>

@@ -24,5 +24,20 @@ export class FilesTabComponent implements OnInit {
 
     async onFileSelect(files: File[]) {
         this.selectedFiles = files;
+        if (files.length === 1) {
+            this.state.selectedFileHash.next(files[0].hash);
+        } else {
+            this.state.selectedFileHash.next(undefined);
+        }
+    }
+
+    public getStateSelectedFile(): File | undefined {
+        const hash = this.state.selectedFileHash.value;
+
+        if (hash) {
+            return this.files.find(f => f.hash === hash);
+        } else {
+            return undefined;
+        }
     }
 }

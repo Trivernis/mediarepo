@@ -14,6 +14,9 @@ import {TagQuery} from "./TagQuery";
 export class TabState {
     public uuid: number;
     public category: TabCategory;
+    public mode = new BehaviorSubject<"grid" | "gallery">("grid");
+    public selectedFileHash = new BehaviorSubject<string | undefined>(undefined);
+
     public files = new BehaviorSubject<File[]>([]);
     public filters = new BehaviorSubject<FilterExpression[]>([]);
     public sortKeys = new BehaviorSubject<SortKey[]>(
@@ -60,6 +63,8 @@ export class TabState {
         );
         state.filters.next(filters);
         state.sortKeys.next(sortKeys);
+        state.mode.next(dto.mode ?? "grid");
+        state.selectedFileHash.next(dto.selectedFileHash)
 
         return state
     }
@@ -70,6 +75,8 @@ export class TabState {
             category: this.category,
             filters: this.filters.value,
             sortKeys: this.sortKeys.value,
+            mode: this.mode.value,
+            selectedFileHash: this.selectedFileHash.value
         };
     }
 }
