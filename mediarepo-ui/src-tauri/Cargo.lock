@@ -40,7 +40,7 @@ checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
 
 [[package]]
 name = "app"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "mediarepo-api",
  "serde",
