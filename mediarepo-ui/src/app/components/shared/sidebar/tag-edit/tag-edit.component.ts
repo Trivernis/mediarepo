@@ -1,8 +1,8 @@
 import {
-    Component,
+    Component, EventEmitter,
     Input,
     OnChanges,
-    OnInit,
+    OnInit, Output,
     SimpleChanges,
     ViewChild
 } from "@angular/core";
@@ -20,6 +20,7 @@ import {delay} from "rxjs/operators";
 export class TagEditComponent implements OnInit, OnChanges {
 
     @Input() files: File[] = [];
+    @Output() tagEditEvent = new EventEmitter<TagEditComponent>();
     public tags: Tag[] = [];
 
     public allTags: Tag[] = [];
@@ -84,10 +85,14 @@ export class TagEditComponent implements OnInit, OnChanges {
             this.fileTags[file.id] = await this.tagService.changeFileTags(
                 file.id,
                 addedTags, removedTags);
+            if (addedTags.length > 0) {
+                await this.tagService.loadTags();
+            }
         }
         this.mapFileTagsToTagList();
         const index = this.tags.indexOf(tag);
         index >= 0 && this.tagScroll.scrollToIndex(index);
+        this.tagEditEvent.emit(this);
     }
 
     async addTag(tag: Tag) {
@@ -101,6 +106,8 @@ export class TagEditComponent implements OnInit, OnChanges {
         this.mapFileTagsToTagList();
         const index = this.tags.indexOf(tag);
         index >= 0 && this.tagScroll.scrollToIndex(index);
+        this.tagEditEvent.emit(this);
+        await this.tagService.loadTags();
     }
 
     public async removeTag(tag: Tag) {
@@ -114,6 +121,7 @@ export class TagEditComponent implements OnInit, OnChanges {
         }
         this.mapFileTagsToTagList();
         this.loading = false;
+        this.tagEditEvent.emit(this);
     }
 
     private async loadFileTags() {
