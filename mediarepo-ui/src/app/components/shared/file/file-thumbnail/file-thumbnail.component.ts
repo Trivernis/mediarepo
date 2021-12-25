@@ -1,21 +1,24 @@
 import {
+    AfterViewInit,
     Component,
     Input,
     OnChanges,
-    OnInit,
     SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
 import {SafeResourceUrl} from "@angular/platform-browser";
+import {
+    SchedulingService
+} from "../../../../services/scheduling/scheduling.service";
 
 @Component({
     selector: "app-file-thumbnail",
     templateUrl: "./file-thumbnail.component.html",
     styleUrls: ["./file-thumbnail.component.scss"]
 })
-export class FileThumbnailComponent implements OnInit, OnChanges {
+export class FileThumbnailComponent implements OnChanges, AfterViewInit {
 
     @Input() file!: File;
 
@@ -23,17 +26,17 @@ export class FileThumbnailComponent implements OnInit, OnChanges {
 
     private supportedThumbnailTypes = ["image", "video"]
 
-    constructor(private fileService: FileService) {
+    constructor( private fileService: FileService) {
     }
 
-    public ngOnInit(): void {
+    public async ngAfterViewInit() {
         this.thumbUrl = this.fileService.buildThumbnailUrl(this.file, 250, 250);
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
+    public async ngOnChanges(changes: SimpleChanges) {
         if (changes["file"]) {
-            this.thumbUrl = this.fileService.buildThumbnailUrl(this.file, 250,
-                250)
+            this.thumbUrl = this.fileService.buildThumbnailUrl(this.file,
+                250, 250);
         }
     }
 

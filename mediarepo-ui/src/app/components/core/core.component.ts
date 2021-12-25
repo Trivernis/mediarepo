@@ -50,6 +50,11 @@ export class CoreComponent {
             }
             state.tabs.subscribe(tabs => {
                 this.tabs = tabs;
+                const selectedIndex = state.selectedTab.value;
+
+                if (selectedIndex) {
+                    this.tabGroup.selectedIndex = selectedIndex;
+                }
 
                 if (this.tabs.length === 0) {
                     this.addTab();
@@ -64,6 +69,9 @@ export class CoreComponent {
 
     public onTabSelectionChange(event: MatTabChangeEvent): void {
         this.tabService.setSelectedTab(event.index);
+        if (event.index > 0 && event.index <= this.tabs.length) {
+            this.appState.selectedTab.next(event.index);
+        }
     }
 
     public addFilesTab(): void {

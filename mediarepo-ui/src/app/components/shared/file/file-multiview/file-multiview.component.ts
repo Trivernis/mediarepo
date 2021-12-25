@@ -1,4 +1,5 @@
 import {
+    AfterViewChecked, AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -15,7 +16,7 @@ import {FileGridComponent} from "./file-grid/file-grid.component";
     templateUrl: "./file-multiview.component.html",
     styleUrls: ["./file-multiview.component.scss"]
 })
-export class FileMultiviewComponent {
+export class FileMultiviewComponent implements AfterViewInit {
 
     @Input() files!: File[];
     @Input() mode: "grid" | "gallery" = "grid";
@@ -31,6 +32,13 @@ export class FileMultiviewComponent {
     @Input() public preselectedFile: File | undefined;
 
     constructor() {
+    }
+
+    public ngAfterViewInit(): void {
+        if (this.preselectedFile) {
+            this.fileSelectEvent.emit([this.preselectedFile])
+            this.selectedFiles = [this.preselectedFile];
+        }
     }
 
     public onFileSelect(files: File[]): void {

@@ -10,6 +10,7 @@ import {File} from "../../../../models/File";
 import {Tag} from "../../../../models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TagService} from "../../../../services/tag/tag.service";
+import {delay} from "rxjs/operators";
 
 @Component({
     selector: "app-tag-edit",
@@ -25,6 +26,8 @@ export class TagEditComponent implements OnInit, OnChanges {
     public editMode: string = "Toggle";
     @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
     private fileTags: { [key: number]: Tag[] } = {};
+
+    public loading = false;
 
     constructor(
         private tagService: TagService,
@@ -44,6 +47,7 @@ export class TagEditComponent implements OnInit, OnChanges {
     }
 
     public async editTag(tag: string): Promise<void> {
+        this.loading = true;
         if (tag.length > 0) {
             let tagInstance = this.allTags.find(
                 t => t.getNormalizedOutput() === tag);
@@ -64,6 +68,7 @@ export class TagEditComponent implements OnInit, OnChanges {
                     break;
             }
         }
+        this.loading = false;
     }
 
     async toggleTag(tag: Tag) {
@@ -87,7 +92,7 @@ export class TagEditComponent implements OnInit, OnChanges {
 
     async addTag(tag: Tag) {
         for (const file of this.files) {
-            if (this.fileTags[file.id].findIndex(t => t.id === tag.id) < 0) {
+            if ((this.fileTags[file.id] ?? []).findIndex(t => t.id === tag.id) < 0) {
                 this.fileTags[file.id] = await this.tagService.changeFileTags(
                     file.id,
                     [tag.id], []);
@@ -99,6 +104,7 @@ export class TagEditComponent implements OnInit, OnChanges {
     }
 
     public async removeTag(tag: Tag) {
+        this.loading = true;
         for (const file of this.files) {
             if (this.fileTags[file.id].findIndex(t => t.id === tag.id) >= 0) {
                 this.fileTags[file.id] = await this.tagService.changeFileTags(
@@ -107,14 +113,23 @@ export class TagEditComponent implements OnInit, OnChanges {
             }
         }
         this.mapFileTagsToTagList();
+        this.loading = false;
     }
 
     private async loadFileTags() {
-        for (const file of this.files) {
+        this.loading = true;
+        const promises = [];
+        const loadFn = async (file: File) => {
             this.fileTags[file.id] = await this.tagService.getTagsForFiles(
                 [file.hash]);
         }
+        for (const file of this.files) {
+            promises.push(loadFn(file));
+        }
+
+        await Promise.all(promises);
         this.mapFileTagsToTagList();
+        this.loading = false;
     }
 
     private mapFileTagsToTagList() {

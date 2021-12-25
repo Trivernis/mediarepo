@@ -4,6 +4,7 @@ import {
     EventEmitter,
     Input,
     OnChanges,
+    OnDestroy,
     OnInit,
     Output,
     SimpleChanges,
@@ -11,24 +12,28 @@ import {
 } from "@angular/core";
 import {File} from "../../../../models/File";
 import {Selectable} from "../../../../models/Selectable";
+import {
+    SchedulingService
+} from "../../../../services/scheduling/scheduling.service";
+
+const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
 
 @Component({
     selector: "app-file-card",
     templateUrl: "./file-card.component.html",
     styleUrls: ["./file-card.component.scss"]
 })
-export class FileCardComponent implements OnInit, OnChanges {
-
+export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild("card") card!: ElementRef;
     @Input() public entry!: Selectable<File>;
     @Output() clickEvent = new EventEmitter<FileCardComponent>();
     @Output() dblClickEvent = new EventEmitter<FileCardComponent>();
 
     private cachedId: number | undefined;
-    private urlSetTimeout: number | undefined;
+    private workId: number | undefined;
     public loading = false;
 
-    constructor() {
+    constructor(private schedulingService: SchedulingService) {
     }
 
     async ngOnInit() {
@@ -43,10 +48,21 @@ export class FileCardComponent implements OnInit, OnChanges {
         }
     }
 
+    public ngOnDestroy(): void {
+        if (this.workId) {
+            this.schedulingService.cancelWork(LOADING_WORK_KEY, this.workId);
+        }
+    }
+
     private setImageDelayed() {
+        if (this.workId) {
+            this.schedulingService.cancelWork(LOADING_WORK_KEY, this.workId);
+        }
         this.loading = true;
-        clearTimeout(this.urlSetTimeout);
-        this.urlSetTimeout = setTimeout(
-            () => this.loading = false, 200);
+        this.workId = this.schedulingService.addWork(LOADING_WORK_KEY,
+            async () => {
+                await this.schedulingService.delay(1);
+                this.loading = false
+            });
     }
 }

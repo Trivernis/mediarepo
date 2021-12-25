@@ -59,6 +59,14 @@ export class RepositoryService {
             } else {
                 await this.disconnectSelectedRepository();
             }
+        } else {
+            try {
+                // just to make sure because sometimes there's some weird issues
+                await this.disconnectSelectedRepository();
+            } catch (err) {
+                console.warn(err);
+            }
+
         }
         await invoke("plugin:mediarepo|select_repository", {name: repo.name});
         await this.loadRepositories();

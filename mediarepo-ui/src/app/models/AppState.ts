@@ -7,6 +7,7 @@ export class AppState {
 
     private tabIdCounter = 0;
     public tabs = new BehaviorSubject<TabState[]>([]);
+    public selectedTab = new BehaviorSubject<number | undefined>(undefined);
 
     private readonly fileService: FileService
 
@@ -34,6 +35,7 @@ export class AppState {
         appState.tabs.next(tabs);
 
         appState.tabIdCounter = state.tabIdCounter;
+        appState.selectedTab.next(state.selectedTab);
 
         return appState
     }
@@ -43,6 +45,7 @@ export class AppState {
         return JSON.stringify({
             tabs: tabDTOs,
             tabIdCounter: this.tabIdCounter,
+            selectedTab: this.selectedTab.value,
         });
     }
 }

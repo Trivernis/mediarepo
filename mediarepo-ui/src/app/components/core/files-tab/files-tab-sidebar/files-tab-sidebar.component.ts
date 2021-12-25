@@ -57,7 +57,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
         if (this.fileSearch) {
             await this.fileSearch.searchForFiles();
         }
-        if (this.tags.length === 0) {
+        if (this.tags.length === 0 && this.selectedFiles.length === 0) {
             this.tags = this.tagsOfFiles;
         }
     }
@@ -102,7 +102,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     }
 
     private showAllTagsFallback() {
-        if (this.tags.length === 0) {
+        if (this.tags.length === 0 && this.selectedFiles.length === 0) {
             this.tags = this.tagsOfFiles.sort(
                 (a, b) => a.getNormalizedOutput()
                     .localeCompare(b.getNormalizedOutput()));
