@@ -8,14 +8,15 @@ import {
     SingleFilterExpression
 } from "./FilterExpression";
 import {SortKey} from "./SortKey";
-import {debounceTime} from "rxjs/operators";
 import {TagQuery} from "./TagQuery";
+import {debounceTime} from "rxjs/operators";
 
 export class TabState {
     public uuid: number;
     public category: TabCategory;
     public mode = new BehaviorSubject<"grid" | "gallery">("grid");
     public selectedFileHash = new BehaviorSubject<string | undefined>(undefined);
+    public loading = new BehaviorSubject<boolean>(false);
 
     public files = new BehaviorSubject<File[]>([]);
     public filters = new BehaviorSubject<FilterExpression[]>([]);
@@ -29,16 +30,20 @@ export class TabState {
         this.category = category;
         this.uuid = uuid;
         this.fileService = fileService;
-        this.filters.pipe(debounceTime(500))
-            .subscribe(async () => await this.findFiles());
-        this.sortKeys.pipe(debounceTime(100))
-            .subscribe(async () => await this.findFiles());
+        if (this.category === TabCategory.Files) {
+            this.filters.pipe(debounceTime(500))
+                .subscribe(async () => await this.findFiles());
+            this.sortKeys.pipe(debounceTime(100))
+                .subscribe(async () => await this.findFiles());
+        }
     }
 
     public async findFiles() {
+        this.loading.next(true);
         const files = await this.fileService.findFiles(this.filters.value,
             this.sortKeys.value);
         this.files.next(files);
+        this.loading.next(false);
     }
 
     public setFilters(filters: FilterExpression[]) {
@@ -46,7 +51,7 @@ export class TabState {
     }
 
     public setSortKeys(keys: SortKey[]) {
-        this.sortKeys.next(keys)
+        this.sortKeys.next(keys);
     }
 
     public static fromDTO(dto: any, fileService: FileService): TabState {
@@ -64,7 +69,8 @@ export class TabState {
         state.filters.next(filters);
         state.sortKeys.next(sortKeys);
         state.mode.next(dto.mode ?? "grid");
-        state.selectedFileHash.next(dto.selectedFileHash)
+        state.selectedFileHash.next(dto.selectedFileHash);
+        state.files.next(dto.files);
 
         return state
     }
@@ -76,7 +82,8 @@ export class TabState {
             filters: this.filters.value,
             sortKeys: this.sortKeys.value,
             mode: this.mode.value,
-            selectedFileHash: this.selectedFileHash.value
+            selectedFileHash: this.selectedFileHash.value,
+            files: this.files.value,
         };
     }
 }

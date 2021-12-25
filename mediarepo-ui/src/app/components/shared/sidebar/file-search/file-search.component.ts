@@ -22,7 +22,7 @@ import {
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../models/Tag";
 import {clipboard} from "@tauri-apps/api";
-import {TabState} from "../../../../models/TabState.rs";
+import {TabState} from "../../../../models/TabState";
 
 
 @Component({

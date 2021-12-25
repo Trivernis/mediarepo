@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../models/File";
-import {TabState} from "../../../models/TabState.rs";
+import {TabState} from "../../../models/TabState";
 
 @Component({
     selector: "app-files-tab",
@@ -20,6 +20,7 @@ export class FilesTabComponent implements OnInit {
 
     async ngOnInit() {
         this.state.files.subscribe(files => this.files = files);
+        this.state.loading.subscribe(loading => this.contentLoading = loading);
     }
 
     async onFileSelect(files: File[]) {
@@ -38,6 +39,14 @@ export class FilesTabComponent implements OnInit {
             return this.files.find(f => f.hash === hash);
         } else {
             return undefined;
+        }
+    }
+
+    public async onKeydown(event: KeyboardEvent) {
+        switch (event.key) {
+            case "F5":
+                await this.state.findFiles()
+                break;
         }
     }
 }

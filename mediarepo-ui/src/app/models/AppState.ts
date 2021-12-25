@@ -1,4 +1,4 @@
-import {TabState} from "./TabState.rs";
+import {TabState} from "./TabState";
 import {FileService} from "../services/file/file.service";
 import {BehaviorSubject} from "rxjs";
 import {TabCategory} from "./TabCategory";

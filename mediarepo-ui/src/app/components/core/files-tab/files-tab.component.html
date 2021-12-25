@@ -1,4 +1,4 @@
-<mat-drawer-container autosize>
+<mat-drawer-container autosize appInputReceiver (keyDownEvent)="this.onKeydown($event)">
     <mat-drawer disableClose mode="side" opened>
         <app-files-tab-sidebar [state]="this.state" (searchEndEvent)="this.contentLoading = false;"
                                (searchStartEvent)="this.contentLoading = true;"

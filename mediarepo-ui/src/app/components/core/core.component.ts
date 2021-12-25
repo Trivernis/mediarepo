@@ -5,7 +5,7 @@ import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
 import {TabService} from "../../services/tab/tab.service";
 import {TabCategory} from "../../models/TabCategory";
-import {TabState} from "../../models/TabState.rs";
+import {TabState} from "../../models/TabState";
 import {AppState} from "../../models/AppState";
 import {StateService} from "../../services/state/state.service";
 

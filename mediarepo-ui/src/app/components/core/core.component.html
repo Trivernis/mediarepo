@@ -1,5 +1,5 @@
 <div id="content">
-    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" class="main-tab-group">
+    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" class="main-tab-group" animationDuration="0">
         <mat-tab label="Repositories">
             <app-repositories-tab></app-repositories-tab>
         </mat-tab>

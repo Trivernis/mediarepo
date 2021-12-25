@@ -20,7 +20,7 @@ import {
 import {
     TagEditComponent
 } from "../../../shared/sidebar/tag-edit/tag-edit.component";
-import {TabState} from "../../../../models/TabState.rs";
+import {TabState} from "../../../../models/TabState";
 
 @Component({
     selector: "app-files-tab-sidebar",

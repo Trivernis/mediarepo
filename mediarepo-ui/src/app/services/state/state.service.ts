@@ -4,7 +4,7 @@ import {AppState} from "../../models/AppState";
 import {invoke} from "@tauri-apps/api/tauri";
 import {FileService} from "../file/file.service";
 import {RepositoryService} from "../repository/repository.service";
-import {TabState} from "../../models/TabState.rs";
+import {TabState} from "../../models/TabState";
 import {debounceTime} from "rxjs/operators";
 
 @Injectable({
@@ -68,6 +68,7 @@ export class StateService {
             tab.selectedFileHash.subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(
             tab.mode.subscribe(() => this.stateChange.next()))
+        this.tabSubscriptions.push(tab.files.subscribe(() => this.stateChange.next()))
     }
 
     /**
