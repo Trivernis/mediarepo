@@ -24,6 +24,7 @@ export class TagInputComponent implements OnChanges {
     @Input() availableTags: Tag[] = [];
     @Input() allowNegation: boolean = false;
     @Input() allowInvalid: boolean = false;
+    @Input() allowWildcards: boolean = false;
     @Output() tagAdded = new EventEmitter<string>();
 
     @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
@@ -48,8 +49,10 @@ export class TagInputComponent implements OnChanges {
         }
     }
 
-    public addTagByInput(event: any): void {
-        this.addTag(this.formControl.value);
+    public addTagByInput(event: KeyboardEvent): void {
+        if (event.key === "Enter") {
+            this.addTag(this.formControl.value);
+        }
     }
 
     public addTagByAutocomplete(event: MatAutocompleteSelectedEvent): void {
@@ -70,17 +73,34 @@ export class TagInputComponent implements OnChanges {
         const negated = normalizedTag.startsWith("-") && this.allowNegation;
         normalizedTag = this.allowNegation ? normalizedTag.replace(/^-/,
             "") : normalizedTag;
+        const containsWildcard = normalizedTag.endsWith("*");
+        normalizedTag = this.allowWildcards ? normalizedTag.replace(/\*\s*$/,
+            "") : normalizedTag;
 
-        return this.tagsForAutocomplete.filter(
+        const autocompleteTags = this.tagsForAutocomplete.filter(
             t => t.includes(normalizedTag))
             .map(t => negated ? "-" + t : t)
             .sort((l, r) => this.compareSuggestionTags(normalizedTag, l, r))
             .slice(0, 20);
+
+        if (containsWildcard) {
+            autocompleteTags.unshift(this.normalizeTag(tag));
+        }
+
+        return autocompleteTags;
     }
 
     private checkTagValid(tag: string): boolean {
         if (this.allowNegation) {
             tag = tag.replace(/^-/, "");
+        }
+        if (tag.endsWith("*")) {
+            if (this.allowWildcards) {
+                return this.tagsForAutocomplete.findIndex(
+                    t => t.startsWith(tag.trim().replace(/\*\s*$/, ""))) >= 0;
+            } else {
+                return false;
+            }
         }
         return this.tagsForAutocomplete.includes(tag);
     }

@@ -13,7 +13,7 @@
         </mat-list>
     </div>
     <mat-divider></mat-divider>
-    <app-tag-input (tagAdded)="this.addFilter($event)" [allowNegation]="true" [availableTags]="this.availableTags"
+    <app-tag-input [allowWildcards]="true" (tagAdded)="this.addFilter($event)" [allowNegation]="true" [availableTags]="this.availableTags"
                    class="tag-input"></app-tag-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>

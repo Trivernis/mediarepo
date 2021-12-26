@@ -14,7 +14,7 @@
             </button>
         </div>
 
-        <app-tag-input (tagAdded)="addSearchTag($event); searchForFiles()" [allowNegation]="true"
+        <app-tag-input [allowWildcards]="true" (tagAdded)="addSearchTag($event); searchForFiles()" [allowNegation]="true"
                        [availableTags]="getValidSearchTags()"
                        class="full-width">
             <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>

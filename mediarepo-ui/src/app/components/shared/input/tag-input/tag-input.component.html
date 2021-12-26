@@ -3,7 +3,7 @@
         Enter a tag
     </mat-label>
     <input #tagInput
-           (keydown.enter)="addTagByInput($event)"
+           (keydown)="addTagByInput($event)"
            [formControl]="formControl"
            [matAutocomplete]="auto"
            matInput>
