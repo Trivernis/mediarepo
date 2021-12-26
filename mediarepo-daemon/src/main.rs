@@ -73,11 +73,11 @@ fn main() -> RepoResult<()> {
         opt.repo = opt.repo.canonicalize().unwrap();
     }
 
-    let mut _guard = None;
+    let mut guards = Vec::new();
     if opt.profile {
-        _guard = Some(logging::init_tracing_flame());
+        guards.push(logging::init_tracing_flame());
     } else {
-        logging::init_tracing();
+        guards.append(&mut logging::init_tracing(&opt.repo));
     }
 
     match opt.cmd.clone() {

@@ -122,14 +122,7 @@ impl Repo {
         let tag_map: HashMap<String, i64> =
             HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
 
-        let tag_ids: Vec<Vec<(i64, bool)>> = tags
-            .into_iter()
-            .map(|expr| {
-                expr.into_iter()
-                    .filter_map(|(tag, negated)| Some((*tag_map.get(&tag)?, negated)))
-                    .collect_vec()
-            })
-            .collect();
+        let tag_ids = process_filters_with_tag_ids(tags, tag_map);
 
         File::find_by_tags(self.db.clone(), tag_ids).await
     }
@@ -406,4 +399,50 @@ impl Repo {
             Err(RepoError::from("No thumbnail storage configured."))
         }
     }
+}
+
+fn process_filters_with_tag_ids(
+    filters: Vec<Vec<(String, bool)>>,
+    tag_ids: HashMap<String, i64>,
+) -> Vec<Vec<(i64, bool)>> {
+    let mut id_filters = Vec::new();
+
+    for expression in filters {
+        let mut id_sub_filters = Vec::new();
+        let mut negated_wildcard_filters = Vec::new();
+
+        for (tag, negate) in expression {
+            if tag.ends_with("*") {
+                let tag_prefix = tag.trim_end_matches('*');
+                let mut found_tag_ids = tag_ids
+                    .iter()
+                    .filter(|(k, _)| k.starts_with(tag_prefix))
+                    .map(|(_, id)| (*id, negate))
+                    .collect::<Vec<(i64, bool)>>();
+
+                if negate {
+                    negated_wildcard_filters.push(found_tag_ids)
+                } else {
+                    id_sub_filters.append(&mut found_tag_ids);
+                }
+            } else {
+                if let Some(id) = tag_ids.get(&tag) {
+                    id_sub_filters.push((*id, negate));
+                }
+            }
+        }
+        if !negated_wildcard_filters.is_empty() {
+            for wildcard_filter in negated_wildcard_filters {
+                for query in wildcard_filter {
+                    let mut sub_filters = id_sub_filters.clone();
+                    sub_filters.push(query);
+                    id_filters.push(sub_filters)
+                }
+            }
+        } else if !id_sub_filters.is_empty() {
+            id_filters.push(id_sub_filters);
+        }
+    }
+
+    id_filters
 }

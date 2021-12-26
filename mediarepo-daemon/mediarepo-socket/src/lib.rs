@@ -28,15 +28,17 @@ pub fn start_tcp_server(
     let address = SocketAddr::new(ip, port);
     let address_string = address.to_string();
 
-    let join_handle = tokio::task::spawn(async move {
-        get_builder::<TcpListener>(address)
-            .insert::<RepoKey>(Arc::new(repo))
-            .insert::<SettingsKey>(settings)
-            .insert::<RepoPathKey>(repo_path)
-            .build_server()
-            .await
-            .expect("Failed to start tcp server")
-    });
+    let join_handle = tokio::task::Builder::new()
+        .name("mediarepo_tcp::listen")
+        .spawn(async move {
+            get_builder::<TcpListener>(address)
+                .insert::<RepoKey>(Arc::new(repo))
+                .insert::<SettingsKey>(settings)
+                .insert::<RepoPathKey>(repo_path)
+                .build_server()
+                .await
+                .expect("Failed to start tcp server")
+        });
 
     Ok((address_string, join_handle))
 }
@@ -55,15 +57,17 @@ pub fn create_unix_socket(
     if path.exists() {
         fs::remove_file(&path)?;
     }
-    let join_handle = tokio::task::spawn(async move {
-        get_builder::<UnixListener>(path)
-            .insert::<RepoKey>(Arc::new(repo))
-            .insert::<SettingsKey>(settings)
-            .insert::<RepoPathKey>(repo_path)
-            .build_server()
-            .await
-            .expect("Failed to create unix domain socket");
-    });
+    let join_handle = tokio::task::Builder::new()
+        .name("mediarepo_unix_socket::listen")
+        .spawn(async move {
+            get_builder::<UnixListener>(path)
+                .insert::<RepoKey>(Arc::new(repo))
+                .insert::<SettingsKey>(settings)
+                .insert::<RepoPathKey>(repo_path)
+                .build_server()
+                .await
+                .expect("Failed to create unix domain socket");
+        });
 
     Ok(join_handle)
 }

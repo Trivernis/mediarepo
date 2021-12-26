@@ -8,6 +8,7 @@ use std::fmt::Debug;
 
 #[derive(Clone)]
 pub struct Namespace {
+    #[allow(dead_code)]
     db: DatabaseConnection,
     model: namespace::Model,
 }
@@ -110,10 +111,9 @@ impl Namespace {
             name: Set(name.to_string()),
             ..Default::default()
         };
-        let active_model = active_model.insert(&db).await?;
-        let namespace = Self::by_id(db, active_model.id.unwrap()).await?.unwrap();
+        let model = active_model.insert(&db).await?;
 
-        Ok(namespace)
+        Ok(Self::new(db, model))
     }
 
     /// The ID of the namespace

@@ -225,7 +225,7 @@ impl File {
         let mut active_file = self.get_active_model();
         active_file.name = Set(Some(name.to_string()));
         let active_file = active_file.update(&self.db).await?;
-        self.model.name = active_file.name.unwrap();
+        self.model.name = active_file.name;
 
         Ok(())
     }
@@ -236,7 +236,7 @@ impl File {
         let mut active_file = self.get_active_model();
         active_file.comment = Set(Some(comment.to_string()));
         let active_file = active_file.update(&self.db).await?;
-        self.model.comment = active_file.comment.unwrap();
+        self.model.comment = active_file.comment;
 
         Ok(())
     }
@@ -247,7 +247,7 @@ impl File {
         let mut active_file = self.get_active_model();
         active_file.file_type = Set(file_type as u32);
         let active_file = active_file.update(&self.db).await?;
-        self.model.file_type = active_file.file_type.unwrap();
+        self.model.file_type = active_file.file_type;
 
         Ok(())
     }
@@ -305,7 +305,7 @@ impl File {
     }
 
     /// Retrieves the size of the file from its content
-    #[tracing::instrument(level = "debug", skip(self))]
+    #[tracing::instrument(level = "trace", skip(self))]
     pub async fn get_size(&self) -> RepoResult<u64> {
         if let Some(size) = self.model.size {
             Ok(size as u64)

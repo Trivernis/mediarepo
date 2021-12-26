@@ -5,7 +5,7 @@ use mediarepo_database::entities::storage;
 use mediarepo_database::entities::storage::ActiveModel as ActiveStorage;
 use mediarepo_database::entities::storage::Model as StorageModel;
 use sea_orm::prelude::*;
-use sea_orm::{DatabaseConnection, Set, Unset};
+use sea_orm::{DatabaseConnection, NotSet, Set};
 use std::fmt::Debug;
 use std::path::PathBuf;
 use tokio::fs;
@@ -104,17 +104,14 @@ impl Storage {
             fs::create_dir(path_buf).await?;
         }
         let storage = ActiveStorage {
-            id: Unset(None),
+            id: NotSet,
             name: Set(name),
             path: Set(path),
             ..Default::default()
         };
-        let storage: ActiveStorage = storage.insert(&db).await?;
-        let storage = Self::by_id(db, storage.id.unwrap())
-            .await?
-            .expect("Inserted storage doesn't exist?!");
+        let model = storage.insert(&db).await?;
 
-        Ok(storage)
+        Ok(Self::new(db, model))
     }
 
     /// Returns the unique identifier of this storage
@@ -148,8 +145,9 @@ impl Storage {
     pub async fn set_path<S: ToString + Debug>(&mut self, path: S) -> RepoResult<()> {
         let mut active_storage: ActiveStorage = self.get_active_model();
         active_storage.path = Set(path.to_string());
-        let storage: ActiveStorage = active_storage.update(&self.db).await?;
-        self.model.path = storage.path.unwrap();
+        let storage = active_storage.update(&self.db).await?;
+
+        self.model = storage;
 
         Ok(())
     }

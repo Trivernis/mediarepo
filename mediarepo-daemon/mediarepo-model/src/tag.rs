@@ -1,4 +1,5 @@
-use crate::namespace::Namespace;
+use std::fmt::Debug;
+
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::hash;
 use mediarepo_database::entities::hash_tag;
@@ -9,7 +10,8 @@ use sea_orm::query::ConnectionTrait;
 use sea_orm::sea_query::Expr;
 use sea_orm::{Condition, DatabaseBackend, DatabaseConnection, JoinType, Set, Statement};
 use sea_orm::{InsertResult, QuerySelect};
-use std::fmt::Debug;
+
+use crate::namespace::Namespace;
 
 #[derive(Clone)]
 pub struct Tag {
@@ -83,7 +85,15 @@ impl Tag {
         let mut or_condition = Condition::any();
 
         for (namespace, name) in namespaces_with_names {
-            let mut all_condition = Condition::all().add(tag::Column::Name.eq(name));
+            let mut all_condition = Condition::all();
+            if !name.ends_with('*') {
+                all_condition = all_condition.add(tag::Column::Name.eq(name))
+            } else if name.len() > 1 {
+                all_condition = all_condition
+                    .add(tag::Column::Name.like(&*format!("{}%", name.trim_end_matches("*"))))
+            } else if namespace.is_none() {
+                continue; // would result in an empty condition otherwise
+            }
 
             all_condition = if let Some(namespace) = namespace {
                 all_condition.add(namespace::Column::Name.eq(namespace))
@@ -179,10 +189,10 @@ impl Tag {
             namespace_id: Set(namespace_id),
             ..Default::default()
         };
-        let active_model = active_model.insert(&db).await?;
-        let tag = Self::by_id(db, active_model.id.unwrap()).await?.unwrap();
+        let model: tag::Model = active_model.insert(&db).await?;
+        let namespace = model.find_related(namespace::Entity).one(&db).await?;
 
-        Ok(tag)
+        Ok(Self::new(db, model, namespace))
     }
 
     /// The ID of the tag

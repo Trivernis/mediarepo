@@ -17,6 +17,6 @@ version = "0.5.9"
 features = ["migrate"]
 
 [dependencies.sea-orm]
-version = "0.3.2"
-features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros"]
+version = "0.5.0-rc.1"
+features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"]
 default-features = false

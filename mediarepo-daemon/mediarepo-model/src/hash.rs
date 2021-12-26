@@ -50,12 +50,9 @@ impl Hash {
             value: Set(value),
             ..Default::default()
         };
-        let active_model: hash::ActiveModel = active_model.insert(&db).await?;
-        let hash = Self::by_id(db, active_model.id.unwrap())
-            .await?
-            .expect("Inserted value does not exist");
+        let model = active_model.insert(&db).await?;
 
-        Ok(hash)
+        Ok(Self::new(db, model))
     }
 
     pub fn id(&self) -> i64 {
