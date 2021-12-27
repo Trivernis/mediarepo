@@ -1,14 +1,14 @@
 import {Component, Inject, ViewChild} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {
-    RepositoryService
-} from "../../../../services/repository/repository.service";
-import {
-    ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
-import {
     RepositoryFormComponent
 } from "../repository-form/repository-form.component";
+import {
+    RepositoryService
+} from "../../../../../services/repository/repository.service";
+import {
+    ErrorBrokerService
+} from "../../../../../services/error-broker/error-broker.service";
 
 @Component({
     selector: "app-add-repository-dialog",

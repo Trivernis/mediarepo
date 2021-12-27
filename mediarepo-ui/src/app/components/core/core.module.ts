@@ -33,9 +33,6 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {
     RepositoryCardComponent
 } from "./repositories-tab/repository-card/repository-card.component";
-import {
-    AddRepositoryDialogComponent
-} from "./repositories-tab/add-repository-dialog/add-repository-dialog.component";
 import {MatCardModule} from "@angular/material/card";
 import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
@@ -43,14 +40,11 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatInputModule} from "@angular/material/input";
 import {TagModule} from "../shared/tag/tag.module";
 import {
-    RepositoryFormComponent
-} from "./repositories-tab/repository-form/repository-form.component";
-import {
-    EditRepositoryDialogComponent
-} from "./repositories-tab/edit-repository-dialog/edit-repository-dialog.component";
-import {
     DownloadDaemonDialogComponent
 } from "./repositories-tab/download-daemon-dialog/download-daemon-dialog.component";
+import {
+    RepositoryModule
+} from "../shared/repository/repository/repository.module";
 
 
 @NgModule({
@@ -62,9 +56,6 @@ import {
         ImportTabComponent,
         ImportTabSidebarComponent,
         RepositoryCardComponent,
-        AddRepositoryDialogComponent,
-        RepositoryFormComponent,
-        EditRepositoryDialogComponent,
         DownloadDaemonDialogComponent,
     ],
     exports: [
@@ -96,6 +87,7 @@ import {
         MatTooltipModule,
         MatInputModule,
         TagModule,
+        RepositoryModule,
     ]
 })
 export class CoreModule {

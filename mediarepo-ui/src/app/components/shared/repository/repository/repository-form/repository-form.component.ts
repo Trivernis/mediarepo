@@ -6,10 +6,10 @@ import {
     ValidationErrors,
     Validators
 } from "@angular/forms";
-import {Repository} from "../../../../models/Repository";
+import {Repository} from "../../../../../models/Repository";
 import {
     RepositoryService
-} from "../../../../services/repository/repository.service";
+} from "../../../../../services/repository/repository.service";
 import {dialog} from "@tauri-apps/api";
 import {MatDialog} from "@angular/material/dialog";
 

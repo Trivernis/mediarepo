@@ -4,15 +4,12 @@ import {
 } from "../repository-form/repository-form.component";
 import {
     RepositoryService
-} from "../../../../services/repository/repository.service";
+} from "../../../../../services/repository/repository.service";
 import {
     ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
+} from "../../../../../services/error-broker/error-broker.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {
-    AddRepositoryDialogComponent
-} from "../add-repository-dialog/add-repository-dialog.component";
-import {Repository} from "../../../../models/Repository";
+import {Repository} from "../../../../../models/Repository";
 
 @Component({
     selector: "app-edit-repository-dialog",
@@ -29,7 +26,7 @@ export class EditRepositoryDialogComponent {
     constructor(
         public repoService: RepositoryService,
         public errorBroker: ErrorBrokerService,
-        public dialogRef: MatDialogRef<AddRepositoryDialogComponent>,
+        public dialogRef: MatDialogRef<EditRepositoryDialogComponent>,
         @Inject(MAT_DIALOG_DATA) data: any) {
         this.selectedRepository = data.repository;
         this.originalName = this.selectedRepository.name;

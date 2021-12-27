@@ -15,7 +15,7 @@ import {
 } from "../../../shared/app-common/busy-indicator/busy-indicator.component";
 import {
     EditRepositoryDialogComponent
-} from "../edit-repository-dialog/edit-repository-dialog.component";
+} from "../../../shared/repository/repository/edit-repository-dialog/edit-repository-dialog.component";
 
 @Component({
     selector: "app-repository-card",

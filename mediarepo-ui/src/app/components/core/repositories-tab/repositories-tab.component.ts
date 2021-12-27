@@ -5,11 +5,11 @@ import {
 } from "../../../services/repository/repository.service";
 import {MatDialog} from "@angular/material/dialog";
 import {
-    AddRepositoryDialogComponent
-} from "./add-repository-dialog/add-repository-dialog.component";
-import {
     DownloadDaemonDialogComponent
 } from "./download-daemon-dialog/download-daemon-dialog.component";
+import {
+    AddRepositoryDialogComponent
+} from "../../shared/repository/repository/add-repository-dialog/add-repository-dialog.component";
 
 @Component({
     selector: "app-repositories-tab",
