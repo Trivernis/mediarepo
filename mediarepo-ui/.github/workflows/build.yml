@@ -40,7 +40,7 @@ jobs:
         node-version: 16
 
     - name: Install Tauri
-      run: cargo install tauri-cli --version ^1.0.0-beta --force
+      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri
 
     - name: Install Angular CLI
       run: npm install -g @angular/cli
