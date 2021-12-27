@@ -1,3 +1,4 @@
+use std::time::Duration;
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
@@ -38,27 +39,27 @@ impl TagApi {
     /// Returns a list of all tags stored in the repo
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_all_tags(&self) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get("all_tags", ()).await
+        self.emit_and_get("all_tags", (), Some(Duration::from_secs(2))).await
     }
 
     /// Returns a list of all tags for a file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_tags_for_file(&self, id: FileIdentifier) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get("tags_for_file", GetFileTagsRequest { id })
+        self.emit_and_get("tags_for_file", GetFileTagsRequest { id }, Some(Duration::from_secs(1)))
             .await
     }
 
     /// Returns a list of all tags that are assigned to the list of files
     #[tracing::instrument(level = "debug", skip_all)]
     pub async fn get_tags_for_files(&self, hashes: Vec<String>) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get("tags_for_files", GetFilesTagsRequest { hashes })
+        self.emit_and_get("tags_for_files", GetFilesTagsRequest { hashes }, Some(Duration::from_secs(10)))
             .await
     }
 
     /// Creates a new tag and returns the created tag object
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_tags(&self, tags: Vec<String>) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get("create_tags", tags).await
+        self.emit_and_get("create_tags", tags, Some(Duration::from_secs(10))).await
     }
 
     /// Changes the tags of a file
@@ -76,6 +77,7 @@ impl TagApi {
                 added_tags,
                 removed_tags,
             },
+            Some(Duration::from_secs(10))
         )
         .await
     }

@@ -10,6 +10,7 @@ use async_trait::async_trait;
 use bromine::context::{PoolGuard, PooledContext};
 use bromine::payload::BytePayload;
 use bromine::prelude::*;
+use tokio::time::Duration;
 
 pub struct FileApi {
     ctx: PooledContext,
@@ -43,12 +44,12 @@ impl FileApi {
     /// Returns all known files
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn all_files(&self) -> ApiResult<Vec<FileMetadataResponse>> {
-        self.emit_and_get("all_files", ()).await
+        self.emit_and_get("all_files", (), Some(Duration::from_secs(30))).await
     }
 
     /// Returns a file by identifier
     pub async fn get_file(&self, id: FileIdentifier) -> ApiResult<FileMetadataResponse> {
-        self.emit_and_get("get_file", id).await
+        self.emit_and_get("get_file", id, Some(Duration::from_secs(2))).await
     }
 
     /// Searches for a file by a list of tags
@@ -64,6 +65,7 @@ impl FileApi {
                 filters,
                 sort_expression,
             },
+            Some(Duration::from_secs(20))
         )
         .await
     }
@@ -72,7 +74,7 @@ impl FileApi {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn read_file(&self, id: FileIdentifier) -> ApiResult<Vec<u8>> {
         let payload: BytePayload = self
-            .emit_and_get("read_file", ReadFileRequest { id })
+            .emit_and_get("read_file", ReadFileRequest { id }, Some(Duration::from_secs(10)))
             .await?;
 
         Ok(payload.into_inner())
@@ -84,7 +86,7 @@ impl FileApi {
         &self,
         id: FileIdentifier,
     ) -> ApiResult<Vec<ThumbnailMetadataResponse>> {
-        self.emit_and_get("get_thumbnails", GetFileThumbnailsRequest { id })
+        self.emit_and_get("get_thumbnails", GetFileThumbnailsRequest { id }, Some(Duration::from_secs(2)))
             .await
     }
 
@@ -104,6 +106,7 @@ impl FileApi {
                     min_size,
                     max_size,
                 },
+                Some(Duration::from_secs(2))
             )
             .await?;
         let (metadata, bytes) = payload.into_inner();
@@ -118,7 +121,7 @@ impl FileApi {
         file_id: FileIdentifier,
         name: String,
     ) -> ApiResult<FileMetadataResponse> {
-        self.emit_and_get("update_file_name", UpdateFileNameRequest { file_id, name })
+        self.emit_and_get("update_file_name", UpdateFileNameRequest { file_id, name }, Some(Duration::from_secs(1)))
             .await
     }
 
@@ -135,7 +138,7 @@ impl FileApi {
             BytePayload::new(bytes),
         );
 
-        self.emit_and_get("add_file", payload).await
+        self.emit_and_get("add_file", payload, Some(Duration::from_secs(5))).await
     }
 
     /// Deletes all thumbnails of a file to regenerate them when requested

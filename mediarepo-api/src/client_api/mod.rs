@@ -12,7 +12,7 @@ use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
 use async_trait::async_trait;
 use bromine::ipc::stream_emitter::EmitMetadata;
 use bromine::prelude::*;
-use std::time::Duration;
+use tokio::time::Duration;
 
 #[async_trait]
 pub trait IPCApi {
@@ -34,8 +34,13 @@ pub trait IPCApi {
         &self,
         event_name: &str,
         data: T,
+        timeout: Option<Duration>,
     ) -> ApiResult<R> {
-        let meta = self.emit(event_name, data).await?;
+        let mut meta = self.emit(event_name, data).await?;
+
+        if let Some(timeout) = timeout {
+            meta = meta.with_timeout(timeout);
+        }
         let response = meta.await_reply(&self.ctx()).await?;
 
         Ok(response.payload()?)
@@ -77,7 +82,7 @@ impl ApiClient {
     ) -> ApiResult<Self> {
         let ctx = IPCBuilder::<L>::new()
             .address(address)
-            .timeout(Duration::from_secs(30))
+            .timeout(Duration::from_secs(10))
             .build_pooled_client(8)
             .await?;
         let client = Self::new(ctx);
