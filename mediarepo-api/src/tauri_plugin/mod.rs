@@ -63,7 +63,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_frontend_state,
                 set_frontend_state,
                 get_all_namespaces,
-                get_files
+                get_files,
+                get_repo_metadata
             ]),
         }
     }
