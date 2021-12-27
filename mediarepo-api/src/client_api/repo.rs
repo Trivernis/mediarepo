@@ -28,7 +28,7 @@ impl RepoApi {
     /// Returns metadata about the repository
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_repo_metadata(&self) -> ApiResult<RepositoryMetadata> {
-        let metadata = self.emit_and_get("repository_metadata", (), Some(Duration::from_secs(2))).await?;
+        let metadata = self.emit_and_get("repository_metadata", (), Some(Duration::from_secs(30))).await?;
 
         Ok(metadata)
     }
