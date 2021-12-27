@@ -23,7 +23,8 @@
                 <mat-label>Namespace Name</mat-label>
                 <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value"
                        [matAutocomplete]="namespaceAutocomplete"
-                       [formControl]="namespaceFormControl"
+                       (keyup)="this.updateAutocompleteSuggestions(namespaceInput.value)"
+                       (focus)="this.updateAutocompleteSuggestions(namespaceInput.value)"
                        [value]="sortKey.namespaceName ?? ''"
                        matInput
                        required>

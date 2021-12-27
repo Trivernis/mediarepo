@@ -15,7 +15,6 @@ export class SortDialogComponent {
 
     public sortEntries: SortKey[] = []
     public suggestedNamespaces: Namespace[] = [];
-    public namespaceFormControl = new FormControl();
 
     private namespaces: Namespace[] = [];
 
@@ -24,10 +23,6 @@ export class SortDialogComponent {
         this.sortEntries = data.sortEntries;
         tagService.namespaces.subscribe(
             namespaces => this.namespaces = namespaces);
-        this.namespaceFormControl.valueChanges.subscribe(
-            v => this.suggestedNamespaces = this.namespaces.sort(
-                (a, b) => this.compareSuggestionNamespaces(v, a.name, b.name))
-                .slice(0, 50))
     }
 
     addNewSortKey() {
@@ -51,6 +46,12 @@ export class SortDialogComponent {
     public onSortEntryDrop(event: CdkDragDrop<SortKey[]>): void {
         moveItemInArray(this.sortEntries, event.previousIndex,
             event.currentIndex);
+    }
+
+    public updateAutocompleteSuggestions(value: string): void {
+        this.suggestedNamespaces = this.namespaces.sort(
+            (a, b) => this.compareSuggestionNamespaces(value, a.name, b.name))
+            .slice(0, 50)
     }
 
     private compareSuggestionNamespaces(query: string, l: string, r: string): number {
