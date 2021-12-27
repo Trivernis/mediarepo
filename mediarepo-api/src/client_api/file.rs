@@ -48,8 +48,15 @@ impl FileApi {
     }
 
     /// Returns a file by identifier
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_file(&self, id: FileIdentifier) -> ApiResult<FileMetadataResponse> {
         self.emit_and_get("get_file", id, Some(Duration::from_secs(2))).await
+    }
+
+    /// Returns metadata for a range of files
+    #[tracing::instrument(level = "debug", skip(self, ids))]
+    pub async fn get_files(&self, ids: Vec<FileIdentifier>) -> ApiResult<Vec<FileMetadataResponse>> {
+        self.emit_and_get("get_files", ids, Some(Duration::from_secs(10))).await
     }
 
     /// Searches for a file by a list of tags

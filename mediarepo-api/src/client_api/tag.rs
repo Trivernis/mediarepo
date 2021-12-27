@@ -3,7 +3,7 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
 use crate::types::identifier::FileIdentifier;
-use crate::types::tags::{ChangeFileTagsRequest, TagResponse};
+use crate::types::tags::{ChangeFileTagsRequest, NamespaceResponse, TagResponse};
 use async_trait::async_trait;
 use bromine::context::{PoolGuard, PooledContext};
 use bromine::ipc::context::Context;
@@ -40,6 +40,12 @@ impl TagApi {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_all_tags(&self) -> ApiResult<Vec<TagResponse>> {
         self.emit_and_get("all_tags", (), Some(Duration::from_secs(2))).await
+    }
+
+    /// Returns a list of all namespaces stored in the repo
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_all_namespaces(&self) -> ApiResult<Vec<NamespaceResponse>> {
+        self.emit_and_get("all_namespaces", (), Some(Duration::from_secs(2))).await
     }
 
     /// Returns a list of all tags for a file

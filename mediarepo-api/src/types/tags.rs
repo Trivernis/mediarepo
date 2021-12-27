@@ -9,6 +9,12 @@ pub struct TagResponse {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NamespaceResponse {
+    pub id: i64,
+    pub name: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChangeFileTagsRequest {
     pub file_id: FileIdentifier,
     pub removed_tags: Vec<i64>,
