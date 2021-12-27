@@ -17,6 +17,7 @@ typemap_rev = "^0.1.5"
 futures = "^0.3.19"
 itertools = "^0.10.3"
 glob = "^0.3.0"
+tracing = "0.1.29"
 
 [dependencies.thumbnailer]
 version = "^0.2.4"
@@ -37,7 +38,7 @@ features = ["fs", "io-util", "io-std"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "72e4d902aff409feab8db10546b81a452ec6f75f"
+rev = "cb4510c57fb25bd39f2e994e928359599e7cbfaa"
 features = ["bromine"]
 
 [features]

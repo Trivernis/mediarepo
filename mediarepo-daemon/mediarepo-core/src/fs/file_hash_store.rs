@@ -1,4 +1,5 @@
 use crate::error::RepoResult;
+use crate::utils::get_folder_size;
 use multibase::Base;
 use multihash::{Code, MultihashDigest};
 use std::path::PathBuf;
@@ -60,6 +61,12 @@ impl FileHashStore {
         let reader = BufReader::new(file);
 
         Ok((extension, reader))
+    }
+
+    /// Scans the size of the folder
+    #[inline]
+    pub async fn get_size(&self) -> RepoResult<u64> {
+        get_folder_size(self.path.to_owned()).await
     }
 
     fn hash_to_file_path(&self, hash: &str) -> PathBuf {

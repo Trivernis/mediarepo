@@ -181,6 +181,13 @@ impl Storage {
         Ok(reader)
     }
 
+    /// Returns the size of the storage
+    #[inline]
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_size(&self) -> RepoResult<u64> {
+        self.store.get_size().await
+    }
+
     /// Returns the active model with only the ID filled so saves always perform an update
     fn get_active_model(&self) -> ActiveStorage {
         ActiveStorage {

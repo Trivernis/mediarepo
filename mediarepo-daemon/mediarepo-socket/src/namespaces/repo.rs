@@ -1,8 +1,13 @@
-use mediarepo_core::bromine::prelude::*;
-use mediarepo_core::mediarepo_api::types::repo::FrontendState;
-use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use std::path::PathBuf;
+
 use tokio::fs;
+
+use mediarepo_core::bromine::prelude::*;
+use mediarepo_core::mediarepo_api::types::repo::{FrontendState, RepositoryMetadata};
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
+use mediarepo_core::utils::get_folder_size;
+
+use crate::utils::get_repo_from_context;
 
 pub struct RepoNamespace;
 
@@ -13,6 +18,7 @@ impl NamespaceProvider for RepoNamespace {
 
     fn register(handler: &mut EventHandler) {
         events!(handler,
+            "repository_metadata" => Self::get_metadata,
             "frontend_state" => Self::frontend_state,
             "set_frontend_state" => Self::set_frontend_state
         );
@@ -20,6 +26,46 @@ impl NamespaceProvider for RepoNamespace {
 }
 
 impl RepoNamespace {
+    #[tracing::instrument(skip_all)]
+    async fn get_metadata(ctx: &Context, _: Event) -> IPCResult<()> {
+        let repo = get_repo_from_context(ctx).await;
+        let counts = repo.get_counts().await?;
+        let file_size = repo.get_main_store_size().await?;
+        let thumbnail_size = repo.get_thumb_store_size().await?;
+
+        let (repo_path, settings) = {
+            let data = ctx.data.read().await;
+            (
+                data.get::<RepoPathKey>().unwrap().clone(),
+                data.get::<SettingsKey>().unwrap().clone(),
+            )
+        };
+        let db_path = repo_path.join(settings.database_path);
+        let total_size = get_folder_size(repo_path).await?;
+        let database_metadata = fs::metadata(db_path).await?;
+        let database_size = database_metadata.len();
+
+        let metadata = RepositoryMetadata {
+            version: env!("CARGO_PKG_VERSION").to_string(),
+            file_count: counts.file_count as u64,
+            tag_count: counts.tag_count as u64,
+            namespace_count: counts.namespace_count as u64,
+            mapping_count: counts.mapping_count as u64,
+            hash_count: counts.hash_count as u64,
+            total_size,
+            file_size,
+            database_size,
+            thumbnail_size,
+        };
+
+        tracing::debug!("metadata = {:?}", metadata);
+
+        ctx.emit_to(Self::name(), "repository_metadata", metadata)
+            .await?;
+
+        Ok(())
+    }
+
     #[tracing::instrument(skip_all)]
     async fn frontend_state(ctx: &Context, _: Event) -> IPCResult<()> {
         let path = get_frontend_state_path(ctx).await?;

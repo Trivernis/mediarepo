@@ -1,3 +1,5 @@
+use crate::error::RepoResult;
+use crate::utils::get_folder_size;
 use std::io::Result;
 use std::path::PathBuf;
 use tokio::fs;
@@ -73,5 +75,11 @@ impl ThumbnailStore {
         }
 
         Ok(entries)
+    }
+
+    /// Returns the size of the folder
+    #[tracing::instrument(level = "debug")]
+    pub async fn get_size(&self) -> RepoResult<u64> {
+        get_folder_size(self.path.to_owned()).await
     }
 }

@@ -11,6 +11,7 @@ use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::get_database;
+use mediarepo_database::queries::analysis::{get_all_counts, Counts};
 use sea_orm::DatabaseConnection;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
@@ -386,6 +387,29 @@ impl Repo {
                 Namespace::add(self.db.clone(), namespace).await?
             };
         Tag::add(self.db.clone(), name, Some(namespace.id())).await
+    }
+
+    /// Returns the size of the main storage
+    #[inline]
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_main_store_size(&self) -> RepoResult<u64> {
+        let main_storage = self.get_main_storage()?;
+        main_storage.get_size().await
+    }
+
+    /// Returns the size of the thumbnail storage
+    #[inline]
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_thumb_store_size(&self) -> RepoResult<u64> {
+        let thumb_storage = self.get_thumbnail_storage()?;
+        thumb_storage.get_size().await
+    }
+
+    /// Returns all entity counts
+    #[inline]
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_counts(&self) -> RepoResult<Counts> {
+        get_all_counts(&self.db).await
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
