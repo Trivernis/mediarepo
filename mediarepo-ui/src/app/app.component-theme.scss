@@ -10,20 +10,6 @@
         background-color: darken(#303030, 5);
         color: white
     }
-    ::ng-deep ::-webkit-scrollbar {
-        width: 15px;
-        height: 15px;
-        background: #272727;
-    }
-
-    ::ng-deep ::-webkit-scrollbar-thumb {
-        background: mat.get-color-from-palette($primary-palette, 'darker');
-        border-radius: 1px;
-    }
-
-    ::ng-deep ::-webkit-scrollbar-thumb:hover {
-        background: mat.get-color-from-palette($primary-palette);
-    }
 
     .warn {
         background-color: mat.get-color-from-palette($warn-palette);
