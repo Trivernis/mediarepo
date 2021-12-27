@@ -1,4 +1,4 @@
-<div class="repo-page-content">
+<div class="repo-page-content" *ngIf="!selectedRepository">
     <div class="add-repo-tools">
         <button (click)="openAddRepositoryDialog()" color="primary" mat-flat-button>Add Repository</button>
     </div>
@@ -7,4 +7,7 @@
             <app-repository-card [repository]="repository"></app-repository-card>
         </div>
     </div>
+</div>
+<div class="repo-details" *ngIf="selectedRepository">
+    <app-repository-details-view [repository]="selectedRepository"></app-repository-details-view>
 </div>

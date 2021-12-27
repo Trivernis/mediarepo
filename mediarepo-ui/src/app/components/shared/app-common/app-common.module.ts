@@ -16,6 +16,9 @@ import {
     ContentAwareImageComponent
 } from "./content-aware-image/content-aware-image.component";
 import { InputReceiverDirective } from "./input-receiver/input-receiver.directive";
+import {
+    MetadataEntryComponent
+} from "./metadata-entry/metadata-entry.component";
 
 
 @NgModule({
@@ -25,6 +28,7 @@ import { InputReceiverDirective } from "./input-receiver/input-receiver.directiv
         ContextMenuComponent,
         ContentAwareImageComponent,
         InputReceiverDirective,
+        MetadataEntryComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -32,6 +36,7 @@ import { InputReceiverDirective } from "./input-receiver/input-receiver.directiv
         ContextMenuComponent,
         ContentAwareImageComponent,
         InputReceiverDirective,
+        MetadataEntryComponent,
     ],
     imports: [
         CommonModule,

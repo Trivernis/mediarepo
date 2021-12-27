@@ -17,7 +17,8 @@ import {
     styleUrls: ["./repositories-tab.component.scss"]
 })
 export class RepositoriesTabComponent implements OnInit, AfterViewInit {
-    repositories: Repository[] = [];
+    public repositories: Repository[] = [];
+    public selectedRepository?: Repository;
 
     constructor(
         private repoService: RepositoryService,
@@ -31,12 +32,12 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
                 this.repositories = repos;
             }
         });
+        this.repoService.selectedRepository.subscribe(repo => this.selectedRepository = repo);
     }
 
     public async ngAfterViewInit() {
         await this.checkAndPromptDaemonExecutable();
     }
-
 
     public openAddRepositoryDialog() {
         this.dialog.open(AddRepositoryDialogComponent, {

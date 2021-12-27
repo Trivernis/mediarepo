@@ -6,6 +6,7 @@ import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
 import {FileService} from "../file/file.service";
+import {RepositoryMetadata} from "../../models/RepositoryMetadata";
 
 @Injectable({
     providedIn: "root"
@@ -161,6 +162,14 @@ export class RepositoryService {
      */
     public async initRepository(repoPath: string): Promise<void> {
         await invoke("plugin:mediarepo|init_repository", {repoPath});
+    }
+
+    /**
+     * Retrieves metadata about the selected repository
+     * @returns {Promise<RepositoryMetadata>}
+     */
+    public async getRepositoryMetadata(): Promise<RepositoryMetadata> {
+        return await invoke<RepositoryMetadata>("plugin:mediarepo|get_repo_metadata");
     }
 
     async loadSelectedRepository() {

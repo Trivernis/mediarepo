@@ -44,7 +44,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {FileMetadataComponent} from "./file-metadata/file-metadata.component";
 import {
     MetadataEntryComponent
-} from "./file-metadata/metadata-entry/metadata-entry.component";
+} from "../app-common/metadata-entry/metadata-entry.component";
 import {
     EditableMetadataEntryComponent
 } from "./file-metadata/editable-metadata-entry/editable-metadata-entry.component";
@@ -62,7 +62,6 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
         FileImportComponent,
         FilesystemImportComponent,
         FileMetadataComponent,
-        MetadataEntryComponent,
         EditableMetadataEntryComponent,
     ],
     exports: [
