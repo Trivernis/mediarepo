@@ -1,7 +1,7 @@
 use crate::tauri_plugin::commands::ApiAccess;
 use crate::tauri_plugin::error::PluginResult;
 use crate::types::identifier::FileIdentifier;
-use crate::types::tags::TagResponse;
+use crate::types::tags::{NamespaceResponse, TagResponse};
 
 #[tauri::command]
 pub async fn get_all_tags(api_state: ApiAccess<'_>) -> PluginResult<Vec<TagResponse>> {
@@ -9,6 +9,14 @@ pub async fn get_all_tags(api_state: ApiAccess<'_>) -> PluginResult<Vec<TagRespo
     let all_tags = api.tag.get_all_tags().await?;
 
     Ok(all_tags)
+}
+
+#[tauri::command]
+pub async fn get_all_namespaces(api_state: ApiAccess<'_>) -> PluginResult<Vec<NamespaceResponse>> {
+    let api = api_state.api().await?;
+    let all_namespaces = api.tag.get_all_namespaces().await?;
+
+    Ok(all_namespaces)
 }
 
 #[tauri::command]
