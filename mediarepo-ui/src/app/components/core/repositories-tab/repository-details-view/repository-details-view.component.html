@@ -8,7 +8,6 @@
         <app-metadata-entry *ngIf="repository.path" attributeName="Path" [value]="repository.path"></app-metadata-entry>
         <app-metadata-entry *ngIf="repository.address" attributeName="Address" [value]="repository.address"></app-metadata-entry>
         <ng-container *ngIf="metadata">
-            <app-metadata-entry attributeName="Daemon Version" [value]="metadata.version"></app-metadata-entry>
             <app-metadata-entry attributeName="File Count" [value]="metadata.file_count.toString()"></app-metadata-entry>
             <app-metadata-entry attributeName="Tag Count" [value]="metadata.tag_count.toString()"></app-metadata-entry>
             <app-metadata-entry attributeName="Namespace Count" [value]="metadata.namespace_count.toString()"></app-metadata-entry>

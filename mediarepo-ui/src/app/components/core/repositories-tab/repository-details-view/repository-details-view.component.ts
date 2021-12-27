@@ -1,7 +1,7 @@
 import {
     Component,
     Input,
-    OnChanges,
+    OnChanges, OnDestroy,
     OnInit,
     SimpleChanges
 } from "@angular/core";
@@ -16,22 +16,28 @@ import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
     templateUrl: "./repository-details-view.component.html",
     styleUrls: ["./repository-details-view.component.scss"]
 })
-export class RepositoryDetailsViewComponent implements OnInit, OnChanges {
+export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() repository!: Repository;
 
     public metadata?: RepositoryMetadata;
+    private refreshMetadataInterval?: number;
 
     constructor(private repoService: RepositoryService) {
     }
 
     public async ngOnInit() {
-        this.metadata = await this.repoService.getRepositoryMetadata();
+        await this.loadMetadata();
+        this.refreshMetadataInterval = setInterval(async () => this.loadMetadata(), 30000);
     }
 
     public async ngOnChanges(changes: SimpleChanges) {
         if (changes["repository"]) {
-            this.metadata = await this.repoService.getRepositoryMetadata();
+            await this.loadMetadata();
         }
+    }
+
+    public ngOnDestroy(): void {
+        clearInterval(this.refreshMetadataInterval);
     }
 
     public async closeRepository() {
@@ -59,5 +65,9 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges {
         } else {
             return size + " B"
         }
+    }
+
+    public async loadMetadata() {
+        this.metadata = await this.repoService.getRepositoryMetadata();
     }
 }
