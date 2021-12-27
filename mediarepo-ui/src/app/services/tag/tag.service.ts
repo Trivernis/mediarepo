@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {invoke} from "@tauri-apps/api/tauri";
 import {Tag} from "../../models/Tag";
 import {BehaviorSubject} from "rxjs";
+import {Namespace} from "../../models/Namespace";
 
 @Injectable({
     providedIn: "root"
@@ -9,6 +10,7 @@ import {BehaviorSubject} from "rxjs";
 export class TagService {
 
     public tags: BehaviorSubject<Tag[]> = new BehaviorSubject<Tag[]>([]);
+    public namespaces: BehaviorSubject<Namespace[]> = new BehaviorSubject<Namespace[]>([]);
 
     constructor() {
     }
@@ -16,6 +18,11 @@ export class TagService {
     public async loadTags() {
         const tags = await invoke<Tag[]>("plugin:mediarepo|get_all_tags");
         this.tags.next(tags.map(t => new Tag(t.id, t.name, t.namespace)));
+    }
+
+    public async loadNamespaces() {
+        const namespaces = await invoke<Namespace[]>("plugin:mediarepo|get_all_namespaces");
+        this.namespaces.next(namespaces.map(n => new Namespace(n.id, n.name)));
     }
 
     public async getTagsForFiles(hashes: string[]): Promise<Tag[]> {

@@ -49,6 +49,7 @@ import {
     EditableMetadataEntryComponent
 } from "./file-metadata/editable-metadata-entry/editable-metadata-entry.component";
 import {ReactiveFormsModule} from "@angular/forms";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 
 @NgModule({
@@ -98,6 +99,7 @@ import {ReactiveFormsModule} from "@angular/forms";
         MatProgressBarModule,
         MatMenuModule,
         ReactiveFormsModule,
+        MatAutocompleteModule,
     ]
 })
 export class SidebarModule {

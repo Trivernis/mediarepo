@@ -22,8 +22,16 @@
             <mat-form-field *ngIf="sortKey.sortType === 'Namespace'">
                 <mat-label>Namespace Name</mat-label>
                 <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value"
-                       [value]="sortKey.namespaceName ?? ''" matInput
+                       [matAutocomplete]="namespaceAutocomplete"
+                       [formControl]="namespaceFormControl"
+                       [value]="sortKey.namespaceName ?? ''"
+                       matInput
                        required>
+                <mat-autocomplete #namespaceAutocomplete (optionSelected)="sortKey.namespaceName = $event.option.value">
+                    <mat-option *ngFor="let namespace of suggestedNamespaces" [value]="namespace.name">
+                        {{namespace.name}}
+                    </mat-option>
+                </mat-autocomplete>
             </mat-form-field>
             <div *ngIf="sortKey.sortType !== 'Namespace'" class="filler"></div>
             <mat-form-field>

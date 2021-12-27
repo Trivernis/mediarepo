@@ -81,7 +81,7 @@ export class TagInputComponent implements OnChanges {
             t => t.includes(normalizedTag))
             .map(t => negated ? "-" + t : t)
             .sort((l, r) => this.compareSuggestionTags(normalizedTag, l, r))
-            .slice(0, 20);
+            .slice(0, 50);
 
         if (containsWildcard) {
             autocompleteTags.unshift(this.normalizeTag(tag));

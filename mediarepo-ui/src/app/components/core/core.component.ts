@@ -65,6 +65,7 @@ export class CoreComponent {
 
     async loadRepoData() {
         await this.tagService.loadTags();
+        await this.tagService.loadNamespaces();
     }
 
     public onTabSelectionChange(event: MatTabChangeEvent): void {

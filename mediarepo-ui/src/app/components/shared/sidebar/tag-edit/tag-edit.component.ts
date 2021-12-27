@@ -38,6 +38,7 @@ export class TagEditComponent implements OnInit, OnChanges {
     async ngOnInit() {
         this.tagService.tags.subscribe(tags => this.allTags = tags);
         await this.tagService.loadTags();
+        await this.tagService.loadNamespaces();
         await this.loadFileTags();
     }
 
@@ -87,6 +88,7 @@ export class TagEditComponent implements OnInit, OnChanges {
                 addedTags, removedTags);
             if (addedTags.length > 0) {
                 await this.tagService.loadTags();
+                await this.tagService.loadNamespaces();
             }
         }
         this.mapFileTagsToTagList();
@@ -108,6 +110,7 @@ export class TagEditComponent implements OnInit, OnChanges {
         index >= 0 && this.tagScroll.scrollToIndex(index);
         this.tagEditEvent.emit(this);
         await this.tagService.loadTags();
+        await this.tagService.loadNamespaces();
     }
 
     public async removeTag(tag: Tag) {
