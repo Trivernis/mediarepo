@@ -11,8 +11,10 @@ pub struct RepositoryMetadata {
     pub file_count: u64,
     pub tag_count: u64,
     pub namespace_count: u64,
+    pub mapping_count: u64,
+    pub hash_count: u64,
     pub total_size: u64,
-    pub image_size: u64,
+    pub file_size: u64,
     pub database_size: u64,
     pub thumbnail_size: u64,
 }
