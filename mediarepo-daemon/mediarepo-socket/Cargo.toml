@@ -2,14 +2,15 @@
 name = "mediarepo-socket"
 version = "0.1.0"
 edition = "2018"
+workspace = ".."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "1.0.130"
-tracing = "0.1.29"
-compare = "0.1.0"
-port_check = "0.1.5"
+serde = "^1.0.130"
+tracing = "^0.1.29"
+compare = "^0.1.0"
+port_check = "^0.1.5"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
@@ -21,11 +22,11 @@ path = "../mediarepo-database"
 path = "../mediarepo-model"
 
 [dependencies.tokio]
-version = "1.12.0"
+version = "^1.15.0"
 features = ["net"]
 
 [dependencies.chrono]
-version = "0.4.19"
+version = "^0.4.19"
 features = ["serde"]
 
 [dependencies.tracing-futures]

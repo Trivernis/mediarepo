@@ -2,7 +2,9 @@ use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
-use mediarepo_core::mediarepo_api::types::tags::{ChangeFileTagsRequest, TagResponse};
+use mediarepo_core::mediarepo_api::types::tags::{
+    ChangeFileTagsRequest, NamespaceResponse, TagResponse,
+};
 
 pub struct TagsNamespace;
 
@@ -14,6 +16,7 @@ impl NamespaceProvider for TagsNamespace {
     fn register(handler: &mut EventHandler) {
         events!(handler,
             "all_tags" => Self::all_tags,
+            "all_namespaces" => Self::all_namespaces,
             "tags_for_file" => Self::tags_for_file,
             "tags_for_files" => Self::tags_for_files,
             "create_tags" => Self::create_tags,
@@ -34,6 +37,22 @@ impl TagsNamespace {
             .map(TagResponse::from_model)
             .collect();
         ctx.emit_to(Self::name(), "all_tags", tags).await?;
+
+        Ok(())
+    }
+
+    /// Returns a list of all namespaces from the database
+    #[tracing::instrument(skip_all)]
+    async fn all_namespaces(ctx: &Context, _event: Event) -> IPCResult<()> {
+        let repo = get_repo_from_context(ctx).await;
+        let namespaces: Vec<NamespaceResponse> = repo
+            .namespaces()
+            .await?
+            .into_iter()
+            .map(NamespaceResponse::from_model)
+            .collect();
+        ctx.emit_to(Self::name(), "all_namespaces", namespaces)
+            .await?;
 
         Ok(())
     }

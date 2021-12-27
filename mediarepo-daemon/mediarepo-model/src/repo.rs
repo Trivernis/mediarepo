@@ -273,6 +273,12 @@ impl Repo {
         Tag::all(self.db.clone()).await
     }
 
+    /// Returns all namespaces stored in the database
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn namespaces(&self) -> RepoResult<Vec<Namespace>> {
+        Namespace::all(self.db.clone()).await
+    }
+
     /// Finds all tags by name
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags_by_names(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {

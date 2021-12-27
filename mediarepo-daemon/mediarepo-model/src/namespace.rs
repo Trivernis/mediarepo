@@ -19,6 +19,19 @@ impl Namespace {
         Self { db, model }
     }
 
+    /// Retrieves a list of all namespaces
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<Self>> {
+        let namespaces = namespace::Entity::find()
+            .all(&db)
+            .await?
+            .into_iter()
+            .map(|model| Self::new(db.clone(), model))
+            .collect();
+
+        Ok(namespaces)
+    }
+
     /// Retrieves the namespace by id
     #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {

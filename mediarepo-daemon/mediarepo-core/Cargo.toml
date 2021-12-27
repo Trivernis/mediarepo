@@ -2,41 +2,42 @@
 name = "mediarepo-core"
 version = "0.1.0"
 edition = "2018"
+workspace = ".."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-thiserror = "1.0.30"
-multihash = "0.15.0"
-multibase = "0.9.1"
-base64 = "0.13.0"
-toml = "0.5.8"
-serde = "1.0.132"
-typemap_rev = "0.1.5"
-futures = "0.3.19"
-itertools = "0.10.3"
-glob = "0.3.0"
+thiserror = "^1.0.30"
+multihash = "^0.15.0"
+multibase = "^0.9.1"
+base64 = "^0.13.0"
+toml = "^0.5.8"
+serde = "^1.0.132"
+typemap_rev = "^0.1.5"
+futures = "^0.3.19"
+itertools = "^0.10.3"
+glob = "^0.3.0"
 
 [dependencies.thumbnailer]
-version = "0.2.4"
+version = "^0.2.4"
 default-features = false
 
 [dependencies.sea-orm]
-version = "0.5.0-rc.1"
+version = "^0.5.0-rc.1"
 default-features = false
 
 [dependencies.sqlx]
-version = "0.5.9"
+version = "^0.5.9"
 default-features = false
 features = ["migrate"]
 
 [dependencies.tokio]
-version = "1.15.0"
+version = "^1.15.0"
 features = ["fs", "io-util", "io-std"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "9599020726eb9db47b9be7a6c41c2942a477ba09"
+rev = "72e4d902aff409feab8db10546b81a452ec6f75f"
 features = ["bromine"]
 
 [features]

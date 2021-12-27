@@ -2,17 +2,18 @@
 name = "mediarepo-model"
 version = "0.1.0"
 edition = "2018"
+workspace = ".."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.19"
-typemap_rev = "0.1.5"
-serde = "1.0.130"
-mime_guess = "2.0.3"
-mime = "0.3.16"
-tracing = "0.1.29"
-async-trait = "0.1.51"
+chrono = "^0.4.19"
+typemap_rev = "^0.1.5"
+serde = "^1.0.130"
+mime_guess = "^2.0.3"
+mime = "^0.3.16"
+tracing = "^0.1.29"
+async-trait = "^0.1.51"
 
 
 [dependencies.mediarepo-core]
@@ -22,12 +23,12 @@ path = "../mediarepo-core"
 path = "../mediarepo-database"
 
 [dependencies.sea-orm]
-version = "0.5.0-rc.1"
+version = "^0.5.0-rc.1"
 features = ["runtime-tokio-native-tls", "macros"]
 default-features = false
 
 [dependencies.tokio]
-version = "1.15.0"
+version = "^1.15.0"
 features = ["fs", "io-std", "io-util"]
 
 

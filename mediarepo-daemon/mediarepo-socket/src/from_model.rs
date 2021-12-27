@@ -1,8 +1,9 @@
 use mediarepo_core::mediarepo_api::types::files::{
     FileMetadataResponse, ThumbnailMetadataResponse,
 };
-use mediarepo_core::mediarepo_api::types::tags::TagResponse;
+use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse};
 use mediarepo_model::file::File;
+use mediarepo_model::namespace::Namespace;
 use mediarepo_model::tag::Tag;
 use mediarepo_model::thumbnail::Thumbnail;
 
@@ -43,6 +44,15 @@ impl FromModel<Thumbnail> for ThumbnailMetadataResponse {
             height: model.size.height,
             width: model.size.width,
             mime_type: model.mime_type.to_owned(),
+        }
+    }
+}
+
+impl FromModel<Namespace> for NamespaceResponse {
+    fn from_model(model: Namespace) -> Self {
+        Self {
+            id: model.id(),
+            name: model.name().to_owned(),
         }
     }
 }

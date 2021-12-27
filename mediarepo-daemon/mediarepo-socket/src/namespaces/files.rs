@@ -41,6 +41,7 @@ impl NamespaceProvider for FilesNamespace {
         events!(handler,
             "all_files" => Self::all_files,
             "get_file" => Self::get_file,
+            "get_files" => Self::get_files,
             "find_files" => Self::find_files,
             "add_file" => Self::add_file,
             "read_file" => Self::read_file,
@@ -77,6 +78,25 @@ impl FilesNamespace {
         let file = file_by_identifier(id, &repo).await?;
         let response = FileMetadataResponse::from_model(file);
         ctx.emit_to(Self::name(), "get_file", response).await?;
+
+        Ok(())
+    }
+
+    /// Returns a list of files by identifier
+    #[tracing::instrument(skip_all)]
+    async fn get_files(ctx: &Context, event: Event) -> IPCResult<()> {
+        let ids = event.payload::<Vec<FileIdentifier>>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let mut responses = Vec::new();
+
+        for id in ids {
+            responses.push(
+                file_by_identifier(id, &repo)
+                    .await
+                    .map(FileMetadataResponse::from_model)?,
+            );
+        }
+        ctx.emit_to(Self::name(), "get_files", responses).await?;
 
         Ok(())
     }

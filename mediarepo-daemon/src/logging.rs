@@ -66,7 +66,8 @@ pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
 
     let bromine_layer = fmt::layer()
         .with_writer(bromine_writer)
-        .json()
+        .pretty()
+        .with_ansi(false)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .with_filter(filter::Targets::new().with_target("bromine", Level::DEBUG));
 
@@ -75,7 +76,8 @@ pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
 
     let app_log_layer = fmt::layer()
         .with_writer(app_log_writer)
-        .json()
+        .pretty()
+        .with_ansi(false)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .with_filter(
             filter::Targets::new()
