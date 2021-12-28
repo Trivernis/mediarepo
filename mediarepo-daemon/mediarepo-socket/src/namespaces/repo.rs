@@ -3,7 +3,9 @@ use std::path::PathBuf;
 use tokio::fs;
 
 use mediarepo_core::bromine::prelude::*;
-use mediarepo_core::mediarepo_api::types::repo::{FrontendState, RepositoryMetadata};
+use mediarepo_core::mediarepo_api::types::repo::{
+    FrontendState, RepositoryMetadata, SizeMetadata, SizeType,
+};
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_core::utils::get_folder_size;
 
@@ -19,6 +21,7 @@ impl NamespaceProvider for RepoNamespace {
     fn register(handler: &mut EventHandler) {
         events!(handler,
             "repository_metadata" => Self::get_metadata,
+            "size_metadata" => Self::get_size_metadata,
             "frontend_state" => Self::frontend_state,
             "set_frontend_state" => Self::set_frontend_state
         );
@@ -30,20 +33,6 @@ impl RepoNamespace {
     async fn get_metadata(ctx: &Context, _: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let counts = repo.get_counts().await?;
-        let file_size = repo.get_main_store_size().await?;
-        let thumbnail_size = repo.get_thumb_store_size().await?;
-
-        let (repo_path, settings) = {
-            let data = ctx.data.read().await;
-            (
-                data.get::<RepoPathKey>().unwrap().clone(),
-                data.get::<SettingsKey>().unwrap().clone(),
-            )
-        };
-        let db_path = repo_path.join(settings.database_path);
-        let total_size = get_folder_size(repo_path).await?;
-        let database_metadata = fs::metadata(db_path).await?;
-        let database_size = database_metadata.len();
 
         let metadata = RepositoryMetadata {
             version: env!("CARGO_PKG_VERSION").to_string(),
@@ -52,16 +41,41 @@ impl RepoNamespace {
             namespace_count: counts.namespace_count as u64,
             mapping_count: counts.mapping_count as u64,
             hash_count: counts.hash_count as u64,
-            total_size,
-            file_size,
-            database_size,
-            thumbnail_size,
         };
 
         tracing::debug!("metadata = {:?}", metadata);
-
         ctx.emit_to(Self::name(), "repository_metadata", metadata)
             .await?;
+
+        Ok(())
+    }
+
+    #[tracing::instrument(skip_all)]
+    async fn get_size_metadata(ctx: &Context, event: Event) -> IPCResult<()> {
+        let size_type = event.payload::<SizeType>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let (repo_path, settings) = {
+            let data = ctx.data.read().await;
+            (
+                data.get::<RepoPathKey>().unwrap().clone(),
+                data.get::<SettingsKey>().unwrap().clone(),
+            )
+        };
+        let size = match &size_type {
+            SizeType::Total => get_folder_size(repo_path).await?,
+            SizeType::FileFolder => repo.get_main_store_size().await?,
+            SizeType::ThumbFolder => repo.get_thumb_store_size().await?,
+            SizeType::DatabaseFile => {
+                let db_path = repo_path.join(settings.database_path);
+
+                let database_metadata = fs::metadata(db_path).await?;
+                database_metadata.len()
+            }
+        };
+        let response = SizeMetadata { size, size_type };
+        tracing::debug!("size response = {:?}", response);
+
+        ctx.emit_to(Self::name(), "size_metadata", response).await?;
 
         Ok(())
     }
