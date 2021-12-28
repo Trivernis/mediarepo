@@ -37,7 +37,7 @@ mat-tab-group {
         top: 4px;
         ng-icon {
             font-size: 1.5em;
-            margin-top: -1.1em;
+            margin-top: calc(-50% + 0.2em);
             --ng-icon__size: 0.4em;
         }
     }
