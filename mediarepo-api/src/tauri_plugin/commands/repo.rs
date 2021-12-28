@@ -3,7 +3,7 @@ use crate::client_api::ApiClient;
 use crate::tauri_plugin::commands::{ApiAccess, AppAccess, BufferAccess};
 use crate::tauri_plugin::error::{PluginError, PluginResult};
 use crate::tauri_plugin::settings::{save_settings, Repository};
-use crate::types::repo::{FrontendState, RepositoryMetadata};
+use crate::types::repo::{FrontendState, RepositoryMetadata, SizeMetadata, SizeType};
 use serde::{Deserialize, Serialize};
 use std::mem;
 use std::path::PathBuf;
@@ -196,6 +196,14 @@ pub async fn get_repo_metadata(api_state: ApiAccess<'_>) -> PluginResult<Reposit
     let metadata = api.repo.get_repo_metadata().await?;
 
     Ok(metadata)
+}
+
+#[tauri::command]
+pub async fn get_size(api_state: ApiAccess<'_>, size_type: SizeType) -> PluginResult<SizeMetadata> {
+    let api = api_state.api().await?;
+    let size = api.repo.get_size(size_type).await?;
+
+    Ok(size)
 }
 
 #[tauri::command]
