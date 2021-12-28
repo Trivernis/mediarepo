@@ -7,11 +7,11 @@
         <div class="file-metadata-entries">
 
             <app-editable-metadata-entry attributeName="Name" [value]="file.name ?? ''" (valueChangeEvent)="this.saveFileName($event)"></app-editable-metadata-entry>
-            <app-metadata-entry attributeName="Hash" [value]="file.hash"></app-metadata-entry>
-            <app-metadata-entry attributeName="Mime Type" [value]="file.mime_type ?? 'unknown'"></app-metadata-entry>
-            <app-metadata-entry attributeName="Imported at" [value]="file.import_time.toLocaleString()"></app-metadata-entry>
-            <app-metadata-entry attributeName="Created at" [value]="file.creation_time.toLocaleString()"></app-metadata-entry>
-            <app-metadata-entry attributeName="Changed at" [value]="file.change_time.toLocaleString()"></app-metadata-entry>
+            <app-metadata-entry attributeName="Hash">{{file.hash}}</app-metadata-entry>
+            <app-metadata-entry attributeName="Mime Type">{{file.mime_type ?? 'unknown'}}</app-metadata-entry>
+            <app-metadata-entry attributeName="Imported at">{{file.import_time.toLocaleString()}}</app-metadata-entry>
+            <app-metadata-entry attributeName="Created at">{{file.creation_time.toLocaleString()}}</app-metadata-entry>
+            <app-metadata-entry attributeName="Changed at">{{file.change_time.toLocaleString()}}</app-metadata-entry>
 
         </div>
     </div>

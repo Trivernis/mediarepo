@@ -7,6 +7,7 @@ import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
 import {FileService} from "../file/file.service";
 import {RepositoryMetadata} from "../../models/RepositoryMetadata";
+import {SizeMetadata, SizeType} from "../../models/SizeMetadata";
 
 @Injectable({
     providedIn: "root"
@@ -170,6 +171,15 @@ export class RepositoryService {
      */
     public async getRepositoryMetadata(): Promise<RepositoryMetadata> {
         return await invoke<RepositoryMetadata>("plugin:mediarepo|get_repo_metadata");
+    }
+
+    /**
+     * Returns a specific size
+     * @param {SizeType} type
+     * @returns {Promise<SizeMetadata>}
+     */
+    public async getSize(sizeType: SizeType): Promise<SizeMetadata> {
+        return await invoke<SizeMetadata>("plugin:mediarepo|get_size", {sizeType});
     }
 
     async loadSelectedRepository() {

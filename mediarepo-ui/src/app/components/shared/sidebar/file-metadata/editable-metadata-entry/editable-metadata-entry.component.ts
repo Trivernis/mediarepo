@@ -9,7 +9,7 @@ import {FormControl} from "@angular/forms";
 export class EditableMetadataEntryComponent implements OnInit{
 
     @Input() attributeName!: string;
-    @Input() value!: string;
+    @Input() value!: string | number;
     @Input() mode: "read" | "write" = "read";
     @Output() valueChangeEvent = new EventEmitter<string>();
 

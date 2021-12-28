@@ -1,7 +1,8 @@
 import {
     Component,
     Input,
-    OnChanges, OnDestroy,
+    OnChanges,
+    OnDestroy,
     OnInit,
     SimpleChanges
 } from "@angular/core";
@@ -10,6 +11,8 @@ import {
     RepositoryService
 } from "../../../../services/repository/repository.service";
 import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
+import {BehaviorSubject} from "rxjs";
+import {SizeType} from "../../../../models/SizeMetadata";
 
 @Component({
     selector: "app-repository-details-view",
@@ -21,6 +24,11 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
 
     public metadata?: RepositoryMetadata;
     private refreshMetadataInterval?: number;
+
+    public totalSize = new BehaviorSubject<string | undefined>(undefined);
+    public fileFolderSize = new BehaviorSubject<string | undefined>(undefined);
+    public thumbFolderSize = new BehaviorSubject<string | undefined>(undefined);
+    public databaseFileSize = new BehaviorSubject<string | undefined>(undefined);
 
     constructor(private repoService: RepositoryService) {
     }
@@ -48,6 +56,17 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
         }
     }
 
+    public async getSizes() {
+        const totalSize = await this.repoService.getSize(SizeType.Total)
+        this.totalSize.next(this.formatByteSize(totalSize.size));
+        const fileSize = await this.repoService.getSize(SizeType.FileFolder);
+        this.fileFolderSize.next(this.formatByteSize(fileSize.size));
+        const thumbSize = await this.repoService.getSize(SizeType.ThumbFolder);
+        this.thumbFolderSize.next(this.formatByteSize(thumbSize.size));
+        const databaseSize = await this.repoService.getSize(SizeType.DatabaseFile);
+        this.databaseFileSize.next(this.formatByteSize(databaseSize.size));
+    }
+
     public formatByteSize(size: number): string {
         const kib = 1024;
         const mib = kib ** 2;
@@ -69,5 +88,6 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
 
     public async loadMetadata() {
         this.metadata = await this.repoService.getRepositoryMetadata();
+        await this.getSizes();
     }
 }

@@ -1489,8 +1489,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.18.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=c5f2bfa48e822e9a761191c9a7ef42e2dbf811b5#c5f2bfa48e822e9a761191c9a7ef42e2dbf811b5"
+version = "0.19.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=6dd3fc2001177ab8222daad3e0b2d78cd37f4b19#6dd3fc2001177ab8222daad3e0b2d78cd37f4b19"
 dependencies = [
  "async-trait",
  "bromine",

@@ -1,5 +1,5 @@
 <div class="metadata-inner">
-    <app-metadata-entry *ngIf="mode === 'read'" [value]="value" [attributeName]="attributeName"></app-metadata-entry>
+    <app-metadata-entry *ngIf="mode === 'read'" [attributeName]="attributeName">{{value}}</app-metadata-entry>
     <mat-form-field *ngIf="mode === 'write'">
         <mat-label>{{attributeName}}</mat-label>
         <input [formControl]="formControl" type="text" matInput [value]="value">
@@ -11,3 +11,4 @@
         <ng-icon name="mat-edit"></ng-icon>
     </button>
 </div>
+
