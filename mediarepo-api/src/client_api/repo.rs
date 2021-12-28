@@ -34,7 +34,7 @@ impl RepoApi {
     /// Returns the size of a given type
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_size(&self, size_type: SizeType) -> ApiResult<SizeMetadata> {
-        self.emit_and_get("size_metadata", (), Some(Duration::from_secs(30))).await
+        self.emit_and_get("size_metadata", size_type, Some(Duration::from_secs(30))).await
     }
 
     /// Returns the state of the frontend that is stored in the repo
