@@ -57,7 +57,7 @@ async fn try_connect_daemon(address: String) -> IPCResult<()> {
         .address(address)
         .build_client()
         .await?;
-    ctx.emit("info", ()).await?.await_reply(&ctx).await?;
+    ctx.emit("info", ()).await_reply().await?;
     ctx.stop().await?;
     Ok(())
 }

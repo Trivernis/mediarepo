@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.19.0"
+version = "0.20.0"
 edition = "2018"
 license = "gpl-3"
 
@@ -20,7 +20,7 @@ url = {version = "^2.2.2", optional=true }
 pathsearch = {version="^0.2.0", optional=true}
 
 [dependencies.bromine]
-version = "^0.16.2"
+version = "^0.17.1"
 optional = true
 features = ["serialize_bincode"]
 

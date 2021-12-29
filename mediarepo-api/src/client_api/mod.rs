@@ -19,29 +19,23 @@ pub trait IPCApi {
     fn namespace() -> &'static str;
     fn ctx(&self) -> PoolGuard<Context>;
 
-    async fn emit<T: IntoPayload + Send>(
-        &self,
-        event_name: &str,
-        data: T,
-    ) -> ApiResult<EmitMetadata> {
+    fn emit<T: IntoPayload + Send>(&self, event_name: &str, data: T) -> EmitMetadata<T> {
         let ctx = self.ctx();
-        let meta = ctx.emit_to(Self::namespace(), event_name, data).await?;
-
-        Ok(meta)
+        ctx.emit_to(Self::namespace(), event_name, data)
     }
 
-    async fn emit_and_get<T: IntoPayload + Send, R: FromPayload + Send>(
+    async fn emit_and_get<T: IntoPayload + Send + Sync + 'static, R: FromPayload + Send>(
         &self,
         event_name: &str,
         data: T,
         timeout: Option<Duration>,
     ) -> ApiResult<R> {
-        let mut meta = self.emit(event_name, data).await?;
+        let mut meta = self.emit(event_name, data).await_reply();
 
         if let Some(timeout) = timeout {
             meta = meta.with_timeout(timeout);
         }
-        let response = meta.await_reply(&self.ctx()).await?;
+        let response = meta.await?;
 
         Ok(response.payload()?)
     }
@@ -108,7 +102,7 @@ impl ApiClient {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn info(&self) -> ApiResult<InfoResponse> {
         let ctx = self.ctx.acquire();
-        let res = ctx.emit("info", ()).await?.await_reply(&ctx).await?;
+        let res = ctx.emit("info", ()).await_reply().await?;
         Ok(res.payload::<InfoResponse>()?)
     }
 
