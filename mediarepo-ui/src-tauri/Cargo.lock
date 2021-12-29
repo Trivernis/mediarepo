@@ -40,7 +40,7 @@ checksum = "84450d0b4a8bd1ba4144ce8ce718fbc5d071358b1e5384bace6536b3d1f2d5b3"
 
 [[package]]
 name = "app"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "mediarepo-api",
  "serde",
@@ -161,9 +161,9 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "bromine"
-version = "0.16.2"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6569b994f61cbc4c1d597d809a322cc994a99b878e7235276d088d8da9736a72"
+checksum = "6774171be092328d9631f246d3122f196a50ddaad224214ca274acec2a1db65d"
 dependencies = [
  "async-trait",
  "bincode",
@@ -1489,8 +1489,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.19.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=6dd3fc2001177ab8222daad3e0b2d78cd37f4b19#6dd3fc2001177ab8222daad3e0b2d78cd37f4b19"
+version = "0.20.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=0c897acfd959c776fc10bd8fabdd2eb22b437be3#0c897acfd959c776fc10bd8fabdd2eb22b437be3"
 dependencies = [
  "async-trait",
  "bromine",

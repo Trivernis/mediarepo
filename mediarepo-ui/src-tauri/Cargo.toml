@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.11.0"
+version = "0.12.0"
 description = "A Tauri App"
 authors = [ "you" ]
 license = ""
@@ -25,7 +25,7 @@ features = [ "env-filter" ]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "6dd3fc2001177ab8222daad3e0b2d78cd37f4b19"
+rev = "0c897acfd959c776fc10bd8fabdd2eb22b437be3"
 features = [ "tauri-plugin" ]
 
 [features]
