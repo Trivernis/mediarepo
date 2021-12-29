@@ -250,9 +250,9 @@ checksum = "8d696c370c750c948ada61c69a0ee2cbbb9c50b1019ddb86d9317157a99c2cae"
 
 [[package]]
 name = "bromine"
-version = "0.16.2"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6569b994f61cbc4c1d597d809a322cc994a99b878e7235276d088d8da9736a72"
+checksum = "6774171be092328d9631f246d3122f196a50ddaad224214ca274acec2a1db65d"
 dependencies = [
  "async-trait",
  "bincode",
@@ -1136,8 +1136,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.19.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=35f1e1f39f477f4ecaab454b01d787349582ee12#35f1e1f39f477f4ecaab454b01d787349582ee12"
+version = "0.20.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=0c897acfd959c776fc10bd8fabdd2eb22b437be3#0c897acfd959c776fc10bd8fabdd2eb22b437be3"
 dependencies = [
  "bromine",
  "chrono",
@@ -1171,7 +1171,7 @@ dependencies = [
 
 [[package]]
 name = "mediarepo-daemon"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "console-subscriber",
  "glob",

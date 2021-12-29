@@ -4,7 +4,7 @@ default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-model", "m
 
 [package]
 name = "mediarepo-daemon"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2018"
 license = "gpl-3"
 repository = "https://github.com/Trivernis/mediarepo-daemon"
