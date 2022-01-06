@@ -122,10 +122,7 @@ pub async fn read_file(
         Ok(buffer.buf)
     } else {
         let api = api_state.api().await?;
-        let content = api
-            .file
-            .read_file(FileIdentifier::CID(hash.clone()))
-            .await?;
+        let content = api.file.read_file(FileIdentifier::CD(hash.clone())).await?;
 
         Ok(content)
     }
