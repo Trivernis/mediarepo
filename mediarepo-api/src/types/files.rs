@@ -26,7 +26,7 @@ pub struct GetFileTagsRequest {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GetFilesTagsRequest {
-    pub ids: Vec<i64>,
+    pub cds: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

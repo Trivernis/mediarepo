@@ -32,11 +32,11 @@ pub async fn get_tags_for_file(
 
 #[tauri::command]
 pub async fn get_tags_for_files(
-    ids: Vec<i64>,
+    cds: Vec<String>,
     api_state: ApiAccess<'_>,
 ) -> PluginResult<Vec<TagResponse>> {
     let api = api_state.api().await?;
-    let tags = api.tag.get_tags_for_files(ids).await?;
+    let tags = api.tag.get_tags_for_files(cds).await?;
 
     Ok(tags)
 }
