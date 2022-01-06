@@ -19,13 +19,13 @@ pub enum Relation {
     Namespace,
 }
 
-impl Related<super::hash::Entity> for Entity {
+impl Related<super::content_descriptor::Entity> for Entity {
     fn to() -> RelationDef {
-        super::hash_tag::Relation::Hash.def()
+        super::content_descriptor_tag::Relation::ContentDescriptorId.def()
     }
 
     fn via() -> Option<RelationDef> {
-        Some(super::hash_tag::Relation::Tag.def().rev())
+        Some(super::content_descriptor_tag::Relation::Tag.def().rev())
     }
 }
 

@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use sea_orm::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -6,26 +5,20 @@ use sea_orm::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i64,
-    pub file_type: u32,
-    pub name: Option<String>,
-    pub comment: Option<String>,
-    pub mime_type: Option<String>,
-    pub size: Option<i64>,
+    pub status: i32,
+    pub mime_type: String,
     pub storage_id: i64,
-    pub hash_id: i64,
-    pub import_time: NaiveDateTime,
-    pub creation_time: NaiveDateTime,
-    pub change_time: NaiveDateTime,
+    pub cd_id: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::hash::Entity",
-        from = "Column::HashId",
-        to = "super::hash::Column::Id"
+        belongs_to = "super::content_descriptor::Entity",
+        from = "Column::CdId",
+        to = "super::content_descriptor::Column::Id"
     )]
-    Hash,
+    ContentDescriptorId,
 
     #[sea_orm(
         belongs_to = "super::storage::Entity",
@@ -35,15 +28,21 @@ pub enum Relation {
     Storage,
 }
 
-impl Related<super::hash::Entity> for Entity {
+impl Related<super::content_descriptor::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Hash.def()
+        Relation::ContentDescriptorId.def()
     }
 }
 
 impl Related<super::storage::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Storage.def()
+    }
+}
+
+impl Related<super::file_metadata::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::file_metadata::Relation::File.def().rev()
     }
 }
 

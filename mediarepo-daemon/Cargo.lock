@@ -1136,8 +1136,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.20.0"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=0c897acfd959c776fc10bd8fabdd2eb22b437be3#0c897acfd959c776fc10bd8fabdd2eb22b437be3"
+version = "0.23.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=773e2132c80a80ad90a0585c50baf499c7ceb53f#773e2132c80a80ad90a0585c50baf499c7ceb53f"
 dependencies = [
  "bromine",
  "chrono",
@@ -1152,6 +1152,7 @@ name = "mediarepo-core"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "data-encoding",
  "futures 0.3.19",
  "glob",
  "itertools",
@@ -1229,6 +1230,7 @@ dependencies = [
  "mediarepo-database",
  "mediarepo-model",
  "port_check",
+ "rayon",
  "serde",
  "tokio",
  "tracing",

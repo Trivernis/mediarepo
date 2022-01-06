@@ -7,7 +7,7 @@ use mediarepo_core::error::{RepoError, RepoResult};
 #[derive(Debug, FromQueryResult)]
 pub struct Counts {
     pub file_count: i64,
-    pub hash_count: i64,
+    pub cd_count: i64,
     pub tag_count: i64,
     pub namespace_count: i64,
     pub source_count: i64,
@@ -20,11 +20,11 @@ pub async fn get_all_counts(db: &DatabaseConnection) -> RepoResult<Counts> {
         r#"
     SELECT *
     FROM (SELECT COUNT(*) AS file_count FROM files),
-         (SELECT COUNT(*) AS hash_count FROM hashes),
+         (SELECT COUNT(*) AS cd_count FROM content_descriptors),
          (SELECT COUNT(*) AS tag_count FROM tags),
          (SELECT COUNT(*) AS namespace_count FROM namespaces),
          (SELECT COUNT(*) AS source_count FROM sources),
-         (SELECT COUNT(*) AS mapping_count FROM hash_tag_mappings)
+         (SELECT COUNT(*) AS mapping_count FROM cd_tag_mappings)
     "#,
         vec![],
     ))

@@ -18,6 +18,7 @@ futures = "^0.3.19"
 itertools = "^0.10.3"
 glob = "^0.3.0"
 tracing = "0.1.29"
+data-encoding = "2.3.2"
 
 [dependencies.thumbnailer]
 version = "^0.2.4"
@@ -38,7 +39,7 @@ features = ["fs", "io-util", "io-std"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "0c897acfd959c776fc10bd8fabdd2eb22b437be3"
+rev = "773e2132c80a80ad90a0585c50baf499c7ceb53f"
 features = ["bromine"]
 
 [features]

@@ -1,4 +1,4 @@
-use crate::hash::Hash;
+use crate::content_descriptor::Hash;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_database::entities::storage;
@@ -172,11 +172,11 @@ impl Storage {
 
     /// Returns the buf reader to the given hash
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn get_file_reader<S: ToString + Debug>(
+    pub async fn get_file_reader(
         &self,
-        hash: S,
+        descriptor: &[u8],
     ) -> RepoResult<BufReader<tokio::fs::File>> {
-        let (_ext, reader) = self.store.get_file(hash.to_string()).await?;
+        let (_ext, reader) = self.store.get_file(descriptor).await?;
 
         Ok(reader)
     }

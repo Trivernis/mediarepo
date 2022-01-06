@@ -1,7 +1,7 @@
+pub mod content_descriptor;
 pub mod file;
-pub mod file_type;
+pub mod file_metadata;
 pub mod handles;
-pub mod hash;
 pub mod namespace;
 pub mod repo;
 pub mod storage;

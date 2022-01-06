@@ -40,7 +40,7 @@ impl RepoNamespace {
             tag_count: counts.tag_count as u64,
             namespace_count: counts.namespace_count as u64,
             mapping_count: counts.mapping_count as u64,
-            hash_count: counts.hash_count as u64,
+            hash_count: counts.cd_count as u64,
         };
 
         tracing::debug!("metadata = {:?}", metadata);

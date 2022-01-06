@@ -1,10 +1,11 @@
 use crate::file::File;
-use crate::file_type::FileType;
+use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
 use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
+use mediarepo_core::content_descriptor::encode_content_descriptor;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
@@ -20,7 +21,7 @@ use std::iter::FromIterator;
 use std::path::PathBuf;
 use std::str::FromStr;
 use tokio::fs::OpenOptions;
-use tokio::io::BufReader;
+use tokio::io::AsyncReadExt;
 
 #[derive(Clone)]
 pub struct Repo {
@@ -91,8 +92,8 @@ impl Repo {
 
     /// Returns a file by its mapped hash
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn file_by_hash<S: AsRef<str> + Debug>(&self, hash: S) -> RepoResult<Option<File>> {
-        File::by_hash(self.db.clone(), hash).await
+    pub async fn file_by_cd<S: AsRef<str> + Debug>(&self, hash: S) -> RepoResult<Option<File>> {
+        File::by_cd(self.db.clone(), hash).await
     }
 
     /// Returns a file by id
@@ -138,47 +139,40 @@ impl Repo {
         change_time: NaiveDateTime,
     ) -> RepoResult<File> {
         let storage = self.get_main_storage()?;
+        let file_size = content.len();
         let reader = Cursor::new(content);
         let hash = storage.store_entry(reader).await?;
 
-        let (mime_type, file_type) = mime_type
+        let mime_type = mime_type
             .and_then(|m| mime::Mime::from_str(&m).ok())
-            .map(|m| (Some(m.to_string()), FileType::from(m)))
-            .unwrap_or((None, FileType::Unknown));
+            .unwrap_or_else(|| mime::APPLICATION_OCTET_STREAM)
+            .to_string();
 
-        File::add(
+        let file = File::add(self.db.clone(), storage.id(), hash.id(), mime_type).await?;
+        FileMetadata::add(
             self.db.clone(),
-            storage.id(),
-            hash.id(),
-            file_type,
-            mime_type,
+            file.id(),
+            file_size as i64,
             creation_time,
             change_time,
         )
-        .await
+        .await?;
+
+        Ok(file)
     }
 
     /// Adds a file to the database by its readable path in the file system
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
-        let mime_match = mime_guess::from_path(&path).first();
+        let mime_type = mime_guess::from_path(&path).first().map(|m| m.to_string());
 
-        let (mime_type, file_type) = if let Some(mime) = mime_match {
-            (Some(mime.clone().to_string()), FileType::from(mime))
-        } else {
-            (None, FileType::Unknown)
-        };
-        let os_file = OpenOptions::new().read(true).open(&path).await?;
-        let reader = BufReader::new(os_file);
+        let mut os_file = OpenOptions::new().read(true).open(&path).await?;
+        let mut buf = Vec::new();
+        os_file.read_to_end(&mut buf).await?;
 
-        let storage = self.get_main_storage()?;
-        let hash = storage.store_entry(reader).await?;
-        File::add(
-            self.db.clone(),
-            storage.id(),
-            hash.id(),
-            file_type,
+        self.add_file(
             mime_type,
+            buf,
             Local::now().naive_local(),
             Local::now().naive_local(),
         )
@@ -186,14 +180,15 @@ impl Repo {
     }
 
     /// Returns all thumbnails of a file
-    pub async fn get_file_thumbnails(&self, file_hash: String) -> RepoResult<Vec<Thumbnail>> {
+    pub async fn get_file_thumbnails(&self, file_cd: &[u8]) -> RepoResult<Vec<Thumbnail>> {
         let thumb_store = self.get_thumbnail_storage()?;
+        let file_cd = encode_content_descriptor(file_cd);
         let thumbnails = thumb_store
-            .get_thumbnails(&file_hash)
+            .get_thumbnails(&file_cd)
             .await?
             .into_iter()
             .map(|(size, path)| Thumbnail {
-                file_hash: file_hash.to_owned(),
+                file_hash: file_cd.to_owned(),
                 path,
                 size,
                 mime_type: mime::IMAGE_PNG.to_string(),
@@ -214,7 +209,7 @@ impl Repo {
 
         for thumb in thumbs {
             let entry = self
-                .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
+                .store_single_thumbnail(file.encoded_cd(), thumb_storage, height, width, thumb)
                 .await?;
             created_thumbs.push(entry);
         }
@@ -236,7 +231,7 @@ impl Repo {
             .pop()
             .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
         let thumbnail = self
-            .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
+            .store_single_thumbnail(file.encoded_cd(), thumb_storage, height, width, thumb)
             .await?;
 
         Ok(thumbnail)
@@ -288,7 +283,10 @@ impl Repo {
 
     /// Finds all tags that are assigned to the given list of hashes
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn find_tags_for_hashes(&self, hashes: Vec<String>) -> RepoResult<Vec<Tag>> {
+    pub async fn find_tags_for_file_identifiers(
+        &self,
+        hashes: Vec<Vec<u8>>,
+    ) -> RepoResult<Vec<Tag>> {
         Tag::for_hash_list(self.db.clone(), hashes).await
     }
 

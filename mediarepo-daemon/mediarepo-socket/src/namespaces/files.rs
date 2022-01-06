@@ -1,20 +1,20 @@
 use crate::from_model::FromModel;
-use crate::utils::{file_by_identifier, get_repo_from_context, hash_by_identifier};
+use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
 use chrono::NaiveDateTime;
 use compare::Compare;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::fs::thumbnail_store::Dimensions;
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::mediarepo_api::types::files::{
-    AddFileRequestHeader, FileMetadataResponse, FilterExpression, FindFilesRequest,
-    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortDirection,
-    SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
+    AddFileRequestHeader, FileBasicDataResponse, FileMetadataResponse, FilterExpression,
+    FindFilesRequest, GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest,
+    SortDirection, SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::queries::tags::{
-    get_hashes_with_namespaced_tags, get_hashes_with_tag_count,
+    get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
 };
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -24,7 +24,7 @@ pub struct FilesNamespace;
 pub struct FileSortContext {
     name: Option<String>,
     size: u64,
-    mime_type: Option<String>,
+    mime_type: String,
     namespaces: HashMap<String, Vec<String>>,
     tag_count: u32,
     import_time: NaiveDateTime,
@@ -41,6 +41,7 @@ impl NamespaceProvider for FilesNamespace {
         events!(handler,
             "all_files" => Self::all_files,
             "get_file" => Self::get_file,
+            "get_file_metadata" => Self::get_file_metadata,
             "get_files" => Self::get_files,
             "find_files" => Self::find_files,
             "add_file" => Self::add_file,
@@ -60,9 +61,9 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let files = repo.files().await?;
 
-        let responses: Vec<FileMetadataResponse> = files
+        let responses: Vec<FileBasicDataResponse> = files
             .into_iter()
-            .map(FileMetadataResponse::from_model)
+            .map(FileBasicDataResponse::from_model)
             .collect();
 
         ctx.emit_to(Self::name(), "all_files", responses).await?;
@@ -76,8 +77,25 @@ impl FilesNamespace {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
-        let response = FileMetadataResponse::from_model(file);
+        let response = FileBasicDataResponse::from_model(file);
         ctx.emit_to(Self::name(), "get_file", response).await?;
+
+        Ok(())
+    }
+
+    /// Returns metadata for a given file
+    #[tracing::instrument(skip_all)]
+    async fn get_file_metadata(ctx: &Context, event: Event) -> IPCResult<()> {
+        let id = event.payload::<FileIdentifier>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(id, &repo).await?;
+        let metadata = file.metadata().await?;
+        ctx.emit_to(
+            Self::name(),
+            "get_file_metadata",
+            FileMetadataResponse::from_model(metadata),
+        )
+        .await?;
 
         Ok(())
     }
@@ -93,7 +111,7 @@ impl FilesNamespace {
             responses.push(
                 file_by_identifier(id, &repo)
                     .await
-                    .map(FileMetadataResponse::from_model)?,
+                    .map(FileBasicDataResponse::from_model)?,
             );
         }
         ctx.emit_to(Self::name(), "get_files", responses).await?;
@@ -121,26 +139,28 @@ impl FilesNamespace {
             .collect();
 
         let mut files = repo.find_files_by_tags(tags).await?;
-        let hash_ids: Vec<i64> = files.iter().map(|f| f.hash_id()).collect();
+        let hash_ids: Vec<i64> = files.iter().map(|f| f.cd_id()).collect();
 
-        let mut hash_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
-            get_hashes_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
-        let mut hash_tag_counts = get_hashes_with_tag_count(repo.db(), hash_ids).await?;
+        let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
+            get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
+        let mut cid_tag_counts =
+            get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
 
         let mut contexts = HashMap::new();
 
         for file in &files {
+            let metadata = file.metadata().await?;
             let context = FileSortContext {
-                name: file.name().to_owned(),
-                size: file.get_size().await?,
+                name: metadata.name().to_owned(),
+                size: metadata.size() as u64,
                 mime_type: file.mime_type().to_owned(),
-                namespaces: hash_nsp
-                    .remove(&file.hash_id())
+                namespaces: cid_nsp
+                    .remove(&file.cd_id())
                     .unwrap_or(HashMap::with_capacity(0)),
-                tag_count: hash_tag_counts.remove(&file.hash_id()).unwrap_or(0),
-                import_time: file.import_time().to_owned(),
-                create_time: file.import_time().to_owned(),
-                change_time: file.change_time().to_owned(),
+                tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
+                import_time: metadata.import_time().to_owned(),
+                create_time: metadata.import_time().to_owned(),
+                change_time: metadata.change_time().to_owned(),
             };
             contexts.insert(file.id(), context);
         }
@@ -155,9 +175,9 @@ impl FilesNamespace {
             )
         });
 
-        let responses: Vec<FileMetadataResponse> = files
+        let responses: Vec<FileBasicDataResponse> = files
             .into_iter()
-            .map(FileMetadataResponse::from_model)
+            .map(FileBasicDataResponse::from_model)
             .collect();
         ctx.emit_to(Self::name(), "find_files", responses).await?;
         Ok(())
@@ -172,7 +192,7 @@ impl FilesNamespace {
         let AddFileRequestHeader { metadata, tags } = request;
         let repo = get_repo_from_context(ctx).await;
 
-        let mut file = repo
+        let file = repo
             .add_file(
                 metadata.mime_type,
                 bytes.into_inner(),
@@ -180,7 +200,7 @@ impl FilesNamespace {
                 metadata.change_time,
             )
             .await?;
-        file.set_name(metadata.name).await?;
+        file.metadata().await?.set_name(metadata.name).await?;
 
         let tags = repo
             .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
@@ -191,7 +211,7 @@ impl FilesNamespace {
         ctx.emit_to(
             Self::name(),
             "add_file",
-            FileMetadataResponse::from_model(file),
+            FileBasicDataResponse::from_model(file),
         )
         .await?;
 
@@ -220,8 +240,8 @@ impl FilesNamespace {
     async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.payload::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let file_hash = hash_by_identifier(request.id.clone(), &repo).await?;
-        let mut thumbnails = repo.get_file_thumbnails(file_hash).await?;
+        let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
+        let mut thumbnails = repo.get_file_thumbnails(&file_cd).await?;
 
         if thumbnails.is_empty() {
             tracing::debug!("No thumbnails for file found. Creating thumbnails...");
@@ -245,8 +265,8 @@ impl FilesNamespace {
     async fn get_thumbnail_of_size(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.payload::<GetFileThumbnailOfSizeRequest>()?;
         let repo = get_repo_from_context(ctx).await;
-        let file_hash = hash_by_identifier(request.id.clone(), &repo).await?;
-        let thumbnails = repo.get_file_thumbnails(file_hash).await?;
+        let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
+        let thumbnails = repo.get_file_thumbnails(&file_cd).await?;
         let min_size = request.min_size;
         let max_size = request.max_size;
 
@@ -289,12 +309,14 @@ impl FilesNamespace {
     async fn update_file_name(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<UpdateFileNameRequest>()?;
-        let mut file = file_by_identifier(request.file_id, &repo).await?;
-        file.set_name(request.name).await?;
+        let file = file_by_identifier(request.file_id, &repo).await?;
+        let mut metadata = file.metadata().await?;
+        metadata.set_name(request.name).await?;
+
         ctx.emit_to(
             Self::name(),
             "update_file_name",
-            FileMetadataResponse::from_model(file),
+            FileMetadataResponse::from_model(metadata),
         )
         .await?;
 
@@ -307,7 +329,7 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let id = event.payload::<FileIdentifier>()?;
         let file = file_by_identifier(id, &repo).await?;
-        let thumbnails = repo.get_file_thumbnails(file.hash().to_owned()).await?;
+        let thumbnails = repo.get_file_thumbnails(file.cd()).await?;
 
         for thumb in thumbnails {
             thumb.delete().await?;
@@ -363,7 +385,7 @@ fn compare_files(
                 direction,
             ),
             SortKey::FileType(direction) => {
-                adjust_for_dir(compare_opts(&ctx_a.mime_type, &ctx_b.mime_type), direction)
+                adjust_for_dir(ctx_a.mime_type.cmp(&ctx_b.mime_type), direction)
             }
             SortKey::NumTags(direction) => adjust_for_dir(
                 cmp_u32.compare(&ctx_a.tag_count, &ctx_b.tag_count),

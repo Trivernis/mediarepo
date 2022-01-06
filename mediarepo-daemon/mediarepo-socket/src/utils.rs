@@ -1,4 +1,5 @@
 use mediarepo_core::bromine::ipc::context::Context;
+use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_model::file::File;
@@ -15,20 +16,20 @@ pub async fn get_repo_from_context(ctx: &Context) -> Arc<Repo> {
 pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<File> {
     let file = match identifier {
         FileIdentifier::ID(id) => repo.file_by_id(id).await,
-        FileIdentifier::Hash(hash) => repo.file_by_hash(hash).await,
+        FileIdentifier::CD(cd) => repo.file_by_cd(cd).await,
     }?;
     file.ok_or_else(|| RepoError::from("Thumbnail not found"))
 }
 
-pub async fn hash_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<String> {
+pub async fn cd_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<Vec<u8>> {
     match identifier {
         FileIdentifier::ID(id) => {
             let file = repo
                 .file_by_id(id)
                 .await?
                 .ok_or_else(|| "Thumbnail not found")?;
-            Ok(file.hash().to_owned())
+            Ok(file.cd().to_owned())
         }
-        FileIdentifier::Hash(hash) => Ok(hash),
+        FileIdentifier::CD(cd) => decode_content_descriptor(cd),
     }
 }

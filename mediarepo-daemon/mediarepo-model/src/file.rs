@@ -2,43 +2,57 @@ use std::fmt::Debug;
 use std::io::Cursor;
 use std::str::FromStr;
 
-use chrono::{Local, NaiveDateTime};
+use mediarepo_core::content_descriptor::encode_content_descriptor;
 use sea_orm::prelude::*;
 use sea_orm::sea_query::{Expr, Query};
 use sea_orm::{Condition, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::{AsyncReadExt, BufReader};
 
-use mediarepo_core::error::RepoResult;
+use crate::file_metadata::FileMetadata;
+use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::thumbnailer::{self, Thumbnail as ThumbnailerThumb, ThumbnailSize};
+use mediarepo_database::entities::content_descriptor;
+use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::file;
-use mediarepo_database::entities::hash;
-use mediarepo_database::entities::hash_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 
-use crate::file_type::FileType;
 use crate::storage::Storage;
 use crate::tag::Tag;
+
+pub enum FileStatus {
+    Imported = 10,
+    Archived = 20,
+    Deleted = 30,
+}
 
 #[derive(Clone)]
 pub struct File {
     db: DatabaseConnection,
     model: file::Model,
-    hash: hash::Model,
+    content_descriptor: content_descriptor::Model,
 }
 
 impl File {
     #[tracing::instrument(level = "trace")]
-    pub(crate) fn new(db: DatabaseConnection, model: file::Model, hash: hash::Model) -> Self {
-        Self { db, model, hash }
+    pub(crate) fn new(
+        db: DatabaseConnection,
+        model: file::Model,
+        hash: content_descriptor::Model,
+    ) -> Self {
+        Self {
+            db,
+            model,
+            content_descriptor: hash,
+        }
     }
 
     /// Returns a list of all known stored files
     #[tracing::instrument(level = "debug", skip(db))]
     pub async fn all(db: DatabaseConnection) -> RepoResult<Vec<File>> {
-        let files: Vec<(file::Model, Option<hash::Model>)> = file::Entity::find()
-            .find_also_related(hash::Entity)
+        let files: Vec<(file::Model, Option<content_descriptor::Model>)> = file::Entity::find()
+            .find_also_related(content_descriptor::Entity)
             .all(&db)
             .await?;
         let files = files
@@ -56,7 +70,7 @@ impl File {
     #[tracing::instrument(level = "debug", skip(db))]
     pub async fn by_id(db: DatabaseConnection, id: i64) -> RepoResult<Option<Self>> {
         if let Some((model, Some(hash))) = file::Entity::find_by_id(id)
-            .find_also_related(hash::Entity)
+            .find_also_related(content_descriptor::Entity)
             .one(&db)
             .await?
         {
@@ -69,12 +83,12 @@ impl File {
 
     /// Finds the file by hash
     #[tracing::instrument(level = "debug", skip(db))]
-    pub async fn by_hash<S: AsRef<str> + Debug>(
+    pub async fn by_cd<S: AsRef<str> + Debug>(
         db: DatabaseConnection,
-        hash: S,
+        cid: S,
     ) -> RepoResult<Option<Self>> {
-        if let Some((hash, Some(model))) = hash::Entity::find()
-            .filter(hash::Column::Value.eq(hash.as_ref()))
+        if let Some((hash, Some(model))) = content_descriptor::Entity::find()
+            .filter(content_descriptor::Column::Descriptor.eq(cid.as_ref()))
             .find_also_related(file::Entity)
             .one(&db)
             .await?
@@ -94,12 +108,13 @@ impl File {
     ) -> RepoResult<Vec<Self>> {
         let main_condition = build_find_filter_conditions(tag_ids);
 
-        let results: Vec<(hash::Model, Option<file::Model>)> = hash::Entity::find()
-            .find_also_related(file::Entity)
-            .filter(main_condition)
-            .group_by(file::Column::Id)
-            .all(&db)
-            .await?;
+        let results: Vec<(content_descriptor::Model, Option<file::Model>)> =
+            content_descriptor::Entity::find()
+                .find_also_related(file::Entity)
+                .filter(main_condition)
+                .group_by(file::Column::Id)
+                .all(&db)
+                .await?;
         let files: Vec<Self> = results
             .into_iter()
             .filter_map(|(hash, tag)| Some(Self::new(db.clone(), tag?, hash)))
@@ -113,20 +128,13 @@ impl File {
     pub(crate) async fn add(
         db: DatabaseConnection,
         storage_id: i64,
-        hash_id: i64,
-        file_type: FileType,
-        mime_type: Option<String>,
-        creation_time: NaiveDateTime,
-        change_time: NaiveDateTime,
+        cd_id: i64,
+        mime_type: String,
     ) -> RepoResult<Self> {
         let file = file::ActiveModel {
-            hash_id: Set(hash_id),
-            file_type: Set(file_type as u32),
+            cd_id: Set(cd_id),
             mime_type: Set(mime_type),
             storage_id: Set(storage_id),
-            import_time: Set(Local::now().naive_local()),
-            creation_time: Set(creation_time),
-            change_time: Set(change_time),
             ..Default::default()
         };
         let file: file::ActiveModel = file.insert(&db).await?.into();
@@ -143,53 +151,41 @@ impl File {
     }
 
     /// Returns the hash of the file (content identifier)
-    pub fn hash(&self) -> &String {
-        &self.hash.value
+    pub fn cd(&self) -> &[u8] {
+        &self.content_descriptor.descriptor
     }
 
-    /// Returns the hash id of the file
-    pub fn hash_id(&self) -> i64 {
-        self.hash.id
+    /// Returns the encoded content descriptor
+    pub fn encoded_cd(&self) -> String {
+        encode_content_descriptor(self.cd())
     }
 
-    /// Returns the type of the file
-    pub fn file_type(&self) -> FileType {
-        match self.model.file_type {
-            1 => FileType::Image,
-            2 => FileType::Video,
-            3 => FileType::Audio,
-            _ => FileType::Unknown,
-        }
+    /// Returns the id of the civ (content identifier value) of the file
+    pub fn cd_id(&self) -> i64 {
+        self.content_descriptor.id
     }
 
-    /// Returns the optional mime type of the file
-    pub fn mime_type(&self) -> &Option<String> {
+    /// Returns the mime type of the file
+    pub fn mime_type(&self) -> &String {
         &self.model.mime_type
     }
 
-    /// Returns the optional name of the file
-    pub fn name(&self) -> &Option<String> {
-        &self.model.name
+    /// Returns the status of the file
+    pub fn status(&self) -> FileStatus {
+        match self.model.status {
+            10 => FileStatus::Imported,
+            20 => FileStatus::Archived,
+            30 => FileStatus::Deleted,
+            _ => FileStatus::Imported,
+        }
     }
 
-    /// Returns the comment of the file
-    pub fn comment(&self) -> &Option<String> {
-        &self.model.comment
-    }
-
-    /// Returns the import time of the file
-    pub fn import_time(&self) -> &NaiveDateTime {
-        &self.model.import_time
-    }
-
-    /// Returns the datetime when the file was created
-    pub fn creation_time(&self) -> &NaiveDateTime {
-        &self.model.creation_time
-    }
-
-    /// Returns the last time the file was changed
-    pub fn change_time(&self) -> &NaiveDateTime {
-        &self.model.change_time
+    /// Returns the metadata associated with this file
+    /// A file MUST always have metadata associated
+    pub async fn metadata(&self) -> RepoResult<FileMetadata> {
+        FileMetadata::by_id(self.db.clone(), self.model.id)
+            .await
+            .and_then(|f| f.ok_or_else(|| RepoError::from("missing file metadata")))
     }
 
     /// Returns the storage where the file is stored
@@ -206,9 +202,15 @@ impl File {
     pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
         let tags: Vec<(tag::Model, Option<namespace::Model>)> = tag::Entity::find()
             .find_also_related(namespace::Entity)
-            .join(JoinType::LeftJoin, hash_tag::Relation::Tag.def().rev())
-            .join(JoinType::InnerJoin, hash_tag::Relation::Hash.def())
-            .filter(hash::Column::Id.eq(self.hash.id))
+            .join(
+                JoinType::LeftJoin,
+                content_descriptor_tag::Relation::Tag.def().rev(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                content_descriptor_tag::Relation::ContentDescriptorId.def(),
+            )
+            .filter(content_descriptor::Column::Id.eq(self.content_descriptor.id))
             .all(&self.db)
             .await?;
         let tags = tags
@@ -219,45 +221,12 @@ impl File {
         Ok(tags)
     }
 
-    /// Changes the name of the file
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_name<S: ToString + Debug>(&mut self, name: S) -> RepoResult<()> {
-        let mut active_file = self.get_active_model();
-        active_file.name = Set(Some(name.to_string()));
-        let active_file = active_file.update(&self.db).await?;
-        self.model.name = active_file.name;
-
-        Ok(())
-    }
-
-    /// Changes the comment of the file
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_comment<S: ToString + Debug>(&mut self, comment: S) -> RepoResult<()> {
-        let mut active_file = self.get_active_model();
-        active_file.comment = Set(Some(comment.to_string()));
-        let active_file = active_file.update(&self.db).await?;
-        self.model.comment = active_file.comment;
-
-        Ok(())
-    }
-
-    /// Changes the type of the file
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_file_type(&mut self, file_type: FileType) -> RepoResult<()> {
-        let mut active_file = self.get_active_model();
-        active_file.file_type = Set(file_type as u32);
-        let active_file = active_file.update(&self.db).await?;
-        self.model.file_type = active_file.file_type;
-
-        Ok(())
-    }
-
     /// Adds a single tag to the file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_tag(&mut self, tag_id: i64) -> RepoResult<()> {
-        let hash_id = self.hash.id;
-        let active_model = hash_tag::ActiveModel {
-            hash_id: Set(hash_id),
+        let cd_id = self.content_descriptor.id;
+        let active_model = content_descriptor_tag::ActiveModel {
+            cd_id: Set(cd_id),
             tag_id: Set(tag_id),
         };
         active_model.insert(&self.db).await?;
@@ -270,15 +239,17 @@ impl File {
         if tag_ids.is_empty() {
             return Ok(());
         }
-        let hash_id = self.hash.id;
-        let models: Vec<hash_tag::ActiveModel> = tag_ids
+        let cd_id = self.content_descriptor.id;
+        let models: Vec<content_descriptor_tag::ActiveModel> = tag_ids
             .into_iter()
-            .map(|tag_id| hash_tag::ActiveModel {
-                hash_id: Set(hash_id),
+            .map(|tag_id| content_descriptor_tag::ActiveModel {
+                cd_id: Set(cd_id),
                 tag_id: Set(tag_id),
             })
             .collect();
-        hash_tag::Entity::insert_many(models).exec(&self.db).await?;
+        content_descriptor_tag::Entity::insert_many(models)
+            .exec(&self.db)
+            .await?;
 
         Ok(())
     }
@@ -286,10 +257,10 @@ impl File {
     /// Removes multiple tags from the file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn remove_tags(&self, tag_ids: Vec<i64>) -> RepoResult<()> {
-        let hash_id = self.hash.id;
-        hash_tag::Entity::delete_many()
-            .filter(hash_tag::Column::HashId.eq(hash_id))
-            .filter(hash_tag::Column::TagId.is_in(tag_ids))
+        let hash_id = self.content_descriptor.id;
+        content_descriptor_tag::Entity::delete_many()
+            .filter(content_descriptor_tag::Column::CdId.eq(hash_id))
+            .filter(content_descriptor_tag::Column::TagId.is_in(tag_ids))
             .exec(&self.db)
             .await?;
 
@@ -301,26 +272,9 @@ impl File {
     pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
         let storage = self.storage().await?;
 
-        storage.get_file_reader(&self.hash.value).await
-    }
-
-    /// Retrieves the size of the file from its content
-    #[tracing::instrument(level = "trace", skip(self))]
-    pub async fn get_size(&self) -> RepoResult<u64> {
-        if let Some(size) = self.model.size {
-            Ok(size as u64)
-        } else {
-            let mut reader = self.get_reader().await?;
-            let size = {
-                let mut buf = Vec::new();
-                reader.read_to_end(&mut buf).await
-            }?;
-            let mut model = self.get_active_model();
-            model.size = Set(Some(size as i64));
-            model.update(&self.db).await?;
-
-            Ok(size as u64)
-        }
+        storage
+            .get_file_reader(&self.content_descriptor.descriptor)
+            .await
     }
 
     /// Creates a thumbnail for the file
@@ -331,23 +285,12 @@ impl File {
     ) -> RepoResult<Vec<ThumbnailerThumb>> {
         let mut buf = Vec::new();
         self.get_reader().await?.read_to_end(&mut buf).await?;
-        let mime_type = self
-            .model
-            .mime_type
-            .clone()
-            .map(|mime_type| mime::Mime::from_str(&mime_type).unwrap())
-            .unwrap_or(mime::IMAGE_STAR);
+        let mime_type = self.model.mime_type.clone();
+        let mime_type =
+            mime::Mime::from_str(&mime_type).unwrap_or_else(|_| mime::APPLICATION_OCTET_STREAM);
         let thumbs = thumbnailer::create_thumbnails(Cursor::new(buf), mime_type, sizes)?;
 
         Ok(thumbs)
-    }
-
-    /// Returns the active model of the file with only the id set
-    fn get_active_model(&self) -> file::ActiveModel {
-        file::ActiveModel {
-            id: Set(self.id()),
-            ..Default::default()
-        }
     }
 }
 
@@ -373,21 +316,21 @@ fn build_find_filter_conditions(tag_ids: Vec<Vec<(i64, bool)>>) -> Condition {
 fn add_single_filter_expression(condition: Condition, tag_id: i64, negated: bool) -> Condition {
     if negated {
         condition.add(
-            hash::Column::Id.not_in_subquery(
+            content_descriptor::Column::Id.not_in_subquery(
                 Query::select()
-                    .expr(Expr::col(hash_tag::Column::HashId))
-                    .from(hash_tag::Entity)
-                    .cond_where(hash_tag::Column::TagId.eq(tag_id))
+                    .expr(Expr::col(content_descriptor_tag::Column::CdId))
+                    .from(content_descriptor_tag::Entity)
+                    .cond_where(content_descriptor_tag::Column::TagId.eq(tag_id))
                     .to_owned(),
             ),
         )
     } else {
         condition.add(
-            hash::Column::Id.in_subquery(
+            content_descriptor::Column::Id.in_subquery(
                 Query::select()
-                    .expr(Expr::col(hash_tag::Column::HashId))
-                    .from(hash_tag::Entity)
-                    .cond_where(hash_tag::Column::TagId.eq(tag_id))
+                    .expr(Expr::col(content_descriptor_tag::Column::CdId))
+                    .from(content_descriptor_tag::Entity)
+                    .cond_where(content_descriptor_tag::Column::TagId.eq(tag_id))
                     .to_owned(),
             ),
         )
