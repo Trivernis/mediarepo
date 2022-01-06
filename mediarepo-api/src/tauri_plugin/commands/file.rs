@@ -27,6 +27,18 @@ pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileBas
 }
 
 #[tauri::command]
+pub async fn get_files(
+    api_state: ApiAccess<'_>,
+    ids: Vec<i64>,
+) -> PluginResult<Vec<FileBasicDataResponse>> {
+    let api = api_state.api().await?;
+    let ids = ids.into_iter().map(|id| FileIdentifier::ID(id)).collect();
+    let files = api.file.get_files(ids).await?;
+
+    Ok(files)
+}
+
+#[tauri::command]
 pub async fn add_local_file(
     api_state: ApiAccess<'_>,
     metadata: FileOSMetadata,
