@@ -2,7 +2,8 @@ use crate::tauri_plugin::commands::{ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
-    FileMetadataResponse, FileOSMetadata, FilterExpression, SortKey, ThumbnailMetadataResponse,
+    FileBasicDataResponse, FileMetadataResponse, FileOSMetadata, FilterExpression, SortKey,
+    ThumbnailMetadataResponse,
 };
 use crate::types::identifier::FileIdentifier;
 use serde::{Deserialize, Serialize};
@@ -18,7 +19,7 @@ pub struct AddFileOptions {
 }
 
 #[tauri::command]
-pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileMetadataResponse>> {
+pub async fn get_all_files(api_state: ApiAccess<'_>) -> PluginResult<Vec<FileBasicDataResponse>> {
     let api = api_state.api().await?;
     let all_files = api.file.all_files().await?;
 
@@ -30,7 +31,7 @@ pub async fn add_local_file(
     api_state: ApiAccess<'_>,
     metadata: FileOSMetadata,
     options: AddFileOptions,
-) -> PluginResult<FileMetadataResponse> {
+) -> PluginResult<FileBasicDataResponse> {
     let api = api_state.api().await?;
     let path = PathBuf::from(&metadata.path);
     let mut tags = Vec::new();
@@ -66,7 +67,7 @@ pub async fn find_files(
     filters: Vec<FilterExpression>,
     sort_by: Vec<SortKey>,
     api_state: ApiAccess<'_>,
-) -> PluginResult<Vec<FileMetadataResponse>> {
+) -> PluginResult<Vec<FileBasicDataResponse>> {
     let api = api_state.api().await?;
     let files = api.file.find_files(filters, sort_by).await?;
 
@@ -111,7 +112,7 @@ pub async fn read_file(
         let api = api_state.api().await?;
         let content = api
             .file
-            .read_file(FileIdentifier::Hash(hash.clone()))
+            .read_file(FileIdentifier::CID(hash.clone()))
             .await?;
 
         Ok(content)

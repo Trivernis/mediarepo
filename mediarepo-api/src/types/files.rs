@@ -26,7 +26,7 @@ pub struct GetFileTagsRequest {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GetFilesTagsRequest {
-    pub hashes: Vec<String>,
+    pub ids: Vec<i64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -74,13 +74,26 @@ pub enum SortDirection {
 impl Eq for SortDirection {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FileMetadataResponse {
+pub struct FileBasicDataResponse {
     pub id: i64,
+    pub status: FileStatus,
+    pub cid: String,
+    pub mime_type: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum FileStatus {
+    Imported,
+    Archived,
+    Deleted,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FileMetadataResponse {
+    pub file_id: i64,
     pub name: Option<String>,
     pub comment: Option<String>,
-    pub hash: String,
     pub file_type: u32,
-    pub mime_type: Option<String>,
     pub creation_time: NaiveDateTime,
     pub change_time: NaiveDateTime,
     pub import_time: NaiveDateTime,

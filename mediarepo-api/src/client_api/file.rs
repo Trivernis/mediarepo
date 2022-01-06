@@ -1,9 +1,9 @@
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
-    AddFileRequestHeader, FileMetadataResponse, FileOSMetadata, FilterExpression, FindFilesRequest,
-    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest, SortKey,
-    ThumbnailMetadataResponse, UpdateFileNameRequest,
+    AddFileRequestHeader, FileBasicDataResponse, FileMetadataResponse, FileOSMetadata,
+    FilterExpression, FindFilesRequest, GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest,
+    ReadFileRequest, SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
@@ -42,13 +42,17 @@ impl FileApi {
 
     /// Returns all known files
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn all_files(&self) -> ApiResult<Vec<FileMetadataResponse>> {
+    pub async fn all_files(&self) -> ApiResult<Vec<FileBasicDataResponse>> {
         self.emit_and_get("all_files", ()).await
     }
 
     /// Returns a file by identifier
-    pub async fn get_file(&self, id: FileIdentifier) -> ApiResult<FileMetadataResponse> {
+    pub async fn get_file(&self, id: FileIdentifier) -> ApiResult<FileBasicDataResponse> {
         self.emit_and_get("get_file", id).await
+    }
+
+    pub async fn get_file_metadata(&self, id: FileIdentifier) -> ApiResult<FileMetadataResponse> {
+        self.emit_and_get("get_file_metadata", id).await
     }
 
     /// Searches for a file by a list of tags
@@ -57,7 +61,7 @@ impl FileApi {
         &self,
         filters: Vec<FilterExpression>,
         sort_expression: Vec<SortKey>,
-    ) -> ApiResult<Vec<FileMetadataResponse>> {
+    ) -> ApiResult<Vec<FileBasicDataResponse>> {
         self.emit_and_get(
             "find_files",
             FindFilesRequest {
@@ -129,7 +133,7 @@ impl FileApi {
         metadata: FileOSMetadata,
         tags: Vec<String>,
         bytes: Vec<u8>,
-    ) -> ApiResult<FileMetadataResponse> {
+    ) -> ApiResult<FileBasicDataResponse> {
         let payload = TandemPayload::new(
             AddFileRequestHeader { metadata, tags },
             BytePayload::new(bytes),

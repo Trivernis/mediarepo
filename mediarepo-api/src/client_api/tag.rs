@@ -50,8 +50,8 @@ impl TagApi {
 
     /// Returns a list of all tags that are assigned to the list of files
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn get_tags_for_files(&self, hashes: Vec<String>) -> ApiResult<Vec<TagResponse>> {
-        self.emit_and_get("tags_for_files", GetFilesTagsRequest { hashes })
+    pub async fn get_tags_for_files(&self, hashes: Vec<i64>) -> ApiResult<Vec<TagResponse>> {
+        self.emit_and_get("tags_for_files", GetFilesTagsRequest { ids: hashes })
             .await
     }
 

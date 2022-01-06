@@ -69,12 +69,12 @@ async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Re
         let api = api_state.api().await?;
         let file = api
             .file
-            .get_file(FileIdentifier::Hash(hash.to_string()))
+            .get_file(FileIdentifier::CID(hash.to_string()))
             .await?;
-        let mime = file.mime_type.unwrap_or("image/png".to_string());
+        let mime = file.mime_type;
         let bytes = api
             .file
-            .read_file(FileIdentifier::Hash(hash.to_string()))
+            .read_file(FileIdentifier::CID(hash.to_string()))
             .await?;
         tracing::debug!("Received {} content bytes", bytes.len());
         buf_state.add_entry(hash.to_string(), mime.clone(), bytes.clone());
@@ -121,7 +121,7 @@ async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Resu
         let (thumb, bytes) = api
             .file
             .get_thumbnail_of_size(
-                FileIdentifier::Hash(hash.to_string()),
+                FileIdentifier::CID(hash.to_string()),
                 ((height as f32 * 0.8) as u32, (width as f32 * 0.8) as u32),
                 ((height as f32 * 1.2) as u32, (width as f32 * 1.2) as u32),
             )
