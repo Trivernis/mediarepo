@@ -98,6 +98,17 @@ pub async fn get_file_thumbnails(
 }
 
 #[tauri::command]
+pub async fn get_file_metadata(
+    api_state: ApiAccess<'_>,
+    id: i64,
+) -> PluginResult<FileMetadataResponse> {
+    let api = api_state.api().await?;
+    let metadata = api.file.get_file_metadata(FileIdentifier::ID(id)).await?;
+
+    Ok(metadata)
+}
+
+#[tauri::command]
 pub async fn update_file_name(
     api_state: ApiAccess<'_>,
     id: i64,

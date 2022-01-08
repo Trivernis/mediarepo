@@ -65,7 +65,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_all_namespaces,
                 get_files,
                 get_repo_metadata,
-                get_size
+                get_size,
+                get_file_metadata
             ]),
         }
     }
