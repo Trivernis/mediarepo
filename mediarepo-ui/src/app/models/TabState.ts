@@ -71,7 +71,7 @@ export class TabState {
         state.sortKeys.next(sortKeys);
         state.mode.next(dto.mode ?? "grid");
         state.selectedCD.next(dto.selectedFileHash);
-        state.files.next(dto.files.map(mapNew(File)));
+        state.files.next((dto.files ?? []).map(mapNew(File)));
 
         return state;
     }

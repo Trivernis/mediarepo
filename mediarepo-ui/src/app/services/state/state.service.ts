@@ -42,7 +42,12 @@ export class StateService {
         let state;
 
         if (stateString) {
-            state = AppState.deserializeJson(stateString, this.fileService);
+            try {
+                state = AppState.deserializeJson(stateString, this.fileService);
+            } catch (err) {
+                console.error("could not deserialize malformed state: ", err);
+                state = new AppState(this.fileService);
+            }
         } else {
             state = new AppState(this.fileService);
         }
