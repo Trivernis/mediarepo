@@ -34,10 +34,11 @@ mat-tab-group {
         float: right;
         position: absolute;
         right: 0;
-        top: 4px;
+        top: 0;
+        height: 100%;
         ng-icon {
             font-size: 1.5em;
-            margin-top: calc(-50% + 0.2em);
+            margin-top: calc(-50%);
             --ng-icon__size: 0.4em;
         }
     }

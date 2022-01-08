@@ -22,7 +22,7 @@ export class BusyIndicatorComponent {
     }
 
     public wrapOperation<T>(operation: Function): T | undefined {
-        this.setBusy(true)
+        this.setBusy(true);
         try {
             const result = operation();
             this.setBusy(false);
@@ -35,7 +35,7 @@ export class BusyIndicatorComponent {
     }
 
     public async wrapAsyncOperation<T>(operation: Function): Promise<T | undefined> {
-        this.setBusy(true)
+        this.setBusy(true);
         try {
             const result = await operation();
             this.setBusy(false);

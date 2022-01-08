@@ -1,9 +1,7 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
-import {filter} from "rxjs/operators";
+import {Injectable} from "@angular/core";
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: "root"
 })
 export class SchedulingService {
 
@@ -51,8 +49,8 @@ export class SchedulingService {
     }
 
     public async delay(time: number) {
-        return new Promise((res, rej) => {
+        return new Promise((res) => {
             setTimeout(res, time);
-        })
+        });
     }
 }

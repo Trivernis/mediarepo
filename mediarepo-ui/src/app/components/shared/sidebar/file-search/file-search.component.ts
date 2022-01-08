@@ -16,11 +16,11 @@ import {
     ErrorBrokerService
 } from "../../../../services/error-broker/error-broker.service";
 import {
-    FilterExpression,
+    GenericFilter,
     SingleFilterExpression
-} from "../../../../models/FilterExpression";
+} from "../../../../models/GenericFilter";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
-import {Tag} from "../../../../models/Tag";
+import {Tag} from "../../../../../api/models/Tag";
 import {clipboard} from "@tauri-apps/api";
 import {TabState} from "../../../../models/TabState";
 
@@ -32,7 +32,7 @@ import {TabState} from "../../../../models/TabState";
 })
 export class FileSearchComponent implements AfterViewChecked, OnInit {
     public sortExpression: SortKey[] = [];
-    public filters: FilterExpression[] = [];
+    public filters: GenericFilter[] = [];
 
     @Input() availableTags: Tag[] = [];
     @Input() contextTags: Tag[] = [];
@@ -93,7 +93,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.state.setFilters([]);
     }
 
-    public async removeFilterExpression(expr: FilterExpression) {
+    public async removeFilterExpression(expr: GenericFilter) {
         const index = this.filters.indexOf(expr);
         if (index >= 0) {
             this.filters.splice(index, 1);
@@ -105,7 +105,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         const sortEntries = this.sortExpression.map(
             key => JSON.parse(JSON.stringify(key))).map(
             key => new SortKey(key.sortType, key.sortDirection,
-                key.namespaceName))
+                key.namespaceName));
         const openedDialog = this.dialog.open(SortDialogComponent, {
             minWidth: "40vw",
             data: {

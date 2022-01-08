@@ -6,7 +6,7 @@ import {
     ValidationErrors,
     Validators
 } from "@angular/forms";
-import {Repository} from "../../../../../models/Repository";
+import {Repository} from "../../../../../../api/models/Repository";
 import {
     RepositoryService
 } from "../../../../../services/repository/repository.service";
@@ -20,7 +20,7 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class RepositoryFormComponent implements OnInit {
 
-    @Input() name: string = "My Repository";
+    @Input() name: string = "My RepositoryData";
     @Input() repositoryType: "local" | "remote" = "local";
     @Input() path: string = "";
     @Input() address: string = "";
@@ -120,7 +120,7 @@ export class RepositoryFormComponent implements OnInit {
             "repositoryType")?.value ?? "remote";
 
         if (repositoryType === "remote") {
-            const match = /(\d+\.){3}\d+:\d+|\S+:\d+/.test(control.value)
+            const match = /(\d+\.){3}\d+:\d+|\S+:\d+/.test(control.value);
             return match ? null : {invalidAddress: control.value};
         }
 

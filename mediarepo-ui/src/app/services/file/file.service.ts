@@ -1,9 +1,11 @@
 import {Inject, Injectable} from "@angular/core";
-import {File} from "../../models/File";
-import {invoke} from "@tauri-apps/api/tauri";
+import {File} from "../../../api/models/File";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {SortKey} from "../../models/SortKey";
-import {FilterExpression} from "../../models/FilterExpression";
+import {GenericFilter} from "../../models/GenericFilter";
+import {MediarepApi} from "../../../api/Api";
+import {mapMany, mapNew} from "../../../api/models/adaptors";
+import {FileMetadata} from "../../../api/api-types/files";
 
 
 @Injectable({
@@ -15,22 +17,22 @@ export class FileService {
         @Inject(DomSanitizer) private sanitizer: DomSanitizer,
     ) {
     }
+
     public async getAllFiles(): Promise<File[]> {
-        return await invoke<File[]>("plugin:mediarepo|get_all_files");
+        return MediarepApi.getAllFiles().then(mapMany(mapNew(File)));
     }
 
-    public async findFiles(filters: FilterExpression[], sortBy: SortKey[]): Promise<File[]> {
+    public async findFiles(filters: GenericFilter[], sortBy: SortKey[]): Promise<File[]> {
         let backendFilters = filters.map(f => f.toBackendType());
-        return await invoke<File[]>("plugin:mediarepo|find_files",
-            {
-                filters: backendFilters,
-                sortBy: sortBy.map(k => k.toBackendType())
-            });
+        return MediarepApi.findFiles({filters: backendFilters, sortBy: sortBy.map(k => k.toBackendType())}).then(mapMany(mapNew(File)));
     }
 
-    public async updateFileName(file: File, name: string): Promise<File> {
-        return await invoke<File>("plugin:mediarepo|update_file_name",
-            {id: file.id, name})
+    public async getFileMetadata(id: number): Promise<FileMetadata> {
+        return MediarepApi.getFileMetadata({id});
+    }
+
+    public async updateFileName(id: number, name: string): Promise<FileMetadata> {
+        return MediarepApi.updateFileName({id, name});
     }
 
     /**
@@ -42,7 +44,7 @@ export class FileService {
      */
     public buildThumbnailUrl(file: File, height: number, width: number): SafeResourceUrl {
         return this.sanitizer.bypassSecurityTrustResourceUrl(
-            `thumb://${file.hash}?width=${250}&height=${250}`)
+            `thumb://${file.cd}?width=${250}&height=${250}`);
     }
 
     /**
@@ -52,7 +54,7 @@ export class FileService {
      */
     public buildContentUrl(file: File): SafeResourceUrl {
         return this.sanitizer.bypassSecurityTrustResourceUrl(
-            `content://${file.hash}`)
+            `content://${file.cd}`);
     }
 
     /**
@@ -62,8 +64,7 @@ export class FileService {
      * @returns {Promise<void>}
      */
     public async saveFile(file: File, targetPath: string) {
-        await invoke("plugin:mediarepo|save_file_locally",
-            {id: file.id, path: targetPath})
+        await MediarepApi.saveFileLocally({id: file.id, path: targetPath});
     }
 
     /**
@@ -72,7 +73,7 @@ export class FileService {
      * @returns {Promise<void>}
      */
     public async deleteThumbnails(file: File) {
-        await invoke("plugin:mediarepo|delete_thumbnails", {id: file.id});
+        await MediarepApi.deleteThumbnails({id: file.id});
     }
 
     /**
@@ -81,9 +82,8 @@ export class FileService {
      * @returns {Promise<SafeResourceUrl>}
      */
     public async readFile(file: File): Promise<SafeResourceUrl> {
-        const data = await invoke<number[]>("plugin:mediarepo|read_file",
-            {hash: file.hash, mimeType: file.mime_type});
-        const blob = new Blob([new Uint8Array(data)], {type: file.mime_type});
+        const data = await MediarepApi.readFile({mimeType: file.mimeType, hash: file.cd});
+        const blob = new Blob([new Uint8Array(data)], {type: file.mimeType});
         const url = URL?.createObjectURL(blob);
         return this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }

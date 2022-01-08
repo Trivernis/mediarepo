@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Output} from "@angular/core";
-import {FileOsMetadata} from "../../../../../models/FileOsMetadata";
 import {ImportService} from "../../../../../services/import/import.service";
 import {
     ErrorBrokerService
 } from "../../../../../services/error-broker/error-broker.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
-import {File} from "../../../../../models/File";
+import {File} from "../../../../../../api/models/File";
 import {DialogFilter} from "@tauri-apps/api/dialog";
+import {FileOsMetadata} from "../../../../../../api/api-types/files";
 
 @Component({
     selector: "app-filesystem-import",

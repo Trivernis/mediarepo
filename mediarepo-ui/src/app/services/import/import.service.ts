@@ -1,8 +1,9 @@
 import {Injectable} from "@angular/core";
-import {FileOsMetadata} from "../../models/FileOsMetadata";
-import {invoke} from "@tauri-apps/api/tauri";
 import {AddFileOptions} from "../../models/AddFileOptions";
-import {File} from "../../models/File";
+import {File} from "../../../api/models/File";
+import {MediarepApi} from "../../../api/Api";
+import {mapNew,} from "../../../api/models/adaptors";
+import {FileOsMetadata} from "../../../api/api-types/files";
 
 @Injectable({
     providedIn: "root"
@@ -18,8 +19,7 @@ export class ImportService {
      * @returns {Promise<FileOsMetadata[]>}
      */
     public async resolvePathsToFiles(paths: string[]): Promise<FileOsMetadata[]> {
-        return await invoke<FileOsMetadata[]>(
-            "plugin:mediarepo|resolve_paths_to_files", {paths});
+        return MediarepApi.resolvePathsToFiles({paths});
     }
 
     /**
@@ -29,7 +29,6 @@ export class ImportService {
      * @returns {Promise<File>}
      */
     public async addLocalFile(metadata: FileOsMetadata, options: AddFileOptions): Promise<File> {
-        return await invoke<File>("plugin:mediarepo|add_local_file",
-            {metadata, options});
+        return MediarepApi.addLocalFile({metadata, options}).then(mapNew(File));
     }
 }

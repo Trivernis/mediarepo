@@ -1,8 +1,9 @@
 import {Injectable} from "@angular/core";
-import {invoke} from "@tauri-apps/api/tauri";
-import {Tag} from "../../models/Tag";
+import {Tag} from "../../../api/models/Tag";
 import {BehaviorSubject} from "rxjs";
-import {Namespace} from "../../models/Namespace";
+import {Namespace} from "../../../api/models/Namespace";
+import {mapMany, mapNew} from "../../../api/models/adaptors";
+import {MediarepApi} from "../../../api/Api";
 
 @Injectable({
     providedIn: "root"
@@ -16,33 +17,28 @@ export class TagService {
     }
 
     public async loadTags() {
-        const tags = await invoke<Tag[]>("plugin:mediarepo|get_all_tags");
-        this.tags.next(tags.map(t => new Tag(t.id, t.name, t.namespace)));
+        const tags = await MediarepApi.getAllTags().then(mapMany(mapNew(Tag)));
+        this.tags.next(tags);
     }
 
     public async loadNamespaces() {
-        const namespaces = await invoke<Namespace[]>("plugin:mediarepo|get_all_namespaces");
-        this.namespaces.next(namespaces.map(n => new Namespace(n.id, n.name)));
+        const namespaces = await MediarepApi.getAllNamespaces().then(mapMany(mapNew(Namespace)));
+        this.namespaces.next(namespaces);
     }
 
-    public async getTagsForFiles(hashes: string[]): Promise<Tag[]> {
-        let tags: Tag[] = []
-        if (hashes.length > 0) {
-            tags = await invoke<Tag[]>("plugin:mediarepo|get_tags_for_files",
-                {hashes});
+    public async getTagsForFiles(cds: string[]): Promise<Tag[]> {
+        let tags: Tag[] = [];
+        if (cds.length > 0) {
+            tags = await MediarepApi.getTagsForFiles({cds}).then(mapMany(mapNew(Tag)));
         }
-        return tags.map(t => new Tag(t.id, t.name, t.namespace));
+        return tags;
     }
 
     public async createTags(tags: string[]): Promise<Tag[]> {
-        const resultTags = await invoke<Tag[]>("plugin:mediarepo|create_tags",
-            {tags});
-        return resultTags.map(t => new Tag(t.id, t.name, t.namespace));
+        return MediarepApi.createTags({tags}).then(mapMany(mapNew(Tag)));
     }
 
     public async changeFileTags(fileId: number, addedTags: number[], removedTags: number[]): Promise<Tag[]> {
-        const tags = await invoke<Tag[]>("plugin:mediarepo|change_file_tags",
-            {id: fileId, addedTags, removedTags});
-        return tags.map(t => new Tag(t.id, t.name, t.namespace));
+        return MediarepApi.changeFileTags({id: fileId, addedTags, removedTags}).then(mapMany(mapNew(Tag)));
     }
 }

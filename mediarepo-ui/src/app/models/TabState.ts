@@ -1,25 +1,26 @@
 import {BehaviorSubject} from "rxjs";
 import {TabCategory} from "./TabCategory";
 import {FileService} from "../services/file/file.service";
-import {File} from "./File";
+import {File} from "../../api/models/File";
 import {
-    FilterExpression,
+    GenericFilter,
     OrFilterExpression,
     SingleFilterExpression
-} from "./FilterExpression";
+} from "./GenericFilter";
 import {SortKey} from "./SortKey";
 import {TagQuery} from "./TagQuery";
 import {debounceTime} from "rxjs/operators";
+import {mapNew} from "../../api/models/adaptors";
 
 export class TabState {
     public uuid: number;
     public category: TabCategory;
     public mode = new BehaviorSubject<"grid" | "gallery">("grid");
-    public selectedFileHash = new BehaviorSubject<string | undefined>(undefined);
+    public selectedCD = new BehaviorSubject<string | undefined>(undefined);
     public loading = new BehaviorSubject<boolean>(false);
 
     public files = new BehaviorSubject<File[]>([]);
-    public filters = new BehaviorSubject<FilterExpression[]>([]);
+    public filters = new BehaviorSubject<GenericFilter[]>([]);
     public sortKeys = new BehaviorSubject<SortKey[]>(
         [new SortKey("FileImportedTime",
             "Ascending", undefined)]);
@@ -46,7 +47,7 @@ export class TabState {
         this.loading.next(false);
     }
 
-    public setFilters(filters: FilterExpression[]) {
+    public setFilters(filters: GenericFilter[]) {
         this.filters.next(filters);
     }
 
@@ -58,21 +59,21 @@ export class TabState {
         const state = new TabState(dto.uuid, dto.category, fileService);
         const filters = dto.filters.map((f: {filter: any, filter_type: any}) => {
             if (f.filter_type === "OrExpression") {
-                return new OrFilterExpression(f.filter.map((f: any) => new TagQuery(f.tag, f.negate)))
+                return new OrFilterExpression(f.filter.map((f: any) => new TagQuery(f.tag, f.negate)));
             } else {
-                return new SingleFilterExpression(new TagQuery(f.filter.tag, f.filter.negate))
+                return new SingleFilterExpression(new TagQuery(f.filter.tag, f.filter.negate));
             }
-        })
+        });
         const sortKeys = dto.sortKeys.map((s: {sortType: any, sortDirection: any, namespaceName: any}) =>
             new SortKey(s.sortType, s.sortDirection, s.namespaceName)
         );
         state.filters.next(filters);
         state.sortKeys.next(sortKeys);
         state.mode.next(dto.mode ?? "grid");
-        state.selectedFileHash.next(dto.selectedFileHash);
-        state.files.next(dto.files);
+        state.selectedCD.next(dto.selectedFileHash);
+        state.files.next(dto.files.map(mapNew(File)));
 
-        return state
+        return state;
     }
 
     public getDTO(): any {
@@ -82,8 +83,8 @@ export class TabState {
             filters: this.filters.value,
             sortKeys: this.sortKeys.value,
             mode: this.mode.value,
-            selectedFileHash: this.selectedFileHash.value,
-            files: this.files.value,
+            selectedFileHash: this.selectedCD.value,
+            files: this.category === TabCategory.Import? this.files.value.map(f => f.rawData) : [],
         };
     }
 }

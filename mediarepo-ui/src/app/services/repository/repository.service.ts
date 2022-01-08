@@ -1,13 +1,13 @@
 import {Injectable} from "@angular/core";
-import {Repository} from "../../models/Repository";
+import {Repository} from "../../../api/models/Repository";
 import {BehaviorSubject} from "rxjs";
-import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
-import {FileService} from "../file/file.service";
 import {RepositoryMetadata} from "../../models/RepositoryMetadata";
-import {SizeMetadata, SizeType} from "../../models/SizeMetadata";
+import {MediarepApi} from "../../../api/Api";
+import {mapMany, mapNew, mapOptional,} from "../../../api/models/adaptors";
+import {SizeMetadata, SizeType} from "../../../api/api-types/repo";
 
 @Injectable({
     providedIn: "root"
@@ -17,8 +17,8 @@ export class RepositoryService {
     public selectedRepository = new BehaviorSubject<Repository | undefined>(
         undefined);
 
-    constructor(private errorBroker: ErrorBrokerService, private fileService: FileService) {
-        this.registerListener()
+    constructor(private errorBroker: ErrorBrokerService) {
+        this.registerListener().catch(err => console.error(err));
     }
 
     /// Registers the info listener
@@ -34,7 +34,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkDameonConfigured(): Promise<boolean> {
-        return await invoke<boolean>("plugin:mediarepo|has_executable");
+        return MediarepApi.hasExecutable();
     }
 
     /**
@@ -43,8 +43,7 @@ export class RepositoryService {
      */
     public async loadRepositories() {
         await this.loadSelectedRepository();
-        let repos = await invoke<Repository[]>(
-            "plugin:mediarepo|get_repositories");
+        let repos = await MediarepApi.getRepositories().then(mapMany(mapNew(Repository)));
         this.repositories.next(repos);
     }
 
@@ -54,7 +53,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async setRepository(repo: Repository) {
-        const selectedRepo = this.selectedRepository.getValue()
+        const selectedRepo = this.selectedRepository.getValue();
         if (selectedRepo) {
             if (selectedRepo.local) {
                 await this.closeSelectedRepository();
@@ -70,7 +69,7 @@ export class RepositoryService {
             }
 
         }
-        await invoke("plugin:mediarepo|select_repository", {name: repo.name});
+        await MediarepApi.selectRepository({name: repo.name});
         await this.loadRepositories();
     }
 
@@ -79,7 +78,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async disconnectSelectedRepository() {
-        await invoke("plugin:mediarepo|disconnect_repository");
+        await MediarepApi.disconnectRepository();
         await this.loadRepositories();
     }
 
@@ -88,7 +87,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async closeSelectedRepository() {
-        await invoke("plugin:mediarepo|close_local_repository");
+        await MediarepApi.closeLocalRepository();
         await this.loadRepositories();
     }
 
@@ -101,9 +100,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async addRepository(name: string, path: string | undefined, address: string | undefined, local: boolean) {
-        let repos = await invoke<Repository[]>(
-            "plugin:mediarepo|add_repository",
-            {name, path, address, local});
+        let repos = await MediarepApi.addRepository({name, path, address, local}).then(mapMany(mapNew(Repository)));
         this.repositories.next(repos);
     }
 
@@ -113,8 +110,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkDaemonRunning(address: string): Promise<boolean> {
-        return await invoke<boolean>("plugin:mediarepo|check_daemon_running",
-            {address});
+        return MediarepApi.checkDaemonRunning({address});
     }
 
     /**
@@ -123,8 +119,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkLocalRepositoryExists(path: string): Promise<boolean> {
-        return await invoke<boolean>(
-            "plugin:mediarepo|check_local_repository_exists", {path})
+        return await MediarepApi.checkLocalRepositoryExists({path});
     }
 
     /**
@@ -133,7 +128,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async removeRepository(name: string): Promise<void> {
-        await invoke("plugin:mediarepo|remove_repository", {name});
+        await MediarepApi.removeRepository({name});
         await this.loadRepositories();
     }
 
@@ -143,7 +138,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async deleteRepository(name: string): Promise<void> {
-        await invoke("plugin:mediarepo|delete_repository", {name});
+        await MediarepApi.deleteRepository({name});
         await this.removeRepository(name);
     }
 
@@ -153,7 +148,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async startDaemon(repoPath: string): Promise<void> {
-        await invoke("plugin:mediarepo|start_daemon", {repoPath})
+        return MediarepApi.startDaemon({repoPath});
     }
 
     /**
@@ -162,7 +157,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async initRepository(repoPath: string): Promise<void> {
-        await invoke("plugin:mediarepo|init_repository", {repoPath});
+        return MediarepApi.initRepository({repoPath});
     }
 
     /**
@@ -170,21 +165,20 @@ export class RepositoryService {
      * @returns {Promise<RepositoryMetadata>}
      */
     public async getRepositoryMetadata(): Promise<RepositoryMetadata> {
-        return await invoke<RepositoryMetadata>("plugin:mediarepo|get_repo_metadata");
+        return MediarepApi.getRepositoryMetadata();
     }
 
     /**
      * Returns a specific size
-     * @param {SizeType} type
      * @returns {Promise<SizeMetadata>}
+     * @param sizeType
      */
     public async getSize(sizeType: SizeType): Promise<SizeMetadata> {
-        return await invoke<SizeMetadata>("plugin:mediarepo|get_size", {sizeType});
+        return MediarepApi.getSize({sizeType});
     }
 
     async loadSelectedRepository() {
-        let active_repo = await invoke<Repository | undefined>(
-            "plugin:mediarepo|get_active_repository");
+        let active_repo = await MediarepApi.getActiveRepository().then(mapOptional(mapNew(Repository)));
         this.selectedRepository.next(active_repo);
     }
 }

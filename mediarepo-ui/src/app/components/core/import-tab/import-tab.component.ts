@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {File} from "../../../models/File";
+import {File} from "../../../../api/models/File";
 import {TabState} from "../../../models/TabState";
 
 @Component({
@@ -47,17 +47,17 @@ export class ImportTabComponent implements OnInit {
     public onFileSelect(files: File[]) {
         this.selectedFiles = files;
         if (files.length === 1) {
-            this.state.selectedFileHash.next(files[0].hash);
+            this.state.selectedCD.next(files[0].cd);
         } else {
-            this.state.selectedFileHash.next(undefined);
+            this.state.selectedCD.next(undefined);
         }
     }
 
     public getSelectedFileFromState(): File | undefined {
-        const selectedHash = this.state.selectedFileHash.value;
+        const selectedHash = this.state.selectedCD.value;
 
         if (selectedHash && this.files) {
-            return this.files.find(f => f.hash === selectedHash);
+            return this.files.find(f => f.cd === selectedHash);
         } else {
             return undefined;
         }

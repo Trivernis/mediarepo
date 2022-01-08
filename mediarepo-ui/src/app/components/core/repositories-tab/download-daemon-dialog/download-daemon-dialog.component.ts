@@ -20,6 +20,6 @@ export class DownloadDaemonDialogComponent {
     }
 
     closeDialog(result: boolean) {
-        this.dialogRef.close(result)
+        this.dialogRef.close(result);
     }
 }

@@ -1,5 +1,5 @@
 import {Component, ViewChild} from "@angular/core";
-import {File} from "../../../../models/File";
+import {File} from "../../../../../api/models/File";
 import {
     ContextMenuComponent
 } from "../../app-common/context-menu/context-menu.component";
@@ -30,11 +30,11 @@ export class FileContextMenuComponent {
     }
 
     public async copyFileHash(): Promise<void> {
-        await clipboard.writeText(this.file.hash);
+        await clipboard.writeText(this.file.cd);
     }
 
     public async exportFile(): Promise<void> {
-        const path = await FileHelper.getFileDownloadLocation(this.file)
+        const path = await FileHelper.getFileDownloadLocation(this.file);
 
         if (path) {
             try {

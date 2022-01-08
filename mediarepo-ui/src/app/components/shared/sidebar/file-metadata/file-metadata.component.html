@@ -6,12 +6,12 @@
     <div class="file-metadata-entries-scroll-container">
         <div class="file-metadata-entries">
 
-            <app-editable-metadata-entry attributeName="Name" [value]="file.name ?? ''" (valueChangeEvent)="this.saveFileName($event)"></app-editable-metadata-entry>
-            <app-metadata-entry attributeName="Hash">{{file.hash}}</app-metadata-entry>
-            <app-metadata-entry attributeName="Mime Type">{{file.mime_type ?? 'unknown'}}</app-metadata-entry>
-            <app-metadata-entry attributeName="Imported at">{{file.import_time.toLocaleString()}}</app-metadata-entry>
-            <app-metadata-entry attributeName="Created at">{{file.creation_time.toLocaleString()}}</app-metadata-entry>
-            <app-metadata-entry attributeName="Changed at">{{file.change_time.toLocaleString()}}</app-metadata-entry>
+            <app-editable-metadata-entry *ngIf="fileMetadata" attributeName="Name" [value]="fileMetadata.name ?? ''" (valueChangeEvent)="this.saveFileName($event)"></app-editable-metadata-entry>
+            <app-metadata-entry attributeName="Content Descriptor (CD)">{{file.cd}}</app-metadata-entry>
+            <app-metadata-entry attributeName="Mime Type">{{file.mimeType}}</app-metadata-entry>
+            <app-metadata-entry *ngIf="fileMetadata" attributeName="Imported at">{{fileMetadata.import_time.toLocaleString()}}</app-metadata-entry>
+            <app-metadata-entry *ngIf="fileMetadata" attributeName="Created at">{{fileMetadata.creation_time.toLocaleString()}}</app-metadata-entry>
+            <app-metadata-entry *ngIf="fileMetadata" attributeName="Changed at">{{fileMetadata.change_time.toLocaleString()}}</app-metadata-entry>
 
         </div>
     </div>

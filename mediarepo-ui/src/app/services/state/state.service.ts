@@ -1,11 +1,11 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject, Subscription} from "rxjs";
 import {AppState} from "../../models/AppState";
-import {invoke} from "@tauri-apps/api/tauri";
 import {FileService} from "../file/file.service";
 import {RepositoryService} from "../repository/repository.service";
 import {TabState} from "../../models/TabState";
 import {debounceTime} from "rxjs/operators";
+import {MediarepApi} from "../../../api/Api";
 
 @Injectable({
     providedIn: "root"
@@ -38,12 +38,11 @@ export class StateService {
      * @returns {Promise<void>}
      */
     public async loadState() {
-        let stateString = await invoke<string | undefined>(
-            "plugin:mediarepo|get_frontend_state");
+        let stateString = await MediarepApi.getFrontendState();
         let state;
 
         if (stateString) {
-            state = AppState.deserializeJson(stateString, this.fileService)
+            state = AppState.deserializeJson(stateString, this.fileService);
         } else {
             state = new AppState(this.fileService);
         }
@@ -56,7 +55,7 @@ export class StateService {
             this.tabSubscriptions.forEach(s => s.unsubscribe());
             tabs.forEach((tab) => this.subscribeToTab(tab));
             this.stateChange.next();
-        })
+        });
     }
 
     private subscribeToTab(tab: TabState) {
@@ -65,10 +64,10 @@ export class StateService {
         this.tabSubscriptions.push(tab.sortKeys
             .subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(
-            tab.selectedFileHash.subscribe(() => this.stateChange.next()));
+            tab.selectedCD.subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(
-            tab.mode.subscribe(() => this.stateChange.next()))
-        this.tabSubscriptions.push(tab.files.subscribe(() => this.stateChange.next()))
+            tab.mode.subscribe(() => this.stateChange.next()));
+        this.tabSubscriptions.push(tab.files.subscribe(() => this.stateChange.next()));
     }
 
     /**
@@ -76,7 +75,6 @@ export class StateService {
      * @returns {Promise<void>}
      */
     public async saveState(): Promise<void> {
-        await invoke("plugin:mediarepo|set_frontend_state",
-            {state: this.state.value.serializeJson()})
+        await MediarepApi.setFrontendState({state: this.state.value.serializeJson()});
     }
 }

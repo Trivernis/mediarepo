@@ -1,7 +1,8 @@
 import {TagQuery} from "./TagQuery";
-import {createRustEnum, RustEnum} from "./rust-types";
+import {createRustEnum} from "./rust-types";
+import {FilterExpression} from "../../api/api-types/files";
 
-export interface FilterExpression {
+export interface GenericFilter {
     filter_type: "OrExpression" | "Query";
     filter: TagQuery[] | TagQuery;
 
@@ -11,14 +12,14 @@ export interface FilterExpression {
 
     getDisplayName(): string;
 
-    clone(): FilterExpression;
+    clone(): GenericFilter;
 
     queryList(): TagQuery[];
 
-    toBackendType(): RustEnum<TagQuery | TagQuery[]>;
+    toBackendType(): FilterExpression;
 }
 
-export class OrFilterExpression implements FilterExpression {
+export class OrFilterExpression implements GenericFilter {
     public filter_type: "OrExpression" = "OrExpression";
     public filter: TagQuery[] = [];
 
@@ -27,7 +28,7 @@ export class OrFilterExpression implements FilterExpression {
     }
 
     public eq(value: any): boolean {
-        return this == value
+        return this == value;
     }
 
     public partiallyEq(value: any): boolean {
@@ -41,7 +42,7 @@ export class OrFilterExpression implements FilterExpression {
     public clone(): OrFilterExpression {
         let tags = this.filter.map(
             (t: TagQuery) => new TagQuery(t.tag, t.negate));
-        return new OrFilterExpression(tags)
+        return new OrFilterExpression(tags);
     }
 
     public queryList(): TagQuery[] {
@@ -64,12 +65,12 @@ export class OrFilterExpression implements FilterExpression {
         this.filter = newEntries.reverse();
     }
 
-    public toBackendType(): RustEnum<TagQuery | TagQuery[]> {
-        return createRustEnum(this.filter_type, this.filter);
+    public toBackendType(): FilterExpression {
+        return createRustEnum(this.filter_type, this.filter) as unknown as FilterExpression;
     }
 }
 
-export class SingleFilterExpression implements FilterExpression {
+export class SingleFilterExpression implements GenericFilter {
     public filter_type: "Query" = "Query";
     public filter: TagQuery;
 
@@ -89,16 +90,16 @@ export class SingleFilterExpression implements FilterExpression {
         return this.filter.getNormalizedTag();
     }
 
-    public clone(): FilterExpression {
+    public clone(): GenericFilter {
         return new SingleFilterExpression(
-            new TagQuery(this.filter.tag, this.filter.negate))
+            new TagQuery(this.filter.tag, this.filter.negate));
     }
 
     public queryList(): TagQuery[] {
-        return [this.filter]
+        return [this.filter];
     }
 
-    public toBackendType(): RustEnum<TagQuery | TagQuery[]> {
-        return createRustEnum(this.filter_type, this.filter);
+    public toBackendType(): FilterExpression {
+        return createRustEnum(this.filter_type, this.filter) as unknown as FilterExpression;
     }
 }

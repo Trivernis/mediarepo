@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges
+} from "@angular/core";
 import {FormControl} from "@angular/forms";
 
 @Component({
@@ -6,7 +14,7 @@ import {FormControl} from "@angular/forms";
     templateUrl: "./editable-metadata-entry.component.html",
     styleUrls: ["./editable-metadata-entry.component.scss"]
 })
-export class EditableMetadataEntryComponent implements OnInit{
+export class EditableMetadataEntryComponent implements OnInit, OnChanges {
 
     @Input() attributeName!: string;
     @Input() value!: string | number;
@@ -20,6 +28,12 @@ export class EditableMetadataEntryComponent implements OnInit{
 
     public ngOnInit(): void {
         this.formControl.setValue(this.value);
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes["value"] || changes["mode"]) {
+            this.formControl.setValue(this.value);
+        }
     }
 
     public onSave(): void {

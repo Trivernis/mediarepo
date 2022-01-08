@@ -16,7 +16,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgIconsModule} from "@ng-icons/core";
-import {MatFolder} from "@ng-icons/material-icons"
+import {MatFolder} from "@ng-icons/material-icons";
 
 
 @NgModule({

@@ -2,12 +2,12 @@ import {Component, HostListener, Inject, ViewChildren} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {SortDialogComponent} from "../sort-dialog/sort-dialog.component";
 import {
-    FilterExpression,
+    GenericFilter,
     OrFilterExpression,
     SingleFilterExpression
-} from "../../../../../models/FilterExpression";
+} from "../../../../../models/GenericFilter";
 import {TagQuery} from "../../../../../models/TagQuery";
-import {Tag} from "../../../../../models/Tag";
+import {Tag} from "../../../../../../api/models/Tag";
 import {
     TagFilterListItemComponent
 } from "./tag-filter-list-item/tag-filter-list-item.component";
@@ -20,7 +20,7 @@ import {Selectable} from "../../../../../models/Selectable";
 })
 export class FilterDialogComponent {
 
-    public filters: Selectable<FilterExpression>[];
+    public filters: Selectable<GenericFilter>[];
     public availableTags: Tag[] = [];
     public mode: "AND" | "OR" = "AND";
 
@@ -32,12 +32,12 @@ export class FilterDialogComponent {
     constructor(public dialogRef: MatDialogRef<SortDialogComponent>, @Inject(
         MAT_DIALOG_DATA) data: any) {
         this.filters = data.filterEntries.map(
-            (f: FilterExpression) => new Selectable<FilterExpression>(f,
+            (f: GenericFilter) => new Selectable<GenericFilter>(f,
                 false)) ?? [];
         this.availableTags = data.availableTags ?? [];
     }
 
-    private static checkFiltersEqual(l: FilterExpression, r: FilterExpression): boolean {
+    private static checkFiltersEqual(l: GenericFilter, r: GenericFilter): boolean {
         const lTags = l.queryList().map(q => q.getNormalizedTag()).sort();
         const rTags = r.queryList().map(q => q.getNormalizedTag()).sort();
         let match = false;
@@ -77,7 +77,7 @@ export class FilterDialogComponent {
 
         if (this.mode === "AND" || this.filters.length === 0) {
             this.filters.push(
-                new Selectable<FilterExpression>(
+                new Selectable<GenericFilter>(
                     new SingleFilterExpression(query),
                     false));
             tag = tag.replace(/^-/g, "");
@@ -94,7 +94,7 @@ export class FilterDialogComponent {
             const filterExpression = new OrFilterExpression(queryList);
             filterExpression.removeDuplicates();
             this.filters.push(
-                new Selectable<FilterExpression>(filterExpression,
+                new Selectable<GenericFilter>(filterExpression,
                     false));
         }
         this.unselectAll();
@@ -120,7 +120,7 @@ export class FilterDialogComponent {
     public convertSelectionToAndExpression(): void {
         for (const query of this.selectedQueries) {
             this.filters.push(
-                new Selectable<FilterExpression>(
+                new Selectable<GenericFilter>(
                     new SingleFilterExpression(query),
                     false));
         }
@@ -131,7 +131,7 @@ export class FilterDialogComponent {
     public convertSelectionToOrExpression(): void {
         const queries = this.selectedQueries;
         const expression = new OrFilterExpression(queries);
-        this.filters.push(new Selectable<FilterExpression>(expression, false));
+        this.filters.push(new Selectable<GenericFilter>(expression, false));
         this.removeFilterDuplicates();
         this.unselectAll();
     }
@@ -142,7 +142,7 @@ export class FilterDialogComponent {
 
     private removeFilterDuplicates() {
         const filters = this.filters;
-        let newFilters: Selectable<FilterExpression>[] = [];
+        let newFilters: Selectable<GenericFilter>[] = [];
 
         for (const filterItem of filters) {
             if (filterItem.data.filter_type == "OrExpression") {

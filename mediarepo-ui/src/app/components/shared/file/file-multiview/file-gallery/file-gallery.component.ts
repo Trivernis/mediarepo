@@ -1,8 +1,8 @@
 import {
-    AfterContentInit, AfterViewInit,
-    Component, ElementRef,
+    AfterViewInit,
+    Component,
+    ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     OnChanges,
     OnInit,
@@ -10,7 +10,7 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../../models/File";
+import {File} from "../../../../../../api/models/File";
 import {FileService} from "../../../../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../../../../models/Selectable";
@@ -48,7 +48,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         if (!this.selectedFile || this.files.indexOf(
             this.selectedFile.data) < 0) {
             await this.onEntrySelect(
-                this.getPreselectedEntry() ?? this.entries[0])
+                this.getPreselectedEntry() ?? this.entries[0]);
         }
     }
 
@@ -59,15 +59,15 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     public async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes["files"]) {
             this.entries = this.files.map(
-                f => new Selectable(f, f.hash == this.selectedFile?.data.hash));
+                f => new Selectable(f, f.id == this.selectedFile?.data.id));
             const selectedIndex = this.files.findIndex(
-                f => f.hash === this.selectedFile?.data.hash);
+                f => f.id === this.selectedFile?.data.id);
 
             if (!this.selectedFile || selectedIndex < 0) {
                 await this.onEntrySelect(
-                    this.getPreselectedEntry() ?? this.entries[0])
+                    this.getPreselectedEntry() ?? this.entries[0]);
             } else {
-                await this.onEntrySelect(this.entries[selectedIndex])
+                await this.onEntrySelect(this.entries[selectedIndex]);
             }
         }
     }
@@ -101,7 +101,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     async loadSelectedFile() {
         if (this.selectedFile) {
             this.fileContentUrl = this.fileService.buildContentUrl(
-                this.selectedFile.data)
+                this.selectedFile.data);
         }
     }
 
@@ -117,7 +117,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             }
             await this.onEntrySelect(this.entries[index]);
         } else {
-            await this.onEntrySelect(this.entries[0])
+            await this.onEntrySelect(this.entries[0]);
         }
     }
 
@@ -133,7 +133,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             }
             await this.onEntrySelect(this.entries[index]);
         } else {
-            await this.onEntrySelect(this.entries[0])
+            await this.onEntrySelect(this.entries[0]);
         }
     }
 

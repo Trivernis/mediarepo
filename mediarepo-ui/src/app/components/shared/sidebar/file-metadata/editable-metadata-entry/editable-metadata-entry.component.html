@@ -2,7 +2,7 @@
     <app-metadata-entry *ngIf="mode === 'read'" [attributeName]="attributeName">{{value}}</app-metadata-entry>
     <mat-form-field *ngIf="mode === 'write'">
         <mat-label>{{attributeName}}</mat-label>
-        <input [formControl]="formControl" type="text" matInput [value]="value">
+        <input [formControl]="formControl" type="text" matInput [value]="value.toString()">
     </mat-form-field>
     <button *ngIf="mode === 'write'" mat-button (click)="this.onSave()">
         <ng-icon name="mat-save"></ng-icon>

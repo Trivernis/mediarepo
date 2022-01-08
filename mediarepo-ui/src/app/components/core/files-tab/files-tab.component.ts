@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {File} from "../../../models/File";
+import {File} from "../../../../api/models/File";
 import {TabState} from "../../../models/TabState";
 
 @Component({
@@ -26,17 +26,17 @@ export class FilesTabComponent implements OnInit {
     async onFileSelect(files: File[]) {
         this.selectedFiles = files;
         if (files.length === 1) {
-            this.state.selectedFileHash.next(files[0].hash);
+            this.state.selectedCD.next(files[0].cd);
         } else {
-            this.state.selectedFileHash.next(undefined);
+            this.state.selectedCD.next(undefined);
         }
     }
 
     public getStateSelectedFile(): File | undefined {
-        const hash = this.state.selectedFileHash.value;
+        const hash = this.state.selectedCD.value;
 
         if (hash) {
-            return this.files.find(f => f.hash === hash);
+            return this.files.find(f => f.cd === hash);
         } else {
             return undefined;
         }
@@ -45,7 +45,7 @@ export class FilesTabComponent implements OnInit {
     public async onKeydown(event: KeyboardEvent) {
         switch (event.key) {
             case "F5":
-                await this.state.findFiles()
+                await this.state.findFiles();
                 break;
         }
     }

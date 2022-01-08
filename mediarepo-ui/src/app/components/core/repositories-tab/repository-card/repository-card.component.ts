@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {Repository} from "../../../../models/Repository";
+import {Repository} from "../../../../../api/models/Repository";
 import {
     RepositoryService
 } from "../../../../services/repository/repository.service";
@@ -52,7 +52,7 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
     }
 
     public isSelectedRepository(): boolean {
-        return this.repoService.selectedRepository.getValue()?.name === this.repository.name
+        return this.repoService.selectedRepository.getValue()?.name === this.repository.name;
     }
 
     public async removeRepository() {
@@ -124,7 +124,7 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
                 await this.repoService.startDaemon(this.repository.path!);
                 this.daemonRunning = true;
                 await new Promise((res, _) => {
-                    setTimeout(res, 2000) // wait for the daemon to start
+                    setTimeout(res, 2000); // wait for the daemon to start
                 });
             }
             await this.selectRepository();
@@ -156,6 +156,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
             data: {
                 repository: this.repository
             }
-        })
+        });
     }
 }

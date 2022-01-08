@@ -8,7 +8,7 @@ import {
     ViewChild
 } from "@angular/core";
 import {SafeResourceUrl} from "@angular/platform-browser";
-import {File} from "../../../../models/File";
+import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
 import {
@@ -64,10 +64,7 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
     }
 
     public getContentType(): ContentType {
-        if (!this.file.mime_type) {
-            return "other";
-        }
-        let mimeParts = this.file.mime_type.split("/");
+        let mimeParts = this.file.mimeType.split("/");
         const type = mimeParts.shift() ?? "other";
         const subtype = mimeParts.shift() ?? "*";
 
@@ -84,7 +81,7 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
     }
 
     public async downloadContent() {
-        const path = await FileHelper.getFileDownloadLocation(this.file)
+        const path = await FileHelper.getFileDownloadLocation(this.file);
 
         if (path) {
             try {

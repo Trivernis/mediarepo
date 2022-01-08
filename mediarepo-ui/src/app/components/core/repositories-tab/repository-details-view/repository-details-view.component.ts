@@ -6,13 +6,12 @@ import {
     OnInit,
     SimpleChanges
 } from "@angular/core";
-import {Repository} from "../../../../models/Repository";
+import {Repository} from "../../../../../api/models/Repository";
 import {
     RepositoryService
 } from "../../../../services/repository/repository.service";
 import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
 import {BehaviorSubject} from "rxjs";
-import {SizeType} from "../../../../models/SizeMetadata";
 
 @Component({
     selector: "app-repository-details-view",
@@ -57,13 +56,13 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
     }
 
     public async getSizes() {
-        const totalSize = await this.repoService.getSize(SizeType.Total)
+        const totalSize = await this.repoService.getSize("Total");
         this.totalSize.next(this.formatByteSize(totalSize.size));
-        const fileSize = await this.repoService.getSize(SizeType.FileFolder);
+        const fileSize = await this.repoService.getSize("FileFolder");
         this.fileFolderSize.next(this.formatByteSize(fileSize.size));
-        const thumbSize = await this.repoService.getSize(SizeType.ThumbFolder);
+        const thumbSize = await this.repoService.getSize("ThumbFolder");
         this.thumbFolderSize.next(this.formatByteSize(thumbSize.size));
-        const databaseSize = await this.repoService.getSize(SizeType.DatabaseFile);
+        const databaseSize = await this.repoService.getSize("DatabaseFile");
         this.databaseFileSize.next(this.formatByteSize(databaseSize.size));
     }
 
@@ -82,7 +81,7 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
         } else if (size >= kib) {
             return (size / kib).toFixed(2) + " KiB";
         } else {
-            return size + " B"
+            return size + " B";
         }
     }
 

@@ -10,18 +10,18 @@ export class ErrorBrokerService {
     infoCb: Function | undefined;
 
     constructor() {
-        this.registerListener();
+        this.registerListener().catch(err => console.error(err));
     }
 
     async registerListener() {
         const _unlisten = await listen("error", event => {
             const payload: any = event.payload;
             if (payload.message) {
-                this.showError(payload)
+                this.showError(payload);
             } else {
-                this.showError(payload.toString())
+                this.showError(payload.toString());
             }
-        })
+        });
     }
 
     showInfo(info: string) {

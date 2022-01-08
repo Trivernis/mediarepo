@@ -2,7 +2,7 @@
                          borderRadius="0.25em"></app-content-aware-image>
 <div *ngIf="this.getThumbnailSupported() && this.thumbUrl" class="file-icon-overlay">
     <ng-icon *ngIf="getFileType() === 'video'" name="mat-movie"></ng-icon>
-    <ng-icon *ngIf="this.file.mime_type === 'image/gif'" class="gif-icon" name="mat-gif"></ng-icon>
+    <ng-icon *ngIf="this.file.mimeType === 'image/gif'" class="gif-icon" name="mat-gif"></ng-icon>
 </div>
 <div *ngIf="!this.getThumbnailSupported() || !this.thumbUrl" class="file-type-icon">
     <ng-icon *ngIf="getFileType() === 'image'" name="mat-image"></ng-icon>

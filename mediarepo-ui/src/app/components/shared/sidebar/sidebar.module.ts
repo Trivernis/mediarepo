@@ -43,9 +43,6 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatMenuModule} from "@angular/material/menu";
 import {FileMetadataComponent} from "./file-metadata/file-metadata.component";
 import {
-    MetadataEntryComponent
-} from "../app-common/metadata-entry/metadata-entry.component";
-import {
     EditableMetadataEntryComponent
 } from "./file-metadata/editable-metadata-entry/editable-metadata-entry.component";
 import {ReactiveFormsModule} from "@angular/forms";

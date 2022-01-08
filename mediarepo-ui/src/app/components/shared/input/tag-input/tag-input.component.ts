@@ -8,7 +8,7 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {Tag} from "../../../../models/Tag";
+import {Tag} from "../../../../../api/models/Tag";
 import {FormControl} from "@angular/forms";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
@@ -60,7 +60,7 @@ export class TagInputComponent implements OnChanges {
     }
 
     private addTag(value: string) {
-        const tag = this.normalizeTag(value);
+        const tag = TagInputComponent.normalizeTag(value);
         if (tag.length > 0 && (this.allowInvalid || this.checkTagValid(tag))) {
             this.tagAdded.emit(tag);
             this.formControl.setValue("");
@@ -69,7 +69,7 @@ export class TagInputComponent implements OnChanges {
     }
 
     private filterSuggestionTag(tag: string) {
-        let normalizedTag = this.normalizeTag(tag);
+        let normalizedTag = TagInputComponent.normalizeTag(tag);
         const negated = normalizedTag.startsWith("-") && this.allowNegation;
         normalizedTag = this.allowNegation ? normalizedTag.replace(/^-/,
             "") : normalizedTag;
@@ -80,11 +80,11 @@ export class TagInputComponent implements OnChanges {
         const autocompleteTags = this.tagsForAutocomplete.filter(
             t => t.includes(normalizedTag))
             .map(t => negated ? "-" + t : t)
-            .sort((l, r) => this.compareSuggestionTags(normalizedTag, l, r))
+            .sort((l, r) => TagInputComponent.compareSuggestionTags(normalizedTag, l, r))
             .slice(0, 50);
 
         if (containsWildcard) {
-            autocompleteTags.unshift(this.normalizeTag(tag));
+            autocompleteTags.unshift(TagInputComponent.normalizeTag(tag));
         }
 
         return autocompleteTags;
@@ -111,7 +111,7 @@ export class TagInputComponent implements OnChanges {
      * @returns {string}
      * @private
      */
-    private normalizeTag(tag: string): string {
+    private static normalizeTag(tag: string): string {
         let normalizedTag = tag.trim();
         let parts = normalizedTag.split(":");
 
@@ -124,7 +124,7 @@ export class TagInputComponent implements OnChanges {
         }
     }
 
-    private compareSuggestionTags(query: string, l: string, r: string): number {
+    private static compareSuggestionTags(query: string, l: string, r: string): number {
         if (l.startsWith(query) && !r.startsWith(query)) {
             return -1;
         } else if (!l.startsWith(query) && r.startsWith(query)) {
@@ -134,7 +134,7 @@ export class TagInputComponent implements OnChanges {
         } else if (l.length > r.length) {
             return 1;
         } else {
-            return l.localeCompare(r)
+            return l.localeCompare(r);
         }
     }
 }

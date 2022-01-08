@@ -15,7 +15,9 @@ import {MatMenuModule} from "@angular/material/menu";
 import {
     ContentAwareImageComponent
 } from "./content-aware-image/content-aware-image.component";
-import { InputReceiverDirective } from "./input-receiver/input-receiver.directive";
+import {
+    InputReceiverDirective
+} from "./input-receiver/input-receiver.directive";
 import {
     MetadataEntryComponent
 } from "./metadata-entry/metadata-entry.component";

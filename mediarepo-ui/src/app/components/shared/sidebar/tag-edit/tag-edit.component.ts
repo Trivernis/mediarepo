@@ -1,16 +1,17 @@
 import {
-    Component, EventEmitter,
+    Component,
+    EventEmitter,
     Input,
     OnChanges,
-    OnInit, Output,
+    OnInit,
+    Output,
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../models/File";
-import {Tag} from "../../../../models/Tag";
+import {File} from "../../../../../api/models/File";
+import {Tag} from "../../../../../api/models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TagService} from "../../../../services/tag/tag.service";
-import {delay} from "rxjs/operators";
 
 @Component({
     selector: "app-tag-edit",
@@ -44,7 +45,7 @@ export class TagEditComponent implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
         if (changes["files"]) {
-            await this.loadFileTags()
+            await this.loadFileTags();
         }
     }
 
@@ -93,7 +94,9 @@ export class TagEditComponent implements OnInit, OnChanges {
         }
         this.mapFileTagsToTagList();
         const index = this.tags.indexOf(tag);
-        index >= 0 && this.tagScroll.scrollToIndex(index);
+        if (index >= 0) {
+            this.tagScroll.scrollToIndex(index);
+        }
         this.tagEditEvent.emit(this);
     }
 
@@ -107,7 +110,9 @@ export class TagEditComponent implements OnInit, OnChanges {
         }
         this.mapFileTagsToTagList();
         const index = this.tags.indexOf(tag);
-        index >= 0 && this.tagScroll.scrollToIndex(index);
+        if (index >= 0) {
+            this.tagScroll.scrollToIndex(index);
+        }
         this.tagEditEvent.emit(this);
         await this.tagService.loadTags();
         await this.tagService.loadNamespaces();
@@ -132,8 +137,8 @@ export class TagEditComponent implements OnInit, OnChanges {
         const promises = [];
         const loadFn = async (file: File) => {
             this.fileTags[file.id] = await this.tagService.getTagsForFiles(
-                [file.hash]);
-        }
+                [file.cd]);
+        };
         for (const file of this.files) {
             promises.push(loadFn(file));
         }

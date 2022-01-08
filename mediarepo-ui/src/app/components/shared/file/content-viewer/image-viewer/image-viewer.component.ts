@@ -54,12 +54,12 @@ export class ImageViewerComponent implements OnChanges {
             const delta = event.wheelDelta ?? event.detail;
 
             if (delta > 0) {
-                this.imageZoom += 0.2
+                this.imageZoom += 0.2;
                 if (this.imageZoom > 4) {
                     this.imageZoom = 4;
                 }
             } else if (delta < 0) {
-                this.imageZoom -= 0.2
+                this.imageZoom -= 0.2;
                 if (this.imageZoom < 0.5) {
                     this.imageZoom = 0.5;
                 }

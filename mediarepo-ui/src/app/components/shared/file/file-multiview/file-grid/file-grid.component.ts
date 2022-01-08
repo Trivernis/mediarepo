@@ -1,9 +1,8 @@
 import {
-    AfterContentInit, AfterViewInit,
+    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     OnChanges,
     OnInit,
@@ -11,7 +10,7 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../../models/File";
+import {File} from "../../../../../../api/models/File";
 import {FileCardComponent} from "../../file-card/file-card.component";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
@@ -73,7 +72,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     setSelectedFile(clickedEntry: Selectable<File>) {
         if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
             this.selectedEntries.forEach(entry => {
-                if (entry !== clickedEntry) entry.selected = false
+                if (entry !== clickedEntry) entry.selected = false;
             });
             this.selectedEntries = [];
         }
@@ -199,11 +198,11 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                     selectedIndex --;
                     break;
                 case "right":
-                    selectedIndex++
+                    selectedIndex++;
                     break;
             }
             while (selectedIndex < 0) {
-                selectedIndex = this.gridEntries.length + selectedIndex
+                selectedIndex = this.gridEntries.length + selectedIndex;
             }
             if (selectedIndex > this.gridEntries.length) {
                 selectedIndex %= this.gridEntries.length;
@@ -222,7 +221,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
                 offsetTop = this.virtualScroll.measureScrollOffset("top");
                 if (contentOffset < offsetTop + (viewportSize / 2)) {
-                    this.virtualScroll.scrollToOffset((offsetTop + 130) -  viewportSize/ 2)
+                    this.virtualScroll.scrollToOffset((offsetTop + 130) -  viewportSize/ 2);
                 }
             }
         }
@@ -266,7 +265,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                 break;
             case "Enter":
                 if (this.selectedEntries.length === 1) {
-                    this.fileOpenEvent.emit(this.selectedEntries[0].data)
+                    this.fileOpenEvent.emit(this.selectedEntries[0].data);
                 }
                 break;
         }

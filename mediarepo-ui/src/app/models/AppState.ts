@@ -24,7 +24,7 @@ export class AppState {
     public async closeTab(uuid: number) {
         const index = this.tabs.value.findIndex(t => t.uuid === uuid);
         const tabs = this.tabs.value;
-        tabs.splice(index, 1)
+        tabs.splice(index, 1);
         this.tabs.next(tabs);
     }
 
@@ -37,7 +37,7 @@ export class AppState {
         appState.tabIdCounter = state.tabIdCounter;
         appState.selectedTab.next(state.selectedTab);
 
-        return appState
+        return appState;
     }
 
     public serializeJson(): string {

@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnInit} from "@angular/core";
-import {Repository} from "../../../models/Repository";
+import {Repository} from "../../../../api/models/Repository";
 import {
     RepositoryService
 } from "../../../services/repository/repository.service";

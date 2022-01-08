@@ -7,10 +7,10 @@ import {
     SimpleChanges
 } from "@angular/core";
 import {
-    FilterExpression,
+    GenericFilter,
     OrFilterExpression,
     SingleFilterExpression
-} from "../../../../../../models/FilterExpression";
+} from "../../../../../../models/GenericFilter";
 import {TagQuery} from "../../../../../../models/TagQuery";
 import {Selectable} from "../../../../../../models/Selectable";
 
@@ -21,7 +21,7 @@ import {Selectable} from "../../../../../../models/Selectable";
 })
 export class TagFilterListItemComponent implements OnChanges {
 
-    @Input() expression!: Selectable<FilterExpression>;
+    @Input() expression!: Selectable<GenericFilter>;
     @Output() removeClicked = new EventEmitter<TagFilterListItemComponent>();
     @Output() querySelect = new EventEmitter<TagQuery>();
     @Output() queryUnselect = new EventEmitter<TagQuery>();
