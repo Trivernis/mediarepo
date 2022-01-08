@@ -77,7 +77,7 @@ impl Eq for SortDirection {}
 pub struct FileBasicDataResponse {
     pub id: i64,
     pub status: FileStatus,
-    pub cid: String,
+    pub cd: String,
     pub mime_type: String,
 }
 
@@ -93,7 +93,6 @@ pub struct FileMetadataResponse {
     pub file_id: i64,
     pub name: Option<String>,
     pub comment: Option<String>,
-    pub file_type: u32,
     pub creation_time: NaiveDateTime,
     pub change_time: NaiveDateTime,
     pub import_time: NaiveDateTime,
