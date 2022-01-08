@@ -21,7 +21,7 @@ pub struct SizeMetadata {
     pub size: u64,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, PartialOrd, Eq, Hash)]
 pub enum SizeType {
     Total,
     FileFolder,
