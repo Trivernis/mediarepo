@@ -1,11 +1,13 @@
 pub mod error;
 pub mod file;
+pub mod job;
 pub mod protocol;
 pub mod repo;
 pub mod tag;
 
 use crate::client_api::error::{ApiError, ApiResult};
 use crate::client_api::file::FileApi;
+use crate::client_api::job::JobApi;
 use crate::client_api::repo::RepoApi;
 use crate::client_api::tag::TagApi;
 use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
@@ -45,6 +47,7 @@ pub struct ApiClient {
     pub file: FileApi,
     pub tag: TagApi,
     pub repo: RepoApi,
+    pub job: JobApi,
 }
 
 impl Clone for ApiClient {
@@ -54,6 +57,7 @@ impl Clone for ApiClient {
             file: self.file.clone(),
             tag: self.tag.clone(),
             repo: self.repo.clone(),
+            job: self.job.clone(),
         }
     }
 }
@@ -65,6 +69,7 @@ impl ApiClient {
             file: FileApi::new(ctx.clone()),
             tag: TagApi::new(ctx.clone()),
             repo: RepoApi::new(ctx.clone()),
+            job: JobApi::new(ctx.clone()),
             ctx,
         }
     }
