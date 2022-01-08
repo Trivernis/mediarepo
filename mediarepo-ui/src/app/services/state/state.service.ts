@@ -5,7 +5,7 @@ import {FileService} from "../file/file.service";
 import {RepositoryService} from "../repository/repository.service";
 import {TabState} from "../../models/TabState";
 import {debounceTime} from "rxjs/operators";
-import {MediarepApi} from "../../../api/Api";
+import {MediarepoApi} from "../../../api/Api";
 
 @Injectable({
     providedIn: "root"
@@ -21,7 +21,7 @@ export class StateService {
     constructor(private fileService: FileService, private repoService: RepositoryService) {
         this.state = new BehaviorSubject(new AppState(fileService));
         this.repoService.selectedRepository.subscribe(async (repo) => {
-            if (repo) {
+            if (repo && (!this.state.value.repoName || this.state.value.repoName !== repo.name)) {
                 await this.loadState();
             } else {
                 const state = new AppState(this.fileService);
@@ -38,13 +38,17 @@ export class StateService {
      * @returns {Promise<void>}
      */
     public async loadState() {
-        let stateString = await MediarepApi.getFrontendState();
+        let stateString = await MediarepoApi.getFrontendState();
         let state;
 
         if (stateString) {
             state = AppState.deserializeJson(stateString, this.fileService);
         } else {
             state = new AppState(this.fileService);
+        }
+        let selectedRepo = this.repoService.selectedRepository.value;
+        if (selectedRepo) {
+            state.repoName = selectedRepo.name;
         }
         this.subscribeToState(state);
         this.state.next(state);
@@ -75,6 +79,8 @@ export class StateService {
      * @returns {Promise<void>}
      */
     public async saveState(): Promise<void> {
-        await MediarepApi.setFrontendState({state: this.state.value.serializeJson()});
+        if (this.repoService.selectedRepository.value) {
+            await MediarepoApi.setFrontendState({state: this.state.value.serializeJson()});
+        }
     }
 }

@@ -5,7 +5,7 @@ import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
 import {ErrorBrokerService} from "../error-broker/error-broker.service";
 import {RepositoryMetadata} from "../../models/RepositoryMetadata";
-import {MediarepApi} from "../../../api/Api";
+import {MediarepoApi} from "../../../api/Api";
 import {mapMany, mapNew, mapOptional,} from "../../../api/models/adaptors";
 import {SizeMetadata, SizeType} from "../../../api/api-types/repo";
 
@@ -34,7 +34,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkDameonConfigured(): Promise<boolean> {
-        return MediarepApi.hasExecutable();
+        return MediarepoApi.hasExecutable();
     }
 
     /**
@@ -43,7 +43,7 @@ export class RepositoryService {
      */
     public async loadRepositories() {
         await this.loadSelectedRepository();
-        let repos = await MediarepApi.getRepositories().then(mapMany(mapNew(Repository)));
+        let repos = await MediarepoApi.getRepositories().then(mapMany(mapNew(Repository)));
         this.repositories.next(repos);
     }
 
@@ -67,10 +67,8 @@ export class RepositoryService {
             } catch (err) {
                 console.warn(err);
             }
-
         }
-        await MediarepApi.selectRepository({name: repo.name});
-        await this.loadRepositories();
+        await MediarepoApi.selectRepository({name: repo.name});
     }
 
     /**
@@ -78,7 +76,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async disconnectSelectedRepository() {
-        await MediarepApi.disconnectRepository();
+        await MediarepoApi.disconnectRepository();
         await this.loadRepositories();
     }
 
@@ -87,7 +85,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async closeSelectedRepository() {
-        await MediarepApi.closeLocalRepository();
+        await MediarepoApi.closeLocalRepository();
         await this.loadRepositories();
     }
 
@@ -100,7 +98,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async addRepository(name: string, path: string | undefined, address: string | undefined, local: boolean) {
-        let repos = await MediarepApi.addRepository({name, path, address, local}).then(mapMany(mapNew(Repository)));
+        let repos = await MediarepoApi.addRepository({name, path, address, local}).then(mapMany(mapNew(Repository)));
         this.repositories.next(repos);
     }
 
@@ -110,7 +108,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkDaemonRunning(address: string): Promise<boolean> {
-        return MediarepApi.checkDaemonRunning({address});
+        return MediarepoApi.checkDaemonRunning({address});
     }
 
     /**
@@ -119,7 +117,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkLocalRepositoryExists(path: string): Promise<boolean> {
-        return await MediarepApi.checkLocalRepositoryExists({path});
+        return await MediarepoApi.checkLocalRepositoryExists({path});
     }
 
     /**
@@ -128,7 +126,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async removeRepository(name: string): Promise<void> {
-        await MediarepApi.removeRepository({name});
+        await MediarepoApi.removeRepository({name});
         await this.loadRepositories();
     }
 
@@ -138,7 +136,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async deleteRepository(name: string): Promise<void> {
-        await MediarepApi.deleteRepository({name});
+        await MediarepoApi.deleteRepository({name});
         await this.removeRepository(name);
     }
 
@@ -148,7 +146,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async startDaemon(repoPath: string): Promise<void> {
-        return MediarepApi.startDaemon({repoPath});
+        return MediarepoApi.startDaemon({repoPath});
     }
 
     /**
@@ -157,7 +155,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async initRepository(repoPath: string): Promise<void> {
-        return MediarepApi.initRepository({repoPath});
+        return MediarepoApi.initRepository({repoPath});
     }
 
     /**
@@ -165,7 +163,7 @@ export class RepositoryService {
      * @returns {Promise<RepositoryMetadata>}
      */
     public async getRepositoryMetadata(): Promise<RepositoryMetadata> {
-        return MediarepApi.getRepositoryMetadata();
+        return MediarepoApi.getRepositoryMetadata();
     }
 
     /**
@@ -174,11 +172,11 @@ export class RepositoryService {
      * @param sizeType
      */
     public async getSize(sizeType: SizeType): Promise<SizeMetadata> {
-        return MediarepApi.getSize({sizeType});
+        return MediarepoApi.getSize({sizeType});
     }
 
     async loadSelectedRepository() {
-        let active_repo = await MediarepApi.getActiveRepository().then(mapOptional(mapNew(Repository)));
+        let active_repo = await MediarepoApi.getActiveRepository().then(mapOptional(mapNew(Repository)));
         this.selectedRepository.next(active_repo);
     }
 }

@@ -35,4 +35,6 @@ export enum ApiFunction {
     // state
     GetFrontendState = "get_frontend_state",
     SetFrontendState = "set_frontend_state",
+    // jobs
+    RunJob = "run_job",
 }

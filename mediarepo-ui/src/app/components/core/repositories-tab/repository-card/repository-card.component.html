@@ -9,11 +9,11 @@
             <p *ngIf="!repository.local" class="repository-address">{{repository.address}}</p>
         </mat-card-content>
         <mat-action-list>
-            <button (click)="startDaemonAndSelectRepository()" *ngIf="!this.isSelectedRepository() && repository.local"
+            <button (click)="this.openEvent.next(repository)" *ngIf="!this.isSelectedRepository() && repository.local"
                     color="primary"
                     mat-flat-button>Open
             </button>
-            <button (click)="selectRepository()" *ngIf="!this.isSelectedRepository() && !repository.local"
+            <button (click)="this.openEvent.next(repository)" *ngIf="!this.isSelectedRepository() && !repository.local"
                     [disabled]="!this.daemonRunning"
                     color="primary" mat-flat-button>Connect
             </button>

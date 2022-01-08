@@ -1,0 +1,12 @@
+<h1 mat-dialog-title class="title">
+    {{title}}
+</h1>
+<div class="content" mat-dialog-content>
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    {{message}}
+</div>
+<div mat-dialog-actions *ngIf="this.allowCancel" class="busy-dialog-actions">
+    <button mat-flat-button (click)="this.dialogRef.close(false)">
+        Cancel
+    </button>
+</div>

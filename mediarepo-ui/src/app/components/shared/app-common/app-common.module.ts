@@ -21,6 +21,7 @@ import {
 import {
     MetadataEntryComponent
 } from "./metadata-entry/metadata-entry.component";
+import { BusyDialogComponent } from './busy-dialog/busy-dialog.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import {
         ContentAwareImageComponent,
         InputReceiverDirective,
         MetadataEntryComponent,
+        BusyDialogComponent,
     ],
     exports: [
         ConfirmDialogComponent,

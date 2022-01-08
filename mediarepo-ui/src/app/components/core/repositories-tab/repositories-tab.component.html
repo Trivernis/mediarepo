@@ -4,7 +4,7 @@
     </div>
     <div class="repository-list">
         <div *ngFor="let repository of repositories" class="repository-container">
-            <app-repository-card [repository]="repository"></app-repository-card>
+            <app-repository-card [repository]="repository" (openEvent)="this.onOpenRepository($event)"></app-repository-card>
         </div>
     </div>
 </div>

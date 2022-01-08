@@ -8,6 +8,7 @@ export class AppState {
     private tabIdCounter = 0;
     public tabs = new BehaviorSubject<TabState[]>([]);
     public selectedTab = new BehaviorSubject<number | undefined>(undefined);
+    public repoName: string | undefined;
 
     private readonly fileService: FileService
 
@@ -36,6 +37,7 @@ export class AppState {
 
         appState.tabIdCounter = state.tabIdCounter;
         appState.selectedTab.next(state.selectedTab);
+        appState.repoName = state.repoName;
 
         return appState;
     }
@@ -43,6 +45,7 @@ export class AppState {
     public serializeJson(): string {
         const tabDTOs = this.tabs.value.map(tab => tab.getDTO());
         return JSON.stringify({
+            repoName: this.repoName,
             tabs: tabDTOs,
             tabIdCounter: this.tabIdCounter,
             selectedTab: this.selectedTab.value,

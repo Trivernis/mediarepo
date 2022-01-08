@@ -18,6 +18,7 @@ import {
     ReadFileRequest,
     RemoveRepositoryRequest,
     ResolvePathsToFilesRequest,
+    RunJobRequest,
     SaveFileRequest,
     SelectRepositoryRequest,
     SetFrontendStateRequest,
@@ -31,7 +32,7 @@ import {
 } from "./api-types/repo";
 import {NamespaceData, TagData} from "./api-types/tags";
 
-export class MediarepApi {
+export class MediarepoApi {
 
     public static async hasExecutable(): Promise<boolean> {
         return this.invokePlugin(ApiFunction.HasExecutable);
@@ -155,6 +156,10 @@ export class MediarepApi {
 
     public static async setFrontendState(request: SetFrontendStateRequest): Promise<void> {
         return this.invokePlugin(ApiFunction.SetFrontendState, request);
+    }
+
+    public static async runJob(request: RunJobRequest): Promise<void> {
+        return this.invokePlugin(ApiFunction.RunJob, request);
     }
 
     private static async invokePlugin<T>(fn: ApiFunction, args?: any): Promise<T> {

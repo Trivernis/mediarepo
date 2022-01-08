@@ -1,11 +1,15 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
+import {
+    Component, EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild
+} from "@angular/core";
 import {Repository} from "../../../../../api/models/Repository";
 import {
     RepositoryService
 } from "../../../../services/repository/repository.service";
-import {
-    ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
 import {MatDialog} from "@angular/material/dialog";
 import {
     ConfirmDialogComponent
@@ -25,6 +29,8 @@ import {
 export class RepositoryCardComponent implements OnInit, OnDestroy {
 
     @Input() repository!: Repository;
+    @Output() openEvent = new EventEmitter<Repository>();
+
     @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
 
     public daemonRunning: boolean = false;
@@ -33,7 +39,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
 
     constructor(
         public repoService: RepositoryService,
-        private errorBroker: ErrorBrokerService,
         public dialog: MatDialog) {
     }
 
@@ -116,31 +121,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
         } else {
             return "status-offline";
         }
-    }
-
-    public async startDaemonAndSelectRepository() {
-        try {
-            if (!this.daemonRunning) {
-                await this.repoService.startDaemon(this.repository.path!);
-                this.daemonRunning = true;
-                await new Promise((res, _) => {
-                    setTimeout(res, 2000); // wait for the daemon to start
-                });
-            }
-            await this.selectRepository();
-        } catch (err) {
-            this.errorBroker.showError(err);
-        }
-    }
-
-    public async selectRepository() {
-        this.busyIndicator.setBusy(true);
-        try {
-            await this.repoService.setRepository(this.repository);
-        } catch (err) {
-            this.errorBroker.showError(err);
-        }
-        this.busyIndicator.setBusy(false);
     }
 
     async checkRemoteRepositoryStatus() {

@@ -1,5 +1,6 @@
 import {FileOsMetadata, FilterExpression, SortKey} from "./files";
 import {RepositoryData, SizeType} from "./repo";
+import {JobType} from "./job";
 
 type NameIdentifierRequest = {
     name: string
@@ -92,3 +93,7 @@ type AddFileOptions = {
 export type SetFrontendStateRequest = {
     state: string
 };
+
+export type RunJobRequest = {
+    jobType: JobType,
+}

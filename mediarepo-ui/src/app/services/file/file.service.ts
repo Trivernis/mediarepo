@@ -3,7 +3,7 @@ import {File} from "../../../api/models/File";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {SortKey} from "../../models/SortKey";
 import {GenericFilter} from "../../models/GenericFilter";
-import {MediarepApi} from "../../../api/Api";
+import {MediarepoApi} from "../../../api/Api";
 import {mapMany, mapNew} from "../../../api/models/adaptors";
 import {FileMetadata} from "../../../api/api-types/files";
 
@@ -19,20 +19,20 @@ export class FileService {
     }
 
     public async getAllFiles(): Promise<File[]> {
-        return MediarepApi.getAllFiles().then(mapMany(mapNew(File)));
+        return MediarepoApi.getAllFiles().then(mapMany(mapNew(File)));
     }
 
     public async findFiles(filters: GenericFilter[], sortBy: SortKey[]): Promise<File[]> {
         let backendFilters = filters.map(f => f.toBackendType());
-        return MediarepApi.findFiles({filters: backendFilters, sortBy: sortBy.map(k => k.toBackendType())}).then(mapMany(mapNew(File)));
+        return MediarepoApi.findFiles({filters: backendFilters, sortBy: sortBy.map(k => k.toBackendType())}).then(mapMany(mapNew(File)));
     }
 
     public async getFileMetadata(id: number): Promise<FileMetadata> {
-        return MediarepApi.getFileMetadata({id});
+        return MediarepoApi.getFileMetadata({id});
     }
 
     public async updateFileName(id: number, name: string): Promise<FileMetadata> {
-        return MediarepApi.updateFileName({id, name});
+        return MediarepoApi.updateFileName({id, name});
     }
 
     /**
@@ -64,7 +64,7 @@ export class FileService {
      * @returns {Promise<void>}
      */
     public async saveFile(file: File, targetPath: string) {
-        await MediarepApi.saveFileLocally({id: file.id, path: targetPath});
+        await MediarepoApi.saveFileLocally({id: file.id, path: targetPath});
     }
 
     /**
@@ -73,7 +73,7 @@ export class FileService {
      * @returns {Promise<void>}
      */
     public async deleteThumbnails(file: File) {
-        await MediarepApi.deleteThumbnails({id: file.id});
+        await MediarepoApi.deleteThumbnails({id: file.id});
     }
 
     /**
@@ -82,7 +82,7 @@ export class FileService {
      * @returns {Promise<SafeResourceUrl>}
      */
     public async readFile(file: File): Promise<SafeResourceUrl> {
-        const data = await MediarepApi.readFile({mimeType: file.mimeType, hash: file.cd});
+        const data = await MediarepoApi.readFile({mimeType: file.mimeType, hash: file.cd});
         const blob = new Blob([new Uint8Array(data)], {type: file.mimeType});
         const url = URL?.createObjectURL(blob);
         return this.sanitizer.bypassSecurityTrustResourceUrl(url);

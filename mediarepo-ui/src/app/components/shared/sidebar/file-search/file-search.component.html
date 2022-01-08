@@ -32,14 +32,16 @@
     </div>
 
     <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
-        <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-            <div (click)="addSearchTag(tag.getNormalizedOutput())"
-                 (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
-                 *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
-                <app-tag-item [tag]="tag"></app-tag-item>
-            </div>
-        </cdk-virtual-scroll-viewport>
-        <app-busy-indicator [busy]="this.tagsLoading" [blurBackground]="true" [darkenBackground]="false"></app-busy-indicator>
+
+        <app-busy-indicator [busy]="this.tagsLoading" [blurBackground]="true" [darkenBackground]="false">
+            <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
+                <div (click)="addSearchTag(tag.getNormalizedOutput())"
+                     (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
+                     *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
+                    <app-tag-item [tag]="tag"></app-tag-item>
+                </div>
+            </cdk-virtual-scroll-viewport>
+        </app-busy-indicator>
     </div>
 
 </div>
