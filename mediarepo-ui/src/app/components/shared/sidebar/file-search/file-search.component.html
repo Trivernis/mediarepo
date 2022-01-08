@@ -39,6 +39,7 @@
                 <app-tag-item [tag]="tag"></app-tag-item>
             </div>
         </cdk-virtual-scroll-viewport>
+        <app-busy-indicator [busy]="this.tagsLoading" [blurBackground]="true" [darkenBackground]="false"></app-busy-indicator>
     </div>
 
 </div>

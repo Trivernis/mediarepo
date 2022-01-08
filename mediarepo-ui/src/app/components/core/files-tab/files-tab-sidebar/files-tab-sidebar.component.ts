@@ -42,6 +42,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     public allTags: Tag[] = [];
     public files: File[] = [];
     public tagsOfSelection: Tag[] = [];
+    public tagsLoading = false;
 
     constructor(private repoService: RepositoryService, private tagService: TagService) {
         this.repoService.selectedRepository.subscribe(
@@ -75,18 +76,22 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     }
 
     async loadTagsForDisplayedFiles() {
+        this.tagsLoading = true;
         this.tagsOfFiles = await this.tagService.getTagsForFiles(
             this.files.map(f => f.cd));
         this.showAllTagsFallback();
+        this.tagsLoading = false;
     }
 
     async showFileDetails(files: File[]) {
+        this.tagsLoading = true;
         this.tagsOfSelection = await this.tagService.getTagsForFiles(
             files.map(f => f.cd));
         this.tagsOfSelection = this.tagsOfSelection.sort(
             (a, b) => a.getNormalizedOutput()
                 .localeCompare(b.getNormalizedOutput()));
         this.tags = this.tagsOfSelection;
+        this.tagsLoading = false;
     }
 
     private async refreshFileSelection() {

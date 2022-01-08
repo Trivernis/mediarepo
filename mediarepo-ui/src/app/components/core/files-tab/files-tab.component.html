@@ -5,7 +5,7 @@
                                [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
     </mat-drawer>
     <mat-drawer-content>
-        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading">
+        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading" [darkenBackground]="true">
             <app-file-multiview [mode]="state.mode.value" (modeChangeEvent)="state.mode.next($event)" (fileSelectEvent)="this.onFileSelect($event)" [files]="this.files" [preselectedFile]="this.getStateSelectedFile()"></app-file-multiview>
         </app-busy-indicator>
     </mat-drawer-content>

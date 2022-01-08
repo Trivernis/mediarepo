@@ -37,6 +37,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     @Input() availableTags: Tag[] = [];
     @Input() contextTags: Tag[] = [];
     @Input() state!: TabState;
+    @Input() tagsLoading = false;
 
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();
