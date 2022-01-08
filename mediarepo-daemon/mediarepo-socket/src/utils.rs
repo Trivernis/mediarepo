@@ -16,9 +16,9 @@ pub async fn get_repo_from_context(ctx: &Context) -> Arc<Repo> {
 pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<File> {
     let file = match identifier {
         FileIdentifier::ID(id) => repo.file_by_id(id).await,
-        FileIdentifier::CD(cd) => repo.file_by_cd(cd).await,
+        FileIdentifier::CD(cd) => repo.file_by_cd(&decode_content_descriptor(cd)?).await,
     }?;
-    file.ok_or_else(|| RepoError::from("Thumbnail not found"))
+    file.ok_or_else(|| RepoError::from("File not found"))
 }
 
 pub async fn cd_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<Vec<u8>> {

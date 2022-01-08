@@ -1,3 +1,4 @@
+use crate::content_descriptor::ContentDescriptor;
 use crate::file::File;
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
@@ -5,7 +6,7 @@ use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
-use mediarepo_core::content_descriptor::encode_content_descriptor;
+use mediarepo_core::content_descriptor::{encode_content_descriptor, is_v1_content_descriptor};
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
@@ -92,8 +93,8 @@ impl Repo {
 
     /// Returns a file by its mapped hash
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn file_by_cd<S: AsRef<str> + Debug>(&self, hash: S) -> RepoResult<Option<File>> {
-        File::by_cd(self.db.clone(), hash).await
+    pub async fn file_by_cd(&self, cd: &[u8]) -> RepoResult<Option<File>> {
+        File::by_cd(self.db.clone(), cd).await
     }
 
     /// Returns a file by id
@@ -127,6 +128,12 @@ impl Repo {
         let tag_ids = process_filters_with_tag_ids(tags, tag_map);
 
         File::find_by_tags(self.db.clone(), tag_ids).await
+    }
+
+    /// Returns all file metadata entries for the given file ids
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_file_metadata_for_ids(&self, ids: Vec<i64>) -> RepoResult<Vec<FileMetadata>> {
+        FileMetadata::all_by_ids(self.db.clone(), ids).await
     }
 
     /// Adds a file from bytes to the database
@@ -283,11 +290,8 @@ impl Repo {
 
     /// Finds all tags that are assigned to the given list of hashes
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn find_tags_for_file_identifiers(
-        &self,
-        hashes: Vec<Vec<u8>>,
-    ) -> RepoResult<Vec<Tag>> {
-        Tag::for_hash_list(self.db.clone(), hashes).await
+    pub async fn find_tags_for_file_identifiers(&self, cds: Vec<Vec<u8>>) -> RepoResult<Vec<Tag>> {
+        Tag::for_cd_list(self.db.clone(), cds).await
     }
 
     /// Adds all tags that are not in the database to the database and returns the ones already existing as well
@@ -408,6 +412,34 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_counts(&self) -> RepoResult<Counts> {
         get_all_counts(&self.db).await
+    }
+
+    pub async fn migrate(&self) -> RepoResult<()> {
+        let cds = ContentDescriptor::all(self.db.clone()).await?;
+
+        tracing::info!("Converting content descriptors to v2 format...");
+        let mut converted_count = 0;
+        let thumb_store = self.get_thumbnail_storage()?;
+        let file_store = self.get_main_storage()?;
+
+        for mut cd in cds {
+            if is_v1_content_descriptor(cd.descriptor()) {
+                let src_cd = cd.descriptor().to_owned();
+                cd.convert_v1_to_v2().await?;
+                let dst_cd = cd.descriptor().to_owned();
+                file_store.rename_entry(&src_cd, &dst_cd).await?;
+                thumb_store
+                    .rename_parent(
+                        encode_content_descriptor(&src_cd),
+                        encode_content_descriptor(&dst_cd),
+                    )
+                    .await?;
+                converted_count += 1;
+            }
+        }
+        tracing::info!("Converted {} descriptors", converted_count);
+
+        Ok(())
     }
 
     #[tracing::instrument(level = "trace", skip(self))]

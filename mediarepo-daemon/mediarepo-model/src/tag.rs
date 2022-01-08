@@ -118,10 +118,7 @@ impl Tag {
 
     /// Returns all tags that are assigned to any of the passed hashes
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn for_hash_list(
-        db: DatabaseConnection,
-        hashes: Vec<Vec<u8>>,
-    ) -> RepoResult<Vec<Self>> {
+    pub async fn for_cd_list(db: DatabaseConnection, cds: Vec<Vec<u8>>) -> RepoResult<Vec<Self>> {
         let tags: Vec<Self> = tag::Entity::find()
             .find_also_related(namespace::Entity)
             .join(
@@ -132,7 +129,7 @@ impl Tag {
                 JoinType::InnerJoin,
                 content_descriptor_tag::Relation::ContentDescriptorId.def(),
             )
-            .filter(content_descriptor::Column::Descriptor.is_in(hashes))
+            .filter(content_descriptor::Column::Descriptor.is_in(cds))
             .group_by(tag::Column::Id)
             .all(&db)
             .await?

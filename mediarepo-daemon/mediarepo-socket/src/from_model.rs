@@ -18,7 +18,6 @@ impl FromModel<FileMetadata> for FileMetadataResponse {
             file_id: metadata.file_id(),
             name: metadata.name().to_owned(),
             comment: metadata.comment().to_owned(),
-            file_type: 0,
             creation_time: metadata.creation_time().to_owned(),
             change_time: metadata.change_time().to_owned(),
             import_time: metadata.import_time().to_owned(),
@@ -31,7 +30,7 @@ impl FromModel<File> for FileBasicDataResponse {
         FileBasicDataResponse {
             id: file.id(),
             status: FileStatus::from_model(file.status()),
-            cid: file.encoded_cd(),
+            cd: file.encoded_cd(),
             mime_type: file.mime_type().to_owned(),
         }
     }

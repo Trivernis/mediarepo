@@ -30,6 +30,20 @@ impl FileMetadata {
         Ok(file_metadata)
     }
 
+    /// Fetches metadata for all given file ids
+    #[tracing::instrument(level = "debug", skip(db))]
+    pub async fn all_by_ids(db: DatabaseConnection, ids: Vec<i64>) -> RepoResult<Vec<Self>> {
+        let file_metadata = file_metadata::Entity::find()
+            .filter(file_metadata::Column::FileId.is_in(ids))
+            .all(&db)
+            .await?
+            .into_iter()
+            .map(|m| FileMetadata::new(db.clone(), m))
+            .collect();
+
+        Ok(file_metadata)
+    }
+
     /// Adds a file with its hash to the database
     #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn add(

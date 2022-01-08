@@ -83,12 +83,9 @@ impl File {
 
     /// Finds the file by hash
     #[tracing::instrument(level = "debug", skip(db))]
-    pub async fn by_cd<S: AsRef<str> + Debug>(
-        db: DatabaseConnection,
-        cid: S,
-    ) -> RepoResult<Option<Self>> {
+    pub async fn by_cd(db: DatabaseConnection, cd: &[u8]) -> RepoResult<Option<Self>> {
         if let Some((hash, Some(model))) = content_descriptor::Entity::find()
-            .filter(content_descriptor::Column::Descriptor.eq(cid.as_ref()))
+            .filter(content_descriptor::Column::Descriptor.eq(cd))
             .find_also_related(file::Entity)
             .one(&db)
             .await?

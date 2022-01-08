@@ -39,7 +39,7 @@ features = ["fs", "io-util", "io-std"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "773e2132c80a80ad90a0585c50baf499c7ceb53f"
+rev = "91d8182548bfdb19f2de9afd8c29d5c8ebd48993"
 features = ["bromine"]
 
 [features]

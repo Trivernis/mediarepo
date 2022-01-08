@@ -16,8 +16,11 @@ use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::queries::tags::{
     get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
 };
+use mediarepo_model::file_metadata::FileMetadata;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::iter::FromIterator;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
@@ -139,30 +142,36 @@ impl FilesNamespace {
             .collect();
 
         let mut files = repo.find_files_by_tags(tags).await?;
-        let hash_ids: Vec<i64> = files.iter().map(|f| f.cd_id()).collect();
+        let hash_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
+        let file_ids: Vec<i64> = files.par_iter().map(|f| f.id()).collect();
 
         let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
             get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
         let mut cid_tag_counts =
             get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
 
+        let files_metadata = repo.get_file_metadata_for_ids(file_ids).await?;
+        let mut file_metadata_map: HashMap<i64, FileMetadata> =
+            HashMap::from_iter(files_metadata.into_iter().map(|m| (m.file_id(), m)));
+
         let mut contexts = HashMap::new();
 
         for file in &files {
-            let metadata = file.metadata().await?;
-            let context = FileSortContext {
-                name: metadata.name().to_owned(),
-                size: metadata.size() as u64,
-                mime_type: file.mime_type().to_owned(),
-                namespaces: cid_nsp
-                    .remove(&file.cd_id())
-                    .unwrap_or(HashMap::with_capacity(0)),
-                tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
-                import_time: metadata.import_time().to_owned(),
-                create_time: metadata.import_time().to_owned(),
-                change_time: metadata.change_time().to_owned(),
-            };
-            contexts.insert(file.id(), context);
+            if let Some(metadata) = file_metadata_map.remove(&file.id()) {
+                let context = FileSortContext {
+                    name: metadata.name().to_owned(),
+                    size: metadata.size() as u64,
+                    mime_type: file.mime_type().to_owned(),
+                    namespaces: cid_nsp
+                        .remove(&file.cd_id())
+                        .unwrap_or(HashMap::with_capacity(0)),
+                    tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
+                    import_time: metadata.import_time().to_owned(),
+                    create_time: metadata.import_time().to_owned(),
+                    change_time: metadata.change_time().to_owned(),
+                };
+                contexts.insert(file.id(), context);
+            }
         }
         let sort_expression = req.sort_expression;
         tracing::debug!("sort_expression = {:?}", sort_expression);

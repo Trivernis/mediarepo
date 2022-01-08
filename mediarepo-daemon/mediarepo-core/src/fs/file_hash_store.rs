@@ -56,6 +56,27 @@ impl FileHashStore {
         Ok((extension, reader))
     }
 
+    /// Renames a file
+    pub async fn rename_file(
+        &self,
+        src_descriptor: &[u8],
+        dst_descriptor: &[u8],
+    ) -> RepoResult<()> {
+        let src_path = self.descriptor_to_file_path(src_descriptor);
+        if !src_path.exists() {
+            tracing::warn!("file {:?} doesn't exist", src_path);
+            return Ok(());
+        }
+        let dst_path = self.descriptor_to_file_path(dst_descriptor);
+        let dst_parent = dst_path.parent().unwrap();
+        if !dst_parent.exists() {
+            fs::create_dir(dst_parent).await?;
+        }
+        fs::rename(src_path, dst_path).await?;
+
+        Ok(())
+    }
+
     /// Scans the size of the folder
     #[inline]
     pub async fn get_size(&self) -> RepoResult<u64> {

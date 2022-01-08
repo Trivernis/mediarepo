@@ -1,4 +1,4 @@
-use crate::content_descriptor::Hash;
+use crate::content_descriptor::ContentDescriptor;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_database::entities::storage;
@@ -161,13 +161,26 @@ impl Storage {
 
     /// Adds a thumbnail
     #[tracing::instrument(level = "debug", skip(self, reader))]
-    pub async fn store_entry<R: AsyncRead + Unpin>(&self, reader: R) -> RepoResult<Hash> {
-        let hash = self.store.add_file(reader, None).await?;
-        if let Some(hash) = Hash::by_value(self.db.clone(), &hash).await? {
+    pub async fn store_entry<R: AsyncRead + Unpin>(
+        &self,
+        reader: R,
+    ) -> RepoResult<ContentDescriptor> {
+        let descriptor = self.store.add_file(reader, None).await?;
+        if let Some(hash) = ContentDescriptor::by_value(self.db.clone(), &descriptor).await? {
             Ok(hash)
         } else {
-            Hash::add(self.db.clone(), hash).await
+            ContentDescriptor::add(self.db.clone(), descriptor).await
         }
+    }
+
+    /// Renames an entry
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn rename_entry(
+        &self,
+        src_descriptor: &[u8],
+        dst_descriptor: &[u8],
+    ) -> RepoResult<()> {
+        self.store.rename_file(src_descriptor, dst_descriptor).await
     }
 
     /// Returns the buf reader to the given hash
