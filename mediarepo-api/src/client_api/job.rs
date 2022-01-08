@@ -33,7 +33,7 @@ impl JobApi {
                 job_type,
                 sync: true,
             },
-            Some(Duration::from_secs(300)),
+            Some(Duration::from_secs(3600)),
         )
         .await
     }
