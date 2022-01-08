@@ -116,7 +116,6 @@ async fn init_repo(opt: &Opt) -> RepoResult<(Settings, Repo)> {
     repo.set_main_storage(&settings.default_file_store).await?;
     repo.set_thumbnail_storage(opt.repo.join(&settings.thumbnail_store))
         .await?;
-    repo.migrate().await?;
     Ok((settings, repo))
 }
 

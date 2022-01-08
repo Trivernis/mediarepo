@@ -2,7 +2,7 @@ use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::Settings;
-use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::net::{IpAddr, SocketAddr};
@@ -35,6 +35,7 @@ pub fn start_tcp_server(
                 .insert::<RepoKey>(Arc::new(repo))
                 .insert::<SettingsKey>(settings)
                 .insert::<RepoPathKey>(repo_path)
+                .insert::<SizeMetadataKey>(Default::default())
                 .build_server()
                 .await
                 .expect("Failed to start tcp server")
@@ -64,6 +65,7 @@ pub fn create_unix_socket(
                 .insert::<RepoKey>(Arc::new(repo))
                 .insert::<SettingsKey>(settings)
                 .insert::<RepoPathKey>(repo_path)
+                .insert::<SizeMetadataKey>(Default::default())
                 .build_server()
                 .await
                 .expect("Failed to create unix domain socket");

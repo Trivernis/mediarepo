@@ -46,6 +46,7 @@ impl FileHashStore {
         descriptor: &[u8],
     ) -> RepoResult<(Option<String>, BufReader<File>)> {
         let file_path = self.descriptor_to_file_path(descriptor);
+        tracing::debug!("Opening file {:?}", file_path);
         let extension = file_path
             .extension()
             .and_then(|s| s.to_str())

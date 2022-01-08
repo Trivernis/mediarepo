@@ -2,10 +2,14 @@ use mediarepo_core::bromine::ipc::context::Context;
 use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
+use mediarepo_core::mediarepo_api::types::repo::SizeType;
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
+use mediarepo_core::utils::get_folder_size;
 use mediarepo_model::file::File;
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::sync::Arc;
+use tokio::fs;
 
 pub async fn get_repo_from_context(ctx: &Context) -> Arc<Repo> {
     let data = ctx.data.read().await;
@@ -32,4 +36,28 @@ pub async fn cd_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoRe
         }
         FileIdentifier::CD(cd) => decode_content_descriptor(cd),
     }
+}
+
+pub async fn calculate_size(size_type: &SizeType, ctx: &Context) -> RepoResult<u64> {
+    let repo = get_repo_from_context(ctx).await;
+    let (repo_path, settings) = {
+        let data = ctx.data.read().await;
+        (
+            data.get::<RepoPathKey>().unwrap().clone(),
+            data.get::<SettingsKey>().unwrap().clone(),
+        )
+    };
+    let size = match &size_type {
+        SizeType::Total => get_folder_size(repo_path).await?,
+        SizeType::FileFolder => repo.get_main_store_size().await?,
+        SizeType::ThumbFolder => repo.get_thumb_store_size().await?,
+        SizeType::DatabaseFile => {
+            let db_path = repo_path.join(settings.database_path);
+
+            let database_metadata = fs::metadata(db_path).await?;
+            database_metadata.len()
+        }
+    };
+
+    Ok(size)
 }

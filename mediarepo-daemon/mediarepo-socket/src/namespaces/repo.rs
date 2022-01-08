@@ -6,10 +6,9 @@ use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::mediarepo_api::types::repo::{
     FrontendState, RepositoryMetadata, SizeMetadata, SizeType,
 };
-use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
-use mediarepo_core::utils::get_folder_size;
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 
-use crate::utils::get_repo_from_context;
+use crate::utils::{calculate_size, get_repo_from_context};
 
 pub struct RepoNamespace;
 
@@ -53,29 +52,21 @@ impl RepoNamespace {
     #[tracing::instrument(skip_all)]
     async fn get_size_metadata(ctx: &Context, event: Event) -> IPCResult<()> {
         let size_type = event.payload::<SizeType>()?;
-        let repo = get_repo_from_context(ctx).await;
-        let (repo_path, settings) = {
-            let data = ctx.data.read().await;
-            (
-                data.get::<RepoPathKey>().unwrap().clone(),
-                data.get::<SettingsKey>().unwrap().clone(),
-            )
-        };
-        let size = match &size_type {
-            SizeType::Total => get_folder_size(repo_path).await?,
-            SizeType::FileFolder => repo.get_main_store_size().await?,
-            SizeType::ThumbFolder => repo.get_thumb_store_size().await?,
-            SizeType::DatabaseFile => {
-                let db_path = repo_path.join(settings.database_path);
+        let data = ctx.data.read().await;
+        let size_cache = data.get::<SizeMetadataKey>().unwrap();
 
-                let database_metadata = fs::metadata(db_path).await?;
-                database_metadata.len()
-            }
+        let size = if let Some(size) = size_cache.get(&size_type) {
+            *size
+        } else {
+            calculate_size(&size_type, ctx).await?
         };
-        let response = SizeMetadata { size, size_type };
-        tracing::debug!("size response = {:?}", response);
 
-        ctx.emit_to(Self::name(), "size_metadata", response).await?;
+        ctx.emit_to(
+            Self::name(),
+            "size_metadata",
+            SizeMetadata { size, size_type },
+        )
+        .await?;
 
         Ok(())
     }
