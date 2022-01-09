@@ -80,6 +80,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 
 [[package]]
+name = "async-recursion"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7d78656ba01f1b93024b7c3a0467f1608e4be67d725749fdcd7d2c7678fd7a2"
+dependencies = [
+ "proc-macro2 1.0.35",
+ "quote 1.0.10",
+ "syn 1.0.84",
+]
+
+[[package]]
 name = "async-stream"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1171,8 +1182,8 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.24.2"
-source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=7b210251f0986e3be060bcfd69cfddcec4e45466#7b210251f0986e3be060bcfd69cfddcec4e45466"
+version = "0.26.0"
+source = "git+https://github.com/Trivernis/mediarepo-api.git?rev=845874bafc253b6ed670594dbcf6d754709ac1e4#845874bafc253b6ed670594dbcf6d754709ac1e4"
 dependencies = [
  "bromine",
  "chrono",
@@ -1201,6 +1212,7 @@ dependencies = [
  "thiserror",
  "thumbnailer",
  "tokio",
+ "tokio-graceful-shutdown",
  "toml",
  "tracing",
  "typemap_rev",
@@ -2217,6 +2229,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 
 [[package]]
+name = "signal-hook-registry"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2549,7 +2570,9 @@ dependencies = [
  "memchr",
  "mio",
  "num_cpus",
+ "once_cell",
  "pin-project-lite",
+ "signal-hook-registry",
  "tokio-macros",
  "tracing",
  "winapi",
@@ -2563,6 +2586,20 @@ checksum = "fb2d1b8f4548dbf5e1f7818512e9c406860678f29c300cdf0ebac72d1a3a1671"
 dependencies = [
  "crossbeam-utils 0.7.2",
  "futures 0.1.31",
+]
+
+[[package]]
+name = "tokio-graceful-shutdown"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d08ebea7dc6b22273290d8ece2ca448f979f836e38ba629b650595c64204b4f2"
+dependencies = [
+ "anyhow",
+ "async-recursion",
+ "futures 0.3.19",
+ "log",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]

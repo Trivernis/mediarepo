@@ -30,7 +30,7 @@ impl Settings {
                 FileFormat::Toml,
             ))?
             .merge(config::File::from(root.join("repo")))?
-            .merge(config::Environment::with_prefix("MEDIAREPO"))?;
+            .merge(config::Environment::with_prefix("MEDIAREPO").separator("."))?;
         tracing::debug!("Settings are: {:#?}", settings);
 
         Ok(settings.try_into::<Settings>()?)

@@ -19,6 +19,7 @@ itertools = "^0.10.3"
 glob = "^0.3.0"
 tracing = "^0.1.29"
 data-encoding = "^2.3.2"
+tokio-graceful-shutdown = "^0.4.3"
 
 [dependencies.thumbnailer]
 version = "^0.2.4"
@@ -43,7 +44,7 @@ features = ["toml"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "7b210251f0986e3be060bcfd69cfddcec4e45466"
+rev = "845874bafc253b6ed670594dbcf6d754709ac1e4"
 features = ["bromine"]
 
 [features]

@@ -2,7 +2,8 @@ use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::{PortSetting, Settings};
-use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
+use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey, SubsystemKey};
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
 use std::net::SocketAddr;
@@ -15,8 +16,9 @@ mod from_model;
 mod namespaces;
 mod utils;
 
-#[tracing::instrument(skip(settings, repo))]
+#[tracing::instrument(skip(subsystem, settings, repo))]
 pub fn start_tcp_server(
+    subsystem: SubsystemHandle,
     repo_path: PathBuf,
     settings: Settings,
     repo: Repo,
@@ -40,6 +42,7 @@ pub fn start_tcp_server(
         .name("mediarepo_tcp::listen")
         .spawn(async move {
             get_builder::<TcpListener>(address)
+                .insert::<SubsystemKey>(subsystem)
                 .insert::<RepoKey>(Arc::new(repo))
                 .insert::<SettingsKey>(settings)
                 .insert::<RepoPathKey>(repo_path)
@@ -53,8 +56,9 @@ pub fn start_tcp_server(
 }
 
 #[cfg(unix)]
-#[tracing::instrument(skip(settings, repo))]
+#[tracing::instrument(skip(subsystem, settings, repo))]
 pub fn create_unix_socket(
+    subsystem: SubsystemHandle,
     path: std::path::PathBuf,
     repo_path: PathBuf,
     settings: Settings,
@@ -70,6 +74,7 @@ pub fn create_unix_socket(
         .name("mediarepo_unix_socket::listen")
         .spawn(async move {
             get_builder::<UnixListener>(path)
+                .insert::<SubsystemKey>(subsystem)
                 .insert::<RepoKey>(Arc::new(repo))
                 .insert::<SettingsKey>(settings)
                 .insert::<RepoPathKey>(repo_path)
@@ -83,7 +88,9 @@ pub fn create_unix_socket(
 }
 
 fn get_builder<L: AsyncStreamProtocolListener>(address: L::AddressType) -> IPCBuilder<L> {
-    namespaces::build_namespaces(IPCBuilder::new().address(address)).on("info", callback!(info))
+    namespaces::build_namespaces(IPCBuilder::new().address(address))
+        .on("info", callback!(info))
+        .on("shutdown", callback!(shutdown))
 }
 
 #[tracing::instrument(skip_all)]
@@ -93,6 +100,20 @@ async fn info(ctx: &Context, _: Event) -> IPCResult<()> {
         env!("CARGO_PKG_VERSION").to_string(),
     );
     ctx.emit("info", response).await?;
+
+    Ok(())
+}
+
+#[tracing::instrument(skip_all)]
+async fn shutdown(ctx: &Context, _: Event) -> IPCResult<()> {
+    ctx.clone().stop().await?;
+    {
+        let data = ctx.data.read().await;
+        let subsystem = data.get::<SubsystemKey>().unwrap();
+        subsystem.request_shutdown();
+        subsystem.on_shutdown_requested().await;
+    }
+    ctx.emit("shutdown", ()).await?;
 
     Ok(())
 }

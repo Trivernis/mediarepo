@@ -6,11 +6,14 @@ use tokio::runtime;
 use tokio::runtime::Runtime;
 
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::futures;
+use mediarepo_core::fs::drop_file::DropFile;
 use mediarepo_core::settings::{PathSettings, Settings};
+use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 use mediarepo_model::repo::Repo;
 use mediarepo_socket::start_tcp_server;
 use std::env;
+use std::time::Duration;
+use tokio::io::AsyncWriteExt;
 
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 
@@ -56,6 +59,7 @@ fn main() -> RepoResult<()> {
     } else {
         Settings::default()
     };
+    clean_old_connection_files(&opt.repo)?;
 
     let mut guards = Vec::new();
     if opt.profile {
@@ -105,24 +109,103 @@ async fn init_repo(opt: &Opt, paths: &PathSettings) -> RepoResult<Repo> {
 /// Starts the server
 async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     let repo = init_repo(&opt, &settings.paths).await?;
-    let mut handles = Vec::new();
+    let mut top_level = Toplevel::new();
 
     #[cfg(unix)]
     {
-        let socket_path = opt.repo.join("repo.sock");
-        let handle = mediarepo_socket::create_unix_socket(
-            socket_path,
-            opt.repo.clone(),
-            settings.clone(),
-            repo.clone(),
-        )?;
-        handles.push(handle);
+        if settings.server.unix_socket.enabled {
+            let settings = settings.clone();
+            let repo_path = opt.repo.clone();
+            let repo = repo.clone();
+
+            top_level = top_level.start("mediarepo-unix-socket", |subsystem| {
+                Box::pin(async move {
+                    start_and_await_unix_socket(subsystem, repo_path, settings, repo).await?;
+                    Ok(())
+                })
+            })
+        }
     }
 
-    let (address, tcp_handle) = start_tcp_server(opt.repo.clone(), settings, repo)?;
-    handles.push(tcp_handle);
-    fs::write(opt.repo.join("repo.tcp"), &address.into_bytes()).await?;
-    futures::future::join_all(handles.into_iter()).await;
+    if settings.server.tcp.enabled {
+        top_level = top_level.start("mediarepo-tcp", move |subsystem| {
+            Box::pin(async move {
+                start_and_await_tcp_server(subsystem, opt.repo, settings, repo).await?;
+
+                Ok(())
+            })
+        })
+    }
+    if let Err(e) = top_level
+        .catch_signals()
+        .handle_shutdown_requests(Duration::from_millis(1000))
+        .await
+    {
+        tracing::error!("an error occurred when running the servers {}", e);
+    }
+
+    tracing::warn!(
+        r"All servers quit.
+        Either they were requested to stop, a fatal error occurred or no servers are enabled in the config.
+        Stopping daemon..."
+    );
+
+    Ok(())
+}
+
+async fn start_and_await_tcp_server(
+    subsystem: SubsystemHandle,
+    repo_path: PathBuf,
+    settings: Settings,
+    repo: Repo,
+) -> RepoResult<()> {
+    let (address, handle) = start_tcp_server(subsystem.clone(), repo_path.clone(), settings, repo)?;
+    let (mut file, _guard) = DropFile::new(repo_path.join("repo.tcp")).await?;
+    file.write_all(&address.into_bytes()).await?;
+
+    tokio::select! {
+        _ = subsystem.on_shutdown_requested() => {
+            tracing::info!("shutdown requested")
+        },
+        result = handle => {
+            if let Err(e) = result {
+                tracing::error!("the tcp server shut down with an error {}", e);
+                subsystem.request_shutdown();
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(unix)]
+async fn start_and_await_unix_socket(
+    subsystem: SubsystemHandle,
+    repo_path: PathBuf,
+    settings: Settings,
+    repo: Repo,
+) -> RepoResult<()> {
+    let socket_path = repo_path.join("repo.sock");
+    let handle = mediarepo_socket::create_unix_socket(
+        subsystem.clone(),
+        socket_path,
+        repo_path.clone(),
+        settings,
+        repo,
+    )?;
+    let _guard = DropFile::from_path(repo_path.join("repo.sock"));
+
+    tokio::select! {
+        _ = subsystem.on_shutdown_requested() => {
+            tracing::info!("shutdown requested")
+        },
+        result = handle => {
+            if let Err(e) = result {
+                tracing::error!("the unix socket shut down with an error {}", e);
+                subsystem.request_shutdown();
+            }
+        }
+    }
 
     Ok(())
 }
@@ -150,6 +233,20 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     settings.save(&opt.repo)?;
 
     log::info!("Repository initialized");
+
+    Ok(())
+}
+
+fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
+    let paths = ["repo.tcp", "repo.sock"];
+
+    for path in paths {
+        let path = root.join(path);
+
+        if path.exists() {
+            std::fs::remove_file(&path)?;
+        }
+    }
 
     Ok(())
 }
