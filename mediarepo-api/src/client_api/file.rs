@@ -2,9 +2,10 @@ use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
 use crate::types::files::{
     AddFileRequestHeader, FileBasicDataResponse, FileMetadataResponse, FileOSMetadata,
-    FilterExpression, FindFilesRequest, GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest,
-    ReadFileRequest, SortKey, ThumbnailMetadataResponse, UpdateFileNameRequest,
+    GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest,
+    ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
+use crate::types::filtering::{FilterExpression, FindFilesRequest, SortKey};
 use crate::types::identifier::FileIdentifier;
 use async_trait::async_trait;
 use bromine::context::{PoolGuard, PooledContext};

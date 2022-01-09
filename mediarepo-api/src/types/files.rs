@@ -1,6 +1,7 @@
 use crate::types::identifier::FileIdentifier;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReadFileRequest {
@@ -28,50 +29,6 @@ pub struct GetFileTagsRequest {
 pub struct GetFilesTagsRequest {
     pub cds: Vec<String>,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FindFilesRequest {
-    pub filters: Vec<FilterExpression>,
-    pub sort_expression: Vec<SortKey>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum FilterExpression {
-    OrExpression(Vec<TagQuery>),
-    Query(TagQuery),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct TagQuery {
-    pub negate: bool,
-    pub tag: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum SortKey {
-    Namespace(SortNamespace),
-    FileName(SortDirection),
-    FileSize(SortDirection),
-    FileImportedTime(SortDirection),
-    FileCreatedTime(SortDirection),
-    FileChangeTime(SortDirection),
-    FileType(SortDirection),
-    NumTags(SortDirection),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SortNamespace {
-    pub name: String,
-    pub direction: SortDirection,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, PartialEq)]
-pub enum SortDirection {
-    Ascending,
-    Descending,
-}
-
-impl Eq for SortDirection {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileBasicDataResponse {

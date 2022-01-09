@@ -2,9 +2,9 @@ use crate::tauri_plugin::commands::{ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
-    FileBasicDataResponse, FileMetadataResponse, FileOSMetadata, FilterExpression, SortKey,
-    ThumbnailMetadataResponse,
+    FileBasicDataResponse, FileMetadataResponse, FileOSMetadata, ThumbnailMetadataResponse,
 };
+use crate::types::filtering::{FilterExpression, SortKey};
 use crate::types::identifier::FileIdentifier;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

@@ -1,9 +1,11 @@
-use crate::types::files::{
-    FilterExpression, GetFileThumbnailOfSizeRequest, SortDirection, SortKey, TagQuery,
+use crate::types::files::GetFileThumbnailOfSizeRequest;
+use crate::types::filtering::{
+    FilterExpression, SortDirection, SortKey, TagQuery, ValueComparator,
 };
 use crate::types::identifier::FileIdentifier;
 use bromine::payload::DynamicSerializer;
 use bromine::prelude::IPCResult;
+use chrono::NaiveDateTime;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
@@ -43,6 +45,15 @@ fn it_serializes_filter_expressions() {
 #[test]
 fn it_serializes_sort_keys() {
     test_serialization(SortKey::FileName(SortDirection::Descending)).unwrap();
+}
+
+#[test]
+fn it_serializes_value_comparators() {
+    test_serialization(ValueComparator::Between((
+        NaiveDateTime::from_timestamp(100, 0),
+        NaiveDateTime::from_timestamp(100, 10),
+    )))
+    .unwrap();
 }
 
 fn test_serialization<T: Serialize + DeserializeOwned>(data: T) -> IPCResult<()> {
