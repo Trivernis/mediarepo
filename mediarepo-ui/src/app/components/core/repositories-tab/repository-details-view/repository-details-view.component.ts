@@ -12,6 +12,10 @@ import {
 } from "../../../../services/repository/repository.service";
 import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
 import {BehaviorSubject} from "rxjs";
+import {MatDialog} from "@angular/material/dialog";
+import {
+    BusyDialogComponent
+} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
 
 @Component({
     selector: "app-repository-details-view",
@@ -29,7 +33,7 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
     public thumbFolderSize = new BehaviorSubject<string | undefined>(undefined);
     public databaseFileSize = new BehaviorSubject<string | undefined>(undefined);
 
-    constructor(private repoService: RepositoryService) {
+    constructor(private repoService: RepositoryService, public dialog: MatDialog) {
     }
 
     public async ngOnInit() {
@@ -48,11 +52,18 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
     }
 
     public async closeRepository() {
+        let closeDialog = this.dialog.open(BusyDialogComponent, {
+            data: {
+                title: "Closing repository",
+                message: new BehaviorSubject("Closing repository...")
+            }
+        });
         if (this.repository?.local) {
             await this.repoService.closeSelectedRepository();
         } else {
             await this.repoService.disconnectSelectedRepository();
         }
+        closeDialog.close(true);
     }
 
     public async getSizes() {
