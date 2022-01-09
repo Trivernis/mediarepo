@@ -234,11 +234,9 @@ impl FilesNamespace {
 
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(request.id, &repo).await?;
-        let mut reader = file.get_reader().await?;
-        let mut buf = Vec::new();
-        reader.read_to_end(&mut buf).await?;
+        let bytes = repo.get_file_bytes(&file).await?;
 
-        ctx.emit_to(Self::name(), "read_file", BytePayload::new(buf))
+        ctx.emit_to(Self::name(), "read_file", BytePayload::new(bytes))
             .await?;
 
         Ok(())

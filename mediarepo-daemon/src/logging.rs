@@ -3,11 +3,12 @@ use rolling_file::RollingConditionBasic;
 use std::fs;
 use std::path::PathBuf;
 
+use mediarepo_core::settings::LoggingSettings;
 use tracing::Level;
 use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_flame::FlameLayer;
 use tracing_log::LogTracer;
-use tracing_subscriber::filter::{self};
+use tracing_subscriber::filter::{self, Targets};
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -19,7 +20,7 @@ use tracing_subscriber::{
 #[allow(dyn_drop)]
 pub type DropGuard = Box<dyn Drop>;
 
-pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
+pub fn init_tracing(repo_path: &PathBuf, log_cfg: &LoggingSettings) -> Vec<DropGuard> {
     LogTracer::init().expect("failed to subscribe to log entries");
     let log_path = repo_path.join("logs");
     let mut guards = Vec::new();
@@ -54,12 +55,7 @@ pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
         .pretty()
         .with_ansi(false)
         .with_span_events(FmtSpan::NONE)
-        .with_filter(
-            filter::Targets::new()
-                .with_target("sqlx", Level::WARN)
-                .with_target("sea_orm", Level::TRACE)
-                .with_target("mediarepo_database", Level::TRACE),
-        );
+        .with_filter(get_sql_targets(log_cfg.trace_sql));
 
     let (bromine_writer, guard) = get_bromine_log_writer(&log_path);
     guards.push(Box::new(guard) as DropGuard);
@@ -69,7 +65,7 @@ pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
         .pretty()
         .with_ansi(false)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
-        .with_filter(filter::Targets::new().with_target("bromine", Level::DEBUG));
+        .with_filter(get_bromine_targets(log_cfg.trace_api_calls));
 
     let (app_log_writer, guard) = get_application_log_writer(&log_path);
     guards.push(Box::new(guard) as DropGuard);
@@ -79,16 +75,7 @@ pub fn init_tracing(repo_path: &PathBuf) -> Vec<DropGuard> {
         .pretty()
         .with_ansi(false)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
-        .with_filter(
-            filter::Targets::new()
-                .with_target("bromine", Level::WARN)
-                .with_target("sqlx", Level::WARN)
-                .with_target("sea_orm", Level::INFO)
-                .with_target("tokio", Level::WARN)
-                .with_target("console_subscriber", Level::INFO)
-                .with_target("h2", Level::INFO)
-                .with_default(Level::DEBUG),
-        );
+        .with_filter(get_app_targets(log_cfg.level.clone().into()));
 
     let registry = Registry::default()
         .with(stdout_layer)
@@ -142,6 +129,36 @@ fn get_application_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) 
         )
         .expect("failed to create repo log file"),
     )
+}
+
+fn get_app_targets(level: Option<Level>) -> Targets {
+    filter::Targets::new()
+        .with_target("bromine", Level::WARN)
+        .with_target("sqlx", Level::WARN)
+        .with_target("sea_orm", Level::WARN)
+        .with_target("tokio", Level::WARN)
+        .with_target("console_subscriber", Level::ERROR)
+        .with_target("h2", Level::WARN)
+        .with_default(level)
+}
+
+fn get_sql_targets(trace_sql: bool) -> Targets {
+    if trace_sql {
+        filter::Targets::new()
+            .with_target("sqlx", Level::WARN)
+            .with_target("sea_orm", Level::TRACE)
+            .with_target("mediarepo_database", Level::TRACE)
+    } else {
+        filter::Targets::new().with_default(None)
+    }
+}
+
+fn get_bromine_targets(trace_bromine: bool) -> Targets {
+    if trace_bromine {
+        filter::Targets::new().with_target("bromine", Level::DEBUG)
+    } else {
+        filter::Targets::new().with_default(None)
+    }
 }
 
 pub fn init_tracing_flame() -> DropGuard {

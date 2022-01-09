@@ -5,5 +5,4 @@ pub mod file;
 pub mod file_metadata;
 pub mod namespace;
 pub mod source;
-pub mod storage;
 pub mod tag;

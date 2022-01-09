@@ -52,7 +52,7 @@ pub async fn calculate_size(size_type: &SizeType, ctx: &Context) -> RepoResult<u
         SizeType::FileFolder => repo.get_main_store_size().await?,
         SizeType::ThumbFolder => repo.get_thumb_store_size().await?,
         SizeType::DatabaseFile => {
-            let db_path = repo_path.join(settings.database_path);
+            let db_path = settings.paths.db_file_path(&repo_path);
 
             let database_metadata = fs::metadata(db_path).await?;
             database_metadata.len()

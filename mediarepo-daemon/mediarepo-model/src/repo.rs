@@ -2,12 +2,12 @@ use crate::content_descriptor::ContentDescriptor;
 use crate::file::File;
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
-use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
 use mediarepo_core::content_descriptor::{encode_content_descriptor, is_v1_content_descriptor};
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
@@ -27,68 +27,37 @@ use tokio::io::AsyncReadExt;
 #[derive(Clone)]
 pub struct Repo {
     db: DatabaseConnection,
-    main_storage: Option<Storage>,
-    thumbnail_storage: Option<ThumbnailStore>,
+    main_storage: FileHashStore,
+    thumbnail_storage: ThumbnailStore,
 }
 
 impl Repo {
-    pub(crate) fn new(db: DatabaseConnection) -> Self {
+    pub(crate) fn new(
+        db: DatabaseConnection,
+        file_store_path: PathBuf,
+        thumb_store_path: PathBuf,
+    ) -> Self {
         Self {
             db,
-            main_storage: None,
-            thumbnail_storage: None,
+            main_storage: FileHashStore::new(file_store_path),
+            thumbnail_storage: ThumbnailStore::new(thumb_store_path),
         }
     }
 
     /// Connects to the database with the given uri
     #[tracing::instrument(level = "debug")]
-    pub async fn connect<S: AsRef<str> + Debug>(uri: S) -> RepoResult<Self> {
+    pub async fn connect<S: AsRef<str> + Debug>(
+        uri: S,
+        file_store_path: PathBuf,
+        thumb_store_path: PathBuf,
+    ) -> RepoResult<Self> {
         let db = get_database(uri).await?;
-        Ok(Self::new(db))
+        Ok(Self::new(db, file_store_path, thumb_store_path))
     }
 
     /// Returns the database of the repo for raw sql queries
     pub fn db(&self) -> &DatabaseConnection {
         &self.db
-    }
-
-    /// Returns all available storages
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn storages(&self) -> RepoResult<Vec<Storage>> {
-        Storage::all(self.db.clone()).await
-    }
-
-    /// Returns a storage by path
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn storage_by_path<S: ToString + Debug>(
-        &self,
-        path: S,
-    ) -> RepoResult<Option<Storage>> {
-        Storage::by_path(self.db.clone(), path).await
-    }
-
-    /// Sets the main storage
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_main_storage<S: ToString + Debug>(&mut self, name: S) -> RepoResult<()> {
-        self.main_storage = Storage::by_name(self.db.clone(), name.to_string()).await?;
-        Ok(())
-    }
-
-    /// Sets the default thumbnail storage
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_thumbnail_storage(&mut self, path: PathBuf) -> RepoResult<()> {
-        self.thumbnail_storage = Some(ThumbnailStore::new(path));
-        Ok(())
-    }
-
-    /// Adds a storage to the repository
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn add_storage<S1: ToString + Debug, S2: ToString + Debug>(
-        &self,
-        name: S1,
-        path: S2,
-    ) -> RepoResult<Storage> {
-        Storage::create(self.db.clone(), name, path).await
     }
 
     /// Returns a file by its mapped hash
@@ -145,17 +114,17 @@ impl Repo {
         creation_time: NaiveDateTime,
         change_time: NaiveDateTime,
     ) -> RepoResult<File> {
-        let storage = self.get_main_storage()?;
         let file_size = content.len();
         let reader = Cursor::new(content);
-        let hash = storage.store_entry(reader).await?;
+        let cd_binary = self.main_storage.add_file(reader, None).await?;
+        let cd = ContentDescriptor::add(self.db.clone(), cd_binary).await?;
 
         let mime_type = mime_type
             .and_then(|m| mime::Mime::from_str(&m).ok())
             .unwrap_or_else(|| mime::APPLICATION_OCTET_STREAM)
             .to_string();
 
-        let file = File::add(self.db.clone(), storage.id(), hash.id(), mime_type).await?;
+        let file = File::add(self.db.clone(), cd.id(), mime_type).await?;
         FileMetadata::add(
             self.db.clone(),
             file.id(),
@@ -188,9 +157,9 @@ impl Repo {
 
     /// Returns all thumbnails of a file
     pub async fn get_file_thumbnails(&self, file_cd: &[u8]) -> RepoResult<Vec<Thumbnail>> {
-        let thumb_store = self.get_thumbnail_storage()?;
         let file_cd = encode_content_descriptor(file_cd);
-        let thumbnails = thumb_store
+        let thumbnails = self
+            .thumbnail_storage
             .get_thumbnails(&file_cd)
             .await?
             .into_iter()
@@ -205,18 +174,25 @@ impl Repo {
         Ok(thumbnails)
     }
 
+    pub async fn get_file_bytes(&self, file: &File) -> RepoResult<Vec<u8>> {
+        let mut buf = Vec::new();
+        let mut reader = file.get_reader(&self.main_storage).await?;
+        reader.read_to_end(&mut buf).await?;
+
+        Ok(buf)
+    }
+
     /// Creates thumbnails of all sizes for a file
     #[tracing::instrument(level = "debug", skip(self, file))]
     pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<Vec<Thumbnail>> {
-        let thumb_storage = self.get_thumbnail_storage()?;
         let size = ThumbnailSize::Medium;
         let (height, width) = size.dimensions();
-        let thumbs = file.create_thumbnail([size]).await?;
+        let thumbs = file.create_thumbnail(&self.main_storage, [size]).await?;
         let mut created_thumbs = Vec::with_capacity(1);
 
         for thumb in thumbs {
             let entry = self
-                .store_single_thumbnail(file.encoded_cd(), thumb_storage, height, width, thumb)
+                .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
                 .await?;
             created_thumbs.push(entry);
         }
@@ -230,15 +206,14 @@ impl Repo {
         file: &File,
         size: ThumbnailSize,
     ) -> RepoResult<Thumbnail> {
-        let thumb_storage = self.get_thumbnail_storage()?;
         let (height, width) = size.dimensions();
         let thumb = file
-            .create_thumbnail([size])
+            .create_thumbnail(&self.main_storage, [size])
             .await?
             .pop()
             .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
         let thumbnail = self
-            .store_single_thumbnail(file.encoded_cd(), thumb_storage, height, width, thumb)
+            .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
             .await?;
 
         Ok(thumbnail)
@@ -248,7 +223,6 @@ impl Repo {
     async fn store_single_thumbnail(
         &self,
         file_hash: String,
-        thumb_storage: &ThumbnailStore,
         height: u32,
         width: u32,
         thumb: mediarepo_core::thumbnailer::Thumbnail,
@@ -256,7 +230,8 @@ impl Repo {
         let mut buf = Vec::new();
         thumb.write_png(&mut buf)?;
         let size = Dimensions { height, width };
-        let path = thumb_storage
+        let path = self
+            .thumbnail_storage
             .add_thumbnail(&file_hash, size.clone(), &buf)
             .await?;
 
@@ -395,16 +370,14 @@ impl Repo {
     #[inline]
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_main_store_size(&self) -> RepoResult<u64> {
-        let main_storage = self.get_main_storage()?;
-        main_storage.get_size().await
+        self.main_storage.get_size().await
     }
 
     /// Returns the size of the thumbnail storage
     #[inline]
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_thumb_store_size(&self) -> RepoResult<u64> {
-        let thumb_storage = self.get_thumbnail_storage()?;
-        thumb_storage.get_size().await
+        self.thumbnail_storage.get_size().await
     }
 
     /// Returns all entity counts
@@ -419,16 +392,14 @@ impl Repo {
 
         tracing::info!("Converting content descriptors to v2 format...");
         let mut converted_count = 0;
-        let thumb_store = self.get_thumbnail_storage()?;
-        let file_store = self.get_main_storage()?;
 
         for mut cd in cds {
             if is_v1_content_descriptor(cd.descriptor()) {
                 let src_cd = cd.descriptor().to_owned();
                 cd.convert_v1_to_v2().await?;
                 let dst_cd = cd.descriptor().to_owned();
-                file_store.rename_entry(&src_cd, &dst_cd).await?;
-                thumb_store
+                self.main_storage.rename_file(&src_cd, &dst_cd).await?;
+                self.thumbnail_storage
                     .rename_parent(
                         encode_content_descriptor(&src_cd),
                         encode_content_descriptor(&dst_cd),
@@ -440,24 +411,6 @@ impl Repo {
         tracing::info!("Converted {} descriptors", converted_count);
 
         Ok(())
-    }
-
-    #[tracing::instrument(level = "trace", skip(self))]
-    fn get_main_storage(&self) -> RepoResult<&Storage> {
-        if let Some(storage) = &self.main_storage {
-            Ok(storage)
-        } else {
-            Err(RepoError::from("No main storage configured."))
-        }
-    }
-
-    #[tracing::instrument(level = "trace", skip(self))]
-    fn get_thumbnail_storage(&self) -> RepoResult<&ThumbnailStore> {
-        if let Some(storage) = &self.thumbnail_storage {
-            Ok(storage)
-        } else {
-            Err(RepoError::from("No thumbnail storage configured."))
-        }
     }
 }
 

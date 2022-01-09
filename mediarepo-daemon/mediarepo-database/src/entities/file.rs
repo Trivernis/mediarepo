@@ -7,7 +7,6 @@ pub struct Model {
     pub id: i64,
     pub status: i32,
     pub mime_type: String,
-    pub storage_id: i64,
     pub cd_id: i64,
 }
 
@@ -19,24 +18,11 @@ pub enum Relation {
         to = "super::content_descriptor::Column::Id"
     )]
     ContentDescriptorId,
-
-    #[sea_orm(
-        belongs_to = "super::storage::Entity",
-        from = "Column::StorageId",
-        to = "super::storage::Column::Id"
-    )]
-    Storage,
 }
 
 impl Related<super::content_descriptor::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ContentDescriptorId.def()
-    }
-}
-
-impl Related<super::storage::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Storage.def()
     }
 }
 

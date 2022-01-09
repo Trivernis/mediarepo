@@ -1,11 +1,11 @@
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
-use mediarepo_core::settings::Settings;
+use mediarepo_core::settings::{PortSetting, Settings};
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 use mediarepo_model::repo::Repo;
 use mediarepo_model::type_keys::RepoKey;
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -17,14 +17,22 @@ mod utils;
 
 #[tracing::instrument(skip(settings, repo))]
 pub fn start_tcp_server(
-    ip: IpAddr,
-    port_range: (u16, u16),
     repo_path: PathBuf,
     settings: Settings,
     repo: Repo,
 ) -> RepoResult<(String, JoinHandle<()>)> {
-    let port = port_check::free_local_port_in_range(port_range.0, port_range.1)
-        .ok_or_else(|| RepoError::PortUnavailable)?;
+    let port = match &settings.server.tcp.port {
+        PortSetting::Fixed(p) => {
+            if port_check::is_local_port_free(*p) {
+                *p
+            } else {
+                return Err(RepoError::PortUnavailable);
+            }
+        }
+        PortSetting::Range((l, r)) => port_check::free_local_port_in_range(*l, *r)
+            .ok_or_else(|| RepoError::PortUnavailable)?,
+    };
+    let ip = settings.server.tcp.listen_address.to_owned();
     let address = SocketAddr::new(ip, port);
     let address_string = address.to_string();
 

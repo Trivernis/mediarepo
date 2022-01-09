@@ -11,6 +11,7 @@ use tokio::io::{AsyncReadExt, BufReader};
 
 use crate::file_metadata::FileMetadata;
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::thumbnailer::{self, Thumbnail as ThumbnailerThumb, ThumbnailSize};
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
@@ -18,7 +19,6 @@ use mediarepo_database::entities::file;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 
-use crate::storage::Storage;
 use crate::tag::Tag;
 
 pub enum FileStatus {
@@ -124,14 +124,12 @@ impl File {
     #[tracing::instrument(level = "debug", skip(db))]
     pub(crate) async fn add(
         db: DatabaseConnection,
-        storage_id: i64,
         cd_id: i64,
         mime_type: String,
     ) -> RepoResult<Self> {
         let file = file::ActiveModel {
             cd_id: Set(cd_id),
             mime_type: Set(mime_type),
-            storage_id: Set(storage_id),
             ..Default::default()
         };
         let file: file::ActiveModel = file.insert(&db).await?.into();
@@ -183,15 +181,6 @@ impl File {
         FileMetadata::by_id(self.db.clone(), self.model.id)
             .await
             .and_then(|f| f.ok_or_else(|| RepoError::from("missing file metadata")))
-    }
-
-    /// Returns the storage where the file is stored
-    pub async fn storage(&self) -> RepoResult<Storage> {
-        let storage = Storage::by_id(self.db.clone(), self.model.storage_id)
-            .await?
-            .expect("The FK storage_id doesn't exist?!");
-
-        Ok(storage)
     }
 
     /// Returns the list of tags of the file
@@ -266,22 +255,28 @@ impl File {
 
     /// Returns the reader for the file
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn get_reader(&self) -> RepoResult<BufReader<tokio::fs::File>> {
-        let storage = self.storage().await?;
-
+    pub async fn get_reader(
+        &self,
+        storage: &FileHashStore,
+    ) -> RepoResult<BufReader<tokio::fs::File>> {
         storage
-            .get_file_reader(&self.content_descriptor.descriptor)
+            .get_file(&self.content_descriptor.descriptor)
             .await
+            .map(|(_, f)| f)
     }
 
     /// Creates a thumbnail for the file
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_thumbnail<I: IntoIterator<Item = ThumbnailSize> + Debug>(
         &self,
+        storage: &FileHashStore,
         sizes: I,
     ) -> RepoResult<Vec<ThumbnailerThumb>> {
         let mut buf = Vec::new();
-        self.get_reader().await?.read_to_end(&mut buf).await?;
+        self.get_reader(storage)
+            .await?
+            .read_to_end(&mut buf)
+            .await?;
         let mime_type = self.model.mime_type.clone();
         let mime_type =
             mime::Mime::from_str(&mime_type).unwrap_or_else(|_| mime::APPLICATION_OCTET_STREAM);
