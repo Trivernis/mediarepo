@@ -144,6 +144,8 @@ pub async fn close_local_repository(
             if let Err(e) = api.shutdown_daemon().await {
                 tracing::error!("failed to ask the daemon to shut down daemon {:?}", e);
             }
+            // allow the repository to gracefully stop within 1 second
+            tokio::time::sleep(Duration::from_secs(1)).await;
         }
         app_state.stop_running_daemon(&path).await?;
     }
