@@ -140,6 +140,11 @@ pub async fn close_local_repository(
     let mut active_repo = app_state.active_repo.write().await;
 
     if let Some(path) = mem::take(&mut *active_repo).and_then(|r| r.path) {
+        if let Ok(api) = api_state.api().await {
+            if let Err(e) = api.shutdown_daemon().await {
+                tracing::error!("failed to ask the daemon to shut down daemon {:?}", e);
+            }
+        }
         app_state.stop_running_daemon(&path).await?;
     }
     api_state.disconnect().await;

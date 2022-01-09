@@ -111,9 +111,22 @@ impl ApiClient {
         Ok(res.payload::<InfoResponse>()?)
     }
 
+    /// Shuts down the daemon that the client is connected to.
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn shutdown_daemon(&self) -> ApiResult<()> {
+        self.ctx
+            .acquire()
+            .emit("shutdown", ())
+            .await_reply()
+            .with_timeout(Duration::from_secs(5))
+            .await?;
+        Ok(())
+    }
+
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn exit(self) -> ApiResult<()> {
         let ctx = (*self.ctx.acquire()).clone();
+
         ctx.stop().await?;
         Ok(())
     }
