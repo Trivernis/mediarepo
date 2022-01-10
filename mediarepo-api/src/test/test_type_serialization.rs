@@ -1,6 +1,6 @@
 use crate::types::files::GetFileThumbnailOfSizeRequest;
 use crate::types::filtering::{
-    FilterExpression, SortDirection, SortKey, TagQuery, ValueComparator,
+    FilterExpression, FilterQuery, SortDirection, SortKey, TagQuery, ValueComparator,
 };
 use crate::types::identifier::FileIdentifier;
 use bromine::payload::DynamicSerializer;
@@ -35,10 +35,10 @@ fn it_serializes_tag_queries() {
 
 #[test]
 fn it_serializes_filter_expressions() {
-    test_serialization(FilterExpression::Query(TagQuery {
+    test_serialization(FilterExpression::Query(FilterQuery::Tag(TagQuery {
         tag: String::from("World"),
         negate: false,
-    }))
+    })))
     .unwrap();
 }
 
