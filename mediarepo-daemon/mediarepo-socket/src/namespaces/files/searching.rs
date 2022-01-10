@@ -10,6 +10,7 @@ use mediarepo_model::file::{File, FileStatus};
 use mediarepo_model::repo::Repo;
 use std::collections::HashMap;
 
+#[tracing::instrument(level = "debug", skip(repo))]
 pub async fn find_files_for_filters(
     repo: &Repo,
     expressions: Vec<FilterExpression>,
@@ -21,6 +22,7 @@ pub async fn find_files_for_filters(
     repo.find_files_by_filters(filters).await
 }
 
+#[tracing::instrument(level = "debug")]
 fn get_tag_names_from_expressions(expressions: &Vec<FilterExpression>) -> Vec<String> {
     expressions
         .iter()
@@ -44,6 +46,7 @@ fn get_tag_names_from_expressions(expressions: &Vec<FilterExpression>) -> Vec<St
         .collect::<Vec<String>>()
 }
 
+#[tracing::instrument(level = "debug")]
 fn build_filters_from_expressions(
     expressions: Vec<FilterExpression>,
     tag_id_map: &HashMap<String, i64>,

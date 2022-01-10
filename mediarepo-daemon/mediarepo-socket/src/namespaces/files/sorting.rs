@@ -24,6 +24,7 @@ pub struct FileSortContext {
     change_time: NaiveDateTime,
 }
 
+#[tracing::instrument(level = "debug", skip(repo, files))]
 pub async fn sort_files_by_properties(
     repo: &Repo,
     sort_expression: Vec<SortKey>,

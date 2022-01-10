@@ -53,6 +53,7 @@ pub enum NegatableComparator<T> {
     IsNot(T),
 }
 
+#[tracing::instrument(level = "debug")]
 pub fn build_find_filter_conditions(filters: Vec<Vec<FilterProperty>>) -> Condition {
     filters
         .into_iter()
