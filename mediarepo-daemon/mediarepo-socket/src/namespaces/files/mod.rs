@@ -2,8 +2,9 @@ mod searching;
 mod sorting;
 
 use crate::from_model::FromModel;
+use crate::namespaces::files::searching::find_files_for_filters;
+use crate::namespaces::files::sorting::sort_files_by_properties;
 use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
-use chrono::NaiveDateTime;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::fs::thumbnail_store::Dimensions;
 use mediarepo_core::itertools::Itertools;
@@ -12,30 +13,13 @@ use mediarepo_core::mediarepo_api::types::files::{
     GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest,
     ThumbnailMetadataResponse, UpdateFileNameRequest,
 };
-use mediarepo_core::mediarepo_api::types::filtering::{FilterExpression, FindFilesRequest};
+use mediarepo_core::mediarepo_api::types::filtering::FindFilesRequest;
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
-use mediarepo_database::queries::tags::{
-    get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
-};
-use mediarepo_model::file_metadata::FileMetadata;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use std::collections::HashMap;
-use std::iter::FromIterator;
 use tokio::io::AsyncReadExt;
 
 pub struct FilesNamespace;
-pub struct FileSortContext {
-    name: Option<String>,
-    size: u64,
-    mime_type: String,
-    namespaces: HashMap<String, Vec<String>>,
-    tag_count: u32,
-    import_time: NaiveDateTime,
-    create_time: NaiveDateTime,
-    change_time: NaiveDateTime,
-}
 
 impl NamespaceProvider for FilesNamespace {
     fn name() -> &'static str {
@@ -130,61 +114,8 @@ impl FilesNamespace {
         let req = event.payload::<FindFilesRequest>()?;
         let repo = get_repo_from_context(ctx).await;
 
-        let tags = req
-            .filters
-            .into_iter()
-            .map(|e| match e {
-                FilterExpression::OrExpression(tags) => {
-                    tags.into_iter().map(|t| (t.tag, t.negate)).collect_vec()
-                }
-                FilterExpression::Query(tag) => {
-                    vec![(tag.tag, tag.negate)]
-                }
-            })
-            .collect();
-
-        let mut files = repo.find_files_by_tags(tags).await?;
-        let hash_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
-        let file_ids: Vec<i64> = files.par_iter().map(|f| f.id()).collect();
-
-        let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
-            get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
-        let mut cid_tag_counts =
-            get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
-
-        let files_metadata = repo.get_file_metadata_for_ids(file_ids).await?;
-        let mut file_metadata_map: HashMap<i64, FileMetadata> =
-            HashMap::from_iter(files_metadata.into_iter().map(|m| (m.file_id(), m)));
-
-        let mut contexts = HashMap::new();
-
-        for file in &files {
-            if let Some(metadata) = file_metadata_map.remove(&file.id()) {
-                let context = FileSortContext {
-                    name: metadata.name().to_owned(),
-                    size: metadata.size() as u64,
-                    mime_type: file.mime_type().to_owned(),
-                    namespaces: cid_nsp
-                        .remove(&file.cd_id())
-                        .unwrap_or(HashMap::with_capacity(0)),
-                    tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
-                    import_time: metadata.import_time().to_owned(),
-                    create_time: metadata.import_time().to_owned(),
-                    change_time: metadata.change_time().to_owned(),
-                };
-                contexts.insert(file.id(), context);
-            }
-        }
-        let sort_expression = req.sort_expression;
-        tracing::debug!("sort_expression = {:?}", sort_expression);
-
-        files.sort_by(|a, b| {
-            sorting::compare_files(
-                contexts.get(&a.id()).unwrap(),
-                contexts.get(&b.id()).unwrap(),
-                &sort_expression,
-            )
-        });
+        let mut files = find_files_for_filters(&repo, req.filters).await?;
+        sort_files_by_properties(&repo, req.sort_expression, &mut files).await?;
 
         let responses: Vec<FileBasicDataResponse> = files
             .into_iter()

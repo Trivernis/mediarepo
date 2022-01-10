@@ -1,4 +1,5 @@
 use crate::content_descriptor::ContentDescriptor;
+use crate::file::filter::FilterProperty;
 use crate::file::File;
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
@@ -80,23 +81,11 @@ impl Repo {
 
     /// Finds all files by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files_by_tags(
+    pub async fn find_files_by_filters(
         &self,
-        tags: Vec<Vec<(String, bool)>>,
+        filters: Vec<Vec<FilterProperty>>,
     ) -> RepoResult<Vec<File>> {
-        let parsed_tags = tags
-            .iter()
-            .flat_map(|e| e.into_iter().map(|t| parse_namespace_and_tag(t.0.clone())))
-            .unique()
-            .collect();
-
-        let db_tags = self.tags_by_names(parsed_tags).await?;
-        let tag_map: HashMap<String, i64> =
-            HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
-
-        let tag_ids = process_filters_with_tag_ids(tags, tag_map);
-
-        File::find_by_tags(self.db.clone(), tag_ids).await
+        File::find_by_filters(self.db.clone(), filters).await
     }
 
     /// Returns all file metadata entries for the given file ids
@@ -257,6 +246,22 @@ impl Repo {
         Namespace::all(self.db.clone()).await
     }
 
+    /// Converts a list of tag names to tag ids
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn tag_names_to_ids(&self, tags: Vec<String>) -> RepoResult<HashMap<String, i64>> {
+        let parsed_tags = tags
+            .iter()
+            .map(|tag| parse_namespace_and_tag(tag.clone()))
+            .unique()
+            .collect();
+
+        let db_tags = self.tags_by_names(parsed_tags).await?;
+        let tag_map: HashMap<String, i64> =
+            HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
+
+        Ok(tag_map)
+    }
+
     /// Finds all tags by name
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags_by_names(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
@@ -412,50 +417,4 @@ impl Repo {
 
         Ok(())
     }
-}
-
-fn process_filters_with_tag_ids(
-    filters: Vec<Vec<(String, bool)>>,
-    tag_ids: HashMap<String, i64>,
-) -> Vec<Vec<(i64, bool)>> {
-    let mut id_filters = Vec::new();
-
-    for expression in filters {
-        let mut id_sub_filters = Vec::new();
-        let mut negated_wildcard_filters = Vec::new();
-
-        for (tag, negate) in expression {
-            if tag.ends_with("*") {
-                let tag_prefix = tag.trim_end_matches('*');
-                let mut found_tag_ids = tag_ids
-                    .iter()
-                    .filter(|(k, _)| k.starts_with(tag_prefix))
-                    .map(|(_, id)| (*id, negate))
-                    .collect::<Vec<(i64, bool)>>();
-
-                if negate {
-                    negated_wildcard_filters.push(found_tag_ids)
-                } else {
-                    id_sub_filters.append(&mut found_tag_ids);
-                }
-            } else {
-                if let Some(id) = tag_ids.get(&tag) {
-                    id_sub_filters.push((*id, negate));
-                }
-            }
-        }
-        if !negated_wildcard_filters.is_empty() {
-            for wildcard_filter in negated_wildcard_filters {
-                for query in wildcard_filter {
-                    let mut sub_filters = id_sub_filters.clone();
-                    sub_filters.push(query);
-                    id_filters.push(sub_filters)
-                }
-            }
-        } else if !id_sub_filters.is_empty() {
-            id_filters.push(id_sub_filters);
-        }
-    }
-
-    id_filters
 }

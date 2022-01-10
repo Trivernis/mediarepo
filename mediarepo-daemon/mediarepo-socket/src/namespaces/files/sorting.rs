@@ -1,10 +1,88 @@
-use crate::namespaces::files::FileSortContext;
+use chrono::NaiveDateTime;
 use compare::Compare;
+use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::filtering::{SortDirection, SortKey};
+use mediarepo_database::queries::tags::{
+    get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
+};
+use mediarepo_model::file::File;
+use mediarepo_model::file_metadata::FileMetadata;
+use mediarepo_model::repo::Repo;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::iter::FromIterator;
+
+pub struct FileSortContext {
+    name: Option<String>,
+    size: u64,
+    mime_type: String,
+    namespaces: HashMap<String, Vec<String>>,
+    tag_count: u32,
+    import_time: NaiveDateTime,
+    create_time: NaiveDateTime,
+    change_time: NaiveDateTime,
+}
+
+pub async fn sort_files_by_properties(
+    repo: &Repo,
+    sort_expression: Vec<SortKey>,
+    files: &mut Vec<File>,
+) -> RepoResult<()> {
+    let contexts = build_sort_context(repo, files).await?;
+
+    files.sort_by(|a, b| {
+        compare_files(
+            contexts.get(&a.id()).unwrap(),
+            contexts.get(&b.id()).unwrap(),
+            &sort_expression,
+        )
+    });
+
+    Ok(())
+}
+
+async fn build_sort_context(
+    repo: &Repo,
+    files: &Vec<File>,
+) -> RepoResult<HashMap<i64, FileSortContext>> {
+    let hash_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
+    let file_ids: Vec<i64> = files.par_iter().map(|f| f.id()).collect();
+
+    let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
+        get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
+    let mut cid_tag_counts = get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
+
+    let files_metadata = repo.get_file_metadata_for_ids(file_ids).await?;
+
+    let mut file_metadata_map: HashMap<i64, FileMetadata> =
+        HashMap::from_iter(files_metadata.into_iter().map(|m| (m.file_id(), m)));
+
+    let mut contexts = HashMap::new();
+
+    for file in files {
+        if let Some(metadata) = file_metadata_map.remove(&file.id()) {
+            let context = FileSortContext {
+                name: metadata.name().to_owned(),
+                size: metadata.size() as u64,
+                mime_type: file.mime_type().to_owned(),
+                namespaces: cid_nsp
+                    .remove(&file.cd_id())
+                    .unwrap_or(HashMap::with_capacity(0)),
+                tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
+                import_time: metadata.import_time().to_owned(),
+                create_time: metadata.import_time().to_owned(),
+                change_time: metadata.change_time().to_owned(),
+            };
+            contexts.insert(file.id(), context);
+        }
+    }
+
+    Ok(contexts)
+}
 
 #[tracing::instrument(level = "trace", skip_all)]
-pub fn compare_files(
+fn compare_files(
     ctx_a: &FileSortContext,
     ctx_b: &FileSortContext,
     expression: &Vec<SortKey>,

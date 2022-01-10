@@ -1,14 +1,16 @@
+pub mod filter;
+
 use std::fmt::Debug;
 use std::io::Cursor;
 use std::str::FromStr;
 
 use mediarepo_core::content_descriptor::encode_content_descriptor;
 use sea_orm::prelude::*;
-use sea_orm::sea_query::{Expr, Query};
-use sea_orm::{Condition, DatabaseConnection, Set};
+use sea_orm::{DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::{AsyncReadExt, BufReader};
 
+use crate::file::filter::FilterProperty;
 use crate::file_metadata::FileMetadata;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::file_hash_store::FileHashStore;
@@ -99,11 +101,11 @@ impl File {
 
     /// Finds the file by tags
     #[tracing::instrument(level = "debug", skip(db))]
-    pub(crate) async fn find_by_tags(
+    pub(crate) async fn find_by_filters(
         db: DatabaseConnection,
-        tag_ids: Vec<Vec<(i64, bool)>>,
+        filters: Vec<Vec<FilterProperty>>,
     ) -> RepoResult<Vec<Self>> {
-        let main_condition = build_find_filter_conditions(tag_ids);
+        let main_condition = filter::build_find_filter_conditions(filters);
 
         let results: Vec<(content_descriptor::Model, Option<file::Model>)> =
             content_descriptor::Entity::find()
@@ -283,48 +285,5 @@ impl File {
         let thumbs = thumbnailer::create_thumbnails(Cursor::new(buf), mime_type, sizes)?;
 
         Ok(thumbs)
-    }
-}
-
-fn build_find_filter_conditions(tag_ids: Vec<Vec<(i64, bool)>>) -> Condition {
-    let mut main_condition = Condition::all();
-
-    for mut expression in tag_ids {
-        if expression.len() == 1 {
-            let (tag_id, negated) = expression.pop().unwrap();
-            main_condition = add_single_filter_expression(main_condition, tag_id, negated)
-        } else if !expression.is_empty() {
-            let mut sub_condition = Condition::any();
-
-            for (tag, negated) in expression {
-                sub_condition = add_single_filter_expression(sub_condition, tag, negated);
-            }
-            main_condition = main_condition.add(sub_condition);
-        }
-    }
-    main_condition
-}
-
-fn add_single_filter_expression(condition: Condition, tag_id: i64, negated: bool) -> Condition {
-    if negated {
-        condition.add(
-            content_descriptor::Column::Id.not_in_subquery(
-                Query::select()
-                    .expr(Expr::col(content_descriptor_tag::Column::CdId))
-                    .from(content_descriptor_tag::Entity)
-                    .cond_where(content_descriptor_tag::Column::TagId.eq(tag_id))
-                    .to_owned(),
-            ),
-        )
-    } else {
-        condition.add(
-            content_descriptor::Column::Id.in_subquery(
-                Query::select()
-                    .expr(Expr::col(content_descriptor_tag::Column::CdId))
-                    .from(content_descriptor_tag::Entity)
-                    .cond_where(content_descriptor_tag::Column::TagId.eq(tag_id))
-                    .to_owned(),
-            ),
-        )
     }
 }
