@@ -3,7 +3,7 @@ use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::file_metadata;
-use sea_orm::sea_query::{Alias, Expr, IntoColumnRef, Query, SimpleExpr};
+use sea_orm::sea_query::{Alias, Expr, Query, SimpleExpr};
 use sea_orm::ColumnTrait;
 use sea_orm::Condition;
 
@@ -135,25 +135,27 @@ fn build_content_descriptor_filter(filter: NegatableComparator<Vec<u8>>) -> Simp
 }
 
 fn build_tag_count_filter(filter: OrderingComparator<i64>) -> SimpleExpr {
-    let count_subquery = Query::select()
-        .expr(content_descriptor_tag::Column::TagId.count())
-        .from(content_descriptor_tag::Entity)
-        .group_by_col(content_descriptor_tag::Column::CdId)
-        .to_owned();
-    let count_column = Alias::new("count").into_column_ref();
+    let count_column = Alias::new("count");
+    let cd_id_column = Alias::new("cd_id");
 
-    let count_expression = match filter {
-        OrderingComparator::Less(count) => Expr::col(count_column).lt(count),
-        OrderingComparator::Equal(count) => Expr::col(count_column).eq(count),
-        OrderingComparator::Greater(count) => Expr::col(count_column).gt(count),
-        OrderingComparator::Between((min_count, max_count)) => {
-            Expr::col(count_column).between(min_count, max_count)
-        }
-    };
+    let count_subquery = Query::select()
+        .expr_as(
+            Expr::col(content_descriptor_tag::Column::CdId),
+            cd_id_column.clone(),
+        )
+        .expr_as(
+            content_descriptor_tag::Column::TagId.count(),
+            count_column.clone(),
+        )
+        .from(content_descriptor_tag::Entity)
+        .group_by_col(cd_id_column.clone())
+        .to_owned();
+
+    let count_expression = apply_ordering_comparator!(Expr::col(count_column), filter);
 
     content_descriptor::Column::Id.in_subquery(
         Query::select()
-            .expr(Expr::col(content_descriptor_tag::Column::CdId))
+            .expr(Expr::col(cd_id_column))
             .from_subquery(count_subquery, Alias::new("tag_counts"))
             .cond_where(count_expression)
             .to_owned(),
