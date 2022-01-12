@@ -12,7 +12,7 @@ import {TagService} from "../../../../../services/tag/tag.service";
 })
 export class SortDialogComponent {
 
-    public sortEntries: SortKey[] = []
+    public sortEntries: SortKey[] = [];
     public suggestedNamespaces: Namespace[] = [];
 
     private namespaces: Namespace[] = [];
@@ -22,6 +22,20 @@ export class SortDialogComponent {
         this.sortEntries = data.sortEntries;
         tagService.namespaces.subscribe(
             namespaces => this.namespaces = namespaces);
+    }
+
+    private static compareSuggestionNamespaces(query: string, l: string, r: string): number {
+        if (l.startsWith(query) && !r.startsWith(query)) {
+            return -1;
+        } else if (!l.startsWith(query) && r.startsWith(query)) {
+            return 1;
+        } else if (l.length < r.length) {
+            return -1;
+        } else if (l.length > r.length) {
+            return 1;
+        } else {
+            return l.localeCompare(r);
+        }
     }
 
     addNewSortKey() {
@@ -44,26 +58,13 @@ export class SortDialogComponent {
 
     public onSortEntryDrop(event: CdkDragDrop<SortKey[]>): void {
         moveItemInArray(this.sortEntries, event.previousIndex,
-            event.currentIndex);
+            event.currentIndex
+        );
     }
 
     public updateAutocompleteSuggestions(value: string): void {
         this.suggestedNamespaces = this.namespaces.sort(
             (a, b) => SortDialogComponent.compareSuggestionNamespaces(value, a.name, b.name))
             .slice(0, 50);
-    }
-
-    private static compareSuggestionNamespaces(query: string, l: string, r: string): number {
-        if (l.startsWith(query) && !r.startsWith(query)) {
-            return -1;
-        } else if (!l.startsWith(query) && r.startsWith(query)) {
-            return 1;
-        } else if (l.length < r.length) {
-            return -1;
-        } else if (l.length > r.length) {
-            return 1;
-        } else {
-            return l.localeCompare(r);
-        }
     }
 }

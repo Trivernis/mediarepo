@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {BusyDialogComponent} from "./busy-dialog.component";
+import {FilterExpressionItemComponent} from "./filter-expression-item.component";
 
-describe("BusyDialogComponent", () => {
-    let component: BusyDialogComponent;
-    let fixture: ComponentFixture<BusyDialogComponent>;
+describe("FilterItemComponent", () => {
+    let component: FilterExpressionItemComponent;
+    let fixture: ComponentFixture<FilterExpressionItemComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BusyDialogComponent]
+            declarations: [FilterExpressionItemComponent]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(BusyDialogComponent);
+        fixture = TestBed.createComponent(FilterExpressionItemComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {BusyDialogComponent} from "./busy-dialog.component";
+import {PropertyQueryItemComponent} from "./property-query-item.component";
 
-describe("BusyDialogComponent", () => {
-    let component: BusyDialogComponent;
-    let fixture: ComponentFixture<BusyDialogComponent>;
+describe("PropertyQueryItemComponent", () => {
+    let component: PropertyQueryItemComponent;
+    let fixture: ComponentFixture<PropertyQueryItemComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BusyDialogComponent]
+            declarations: [PropertyQueryItemComponent]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(BusyDialogComponent);
+        fixture = TestBed.createComponent(PropertyQueryItemComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

@@ -5,7 +5,7 @@ import {Injectable} from "@angular/core";
 })
 export class SchedulingService {
 
-    private workQueue: { [key: string]: {id: number, cancelled: boolean, cb: Function}[] } = {}
+    private workQueue: { [key: string]: { id: number, cancelled: boolean, cb: Function }[] } = {};
     private lastWorkId = 0;
 
     constructor() {
@@ -17,7 +17,7 @@ export class SchedulingService {
             setTimeout(() => this.startWork(key), 0); // start in the next tick
         }
         const id = this.lastWorkId++;
-        this.workQueue[key].push({id, cb, cancelled: false});
+        this.workQueue[key].push({ id, cb, cancelled: false });
         return id;
     }
 
@@ -26,6 +26,12 @@ export class SchedulingService {
         if (work) {
             work.cancelled = true;
         }
+    }
+
+    public async delay(time: number) {
+        return new Promise((res) => {
+            setTimeout(res, time);
+        });
     }
 
     private async startWork(key: string) {
@@ -46,11 +52,5 @@ export class SchedulingService {
             }
             await this.delay(1);
         }
-    }
-
-    public async delay(time: number) {
-        return new Promise((res) => {
-            setTimeout(res, time);
-        });
     }
 }

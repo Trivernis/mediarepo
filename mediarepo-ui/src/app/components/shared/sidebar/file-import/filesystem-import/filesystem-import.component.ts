@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Output} from "@angular/core";
 import {ImportService} from "../../../../../services/import/import.service";
-import {
-    ErrorBrokerService
-} from "../../../../../services/error-broker/error-broker.service";
+import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
 import {File} from "../../../../../../api/models/File";
 import {DialogFilter} from "@tauri-apps/api/dialog";
@@ -26,12 +24,12 @@ export class FilesystemImportComponent {
             name: "Images",
             extensions: ["png", "jpg", "jpeg", "webp", "bmp", "gif"]
         },
-        {name: "Videos", extensions: ["mp4", "mkv", "wmv", "avi", "webm"]},
-        {name: "Audio", extensions: ["mp3", "ogg", "wav", "flac", "aac"]},
-        {name: "Documents", extensions: ["pdf", "doc", "docx", "odf"]},
-        {name: "Text", extensions: ["txt", "md"]},
-        {name: "All", extensions: ["*"]}
-    ]
+        { name: "Videos", extensions: ["mp4", "mkv", "wmv", "avi", "webm"] },
+        { name: "Audio", extensions: ["mp3", "ogg", "wav", "flac", "aac"] },
+        { name: "Documents", extensions: ["pdf", "doc", "docx", "odf"] },
+        { name: "Text", extensions: ["txt", "md"] },
+        { name: "All", extensions: ["*"] }
+    ];
 
 
     public resolving = false;
@@ -61,8 +59,10 @@ export class FilesystemImportComponent {
 
         for (const file of this.files) {
             try {
-                const resultFile = await this.importService.addLocalFile(file,
-                    this.importOptions);
+                const resultFile = await this.importService.addLocalFile(
+                    file,
+                    this.importOptions
+                );
                 this.fileImported.emit(resultFile);
             } catch (err) {
                 console.log(err);

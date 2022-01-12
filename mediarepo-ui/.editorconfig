@@ -9,7 +9,26 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.ts]
-quote_type = double
+trim_trailing_whitespace = true
+charset = utf-8
+ij_typescript_align_multiline_chained_methods = true
+ij_typescript_force_quote_style = true
+ij_typescript_space_after_colon = true
+ij_typescript_space_after_comma = true
+ij_typescript_space_after_property_colon = true
+ij_typescript_space_after_type_colon = true
+ij_any_spaces_within_braces = true
+ij_typescript_spaces_within_object_type_braces = true
+ij_typescript_spaces_within_object_literal_braces = true
+ij_any_call_parameters_wrap = on_every_item
+ij_any_method_parameters_wrap = on_every_item
+ij_any_method_call_chain_wrap = on_every_item
+ij_typescript_method_parameters_wrap = on_every_item
+ij_any_call_parameters_new_line_after_left_paren = true
+ij_any_call_parameters_right_paren_on_new_line = true
+ij_any_method_parameters_new_line_after_left_paren = true
+ij_any_method_parameters_right_paren_on_new_line = true
+max_line_length = 120
 
 [*.md]
 max_line_length = off

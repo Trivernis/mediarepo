@@ -31,13 +31,13 @@ export class ErrorBrokerService {
         }
     }
 
-    showError(error: { message: string }) {
+    showError(error: { message: string } | any) {
         console.error(error);
         if (this.errorCb) {
             if (!error.message) {
-                this.errorCb({message: error});
+                this.errorCb({ message: error });
             } else {
-                this.errorCb({...error});
+                this.errorCb({ ...error });
             }
         }
     }

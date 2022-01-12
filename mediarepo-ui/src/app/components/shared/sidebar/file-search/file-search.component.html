@@ -4,8 +4,11 @@
         <div class="tag-input-list-and-actions">
             <div #tagInputList class="tag-input-list">
                 <div class="tag-input-list-inner">
-                    <div (click)="removeFilterExpression(filter)" *ngFor="let filter of filters" class="tag-input-item"
-                         mat-ripple>{{filter.getDisplayName()}}</div>
+                    <div (click)="removeFilterExpression(filter)" *ngFor="let filter of filters.getFilters()"
+                         class="tag-input-item"
+                         mat-ripple>
+                        <app-filter-expression-item [filter]="filter"></app-filter-expression-item>
+                    </div>
                 </div>
             </div>
 
@@ -14,7 +17,9 @@
             </button>
         </div>
 
-        <app-tag-input [allowWildcards]="true" (tagAdded)="addSearchTag($event); searchForFiles()" [allowNegation]="true"
+        <app-tag-input (tagAdded)="addSearchQuery($event); searchForFiles()" [allowInvalid]="true"
+                       [allowNegation]="true"
+                       [allowWildcards]="true"
                        [availableTags]="getValidSearchTags()"
                        class="full-width">
             <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>
@@ -33,9 +38,9 @@
 
     <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
 
-        <app-busy-indicator [busy]="this.tagsLoading" [blurBackground]="true" [darkenBackground]="false">
+        <app-busy-indicator [blurBackground]="true" [busy]="this.tagsLoading" [darkenBackground]="false">
             <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-                <div (click)="addSearchTag(tag.getNormalizedOutput())"
+                <div (click)="addSearchQuery(tag.getNormalizedOutput())"
                      (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
                      *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
                     <app-tag-item [tag]="tag"></app-tag-item>

@@ -37,7 +37,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     partitionedGridEntries: Selectable<File>[][] = [];
     private shiftClicked = false;
     private ctrlClicked = false;
-    private gridEntries: Selectable<File>[] = []
+    private gridEntries: Selectable<File>[] = [];
 
     constructor(
         private tabService: TabService,
@@ -102,6 +102,55 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         await this.fileService.deleteThumbnails(file);
     }
 
+    public focus() {
+        this.inner.nativeElement.focus();
+    }
+
+    public handleKeydownEvent(event: KeyboardEvent) {
+        this.shiftClicked ||= event.shiftKey;
+        this.ctrlClicked ||= event.ctrlKey;
+
+        switch (event.key) {
+            case "ArrowRight":
+                this.handleArrowSelect("right");
+                break;
+            case "ArrowLeft":
+                this.handleArrowSelect("left");
+                break;
+            case "ArrowDown":
+                this.handleArrowSelect("down");
+                break;
+            case "ArrowUp":
+                this.handleArrowSelect("up");
+                break;
+            case "PageDown":
+                this.pageDown();
+                break;
+            case "PageUp":
+                this.pageUp();
+                break;
+            case "a":
+            case "A":
+                if (this.shiftClicked && this.ctrlClicked) {
+                    this.selectNone();
+                } else if (this.ctrlClicked) {
+                    event.preventDefault();
+                    this.selectAll();
+                }
+                break;
+            case "Enter":
+                if (this.selectedEntries.length === 1) {
+                    this.fileOpenEvent.emit(this.selectedEntries[0].data);
+                }
+                break;
+        }
+    }
+
+    public handleKeyupEvent(event: KeyboardEvent) {
+        this.shiftClicked = event.shiftKey ? false : this.shiftClicked;
+        this.ctrlClicked = event.ctrlKey ? false : this.ctrlClicked;
+    }
+
     private setPartitionedGridEntries() {
         this.partitionedGridEntries = [];
         let scrollToIndex = -1;
@@ -109,8 +158,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
         for (let i = 0; i < (Math.ceil(
             this.gridEntries.length / this.columns)); i++) {
-            const entries = this.gridEntries.slice(i * this.columns,
-                Math.min(this.gridEntries.length, (i + 1) * this.columns));
+            const entries = this.gridEntries.slice(
+                i * this.columns,
+                Math.min(this.gridEntries.length, (i + 1) * this.columns)
+            );
             this.partitionedGridEntries.push(entries);
 
             const preselectedEntry = entries.find(
@@ -195,7 +246,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                     selectedIndex += this.columns;
                     break;
                 case "left":
-                    selectedIndex --;
+                    selectedIndex--;
                     break;
                 case "right":
                     selectedIndex++;
@@ -221,59 +272,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
                 offsetTop = this.virtualScroll.measureScrollOffset("top");
                 if (contentOffset < offsetTop + (viewportSize / 2)) {
-                    this.virtualScroll.scrollToOffset((offsetTop + 130) -  viewportSize/ 2);
+                    this.virtualScroll.scrollToOffset((offsetTop + 130) - viewportSize / 2);
                 }
             }
         }
-    }
-
-    public focus() {
-        this.inner.nativeElement.focus();
-    }
-
-    public handleKeydownEvent(event: KeyboardEvent) {
-        this.shiftClicked ||= event.shiftKey;
-        this.ctrlClicked ||= event.ctrlKey;
-
-        switch (event.key) {
-            case "ArrowRight":
-                this.handleArrowSelect("right");
-                break;
-            case "ArrowLeft":
-                this.handleArrowSelect("left");
-                break;
-            case "ArrowDown":
-                this.handleArrowSelect("down");
-                break;
-            case "ArrowUp":
-                this.handleArrowSelect("up");
-                break;
-            case "PageDown":
-                this.pageDown();
-                break;
-            case "PageUp":
-                this.pageUp();
-                break;
-            case "a":
-            case "A":
-                if (this.shiftClicked && this.ctrlClicked) {
-                    this.selectNone();
-                } else if (this.ctrlClicked) {
-                    event.preventDefault();
-                    this.selectAll();
-                }
-                break;
-            case "Enter":
-                if (this.selectedEntries.length === 1) {
-                    this.fileOpenEvent.emit(this.selectedEntries[0].data);
-                }
-                break;
-        }
-    }
-
-    public handleKeyupEvent(event: KeyboardEvent) {
-        this.shiftClicked = event.shiftKey? false : this.shiftClicked;
-        this.ctrlClicked = event.ctrlKey? false : this.ctrlClicked;
     }
 
     private pageDown() {

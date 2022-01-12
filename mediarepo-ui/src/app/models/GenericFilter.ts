@@ -66,7 +66,7 @@ export class OrFilterExpression implements GenericFilter {
     }
 
     public toBackendType(): FilterExpression {
-        return createRustEnum(this.filter_type, this.filter) as unknown as FilterExpression;
+        return createRustEnum(this.filter_type, createRustEnum("Tag", this.filter)) as unknown as FilterExpression;
     }
 }
 
@@ -100,6 +100,6 @@ export class SingleFilterExpression implements GenericFilter {
     }
 
     public toBackendType(): FilterExpression {
-        return createRustEnum(this.filter_type, this.filter) as unknown as FilterExpression;
+        return createRustEnum(this.filter_type, createRustEnum("Tag", this.filter)) as unknown as FilterExpression;
     }
 }

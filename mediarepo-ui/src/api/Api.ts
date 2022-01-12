@@ -25,12 +25,9 @@ import {
     StartDaemonRequest,
     UpdateFileNameRequest
 } from "./api-types/requests";
-import {
-    RepositoryData,
-    RepositoryMetadata,
-    SizeMetadata
-} from "./api-types/repo";
+import {RepositoryData, RepositoryMetadata, SizeMetadata} from "./api-types/repo";
 import {NamespaceData, TagData} from "./api-types/tags";
+import {ShortCache} from "./ShortCache";
 
 export class MediarepoApi {
 
@@ -99,7 +96,7 @@ export class MediarepoApi {
     }
 
     public static async findFiles(request: FindFilesRequest): Promise<FileBasicData[]> {
-        return this.invokePlugin(ApiFunction.FindFiles, request);
+        return ShortCache.cached(request, () => this.invokePlugin(ApiFunction.FindFiles, request), 5000, "findFiles");
     }
 
     public static async getFileMetadata(request: GetFileMetadataRequest): Promise<FileMetadata> {
@@ -123,7 +120,7 @@ export class MediarepoApi {
     }
 
     public static async getAllTags(): Promise<TagData[]> {
-        return this.invokePlugin(ApiFunction.GetAllTags);
+        return ShortCache.cached("all-tags", () => this.invokePlugin(ApiFunction.GetAllTags), 2000);
     }
 
     public static async getAllNamespaces(): Promise<NamespaceData[]> {
@@ -131,7 +128,12 @@ export class MediarepoApi {
     }
 
     public static async getTagsForFiles(request: GetTagsForFilesRequest): Promise<TagData[]> {
-        return this.invokePlugin(ApiFunction.GetTagsForFiles, request);
+        return ShortCache.cached(
+            request,
+            () => this.invokePlugin(ApiFunction.GetTagsForFiles, request),
+            1000,
+            "getTagsForFiles"
+        );
     }
 
     public static async createTags(request: CreateTagsRequest): Promise<TagData[]> {
@@ -151,7 +153,7 @@ export class MediarepoApi {
     }
 
     public static async getFrontendState(): Promise<string> {
-        return this.invokePlugin(ApiFunction.GetFrontendState);
+        return ShortCache.cached("frontend-state", () => this.invokePlugin(ApiFunction.GetFrontendState), 1000);
     }
 
     public static async setFrontendState(request: SetFrontendStateRequest): Promise<void> {

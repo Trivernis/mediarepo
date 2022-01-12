@@ -1,22 +1,14 @@
 import {AfterViewInit, Component, OnInit} from "@angular/core";
 import {Repository} from "../../../../api/models/Repository";
-import {
-    RepositoryService
-} from "../../../services/repository/repository.service";
+import {RepositoryService} from "../../../services/repository/repository.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {
-    DownloadDaemonDialogComponent
-} from "./download-daemon-dialog/download-daemon-dialog.component";
+import {DownloadDaemonDialogComponent} from "./download-daemon-dialog/download-daemon-dialog.component";
 import {
     AddRepositoryDialogComponent
 } from "../../shared/repository/repository/add-repository-dialog/add-repository-dialog.component";
-import {
-    ErrorBrokerService
-} from "../../../services/error-broker/error-broker.service";
+import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
 import {BehaviorSubject} from "rxjs";
-import {
-    BusyDialogComponent
-} from "../../shared/app-common/busy-dialog/busy-dialog.component";
+import {BusyDialogComponent} from "../../shared/app-common/busy-dialog/busy-dialog.component";
 import {JobService} from "../../../services/job/job.service";
 import {StateService} from "../../../services/state/state.service";
 
@@ -83,12 +75,28 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             await this.repoService.loadRepositories();
             await this.stateService.loadState();
             dialogContext.dialog.close(true);
-        } catch (err) {
+        } catch (err: any) {
             this.errorBroker.showError(err);
             dialogContext.message.next(
                 "Failed to open repository: " + err.toString());
             await this.forceCloseRepository();
             setTimeout(() => dialogContext!.dialog.close(true), 1000);
+        }
+    }
+
+    public openAddRepositoryDialog() {
+        this.dialog.open(AddRepositoryDialogComponent, {
+            disableClose: true,
+            minWidth: "30%",
+            minHeight: "30%",
+        });
+    }
+
+    public async onOpenRepository(repository: Repository) {
+        if (!repository.local) {
+            await this.selectRepository(repository);
+        } else {
+            await this.startDaemonAndSelectRepository(repository);
         }
     }
 
@@ -132,36 +140,22 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             }
         });
 
-        return {message: dialogMessage, dialog};
-    }
-
-    public openAddRepositoryDialog() {
-        this.dialog.open(AddRepositoryDialogComponent, {
-            disableClose: true,
-            minWidth: "30%",
-            minHeight: "30%",
-        });
+        return { message: dialogMessage, dialog };
     }
 
     private async checkAndPromptDaemonExecutable() {
         if (!await this.repoService.checkDameonConfigured()) {
-            const result = await this.dialog.open(DownloadDaemonDialogComponent,
+            const result = await this.dialog.open(
+                DownloadDaemonDialogComponent,
                 {
                     disableClose: true,
-                }).afterClosed().toPromise();
+                }
+            ).afterClosed().toPromise();
             if (result) {
                 // recursion avoidance
                 setTimeout(
                     async () => await this.checkAndPromptDaemonExecutable(), 0);
             }
-        }
-    }
-
-    public async onOpenRepository(repository: Repository) {
-        if (!repository.local) {
-            await this.selectRepository(repository);
-        } else {
-            await this.startDaemonAndSelectRepository(repository);
         }
     }
 }

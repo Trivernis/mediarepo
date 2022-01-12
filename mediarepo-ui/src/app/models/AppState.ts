@@ -5,28 +5,14 @@ import {TabCategory} from "./TabCategory";
 
 export class AppState {
 
-    private tabIdCounter = 0;
     public tabs = new BehaviorSubject<TabState[]>([]);
     public selectedTab = new BehaviorSubject<number | undefined>(undefined);
     public repoName: string | undefined;
-
-    private readonly fileService: FileService
+    private tabIdCounter = 0;
+    private readonly fileService: FileService;
 
     constructor(fileService: FileService) {
         this.fileService = fileService;
-    }
-
-    public addTab(category: TabCategory): TabState {
-        const state = new TabState(this.tabIdCounter++, category, this.fileService);
-        this.tabs.next([...this.tabs.value, state]);
-        return state;
-    }
-
-    public async closeTab(uuid: number) {
-        const index = this.tabs.value.findIndex(t => t.uuid === uuid);
-        const tabs = this.tabs.value;
-        tabs.splice(index, 1);
-        this.tabs.next(tabs);
     }
 
     public static deserializeJson(stateString: string, fileService: FileService): AppState {
@@ -40,6 +26,19 @@ export class AppState {
         appState.repoName = state.repoName;
 
         return appState;
+    }
+
+    public addTab(category: TabCategory): TabState {
+        const state = new TabState(this.tabIdCounter++, category, this.fileService);
+        this.tabs.next([...this.tabs.value, state]);
+        return state;
+    }
+
+    public async closeTab(uuid: number) {
+        const index = this.tabs.value.findIndex(t => t.uuid === uuid);
+        const tabs = this.tabs.value;
+        tabs.splice(index, 1);
+        this.tabs.next(tabs);
     }
 
     public serializeJson(): string {

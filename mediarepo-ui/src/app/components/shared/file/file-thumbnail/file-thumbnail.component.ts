@@ -1,10 +1,4 @@
-import {
-    AfterViewInit,
-    Component,
-    Input,
-    OnChanges,
-    SimpleChanges
-} from "@angular/core";
+import {AfterViewInit, Component, Input, OnChanges, SimpleChanges} from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
@@ -21,9 +15,9 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
 
     public thumbUrl: SafeResourceUrl | undefined;
 
-    private supportedThumbnailTypes = ["image", "video"]
+    private supportedThumbnailTypes = ["image", "video"];
 
-    constructor( private fileService: FileService) {
+    constructor(private fileService: FileService) {
     }
 
     public async ngAfterViewInit() {
@@ -33,7 +27,8 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
     public async ngOnChanges(changes: SimpleChanges) {
         if (changes["file"]) {
             this.thumbUrl = this.fileService.buildThumbnailUrl(this.file,
-                250, 250);
+                250, 250
+            );
         }
     }
 

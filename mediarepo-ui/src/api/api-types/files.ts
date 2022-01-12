@@ -1,11 +1,55 @@
-export type FilterExpression =
-    { OrExpression: TagQuery[] }
-    | { Query: TagQuery };
+export type FilterExpression = FilterExpressionOrExpression | FilterExpressionQuery;
+
+export type FilterExpressionOrExpression = {
+    OrExpression: FilterQuery[],
+};
+export type FilterExpressionQuery = {
+    Query: FilterQuery;
+};
+
+export type FilterQuery = FilterQueryTag | FilterQueryProperty;
+
+export type FilterQueryTag = { Tag: TagQuery };
+export type FilterQueryProperty = { Property: PropertyQuery };
 
 export type TagQuery = {
     negate: boolean,
     tag: string,
 };
+
+export type PropertyKeys =
+    "Status"
+    | "FileSize"
+    | "ImportedTime"
+    | "ChangedTime"
+    | "CreatedTime"
+    | "TagCount"
+    | "Cd"
+    | "Id";
+
+export type PropertyQuery = PropertyQueryStatus
+    | PropertyQueryFileSize
+    | PropertyQueryImportedTime
+    | PropertyQueryChangedTime
+    | PropertyQueryCreatedTime
+    | PropertyQueryTagCount
+    | PropertyQueryCd
+    | PropertyQueryId;
+
+export type PropertyQueryStatus = { Status: FileStatus };
+export type PropertyQueryFileSize = { FileSize: ValueComparator<number> };
+export type PropertyQueryImportedTime = { ImportedTime: ValueComparator<Date> };
+export type PropertyQueryChangedTime = { ChangedTime: ValueComparator<Date> };
+export type PropertyQueryCreatedTime = { CreatedTime: ValueComparator<Date> };
+export type PropertyQueryTagCount = { TagCount: ValueComparator<number> };
+export type PropertyQueryCd = { Cd: string };
+export type PropertyQueryId = { Id: number };
+
+export type ValueComparator<T> =
+    { Less: T }
+    | { Equal: T }
+    | { Greater: T }
+    | { Between: T[] }
 
 export type SortKey = { Namespace: SortNamespace }
     | { FileName: SortDirection }

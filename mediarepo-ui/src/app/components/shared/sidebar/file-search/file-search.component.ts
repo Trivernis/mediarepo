@@ -1,28 +1,15 @@
-import {
-    AfterViewChecked,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-    ViewChild
-} from "@angular/core";
-import {TagQuery} from "../../../../models/TagQuery";
+import {AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
 import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
-import {
-    ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
-import {
-    GenericFilter,
-    SingleFilterExpression
-} from "../../../../models/GenericFilter";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../../api/models/Tag";
 import {clipboard} from "@tauri-apps/api";
 import {TabState} from "../../../../models/TabState";
+import {FilterQueryBuilder} from "../../../../../api/models/FilterQueryBuilder";
+import {SearchFilters} from "../../../../../api/models/SearchFilters";
+import {FilterExpression} from "../../../../../api/api-types/files";
 
 
 @Component({
@@ -32,7 +19,7 @@ import {TabState} from "../../../../models/TabState";
 })
 export class FileSearchComponent implements AfterViewChecked, OnInit {
     public sortExpression: SortKey[] = [];
-    public filters: GenericFilter[] = [];
+    public filters: SearchFilters = new SearchFilters([]);
 
     @Input() availableTags: Tag[] = [];
     @Input() contextTags: Tag[] = [];
@@ -73,40 +60,43 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.searchEndEvent.emit();
     }
 
-    public addSearchTag(tag: string) {
-        this.filters.push(new SingleFilterExpression(TagQuery.fromString(tag)));
-        tag = tag.replace(/^-/g, "");
+    public addSearchQuery(queryStr: string) {
+        let filter = FilterQueryBuilder.buildFilterFromString(queryStr);
 
-        if (this.filters.filter(t => t.partiallyEq(tag)).length > 1) {
-            const index = this.filters.findIndex(t => t.partiallyEq(tag));
-            this.filters.splice(index, 1);
+        if (filter) {
+            this.filters.removeFilter({ Query: filter });
+            this.filters.appendFilter(filter);
         }
-        this.state.setFilters(this.filters);
+
+        queryStr = queryStr.replace(/^-/g, "");
+        this.state.setTagFilters(this.filters);
     }
 
     public getValidSearchTags(): Tag[] {
-        return this.availableTags.filter(t => this.filters.findIndex(
-            f => f.partiallyEq(t.getNormalizedOutput())) < 0);
+        return this.availableTags.filter(t => !this.filters.hasFilter({
+            Query: FilterQueryBuilder.tag(
+                t.getNormalizedOutput(),
+                false
+            )
+        }));
     }
 
     public async removeAllSearchTags() {
-        this.filters = [];
-        this.state.setFilters([]);
+        this.filters = new SearchFilters([]);
+        this.state.setTagFilters(this.filters);
     }
 
-    public async removeFilterExpression(expr: GenericFilter) {
-        const index = this.filters.indexOf(expr);
-        if (index >= 0) {
-            this.filters.splice(index, 1);
-        }
-        this.state.setFilters(this.filters);
+    public async removeFilterExpression(expr: FilterExpression) {
+        this.filters.removeFilter(expr);
+        this.state.setTagFilters(this.filters);
     }
 
     public openSortDialog() {
         const sortEntries = this.sortExpression.map(
             key => JSON.parse(JSON.stringify(key))).map(
             key => new SortKey(key.sortType, key.sortDirection,
-                key.namespaceName));
+                key.namespaceName
+            ));
         const openedDialog = this.dialog.open(SortDialogComponent, {
             minWidth: "40vw",
             data: {
@@ -123,7 +113,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     }
 
     public openFilterDialog(): void {
-        const filterEntries = this.filters.map(f => f.clone());
+        const filterEntries = this.filters;
         const filterDialog = this.dialog.open(FilterDialogComponent, {
             minWidth: "25vw",
             maxHeight: "80vh",
@@ -136,7 +126,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         filterDialog.afterClosed().subscribe(async (filterExpression) => {
             if (filterExpression !== undefined || filterExpression?.length > 0) {
                 this.filters = filterExpression;
-                this.state.setFilters(this.filters);
+                this.state.setTagFilters(this.filters);
             }
         });
     }
