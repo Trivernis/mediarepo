@@ -167,9 +167,25 @@ export class FilterInputComponent implements OnChanges {
         }
 
         if (validComparators.length == 1) {
-            return validProperties.map(p => validComparators.map(c => this.propertyQueriesWithValues[p].map(v => `${p} ${c} ${v ?? value}`.trim())).flat()).flat();
+            return validProperties.map(p => validComparators.filter(c => this.filterComparatorsForProperty(
+                c,
+                p
+            )).map(c => this.propertyQueriesWithValues[p].map(v => `${p} ${c} ${v ?? value}`.trim())).flat()).flat();
         } else {
-            return validProperties.map(p => validComparators.map(c => `${p} ${c} ${value}`.trim())).flat();
+            return validProperties.map(p => validComparators.filter((c) => this.filterComparatorsForProperty(c, p)).map(
+                c => `${p} ${c} ${value}`.trim())).flat();
+        }
+    }
+
+    private filterComparatorsForProperty(comparator: string, property: string): boolean {
+        console.log(comparator, property);
+        switch (property) {
+            case ".status":
+            case ".fileId":
+            case ".contentDescriptor":
+                return comparator === "=";
+            default:
+                return true;
         }
     }
 }

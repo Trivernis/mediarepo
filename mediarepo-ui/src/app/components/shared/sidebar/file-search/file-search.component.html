@@ -1,6 +1,13 @@
 <div class="search-tab-inner" fxLayout="column">
     <div id="file-search-input">
-
+        <div class="status-selector">
+            <mat-checkbox (change)="this.setDisplayImported($event)" [checked]="this.displayImported">Imported
+            </mat-checkbox>
+            <mat-checkbox (change)="this.setDisplayArchived($event)" [checked]="this.displayArchived">Archived
+            </mat-checkbox>
+            <mat-checkbox (change)="this.setDisplayDeleted($event)" [checked]="this.displayDeleted">Deleted
+            </mat-checkbox>
+        </div>
         <div class="tag-input-list-and-actions">
             <div #tagInputList class="tag-input-list">
                 <div class="tag-input-list-inner">

@@ -27,16 +27,26 @@ export class SearchFilters {
         return !!this.filters.find(f => deepEqual(f, expression));
     }
 
+    public hasSubfilter(query: FilterQuery): boolean {
+        return !!this.filters.find(f => {
+            if ("OrExpression" in f) {
+                return !!f.OrExpression.find(q => deepEqual(q, query));
+            } else {
+                return deepEqual(f.Query, query);
+            }
+        });
+    }
+
     public addFilterExpression(filter: FilterExpression) {
         this.filters.push(filter);
         this.processChangesToOrExpressions();
     }
 
-    public addFilter(filter: FilterQuery, index: number) {
+    public addFilter(filter: FilterExpression, index: number) {
         this.filters = [...this.filters.slice(
             0,
             index
-        ), { Query: filter }, ...this.filters.slice(index)];
+        ), filter, ...this.filters.slice(index)];
     }
 
     public appendFilter(filter: FilterQuery) {
@@ -59,7 +69,7 @@ export class SearchFilters {
         } else {
             const otherQuery = expressionEntry["Query"]!;
             let entry = expressionEntry as unknown as { OrExpression: FilterQuery[], Query: undefined };
-            entry["Query"] = undefined;
+            delete entry["Query"];
             entry["OrExpression"] = [otherQuery, filter];
         }
     }
@@ -70,10 +80,12 @@ export class SearchFilters {
                 return false;
             } else {
                 f["OrExpression"] = f["OrExpression"]!.filter(q => !deepEqual(q, queryToRemove));
-                return (f["OrExpression"]!.length === 0);
+                return (!f["OrExpression"] || f["OrExpression"]!.length === 0);
             }
         });
-        this.filters.splice(index);
+        if (index >= 0) {
+            this.filters.splice(index, 1);
+        }
         this.processChangesToOrExpressions();
     }
 
@@ -94,13 +106,13 @@ export class SearchFilters {
         const filters_to_remove: FilterExpression[] = [];
 
         for (const filter of this.filters) {
-            if ("OrExpression" in filter) {
-                if (filter.OrExpression.length === 1) {
+            if ("OrExpression" in filter && !("Query" in filter)) {
+                if (filter.OrExpression && filter.OrExpression.length === 1) {
                     const query = filter.OrExpression[0];
                     let newFilter = filter as unknown as FilterExpressionQuery & { OrExpression: undefined };
-                    newFilter["OrExpression"] = undefined;
+                    delete newFilter["OrExpression"];
                     newFilter.Query = query;
-                } else if (filter.OrExpression.length === 0) {
+                } else if (!filter.OrExpression || filter.OrExpression.length === 0) {
                     filters_to_remove.push(filter);
                 }
             }

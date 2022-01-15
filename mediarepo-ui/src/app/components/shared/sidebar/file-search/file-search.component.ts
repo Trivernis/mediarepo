@@ -9,8 +9,9 @@ import {clipboard} from "@tauri-apps/api";
 import {TabState} from "../../../../models/TabState";
 import {FilterQueryBuilder} from "../../../../../api/models/FilterQueryBuilder";
 import {SearchFilters} from "../../../../../api/models/SearchFilters";
-import {FilterExpression,} from "../../../../../api/api-types/files";
+import {FileStatus, FilterExpression,} from "../../../../../api/api-types/files";
 import {filterExpressionToString} from "../../../../utils/filter-utils";
+import {MatCheckboxChange} from "@angular/material/checkbox";
 
 
 @Component({
@@ -36,6 +37,12 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public contextMenuFilter: FilterExpression | undefined = undefined;
     public initialFilterInputValue: string | undefined;
 
+    public displayImported = true;
+    public displayArchived = true;
+    public displayDeleted = false;
+
+    private needsScroll = false;
+
     constructor(
         private errorBroker: ErrorBrokerService,
         public dialog: MatDialog
@@ -45,11 +52,14 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public async ngOnInit() {
         this.state.filters.subscribe(f => this.filters = f);
         this.state.sortKeys.subscribe(s => this.sortExpression = s);
+        this.applyStatusFromFilters();
         await this.searchForFiles();
     }
 
     public ngAfterViewChecked(): void {
-        this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
+        if (this.needsScroll) {
+            this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
+        }
     }
 
     public async searchForFiles() {
@@ -67,6 +77,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.filters.addFilterExpression(filter);
 
         this.state.setTagFilters(this.filters);
+        this.needsScroll = true;
     }
 
     public addTagFilter(filterString: string) {
@@ -93,6 +104,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public async removeFilterExpression(expr: FilterExpression) {
         this.filters.removeFilter(expr);
         this.state.setTagFilters(this.filters);
+        this.needsScroll = true;
     }
 
     public openSortDialog() {
@@ -118,7 +130,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     public openFilterDialog(): void {
         const filterEntries = new SearchFilters(JSON.parse(JSON.stringify(this.filters.getFilters())));
-        
+
         const filterDialog = this.dialog.open(FilterDialogComponent, {
             minWidth: "25vw",
             maxHeight: "80vh",
@@ -132,6 +144,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             if (filterExpression !== undefined || filterExpression?.length > 0) {
                 this.filters = filterExpression;
                 this.state.setTagFilters(this.filters);
+                this.applyStatusFromFilters();
+                this.needsScroll = true;
             }
         });
     }
@@ -142,5 +156,65 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     public addFilterToInput(param: FilterExpression): void {
         this.initialFilterInputValue = filterExpressionToString(param);
+    }
+
+    public setDisplayDeleted(event: MatCheckboxChange) {
+        this.displayDeleted = event.checked;
+        this.updateStatusFilters();
+    }
+
+    public setDisplayArchived(event: MatCheckboxChange) {
+        this.displayArchived = event.checked;
+        this.updateStatusFilters();
+    }
+
+    public setDisplayImported(event: MatCheckboxChange) {
+        this.displayImported = event.checked;
+        this.updateStatusFilters();
+    }
+
+    private applyStatusFromFilters() {
+        const filterImported = FilterQueryBuilder.status("Imported");
+        const filterArchived = FilterQueryBuilder.status("Archived");
+        const filterDeleted = FilterQueryBuilder.status("Deleted");
+        this.displayImported = this.filters.hasSubfilter(filterImported);
+        this.displayArchived = this.filters.hasSubfilter(filterArchived);
+        this.displayDeleted = this.filters.hasSubfilter(filterDeleted);
+
+        if (!this.displayImported && !this.displayDeleted && !this.displayArchived) {
+            this.displayImported = true;
+            this.displayArchived = true;
+            this.updateStatusFilters();
+        }
+    }
+
+    private updateStatusFilters() {
+        this.deleteAllStatusFilters();
+        const filter = this.buildFilterForDisplayProperty();
+        this.filters.addFilter(filter, 0);
+        this.state.setTagFilters(this.filters);
+    }
+
+    private deleteAllStatusFilters() {
+        for (const status of ["Imported", "Archived", "Deleted"]) {
+            const query = FilterQueryBuilder.status(status as FileStatus);
+            this.filters.removeSubfilter(query);
+            this.filters.removeFilter({ Query: query });
+        }
+        this.state.setTagFilters(this.filters);
+    }
+
+    private buildFilterForDisplayProperty(): FilterExpression {
+        const filters = [];
+        if (this.displayImported) {
+            filters.push(FilterQueryBuilder.status("Imported"));
+        }
+        if (this.displayArchived) {
+            filters.push(FilterQueryBuilder.status("Archived"));
+        }
+        if (this.displayDeleted) {
+            filters.push(FilterQueryBuilder.status("Deleted"));
+        }
+        return { OrExpression: filters };
     }
 }
