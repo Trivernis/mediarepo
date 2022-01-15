@@ -17,16 +17,6 @@ export type TagQuery = {
     tag: string,
 };
 
-export type PropertyKeys =
-    "Status"
-    | "FileSize"
-    | "ImportedTime"
-    | "ChangedTime"
-    | "CreatedTime"
-    | "TagCount"
-    | "Cd"
-    | "Id";
-
 export type PropertyQuery = PropertyQueryStatus
     | PropertyQueryFileSize
     | PropertyQueryImportedTime

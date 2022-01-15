@@ -54,11 +54,13 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.state.sortKeys.subscribe(s => this.sortExpression = s);
         this.applyStatusFromFilters();
         await this.searchForFiles();
+        this.needsScroll = true;
     }
 
     public ngAfterViewChecked(): void {
         if (this.needsScroll) {
             this.inputList.nativeElement.scrollLeft = this.inputList.nativeElement.scrollWidth;
+            this.needsScroll = false;
         }
     }
 

@@ -43,7 +43,9 @@ import {TagQueryItemComponent} from "./file-search/filter-expression-item/tag-qu
 import {
     PropertyQueryItemComponent
 } from "./file-search/filter-expression-item/property-query-item/property-query-item.component";
-import { FilterExpressionListItemComponent } from './file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component';
+import {
+    FilterExpressionListItemComponent
+} from "./file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component";
 
 
 @NgModule({
