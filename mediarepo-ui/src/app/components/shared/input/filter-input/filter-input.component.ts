@@ -19,6 +19,7 @@ type AutocompleteEntry = {
 })
 export class FilterInputComponent implements OnChanges {
 
+    @Input() value: string | undefined;
     @Input() availableTags: Tag[] = [];
     @Output() filterAdded = new EventEmitter<FilterExpression>();
 
@@ -57,12 +58,18 @@ export class FilterInputComponent implements OnChanges {
         );
         this.tagsForAutocomplete = this.availableTags.map(
             t => t.getNormalizedOutput());
+        if (this.value) {
+            this.formControl.setValue(this.value);
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes["availableTags"]) {
             this.tagsForAutocomplete = this.availableTags.map(
                 t => t.getNormalizedOutput());
+        }
+        if (changes["value"] && this.value) {
+            this.formControl.setValue(this.value);
         }
     }
 
@@ -72,7 +79,6 @@ export class FilterInputComponent implements OnChanges {
             return;
         }
         const expressions = FilterQueryBuilder.buildFilterExpressionsFromString(this.formControl.value);
-        console.log(this.formControl.value, expressions);
 
         let valid: boolean;
 

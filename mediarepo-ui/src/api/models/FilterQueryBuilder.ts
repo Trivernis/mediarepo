@@ -143,7 +143,7 @@ export class FilterQueryBuilder {
                     }
                     break;
                 case "FileSize":
-                    value = this.parsePropertyValue(compareValue, parseNumber);
+                    value = this.parsePropertyValue(compareValue, parseByteSize);
                     if (value != undefined) {
                         return this.fileSize(value[0], comparator, value[1]);
                     }
@@ -278,6 +278,35 @@ function valuesToCompareEnum<T>(min_value: T, comparator: Comparator, max_value?
 function parseNumber(value: string): number | undefined {
     const num = Number(value);
     return isNaN(num) ? undefined : num;
+}
+
+function parseByteSize(value: string): number | undefined {
+    const valueMappings: { [key: string]: number } = {
+        "TiB": 1024 ** 4,
+        "GiB": 1024 ** 3,
+        "MiB": 1024 ** 2,
+        "KiB": 1024,
+        "TB": 1000 ** 4,
+        "GB": 1000 ** 3,
+        "MB": 1000 ** 2,
+        "KB": 1000
+    };
+    const stringValue = value.replace(/TiB|GiB|MiB|KiB|TB|GB|MB|KB$/i, "");
+    let number = parseNumber(stringValue);
+    const checkUnit = (unit: string) => value.toLowerCase().includes(unit.toLowerCase());
+
+    if (number) {
+        for (const key of Object.keys(valueMappings)) {
+            if (checkUnit(key)) {
+                console.log("key", key, "valueMapping", valueMappings[key]);
+                number *= valueMappings[key];
+                console.log("number", number);
+                break;
+            }
+        }
+    }
+
+    return number;
 }
 
 function parseDate(value: string): Date | undefined {

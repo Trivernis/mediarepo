@@ -6,6 +6,7 @@
         (keydown.enter)="addExpressionByInput()"
         [formControl]="formControl"
         [matAutocomplete]="auto"
+        [value]="this.value"
         matInput>
     <ng-content></ng-content>
     <mat-autocomplete #auto

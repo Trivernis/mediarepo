@@ -9,7 +9,8 @@ import {clipboard} from "@tauri-apps/api";
 import {TabState} from "../../../../models/TabState";
 import {FilterQueryBuilder} from "../../../../../api/models/FilterQueryBuilder";
 import {SearchFilters} from "../../../../../api/models/SearchFilters";
-import {FilterExpression} from "../../../../../api/api-types/files";
+import {FilterExpression,} from "../../../../../api/api-types/files";
+import {filterExpressionToString} from "../../../../utils/filter-utils";
 
 
 @Component({
@@ -29,10 +30,11 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();
 
-    @ViewChild("tagInput") tagInput!: ElementRef<HTMLInputElement>;
     @ViewChild("tagInputList") inputList!: ElementRef;
 
     public contextMenuTag: Tag | undefined;
+    public contextMenuFilter: FilterExpression | undefined = undefined;
+    public initialFilterInputValue: string | undefined;
 
     constructor(
         private errorBroker: ErrorBrokerService,
@@ -135,5 +137,9 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     public async copyToClipboard(text: string) {
         await clipboard.writeText(text);
+    }
+
+    public addFilterToInput(param: FilterExpression): void {
+        this.initialFilterInputValue = filterExpressionToString(param);
     }
 }

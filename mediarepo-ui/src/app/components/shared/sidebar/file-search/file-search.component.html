@@ -4,7 +4,9 @@
         <div class="tag-input-list-and-actions">
             <div #tagInputList class="tag-input-list">
                 <div class="tag-input-list-inner">
-                    <div (click)="removeFilterExpression(filter)" *ngFor="let filter of filters.getFilters()"
+                    <div (click)="removeFilterExpression(filter)"
+                         (contextmenu)="this.contextMenuFilters.onContextMenu($event); this.contextMenuFilter = filter"
+                         *ngFor="let filter of filters.getFilters()"
                          class="tag-input-item"
                          mat-ripple>
                         <app-filter-expression-item [filter]="filter"></app-filter-expression-item>
@@ -19,6 +21,7 @@
 
         <app-filter-input (filterAdded)="addFilterExpression($event); searchForFiles()"
                           [availableTags]="getValidSearchTags()"
+                          [value]="this.initialFilterInputValue"
                           class="full-width">
             <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>
                 <ng-icon name="mat-filter-alt"></ng-icon>
@@ -62,3 +65,12 @@
     </button>
 </app-context-menu>
 
+<app-context-menu #contextMenuFilters>
+    <button (click)="this.removeFilterExpression(this.contextMenuFilter!)" *ngIf="contextMenuFilter" mat-menu-item>
+        Remove
+    </button>
+    <button (click)="this.removeFilterExpression(this.contextMenuFilter!); this.addFilterToInput(this.contextMenuFilter!)"
+            *ngIf="contextMenuFilter"
+            mat-menu-item>Edit
+    </button>
+</app-context-menu>
