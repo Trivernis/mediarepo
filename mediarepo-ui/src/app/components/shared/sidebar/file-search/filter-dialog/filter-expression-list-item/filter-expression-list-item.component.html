@@ -1,0 +1,26 @@
+<span *ngIf="this.orExpression" class="or-expression">
+    <mat-list>
+        <mat-list-item *ngFor="let entry of this.orExpression"
+                       [class.selected]="componentSelectable.selected"
+                       class="or-filter-list-item">
+            <app-selectable #componentSelectable
+                            (appSelect)="this.entrySelect.emit(entry)"
+                            (appUnselect)="this.entryUnselect.emit(entry)">
+                <app-property-query-item *ngIf="this.queryIs(entry[1], 'Property')"
+                                         [propertyQuery]="this.propertyQuery(entry[1]).Property"></app-property-query-item>
+                <app-tag-query-item *ngIf="this.queryIs(entry[1], 'Tag')"
+                                    [tagQuery]="this.tagQuery(entry[1]).Tag"></app-tag-query-item>
+            </app-selectable>
+        </mat-list-item>
+    </mat-list>
+</span>
+<span *ngIf="this.query" [class.selected]="singleSelectable.selected" class="query">
+    <app-selectable #singleSelectable
+                    (appSelect)="this.appSelect.emit(this.query)"
+                    (appUnselect)="this.appUnselect.emit(this.query)">
+        <app-property-query-item *ngIf="this.queryIs(this.query, 'Property')"
+                                 [propertyQuery]="this.propertyQuery(this.query).Property"></app-property-query-item>
+        <app-tag-query-item *ngIf="this.queryIs(this.query, 'Tag')"
+                            [tagQuery]="this.tagQuery(this.query).Tag"></app-tag-query-item>
+    </app-selectable>
+</span>

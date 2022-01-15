@@ -117,12 +117,13 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     }
 
     public openFilterDialog(): void {
-        const filterEntries = this.filters;
+        const filterEntries = new SearchFilters(JSON.parse(JSON.stringify(this.filters.getFilters())));
+        
         const filterDialog = this.dialog.open(FilterDialogComponent, {
             minWidth: "25vw",
             maxHeight: "80vh",
             data: {
-                filterEntries,
+                filters: filterEntries,
                 availableTags: this.availableTags,
             },
             disableClose: true,

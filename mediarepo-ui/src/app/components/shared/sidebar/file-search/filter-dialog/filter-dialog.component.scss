@@ -8,7 +8,7 @@
     }
 }
 
-.tag-input {
+.filter-input {
     width: 100%;
     height: 5em;
 }
@@ -20,12 +20,8 @@ mat-list-item.filter-list-item {
     cursor: pointer;
 }
 
-app-tag-filter-list-item {
+app-filter-expression-list-item {
     width: 100%;
-}
-
-.selected {
-    background-color: #5c5c5c;
 }
 
 .filter-dialog-content {

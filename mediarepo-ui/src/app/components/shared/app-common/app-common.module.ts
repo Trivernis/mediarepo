@@ -12,6 +12,7 @@ import {ContentAwareImageComponent} from "./content-aware-image/content-aware-im
 import {InputReceiverDirective} from "./input-receiver/input-receiver.directive";
 import {MetadataEntryComponent} from "./metadata-entry/metadata-entry.component";
 import {BusyDialogComponent} from "./busy-dialog/busy-dialog.component";
+import {SelectableComponent} from "./selectable/selectable.component";
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import {BusyDialogComponent} from "./busy-dialog/busy-dialog.component";
         InputReceiverDirective,
         MetadataEntryComponent,
         BusyDialogComponent,
+        SelectableComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -31,6 +33,7 @@ import {BusyDialogComponent} from "./busy-dialog/busy-dialog.component";
         ContentAwareImageComponent,
         InputReceiverDirective,
         MetadataEntryComponent,
+        SelectableComponent,
     ],
     imports: [
         CommonModule,

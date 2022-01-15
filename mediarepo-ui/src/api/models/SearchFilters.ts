@@ -1,4 +1,4 @@
-import {FilterExpression, FilterQuery} from "../api-types/files";
+import {FilterExpression, FilterExpressionQuery, FilterQuery} from "../api-types/files";
 import * as deepEqual from "fast-deep-equal";
 
 export class SearchFilters {
@@ -13,12 +13,23 @@ export class SearchFilters {
         return this.filters;
     }
 
+    public getSubfilterAtIndex(index: number, subindex: number): FilterQuery | undefined {
+        if (index < this.filters.length) {
+            const filterEntry = this.filters[index]!;
+            if ("OrExpression" in filterEntry) {
+                return filterEntry.OrExpression[subindex];
+            }
+        }
+        return undefined;
+    }
+
     public hasFilter(expression: FilterExpression): boolean {
         return !!this.filters.find(f => deepEqual(f, expression));
     }
 
     public addFilterExpression(filter: FilterExpression) {
         this.filters.push(filter);
+        this.processChangesToOrExpressions();
     }
 
     public addFilter(filter: FilterQuery, index: number) {
@@ -63,6 +74,7 @@ export class SearchFilters {
             }
         });
         this.filters.splice(index);
+        this.processChangesToOrExpressions();
     }
 
     public removeSubfilterAtIndex(index: number, subindex: number) {
@@ -75,5 +87,24 @@ export class SearchFilters {
                 this.removeFilterAtIndex(index);
             }
         }
+        this.processChangesToOrExpressions();
+    }
+
+    private processChangesToOrExpressions() {
+        const filters_to_remove: FilterExpression[] = [];
+
+        for (const filter of this.filters) {
+            if ("OrExpression" in filter) {
+                if (filter.OrExpression.length === 1) {
+                    const query = filter.OrExpression[0];
+                    let newFilter = filter as unknown as FilterExpressionQuery & { OrExpression: undefined };
+                    newFilter["OrExpression"] = undefined;
+                    newFilter.Query = query;
+                } else if (filter.OrExpression.length === 0) {
+                    filters_to_remove.push(filter);
+                }
+            }
+        }
+        filters_to_remove.forEach(f => this.removeFilter(f));
     }
 }

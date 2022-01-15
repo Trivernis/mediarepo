@@ -64,9 +64,9 @@ export class FilterQueryBuilder {
         const parts = expressionStr.split(/\s+or\s+/gi);
         const queries = parts.map(part => this.buildFilterFromString(part)).filter(f => f != undefined) as FilterQuery[];
 
-        if (queries.length > 0) {
+        if (queries.length > 1) {
             return { OrExpression: queries };
-        } else if (queries.length == 1) {
+        } else if (queries.length === 1) {
             return { Query: queries[0] };
         } else {
             return undefined;

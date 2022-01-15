@@ -20,9 +20,6 @@ import {MatDividerModule} from "@angular/material/divider";
 import {FlexModule} from "@angular/flex-layout";
 import {MatSelectModule} from "@angular/material/select";
 import {MatInputModule} from "@angular/material/input";
-import {
-    TagFilterListItemComponent
-} from "./file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
 import {SortDialogComponent} from "./file-search/sort-dialog/sort-dialog.component";
 import {FilterDialogComponent} from "./file-search/filter-dialog/filter-dialog.component";
 import {MatListModule} from "@angular/material/list";
@@ -46,13 +43,13 @@ import {TagQueryItemComponent} from "./file-search/filter-expression-item/tag-qu
 import {
     PropertyQueryItemComponent
 } from "./file-search/filter-expression-item/property-query-item/property-query-item.component";
+import { FilterExpressionListItemComponent } from './file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component';
 
 
 @NgModule({
     declarations: [
         TagEditComponent,
         FileSearchComponent,
-        TagFilterListItemComponent,
         SortDialogComponent,
         FilterDialogComponent,
         FileImportComponent,
@@ -62,6 +59,7 @@ import {
         FilterExpressionItemComponent,
         TagQueryItemComponent,
         PropertyQueryItemComponent,
+        FilterExpressionListItemComponent,
     ],
     exports: [
         TagEditComponent,

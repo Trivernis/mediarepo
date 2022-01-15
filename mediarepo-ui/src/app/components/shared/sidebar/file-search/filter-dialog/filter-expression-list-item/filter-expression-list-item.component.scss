@@ -1,14 +1,3 @@
-.remove-button, .remove-button-inner-list {
-    position: absolute;
-    right: 0;
-    z-index: 999;
-    top: calc(0.5em - 15px);
-}
-
-.remove-button {
-    right: 16px;
-}
-
 mat-list {
     height: 100%;
     width: 100%;
@@ -32,10 +21,11 @@ mat-list-item.or-filter-list-item {
     }
 }
 
-.or-span {
-    margin-right: 0.5em;
-}
-
 .selected {
     background-color: #5c5c5c;
+}
+
+app-selectable {
+    width: 100%;
+    height: 100%;
 }
