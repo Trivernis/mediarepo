@@ -2,7 +2,8 @@ use crate::tauri_plugin::commands::{ApiAccess, BufferAccess};
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::utils::system_time_to_naive_date_time;
 use crate::types::files::{
-    FileBasicDataResponse, FileMetadataResponse, FileOSMetadata, ThumbnailMetadataResponse,
+    FileBasicDataResponse, FileMetadataResponse, FileOSMetadata, FileStatus,
+    ThumbnailMetadataResponse,
 };
 use crate::types::filtering::{FilterExpression, SortKey};
 use crate::types::identifier::FileIdentifier;
@@ -121,6 +122,29 @@ pub async fn update_file_name(
         .await?;
 
     Ok(metadata)
+}
+
+#[tauri::command]
+pub async fn update_file_status(
+    api_state: ApiAccess<'_>,
+    id: i64,
+    status: FileStatus,
+) -> PluginResult<FileBasicDataResponse> {
+    let api = api_state.api().await?;
+    let file = api
+        .file
+        .update_file_status(FileIdentifier::ID(id), status)
+        .await?;
+
+    Ok(file)
+}
+
+#[tauri::command]
+pub async fn delete_file(api_state: ApiAccess<'_>, id: i64) -> PluginResult<()> {
+    let api = api_state.api().await?;
+    api.file.delete_file(FileIdentifier::ID(id)).await?;
+
+    Ok(())
 }
 
 #[tauri::command]
