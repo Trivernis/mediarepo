@@ -79,6 +79,12 @@ pub struct UpdateFileNameRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UpdateFileStatusRequest {
+    pub file_id: FileIdentifier,
+    pub status: FileStatus,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AddFileRequestHeader {
     pub metadata: FileOSMetadata,
     pub tags: Vec<String>,
