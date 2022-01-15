@@ -52,12 +52,6 @@
         "allowlist": {
             "dialog": {
                 "all": true
-            },
-            "path": {
-                "all": true
-            },
-            "shell": {
-                "open": true
             }
         },
         "windows": [

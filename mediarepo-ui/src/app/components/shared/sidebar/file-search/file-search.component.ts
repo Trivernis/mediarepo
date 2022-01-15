@@ -60,16 +60,18 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.searchEndEvent.emit();
     }
 
-    public addSearchQuery(queryStr: string) {
-        let filter = FilterQueryBuilder.buildFilterFromString(queryStr);
+    public addFilterExpression(filter: FilterExpression) {
+        this.filters.removeFilter(filter);
+        this.filters.addFilterExpression(filter);
 
-        if (filter) {
-            this.filters.removeFilter({ Query: filter });
-            this.filters.appendFilter(filter);
-        }
-
-        queryStr = queryStr.replace(/^-/g, "");
         this.state.setTagFilters(this.filters);
+    }
+
+    public addTagFilter(filterString: string) {
+        const filter = FilterQueryBuilder.buildFilterFromString(filterString);
+        if (filter) {
+            this.addFilterExpression({ Query: filter });
+        }
     }
 
     public getValidSearchTags(): Tag[] {

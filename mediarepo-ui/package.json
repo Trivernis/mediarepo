@@ -3,9 +3,10 @@
     "version": "0.12.0",
     "scripts": {
         "ng": "ng",
-        "start": "ng serve",
+        "start": "ng serve --configuration production",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
+        "watch-prod": "ng build --watch --configuration production",
         "test": "ng test",
         "lint": "ng lint",
         "tauri": "tauri"

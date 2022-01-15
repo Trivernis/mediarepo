@@ -17,15 +17,13 @@
             </button>
         </div>
 
-        <app-tag-input (tagAdded)="addSearchQuery($event); searchForFiles()" [allowInvalid]="true"
-                       [allowNegation]="true"
-                       [allowWildcards]="true"
-                       [availableTags]="getValidSearchTags()"
-                       class="full-width">
+        <app-filter-input (filterAdded)="addFilterExpression($event); searchForFiles()"
+                          [availableTags]="getValidSearchTags()"
+                          class="full-width">
             <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>
                 <ng-icon name="mat-filter-alt"></ng-icon>
             </button>
-        </app-tag-input>
+        </app-filter-input>
 
         <button (click)="openSortDialog()" id="sort-button" mat-flat-button>Sort: {{sortExpression.join(", ")}}</button>
     </div>
@@ -40,7 +38,7 @@
 
         <app-busy-indicator [blurBackground]="true" [busy]="this.tagsLoading" [darkenBackground]="false">
             <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-                <div (click)="addSearchQuery(tag.getNormalizedOutput())"
+                <div (click)="addFilterExpression(tag.getNormalizedOutput())"
                      (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
                      *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
                     <app-tag-item [tag]="tag"></app-tag-item>

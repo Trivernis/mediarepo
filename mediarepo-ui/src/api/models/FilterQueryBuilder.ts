@@ -85,7 +85,6 @@ export class FilterQueryBuilder {
         let valueStarted = false;
 
         for (const char of expression) {
-            console.log(char);
             if (!valueStarted) {
                 switch (char) {
                     case " ":

@@ -17,6 +17,10 @@ export class SearchFilters {
         return !!this.filters.find(f => deepEqual(f, expression));
     }
 
+    public addFilterExpression(filter: FilterExpression) {
+        this.filters.push(filter);
+    }
+
     public addFilter(filter: FilterQuery, index: number) {
         this.filters = [...this.filters.slice(
             0,
