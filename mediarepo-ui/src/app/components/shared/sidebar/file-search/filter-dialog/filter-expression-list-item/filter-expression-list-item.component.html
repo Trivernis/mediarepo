@@ -3,6 +3,7 @@
         <mat-list-item *ngFor="let entry of this.orExpression"
                        [class.selected]="componentSelectable.selected"
                        class="or-filter-list-item">
+            <span *ngIf="entry[0] > 0" class="or-combinator">OR&nbsp;</span>
             <app-selectable #componentSelectable
                             (appSelect)="this.entrySelect.emit(entry)"
                             (appUnselect)="this.entryUnselect.emit(entry)">
