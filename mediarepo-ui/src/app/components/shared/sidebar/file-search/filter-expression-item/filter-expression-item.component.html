@@ -4,6 +4,7 @@
                                  [propertyQuery]="this.propertyQuery(query).Property"></app-property-query-item>
         <app-tag-query-item *ngIf="this.queryIs(query, 'Tag')"
                             [tagQuery]="this.tagQuery(query).Tag"></app-tag-query-item>
+        <span class="or-combinator"> OR </span>
     </ng-container>
 </span>
 <span *ngIf="is('Query')" class="query">

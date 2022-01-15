@@ -38,7 +38,7 @@
 
         <app-busy-indicator [blurBackground]="true" [busy]="this.tagsLoading" [darkenBackground]="false">
             <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
-                <div (click)="addFilterExpression(tag.getNormalizedOutput())"
+                <div (click)="addTagFilter(tag.getNormalizedOutput())"
                      (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
                      *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
                     <app-tag-item [tag]="tag"></app-tag-item>

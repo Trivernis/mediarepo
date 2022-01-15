@@ -1,4 +1,4 @@
-import {FileStatus, FilterQuery, PropertyQuery, ValueComparator} from "../api-types/files";
+import {FileStatus, FilterExpression, FilterQuery, PropertyQuery, ValueComparator} from "../api-types/files";
 
 export type Comparator = "Less" | "Equal" | "Greater" | "Between";
 export type PropertyType =
@@ -60,7 +60,20 @@ export class FilterQueryBuilder {
         return filterQuery({ Id: id });
     }
 
-    public static buildFilterFromString(filterStr: string): FilterQuery {
+    public static buildFilterExpressionsFromString(expressionStr: string): FilterExpression | undefined {
+        const parts = expressionStr.split(/\s+or\s+/gi);
+        const queries = parts.map(part => this.buildFilterFromString(part)).filter(f => f != undefined) as FilterQuery[];
+
+        if (queries.length > 0) {
+            return { OrExpression: queries };
+        } else if (queries.length == 1) {
+            return { Query: queries[0] };
+        } else {
+            return undefined;
+        }
+    }
+
+    public static buildFilterFromString(filterStr: string): FilterQuery | undefined {
         filterStr = filterStr.trim();
 
         if (filterStr.startsWith(".")) {
@@ -119,7 +132,6 @@ export class FilterQueryBuilder {
     ): FilterQuery | undefined {
         const property = this.parsePropertyName(propertyName);
         const comparator = this.parseComparator(rawComparator);
-        console.log("Parts: ", propertyName, rawComparator, compareValue);
 
         if (property && comparator) {
             let value;
