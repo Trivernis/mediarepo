@@ -78,6 +78,17 @@ impl FileHashStore {
         Ok(())
     }
 
+    pub async fn delete_file(&self, descriptor: &[u8]) -> RepoResult<()> {
+        let path = self.descriptor_to_file_path(descriptor);
+        if !path.exists() {
+            tracing::warn!("file {:?} doesn't exist", path);
+            return Ok(());
+        }
+        fs::remove_file(path).await?;
+
+        Ok(())
+    }
+
     /// Scans the size of the folder
     #[inline]
     pub async fn get_size(&self) -> RepoResult<u64> {

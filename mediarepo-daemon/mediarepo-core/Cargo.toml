@@ -44,7 +44,7 @@ features = ["toml"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "06d51ed147c4f65361f8351c30e3417ffd457f0c"
+rev = "9fd25e4696cdd68886fa98579aef4fa2ca561dc0"
 features = ["bromine"]
 
 [features]

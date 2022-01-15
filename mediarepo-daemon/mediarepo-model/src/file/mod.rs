@@ -6,7 +6,7 @@ use std::str::FromStr;
 
 use mediarepo_core::content_descriptor::encode_content_descriptor;
 use sea_orm::prelude::*;
-use sea_orm::{DatabaseConnection, Set};
+use sea_orm::{ConnectionTrait, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::{AsyncReadExt, BufReader};
 
@@ -14,10 +14,12 @@ use crate::file::filter::FilterProperty;
 use crate::file_metadata::FileMetadata;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::file_hash_store::FileHashStore;
+use mediarepo_core::mediarepo_api::types::files::FileStatus as ApiFileStatus;
 use mediarepo_core::thumbnailer::{self, Thumbnail as ThumbnailerThumb, ThumbnailSize};
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::file;
+use mediarepo_database::entities::file_metadata;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 
@@ -27,6 +29,16 @@ pub enum FileStatus {
     Imported = 10,
     Archived = 20,
     Deleted = 30,
+}
+
+impl From<ApiFileStatus> for FileStatus {
+    fn from(s: ApiFileStatus) -> Self {
+        match s {
+            ApiFileStatus::Imported => Self::Imported,
+            ApiFileStatus::Archived => Self::Archived,
+            ApiFileStatus::Deleted => Self::Deleted,
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -177,6 +189,17 @@ impl File {
         }
     }
 
+    pub async fn set_status(&mut self, status: FileStatus) -> RepoResult<()> {
+        let active_model = file::ActiveModel {
+            id: Set(self.model.id),
+            status: Set(status as i32),
+            ..Default::default()
+        };
+        self.model = active_model.update(&self.db).await?;
+
+        Ok(())
+    }
+
     /// Returns the metadata associated with this file
     /// A file MUST always have metadata associated
     pub async fn metadata(&self) -> RepoResult<FileMetadata> {
@@ -285,5 +308,27 @@ impl File {
         let thumbs = thumbnailer::create_thumbnails(Cursor::new(buf), mime_type, sizes)?;
 
         Ok(thumbs)
+    }
+
+    /// Deletes the file as well as the content descriptor, tag mappings and metadata about the file
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn delete(self) -> RepoResult<()> {
+        let trx = self.db.begin().await?;
+        file_metadata::Entity::delete_many()
+            .filter(file_metadata::Column::FileId.eq(self.model.id))
+            .exec(&trx)
+            .await?;
+        self.model.delete(&trx).await?;
+        content_descriptor_tag::Entity::delete_many()
+            .filter(content_descriptor_tag::Column::CdId.eq(self.content_descriptor.id))
+            .exec(&trx)
+            .await?;
+        content_descriptor::Entity::delete_many()
+            .filter(content_descriptor::Column::Id.eq(self.content_descriptor.id))
+            .exec(&trx)
+            .await?;
+        trx.commit().await?;
+
+        Ok(())
     }
 }

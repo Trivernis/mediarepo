@@ -11,7 +11,7 @@ use mediarepo_core::itertools::Itertools;
 use mediarepo_core::mediarepo_api::types::files::{
     AddFileRequestHeader, FileBasicDataResponse, FileMetadataResponse,
     GetFileThumbnailOfSizeRequest, GetFileThumbnailsRequest, ReadFileRequest,
-    ThumbnailMetadataResponse, UpdateFileNameRequest,
+    ThumbnailMetadataResponse, UpdateFileNameRequest, UpdateFileStatusRequest,
 };
 use mediarepo_core::mediarepo_api::types::filtering::FindFilesRequest;
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
@@ -38,7 +38,9 @@ impl NamespaceProvider for FilesNamespace {
             "get_thumbnails" => Self::thumbnails,
             "get_thumbnail_of_size" => Self::get_thumbnail_of_size,
             "update_file_name" => Self::update_file_name,
-            "delete_thumbnails" => Self::delete_thumbnails
+            "delete_thumbnails" => Self::delete_thumbnails,
+            "update_file_status" => Self::update_status,
+            "delete_file" => Self::delete_file
         );
     }
 }
@@ -160,17 +162,45 @@ impl FilesNamespace {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
+    async fn update_status(ctx: &Context, event: Event) -> IPCResult<()> {
+        let request = event.payload::<UpdateFileStatusRequest>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let mut file = file_by_identifier(request.file_id, &repo).await?;
+        file.set_status(request.status.into()).await?;
+        ctx.emit_to(
+            Self::name(),
+            "update_file_status",
+            FileBasicDataResponse::from_model(file),
+        )
+        .await?;
+
+        Ok(())
+    }
+
     /// Reads the binary contents of a file
     #[tracing::instrument(skip_all)]
     async fn read_file(ctx: &Context, event: Event) -> IPCResult<()> {
         let request = event.payload::<ReadFileRequest>()?;
-
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(request.id, &repo).await?;
         let bytes = repo.get_file_bytes(&file).await?;
 
         ctx.emit_to(Self::name(), "read_file", BytePayload::new(bytes))
             .await?;
+
+        Ok(())
+    }
+
+    /// Deletes a file
+    #[tracing::instrument(skip_all)]
+    async fn delete_file(ctx: &Context, event: Event) -> IPCResult<()> {
+        let id = event.payload::<FileIdentifier>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let file = file_by_identifier(id, &repo).await?;
+        repo.delete_file(file).await?;
+
+        ctx.emit_to(Self::name(), "delete_file", ()).await?;
 
         Ok(())
     }

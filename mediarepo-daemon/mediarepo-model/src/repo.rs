@@ -144,6 +144,16 @@ impl Repo {
         .await
     }
 
+    /// Deletes a file from the database and disk
+    #[tracing::instrument(level = "debug", skip(self, file))]
+    pub async fn delete_file(&self, file: File) -> RepoResult<()> {
+        let cd = file.cd().to_owned();
+        file.delete().await?;
+        self.main_storage.delete_file(&cd).await?;
+
+        Ok(())
+    }
+
     /// Returns all thumbnails of a file
     pub async fn get_file_thumbnails(&self, file_cd: &[u8]) -> RepoResult<Vec<Thumbnail>> {
         let file_cd = encode_content_descriptor(file_cd);
