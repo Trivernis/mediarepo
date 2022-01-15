@@ -90,6 +90,7 @@ export class FileContextMenuComponent {
     }
 
     private applyStatus() {
+        this.actionDeletePermantently = true;
         for (const file of this.files) {
             this.actionDeletePermantently &&= file.status === "Deleted";
             this.actionDelete ||= file.status !== "Deleted";
