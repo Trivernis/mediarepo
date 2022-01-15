@@ -8,6 +8,7 @@ import {
     CheckDaemonRunningRequest,
     CheckLocalRepositoryExistsRequest,
     CreateTagsRequest,
+    DeleteFileRequest,
     DeleteRepositoryRequest,
     DeleteThumbnailsRequest,
     FindFilesRequest,
@@ -23,7 +24,8 @@ import {
     SelectRepositoryRequest,
     SetFrontendStateRequest,
     StartDaemonRequest,
-    UpdateFileNameRequest
+    UpdateFileNameRequest,
+    UpdateFileStatusRequest
 } from "./api-types/requests";
 import {RepositoryData, RepositoryMetadata, SizeMetadata} from "./api-types/repo";
 import {NamespaceData, TagData} from "./api-types/tags";
@@ -107,6 +109,10 @@ export class MediarepoApi {
         return this.invokePlugin(ApiFunction.UpdateFileName, request);
     }
 
+    public static async updateFileStatus(request: UpdateFileStatusRequest): Promise<FileBasicData> {
+        return this.invokePlugin(ApiFunction.UpdateFileStatus, request);
+    }
+
     public static async saveFileLocally(request: SaveFileRequest): Promise<void> {
         return this.invokePlugin(ApiFunction.SaveFileLocally, request);
     }
@@ -117,6 +123,10 @@ export class MediarepoApi {
 
     public static async readFile(request: ReadFileRequest): Promise<number[]> {
         return this.invokePlugin(ApiFunction.ReadFile, request);
+    }
+
+    public static async deleteFile(request: DeleteFileRequest): Promise<void> {
+        return this.invokePlugin(ApiFunction.DeleteFile, request);
     }
 
     public static async getAllTags(): Promise<TagData[]> {

@@ -7,7 +7,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {NgIconsModule} from "@ng-icons/core";
-import {MatFolder, MatInsertDriveFile} from "@ng-icons/material-icons";
+import {MatDeleteForever, MatFiberNew, MatFolder, MatInsertDriveFile} from "@ng-icons/material-icons";
 import {MatButtonModule} from "@angular/material/button";
 import {FlexModule} from "@angular/flex-layout";
 import {FilterInputComponent} from "./filter-input/filter-input.component";
@@ -30,7 +30,7 @@ import {FilterInputComponent} from "./filter-input/filter-input.component";
         MatFormFieldModule,
         ReactiveFormsModule,
         MatInputModule,
-        NgIconsModule.withIcons({ MatInsertDriveFile, MatFolder }),
+        NgIconsModule.withIcons({ MatInsertDriveFile, MatFolder, MatDeleteForever, MatFiberNew }),
         MatButtonModule,
         FlexModule,
     ]

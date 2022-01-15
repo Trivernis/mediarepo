@@ -4,7 +4,7 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {SortKey} from "../../models/SortKey";
 import {MediarepoApi} from "../../../api/Api";
 import {mapMany, mapNew} from "../../../api/models/adaptors";
-import {FileMetadata} from "../../../api/api-types/files";
+import {FileMetadata, FileStatus} from "../../../api/api-types/files";
 import {SearchFilters} from "../../../api/models/SearchFilters";
 
 
@@ -31,12 +31,42 @@ export class FileService {
             .then(mapMany(mapNew(File)));
     }
 
+    /**
+     * Returns metadata about a file
+     * @param {number} id
+     * @returns {Promise<FileMetadata>}
+     */
     public async getFileMetadata(id: number): Promise<FileMetadata> {
         return MediarepoApi.getFileMetadata({ id });
     }
 
+    /**
+     * Updates the filename of a file
+     * @param {number} id
+     * @param {string} name
+     * @returns {Promise<FileMetadata>}
+     */
     public async updateFileName(id: number, name: string): Promise<FileMetadata> {
         return MediarepoApi.updateFileName({ id, name });
+    }
+
+    /**
+     * Updates the status of a file
+     * @param {number} id
+     * @param {FileStatus} status
+     * @returns {Promise<File>}
+     */
+    public async updateFileStatus(id: number, status: FileStatus): Promise<File> {
+        return MediarepoApi.updateFileStatus({ id, status }).then(mapNew(File));
+    }
+
+    /***
+     * Permanently deletes a file
+     * @param {number} id
+     * @returns {Promise<void>}
+     */
+    public async deleteFile(id: number): Promise<void> {
+        return MediarepoApi.deleteFile({ id });
     }
 
     /**

@@ -1,13 +1,13 @@
-<div class="gallery-container" #inner fxLayout="column" appInputReceiver (keyDownEvent)="handleKeydownEvent($event)">
+<div #inner (keyDownEvent)="handleKeydownEvent($event)" appInputReceiver class="gallery-container" fxLayout="column">
     <button (click)="this.closeEvent.emit(this)" class="close-button" mat-icon-button>
         <ng-icon name="mat-close"></ng-icon>
     </button>
     <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null"
          class="file-full-view"
          fxFlex="80%">
-        <app-content-viewer *ngIf="this.selectedFile"
-            (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, this.selectedFile!.data)"
-            [file]="this.selectedFile!.data"></app-content-viewer>
+        <app-content-viewer (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, [this.selectedFile!.data])"
+                            *ngIf="this.selectedFile"
+                            [file]="this.selectedFile!.data"></app-content-viewer>
     </div>
     <mat-divider fxFlex></mat-divider>
     <div class="file-scroll-view" fxFlex="20%">
@@ -15,7 +15,7 @@
                                      minBufferPx="1000" orientation="horizontal">
             <div *cdkVirtualFor="let entry of entries" class="file-item">
                 <app-file-card (clickEvent)="onEntrySelect($event.entry)"
-                                        [entry]="entry"></app-file-card>
+                               [entry]="entry"></app-file-card>
             </div>
         </cdk-virtual-scroll-viewport>
     </div>

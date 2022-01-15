@@ -24,6 +24,21 @@ app-content-aware-image {
     right: 0;
 }
 
+.file-status-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 20%;
+    width: 20%;
+    display: flex;
+
+    ng-icon {
+        align-self: flex-end;
+        margin: 0 0 auto auto;
+        font-size: 2em;
+    }
+}
+
 ng-icon.gif-icon {
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.5);

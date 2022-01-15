@@ -20,9 +20,11 @@ export enum ApiFunction {
     FindFiles = "find_files",
     GetFileMetadata = "get_file_metadata",
     UpdateFileName = "update_file_name",
+    UpdateFileStatus = "update_file_status",
     SaveFileLocally = "save_file_locally",
     DeleteThumbnails = "delete_thumbnails",
     ReadFile = "read_file",
+    DeleteFile = "delete_file",
     // tags
     GetAllTags = "get_all_tags",
     GetAllNamespace = "get_all_namespaces",

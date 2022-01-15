@@ -10,3 +10,7 @@
     <ng-icon *ngIf="getFileType() === 'audio'" name="mat-audiotrack"></ng-icon>
     <ng-icon *ngIf="getFileType() === 'text'" name="mat-description"></ng-icon>
 </div>
+<div class="file-status-icon">
+    <ng-icon *ngIf="file.status === 'Deleted'" name="mat-auto-delete"></ng-icon>
+    <ng-icon *ngIf="file.status === 'Imported'" name="mat-fiber-new"></ng-icon>
+</div>

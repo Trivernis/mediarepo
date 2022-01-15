@@ -92,14 +92,22 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         this.fileSelectEvent.emit(this.selectedEntries.map(g => g.data));
     }
 
+    public selectEntryWhenNotSelected(entry: Selectable<File>) {
+        if (!entry.selected) {
+            this.setSelectedFile(entry);
+        }
+    }
+
     public adjustElementSizes(): void {
         if (this.virtualScroll) {
             this.virtualScroll.checkViewportSize();
         }
     }
 
-    public async regenerateThumbnail(file: File) {
-        await this.fileService.deleteThumbnails(file);
+    public async regenerateThumbnail(files: File[]) {
+        for (const file of files) {
+            await this.fileService.deleteThumbnails(file);
+        }
     }
 
     public focus() {
@@ -144,6 +152,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                 }
                 break;
         }
+    }
+
+    public getSelectedFiles(): File[] {
+        return this.selectedEntries.map(e => e.data);
     }
 
     public handleKeyupEvent(event: KeyboardEvent) {

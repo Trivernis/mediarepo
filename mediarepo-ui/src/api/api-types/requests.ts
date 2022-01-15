@@ -1,4 +1,4 @@
-import {FileOsMetadata, FilterExpression, SortKey} from "./files";
+import {FileOsMetadata, FileStatus, FilterExpression, SortKey} from "./files";
 import {RepositoryData, SizeType} from "./repo";
 import {JobType} from "./job";
 
@@ -60,7 +60,14 @@ export type ReadFileRequest = {
     mimeType: string,
 };
 
+export type DeleteFileRequest = IdIdentifierRequest;
+
 export type GetFileMetadataRequest = IdIdentifierRequest;
+
+export type UpdateFileStatusRequest = {
+    id: number,
+    status: FileStatus
+};
 
 export type GetTagsForFilesRequest = {
     cds: string[]

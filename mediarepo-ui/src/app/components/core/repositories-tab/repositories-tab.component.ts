@@ -123,7 +123,7 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
     }
 
     private openStartupDialog(repository: Repository): BusyDialogContext {
-        let dialogMessage = new BehaviorSubject<string>(
+        const dialogMessage = new BehaviorSubject<string>(
             "Opening repository...");
         let dialog = this.dialog.open(BusyDialogComponent, {
             data: {

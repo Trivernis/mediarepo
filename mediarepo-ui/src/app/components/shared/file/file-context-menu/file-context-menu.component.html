@@ -1,6 +1,24 @@
 <app-context-menu #contextMenu>
     <ng-content select="[content-before]"></ng-content>
-    <button (click)="this.copyFileHash()" mat-menu-item>Copy Hash</button>
-    <button (click)="this.exportFile()" mat-menu-item>Save As...</button>
+    <ng-container *ngIf="this.files">
+        <button (click)="this.updateStatus('Archived')" *ngIf="actionArchive" mat-menu-item>Archive
+        </button>
+        <button (click)="this.updateStatus('Imported')" *ngIf="actionImported" mat-menu-item>Back to
+            imported
+        </button>
+        <button (click)="this.updateStatus('Deleted')"
+                *ngIf="actionDelete"
+                mat-menu-item>Delete
+        </button>
+        <button (click)="this.deletePermanently()" *ngIf="actionDeletePermantently" mat-menu-item>Delete permanently
+        </button>
+        <button (click)="this.updateStatus('Archived')" *ngIf="actionRestore" mat-menu-item>Restore</button>
+
+        <!-- everything that only applies to a single file -->
+        <ng-container>
+            <button (click)="this.copyFileHash()" mat-menu-item>Copy Hash</button>
+            <button (click)="this.exportFile()" mat-menu-item>Save As...</button>
+        </ng-container>
+    </ng-container>
     <ng-content></ng-content>
 </app-context-menu>
