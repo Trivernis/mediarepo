@@ -1,0 +1,52 @@
+[package]
+name = "mediarepo-api"
+version = "0.27.0"
+edition = "2018"
+license = "gpl-3"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tracing = "^0.1.29"
+thiserror = "^1.0.30"
+async-trait = {version = "^0.1.52", optional=true}
+parking_lot = {version="^0.11.2", optional=true}
+serde_json = {version="^1.0.73", optional=true}
+directories = {version="^4.0.1", optional=true}
+mime_guess = {version = "^2.0.3", optional=true}
+serde_piecewise_default = "^0.2.0"
+futures = {version = "^0.3.19", optional=true}
+url = {version = "^2.2.2", optional=true }
+pathsearch = {version="^0.2.0", optional=true}
+
+[dependencies.bromine]
+version = "^0.17.1"
+optional = true
+features = ["serialize_bincode"]
+
+[dependencies.serde]
+version = "^1.0.132"
+features = ["serde_derive"]
+
+[dependencies.chrono]
+version = "^0.4.19"
+features = ["serde"]
+
+[dependencies.tauri]
+version = "^1.0.0-beta.8"
+optional=true
+default-features = false
+features = []
+
+[dependencies.tokio]
+version = "^1.15.0"
+optional = true
+features = ["sync", "fs", "net", "io-util", "io-std", "time", "rt", "process"]
+
+[dependencies.toml]
+version = "^0.5.8"
+optional = true
+
+[features]
+tauri-plugin = ["client-api","tauri", "parking_lot", "serde_json", "tokio", "toml", "directories", "mime_guess", "futures", "url"]
+client-api = ["bromine", "async-trait", "tokio", "pathsearch"]
