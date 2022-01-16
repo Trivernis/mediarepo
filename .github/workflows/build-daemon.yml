@@ -1,6 +1,7 @@
 name: Build daemon
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, develop ]
   pull_request:
@@ -12,6 +13,12 @@ env:
 jobs:
 
   build:
+    
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-daemon
+
     strategy:
       fail-fast: false
       matrix:
@@ -19,11 +26,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-
-      - name: switch working directory
-        run: cd mediarepo-daemon
+        if: ${{ !env.ACT }}
 
       - name: Cache build data
+        if: ${{ !env.ACT }}
         uses: actions/cache@v2
         with:
           path: |
@@ -37,6 +43,7 @@ jobs:
         run: cargo build --release --no-default-features
 
       - name: Upload artifacts
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v2
         with:
           name: mediarepo-daemon-${{ runner.os }}
