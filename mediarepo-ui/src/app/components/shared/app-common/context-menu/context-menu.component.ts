@@ -11,7 +11,7 @@ export class ContextMenuComponent {
     public x: string = "0";
     public y: string = "0";
 
-    @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger
+    @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
     constructor() {
     }

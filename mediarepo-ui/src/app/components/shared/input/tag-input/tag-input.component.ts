@@ -1,18 +1,10 @@
-import {
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-    ViewChild
-} from "@angular/core";
-import {Tag} from "../../../../models/Tag";
+import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from "@angular/core";
+import {Tag} from "../../../../../api/models/Tag";
 import {FormControl} from "@angular/forms";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
 import {debounceTime, map, startWith} from "rxjs/operators";
+import {compareSearchResults} from "../../../../utils/compare-utils";
 
 @Component({
     selector: "app-tag-input",
@@ -39,7 +31,27 @@ export class TagInputComponent implements OnChanges {
             startWith(null),
             debounceTime(250),
             map((tag: string | null) => tag ? this.filterSuggestionTag(
-                tag) : this.tagsForAutocomplete.slice(0, 20)));
+                tag) : this.tagsForAutocomplete.slice(0, 20))
+        );
+    }
+
+    /**
+     * Normalizes the tag by removing whitespaces
+     * @param {string} tag
+     * @returns {string}
+     * @private
+     */
+    private static normalizeTag(tag: string): string {
+        let normalizedTag = tag.trim();
+        let parts = normalizedTag.split(":");
+
+        if (parts.length > 1) {
+            const namespace = parts.shift()!.trim();
+            const name = parts.join(":").trim();
+            return namespace + ":" + name;
+        } else {
+            return normalizedTag;
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -60,7 +72,7 @@ export class TagInputComponent implements OnChanges {
     }
 
     private addTag(value: string) {
-        const tag = this.normalizeTag(value);
+        const tag = TagInputComponent.normalizeTag(value);
         if (tag.length > 0 && (this.allowInvalid || this.checkTagValid(tag))) {
             this.tagAdded.emit(tag);
             this.formControl.setValue("");
@@ -69,22 +81,26 @@ export class TagInputComponent implements OnChanges {
     }
 
     private filterSuggestionTag(tag: string) {
-        let normalizedTag = this.normalizeTag(tag);
+        let normalizedTag = TagInputComponent.normalizeTag(tag);
         const negated = normalizedTag.startsWith("-") && this.allowNegation;
-        normalizedTag = this.allowNegation ? normalizedTag.replace(/^-/,
-            "") : normalizedTag;
+        normalizedTag = this.allowNegation ? normalizedTag.replace(
+            /^-/,
+            ""
+        ) : normalizedTag;
         const containsWildcard = normalizedTag.endsWith("*");
-        normalizedTag = this.allowWildcards ? normalizedTag.replace(/\*\s*$/,
-            "") : normalizedTag;
+        normalizedTag = this.allowWildcards ? normalizedTag.replace(
+            /\*\s*$/,
+            ""
+        ) : normalizedTag;
 
         const autocompleteTags = this.tagsForAutocomplete.filter(
             t => t.includes(normalizedTag))
             .map(t => negated ? "-" + t : t)
-            .sort((l, r) => this.compareSuggestionTags(normalizedTag, l, r))
+            .sort((l, r) => compareSearchResults(normalizedTag, l, r))
             .slice(0, 50);
 
         if (containsWildcard) {
-            autocompleteTags.unshift(this.normalizeTag(tag));
+            autocompleteTags.unshift(TagInputComponent.normalizeTag(tag));
         }
 
         return autocompleteTags;
@@ -103,38 +119,5 @@ export class TagInputComponent implements OnChanges {
             }
         }
         return this.tagsForAutocomplete.includes(tag);
-    }
-
-    /**
-     * Normalizes the tag by removing whitespaces
-     * @param {string} tag
-     * @returns {string}
-     * @private
-     */
-    private normalizeTag(tag: string): string {
-        let normalizedTag = tag.trim();
-        let parts = normalizedTag.split(":");
-
-        if (parts.length > 1) {
-            const namespace = parts.shift()!.trim();
-            const name = parts.join(":").trim();
-            return namespace + ":" + name;
-        } else {
-            return normalizedTag;
-        }
-    }
-
-    private compareSuggestionTags(query: string, l: string, r: string): number {
-        if (l.startsWith(query) && !r.startsWith(query)) {
-            return -1;
-        } else if (!l.startsWith(query) && r.startsWith(query)) {
-            return 1;
-        } else if (l.length < r.length) {
-            return -1;
-        } else if (l.length > r.length) {
-            return 1;
-        } else {
-            return l.localeCompare(r)
-        }
     }
 }

@@ -9,7 +9,7 @@ import {
     ErrorBrokerService
 } from "../../../../../services/error-broker/error-broker.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Repository} from "../../../../../models/Repository";
+import {Repository} from "../../../../../../api/models/Repository";
 
 @Component({
     selector: "app-edit-repository-dialog",
@@ -62,10 +62,7 @@ export class EditRepositoryDialogComponent {
             }
             await this.repoService.addRepository(name, path, address,
                 repositoryType === "local");
-            this.selectedRepository.name = name;
-            this.selectedRepository.local = repositoryType === "local";
-            this.selectedRepository.path = path;
-            this.selectedRepository.address = address;
+            this.selectedRepository.update({name, local: repositoryType === "local", path, address});
 
             this.dialogRef.close();
         } catch (err) {

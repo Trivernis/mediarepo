@@ -10,18 +10,27 @@ export class ErrorBrokerService {
     infoCb: Function | undefined;
 
     constructor() {
-        this.registerListener();
+        this.registerListener().catch(err => console.error(err));
     }
 
     async registerListener() {
         const _unlisten = await listen("error", event => {
             const payload: any = event.payload;
             if (payload.message) {
-                this.showError(payload)
+                this.showError(payload);
             } else {
-                this.showError(payload.toString())
+                this.showError(payload.toString());
             }
-        })
+        });
+    }
+
+    async try<T>(fn: () => Promise<T>): Promise<T | undefined> {
+        try {
+            return await fn();
+        } catch (err) {
+            this.showError(err);
+            return;
+        }
     }
 
     showInfo(info: string) {
@@ -31,13 +40,13 @@ export class ErrorBrokerService {
         }
     }
 
-    showError(error: { message: string }) {
+    showError(error: { message: string } | any) {
         console.error(error);
         if (this.errorCb) {
             if (!error.message) {
-                this.errorCb({message: error});
+                this.errorCb({ message: error });
             } else {
-                this.errorCb({...error});
+                this.errorCb({ ...error });
             }
         }
     }

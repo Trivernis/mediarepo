@@ -53,11 +53,11 @@
             "dialog": {
                 "all": true
             },
-            "path": {
+            "shell": {
                 "all": true
             },
-            "shell": {
-                "open": true
+            "path": {
+                "all": true
             }
         },
         "windows": [

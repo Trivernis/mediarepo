@@ -10,7 +10,7 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {File} from "../../../../models/File";
+import {File} from "../../../../../api/models/File";
 import {Selectable} from "../../../../models/Selectable";
 import {
     SchedulingService
@@ -62,7 +62,7 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
         this.workId = this.schedulingService.addWork(LOADING_WORK_KEY,
             async () => {
                 await this.schedulingService.delay(1);
-                this.loading = false
+                this.loading = false;
             });
     }
 }

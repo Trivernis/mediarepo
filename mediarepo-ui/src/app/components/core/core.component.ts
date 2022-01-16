@@ -1,5 +1,5 @@
 import {Component, ViewChild} from "@angular/core";
-import {Repository} from "../../models/Repository";
+import {Repository} from "../../../api/models/Repository";
 import {RepositoryService} from "../../services/repository/repository.service";
 import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
@@ -60,7 +60,7 @@ export class CoreComponent {
                     this.addTab();
                 }
             });
-        })
+        });
     }
 
     async loadRepoData() {

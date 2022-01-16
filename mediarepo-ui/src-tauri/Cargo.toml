@@ -2,7 +2,7 @@
 name = "app"
 version = "0.12.0"
 description = "A Tauri App"
-authors = [ "you" ]
+authors = ["you"]
 license = ""
 repository = ""
 default-run = "app"
@@ -14,20 +14,23 @@ tauri-build = { version = "^1.0.0-beta.4" }
 
 [dependencies]
 serde_json = "^1.0"
-serde = { version = "^1.0", features = [ "derive" ] }
-tauri = { version = "^1.0.0-beta.8", features = ["dialog-all", "path-all", "shell-open"] }
+serde = { version = "^1.0", features = ["derive"] }
 thiserror = "^1.0.30"
 typemap_rev = "^0.1.5"
 
+[dependencies.tauri]
+version = "^1.0.0-beta.8"
+features = ["dialog-all", "path-all", "shell-all"]
+
 [dependencies.tracing-subscriber]
 version = "^0.3.0"
-features = [ "env-filter" ]
+features = ["env-filter"]
 
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "0c897acfd959c776fc10bd8fabdd2eb22b437be3"
-features = [ "tauri-plugin" ]
+rev = "57d85eb3a668a8d4d344b7fbe2403731a16625a7"
+features = ["tauri-plugin"]
 
 [features]
-default = [ "custom-protocol" ]
-custom-protocol = [ "tauri/custom-protocol" ]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

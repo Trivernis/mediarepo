@@ -1,0 +1,17 @@
+mat-progress-spinner {
+    margin: auto;
+    padding-bottom: 1em;
+}
+
+.title, .content {
+    text-align: center;
+}
+
+.busy-dialog-actions {
+    display: block;
+
+    button {
+        float: right;
+        margin-left: 1em;
+    }
+}

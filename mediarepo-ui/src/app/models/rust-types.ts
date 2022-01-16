@@ -2,9 +2,9 @@ export type RustEnum<VariantData> = {
     [key: string]: VariantData
 };
 
-export function createRustEnum<VariantData>(variant: string, data: VariantData): RustEnum<VariantData> {
+export function createRustEnum<T, VariantData>(variant: string, data: VariantData): T {
     let enumInstance: RustEnum<VariantData> = {};
     enumInstance[variant] = data;
 
-    return enumInstance;
+    return enumInstance as unknown as T;
 }

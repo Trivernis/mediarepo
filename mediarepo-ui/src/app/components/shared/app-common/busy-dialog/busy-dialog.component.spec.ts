@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {TagFilterListItemComponent} from "./tag-filter-list-item.component";
+import {BusyDialogComponent} from "./busy-dialog.component";
 
-describe("TagFilterListItemComponent", () => {
-    let component: TagFilterListItemComponent;
-    let fixture: ComponentFixture<TagFilterListItemComponent>;
+describe("BusyDialogComponent", () => {
+    let component: BusyDialogComponent;
+    let fixture: ComponentFixture<BusyDialogComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [TagFilterListItemComponent]
+            declarations: [BusyDialogComponent]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(TagFilterListItemComponent);
+        fixture = TestBed.createComponent(BusyDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

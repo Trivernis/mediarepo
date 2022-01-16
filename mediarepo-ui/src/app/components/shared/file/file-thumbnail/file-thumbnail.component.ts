@@ -1,17 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    Input,
-    OnChanges,
-    SimpleChanges
-} from "@angular/core";
-import {File} from "../../../../models/File";
+import {AfterViewInit, Component, Input, OnChanges, SimpleChanges} from "@angular/core";
+import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
 import {SafeResourceUrl} from "@angular/platform-browser";
-import {
-    SchedulingService
-} from "../../../../services/scheduling/scheduling.service";
 
 @Component({
     selector: "app-file-thumbnail",
@@ -24,9 +15,9 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
 
     public thumbUrl: SafeResourceUrl | undefined;
 
-    private supportedThumbnailTypes = ["image", "video"]
+    private supportedThumbnailTypes = ["image", "video"];
 
-    constructor( private fileService: FileService) {
+    constructor(private fileService: FileService) {
     }
 
     public async ngAfterViewInit() {
@@ -36,19 +27,20 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
     public async ngOnChanges(changes: SimpleChanges) {
         if (changes["file"]) {
             this.thumbUrl = this.fileService.buildThumbnailUrl(this.file,
-                250, 250);
+                250, 250
+            );
         }
     }
 
     public getThumbnailSupported(): boolean {
-        const mimeParts = FileHelper.parseMime(this.file.mime_type);
+        const mimeParts = FileHelper.parseMime(this.file.mimeType);
 
         return !!mimeParts && this.supportedThumbnailTypes.includes(
             mimeParts[0]);
     }
 
     public getFileType(): string {
-        const mimeParts = FileHelper.parseMime(this.file.mime_type);
+        const mimeParts = FileHelper.parseMime(this.file.mimeType);
         return (mimeParts && mimeParts[0]) ?? "other";
     }
 }

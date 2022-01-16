@@ -8,9 +8,9 @@ import {
     SimpleChanges,
     ViewChild
 } from "@angular/core";
-import {Tag} from "../../../../models/Tag";
+import {Tag} from "../../../../../api/models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
-import {File} from "../../../../models/File";
+import {File} from "../../../../../api/models/File";
 import {
     FileSearchComponent
 } from "../../../shared/sidebar/file-search/file-search.component";
@@ -42,6 +42,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     public allTags: Tag[] = [];
     public files: File[] = [];
     public tagsOfSelection: Tag[] = [];
+    public tagsLoading = false;
 
     constructor(private repoService: RepositoryService, private tagService: TagService) {
         this.repoService.selectedRepository.subscribe(
@@ -53,7 +54,7 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
         this.state.files.subscribe(async (files) => {
             this.files = files;
             await this.onDisplayedFilesChange();
-        })
+        });
         if (this.fileSearch) {
             await this.fileSearch.searchForFiles();
         }
@@ -75,18 +76,22 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     }
 
     async loadTagsForDisplayedFiles() {
+        this.tagsLoading = true;
         this.tagsOfFiles = await this.tagService.getTagsForFiles(
-            this.files.map(f => f.hash));
+            this.files.map(f => f.cd));
         this.showAllTagsFallback();
+        this.tagsLoading = false;
     }
 
     async showFileDetails(files: File[]) {
+        this.tagsLoading = true;
         this.tagsOfSelection = await this.tagService.getTagsForFiles(
-            files.map(f => f.hash))
+            files.map(f => f.cd));
         this.tagsOfSelection = this.tagsOfSelection.sort(
             (a, b) => a.getNormalizedOutput()
                 .localeCompare(b.getNormalizedOutput()));
         this.tags = this.tagsOfSelection;
+        this.tagsLoading = false;
     }
 
     private async refreshFileSelection() {

@@ -46,7 +46,9 @@ import {
     RepositoryModule
 } from "../shared/repository/repository/repository.module";
 import {MatToolbarModule} from "@angular/material/toolbar";
-import { RepositoryDetailsViewComponent } from './repositories-tab/repository-details-view/repository-details-view.component';
+import {
+    RepositoryDetailsViewComponent
+} from "./repositories-tab/repository-details-view/repository-details-view.component";
 
 
 @NgModule({

@@ -1,12 +1,17 @@
-<mat-drawer-container autosize appInputReceiver (keyDownEvent)="this.onKeydown($event)">
+<mat-drawer-container (keyDownEvent)="this.onKeydown($event)" appInputReceiver autosize>
     <mat-drawer disableClose mode="side" opened>
-        <app-files-tab-sidebar [state]="this.state" (searchEndEvent)="this.contentLoading = false;"
-                               (searchStartEvent)="this.contentLoading = true;"
-                               [selectedFiles]="this.selectedFiles"></app-files-tab-sidebar>
+        <app-files-tab-sidebar (searchEndEvent)="this.contentLoading = false;" (searchStartEvent)="this.contentLoading = true;"
+                               [selectedFiles]="this.selectedFiles"
+                               [state]="this.state"></app-files-tab-sidebar>
     </mat-drawer>
     <mat-drawer-content>
-        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading">
-            <app-file-multiview [mode]="state.mode.value" (modeChangeEvent)="state.mode.next($event)" (fileSelectEvent)="this.onFileSelect($event)" [files]="this.files" [preselectedFile]="this.getStateSelectedFile()"></app-file-multiview>
+        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading" [darkenBackground]="true">
+            <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)"
+                                (modeChangeEvent)="state.mode.next($event)"
+                                [files]="this.files"
+                                [mode]="state.mode.value"
+                                [preselectedFile]="this.getStateSelectedFile()"
+                                [tabState]="this.state"></app-file-multiview>
         </app-busy-indicator>
     </mat-drawer-content>
 </mat-drawer-container>

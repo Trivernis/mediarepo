@@ -119,3 +119,16 @@ mat-divider {
         margin: auto;
     }
 }
+
+.file-tag-list {
+    position: relative;
+}
+
+.status-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 2em);
+    margin-left: 1em;
+    margin-right: 1em;
+}

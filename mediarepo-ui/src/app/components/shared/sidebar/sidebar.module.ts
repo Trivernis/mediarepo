@@ -20,49 +20,48 @@ import {MatDividerModule} from "@angular/material/divider";
 import {FlexModule} from "@angular/flex-layout";
 import {MatSelectModule} from "@angular/material/select";
 import {MatInputModule} from "@angular/material/input";
-import {
-    TagFilterListItemComponent
-} from "./file-search/filter-dialog/tag-filter-list-item/tag-filter-list-item.component";
-import {
-    SortDialogComponent
-} from "./file-search/sort-dialog/sort-dialog.component";
-import {
-    FilterDialogComponent
-} from "./file-search/filter-dialog/filter-dialog.component";
+import {SortDialogComponent} from "./file-search/sort-dialog/sort-dialog.component";
+import {FilterDialogComponent} from "./file-search/filter-dialog/filter-dialog.component";
 import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
 import {AppCommonModule} from "../app-common/app-common.module";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {TagModule} from "../tag/tag.module";
 import {FileImportComponent} from "./file-import/file-import.component";
-import {
-    FilesystemImportComponent
-} from "./file-import/filesystem-import/filesystem-import.component";
+import {FilesystemImportComponent} from "./file-import/filesystem-import/filesystem-import.component";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatMenuModule} from "@angular/material/menu";
 import {FileMetadataComponent} from "./file-metadata/file-metadata.component";
 import {
-    MetadataEntryComponent
-} from "../app-common/metadata-entry/metadata-entry.component";
-import {
     EditableMetadataEntryComponent
 } from "./file-metadata/editable-metadata-entry/editable-metadata-entry.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {FilterExpressionItemComponent} from "./file-search/filter-expression-item/filter-expression-item.component";
+import {TagQueryItemComponent} from "./file-search/filter-expression-item/tag-query-item/tag-query-item.component";
+import {
+    PropertyQueryItemComponent
+} from "./file-search/filter-expression-item/property-query-item/property-query-item.component";
+import {
+    FilterExpressionListItemComponent
+} from "./file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component";
 
 
 @NgModule({
     declarations: [
         TagEditComponent,
         FileSearchComponent,
-        TagFilterListItemComponent,
         SortDialogComponent,
         FilterDialogComponent,
         FileImportComponent,
         FilesystemImportComponent,
         FileMetadataComponent,
         EditableMetadataEntryComponent,
+        FilterExpressionItemComponent,
+        TagQueryItemComponent,
+        PropertyQueryItemComponent,
+        FilterExpressionListItemComponent,
     ],
     exports: [
         TagEditComponent,

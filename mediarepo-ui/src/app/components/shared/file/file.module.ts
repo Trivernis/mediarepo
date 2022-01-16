@@ -1,44 +1,28 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {
-    FileMultiviewComponent
-} from "./file-multiview/file-multiview.component";
-import {
-    FileGridComponent
-} from "./file-multiview/file-grid/file-grid.component";
-import {
-    FileGalleryComponent
-} from "./file-multiview/file-gallery/file-gallery.component";
+import {FileMultiviewComponent} from "./file-multiview/file-multiview.component";
+import {FileGridComponent} from "./file-multiview/file-grid/file-grid.component";
+import {FileGalleryComponent} from "./file-multiview/file-gallery/file-gallery.component";
 import {FileCardComponent} from "./file-card/file-card.component";
-import {
-    FileContextMenuComponent
-} from "./file-context-menu/file-context-menu.component";
-import {
-    FileThumbnailComponent
-} from "./file-thumbnail/file-thumbnail.component";
-import {
-    ContentViewerComponent
-} from "./content-viewer/content-viewer.component";
-import {
-    AudioViewerComponent
-} from "./content-viewer/audio-viewer/audio-viewer.component";
-import {
-    ImageViewerComponent
-} from "./content-viewer/image-viewer/image-viewer.component";
-import {
-    VideoViewerComponent
-} from "./content-viewer/video-viewer/video-viewer.component";
+import {FileContextMenuComponent} from "./file-context-menu/file-context-menu.component";
+import {FileThumbnailComponent} from "./file-thumbnail/file-thumbnail.component";
+import {ContentViewerComponent} from "./content-viewer/content-viewer.component";
+import {AudioViewerComponent} from "./content-viewer/audio-viewer/audio-viewer.component";
+import {ImageViewerComponent} from "./content-viewer/image-viewer/image-viewer.component";
+import {VideoViewerComponent} from "./content-viewer/video-viewer/video-viewer.component";
 import {AppCommonModule} from "../app-common/app-common.module";
 import {MatSliderModule} from "@angular/material/slider";
 import {NgIconsModule} from "@ng-icons/core";
 import {
     MatAudiotrack,
+    MatAutoDelete,
     MatClose,
     MatDescription,
+    MatFiberNew,
     MatGif,
     MatImage,
     MatMovie,
-    MatRefresh
+    MatRefresh,
 } from "@ng-icons/material-icons";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {MatButtonModule} from "@angular/material/button";
@@ -77,7 +61,9 @@ import {MatCardModule} from "@angular/material/card";
             MatMovie,
             MatGif,
             MatAudiotrack,
-            MatDescription
+            MatDescription,
+            MatAutoDelete,
+            MatFiberNew,
         }),
         DragDropModule,
         MatButtonModule,
@@ -89,4 +75,5 @@ import {MatCardModule} from "@angular/material/card";
         MatCardModule
     ]
 })
-export class FileModule { }
+export class FileModule {
+}

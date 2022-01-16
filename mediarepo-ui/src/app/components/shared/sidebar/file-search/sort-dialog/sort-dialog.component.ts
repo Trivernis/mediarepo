@@ -2,9 +2,8 @@ import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {SortKey} from "../../../../../models/SortKey";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
-import {Namespace} from "../../../../../models/Namespace";
+import {Namespace} from "../../../../../../api/models/Namespace";
 import {TagService} from "../../../../../services/tag/tag.service";
-import {FormControl} from "@angular/forms";
 
 @Component({
     selector: "app-sort-dialog",
@@ -13,7 +12,7 @@ import {FormControl} from "@angular/forms";
 })
 export class SortDialogComponent {
 
-    public sortEntries: SortKey[] = []
+    public sortEntries: SortKey[] = [];
     public suggestedNamespaces: Namespace[] = [];
 
     private namespaces: Namespace[] = [];
@@ -25,9 +24,23 @@ export class SortDialogComponent {
             namespaces => this.namespaces = namespaces);
     }
 
+    private static compareSuggestionNamespaces(query: string, l: string, r: string): number {
+        if (l.startsWith(query) && !r.startsWith(query)) {
+            return -1;
+        } else if (!l.startsWith(query) && r.startsWith(query)) {
+            return 1;
+        } else if (l.length < r.length) {
+            return -1;
+        } else if (l.length > r.length) {
+            return 1;
+        } else {
+            return l.localeCompare(r);
+        }
+    }
+
     addNewSortKey() {
         const sortKey = new SortKey("FileName", "Ascending", undefined);
-        this.sortEntries.push(sortKey)
+        this.sortEntries.push(sortKey);
     }
 
     public removeSortKey(sortKey: SortKey): void {
@@ -40,31 +53,18 @@ export class SortDialogComponent {
     }
 
     public cancelSort(): void {
-        this.dialogRef.close()
+        this.dialogRef.close();
     }
 
     public onSortEntryDrop(event: CdkDragDrop<SortKey[]>): void {
         moveItemInArray(this.sortEntries, event.previousIndex,
-            event.currentIndex);
+            event.currentIndex
+        );
     }
 
     public updateAutocompleteSuggestions(value: string): void {
         this.suggestedNamespaces = this.namespaces.sort(
-            (a, b) => this.compareSuggestionNamespaces(value, a.name, b.name))
-            .slice(0, 50)
-    }
-
-    private compareSuggestionNamespaces(query: string, l: string, r: string): number {
-        if (l.startsWith(query) && !r.startsWith(query)) {
-            return -1;
-        } else if (!l.startsWith(query) && r.startsWith(query)) {
-            return 1;
-        } else if (l.length < r.length) {
-            return -1;
-        } else if (l.length > r.length) {
-            return 1;
-        } else {
-            return l.localeCompare(r)
-        }
+            (a, b) => SortDialogComponent.compareSuggestionNamespaces(value, a.name, b.name))
+            .slice(0, 50);
     }
 }

@@ -1,6 +1,6 @@
 import {downloadDir} from "@tauri-apps/api/path";
 import {dialog} from "@tauri-apps/api";
-import {File} from "../../models/File";
+import {File} from "../../../api/models/File";
 
 export class FileHelper {
 
@@ -9,21 +9,18 @@ export class FileHelper {
      * @param {File} file
      */
     public static async getFileDownloadLocation(file: File): Promise<string | undefined> {
-        let extension;
+        let extension = FileHelper.getExtensionForMime(file.mimeType);
 
-        if (file.mime_type) {
-            extension = FileHelper.getExtensionForMime(file.mime_type);
-        }
         const downloadDirectory = await downloadDir();
-        const suggestionPath = downloadDirectory + file.hash + "." + extension;
+        const suggestionPath = downloadDirectory + file.cd + "." + extension;
 
         return await dialog.save({
             defaultPath: suggestionPath,
             filters: [{
-                name: file.mime_type ?? "All",
+                name: file.mimeType,
                 extensions: [extension ?? "*"]
             }, {name: "All", extensions: ["*"]}]
-        })
+        });
     }
 
     /**
