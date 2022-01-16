@@ -1,0 +1,46 @@
+name: Run checks on all projects
+
+on:
+  push:
+    branches: [ main, develop, gh-actions ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        if: ${{ !env.ACT }}
+
+      - name: Check api
+        working-directory: mediarepo-api
+        run: cargo check
+
+      - name: Check daemon
+        working-directory: mediarepo-daemon
+        run: cargo check
+
+      - name: Check ui backend
+        working-directory: mediarepo-ui/src-tauri
+        run: cargo check
+
+      - name: Install UI dependencies
+        working-directory: mediarepo-ui
+        run: |
+            npm i -g yarn
+            npm i -g @angular/cli
+            yarn install
+
+      - name: Lint ui frontend
+        working-directory: mediarepo-ui
+        run: yarn lint
