@@ -20,7 +20,7 @@ typemap_rev = "^0.1.5"
 
 [dependencies.tauri]
 version = "^1.0.0-beta.8"
-features = ["dialog-all"]
+features = ["dialog-all", "path-all", "shell-all"]
 
 [dependencies.tracing-subscriber]
 version = "^0.3.0"
