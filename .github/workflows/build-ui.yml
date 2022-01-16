@@ -5,7 +5,12 @@ on:
   push:
     branches:
       - main
-      - github-actions
+      - develop
+      - gh-actions
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
 
