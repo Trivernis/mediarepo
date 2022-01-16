@@ -148,8 +148,10 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip(self, file))]
     pub async fn delete_file(&self, file: File) -> RepoResult<()> {
         let cd = file.cd().to_owned();
+        let cd_string = file.encoded_cd();
         file.delete().await?;
         self.main_storage.delete_file(&cd).await?;
+        self.thumbnail_storage.delete_parent(&cd_string).await?;
 
         Ok(())
     }

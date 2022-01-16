@@ -95,6 +95,20 @@ impl ThumbnailStore {
         fs::rename(src_dir, dst_dir).await
     }
 
+    /// Deletes all thumbnails of a parent
+    #[tracing::instrument(level = "debug")]
+    pub async fn delete_parent<S: AsRef<str> + Debug>(&self, parent: S) -> Result<()> {
+        let path = PathBuf::from(parent.as_ref());
+
+        if !path.exists() {
+            tracing::warn!("directory {:?} doesn't exist", path);
+            return Ok(());
+        }
+        fs::remove_dir_all(&path).await?;
+
+        Ok(())
+    }
+
     /// Returns the size of the folder
     #[tracing::instrument(level = "debug")]
     pub async fn get_size(&self) -> RepoResult<u64> {
