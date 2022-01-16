@@ -5,7 +5,10 @@
 /target
 
 # IDEs and editors
-/.idea
+mediarepo-api/.idea
+mediarepo-daemon/.idea
+mediarepo-ui/.idea
+.idae
 .project
 .classpath
 .c9/

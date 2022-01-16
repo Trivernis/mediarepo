@@ -1,4 +1,4 @@
-name: Build
+name: Build ui
 
 on:
   workflow_dispatch:
@@ -19,6 +19,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: switch working directory
+      run: cd mediarepo-ui
 
     - name: Cache Dependencies
       id: cache-dependencies
@@ -80,6 +83,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: switch working directory
+      run: cd mediarepo-ui
 
     - name: Cache Dependencies
       id: cache-dependencies

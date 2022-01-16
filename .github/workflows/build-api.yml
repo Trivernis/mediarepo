@@ -1,4 +1,4 @@
-name: Build on multiple platforms
+name: Build and test api
 
 on:
   push:
@@ -19,6 +19,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: switch working directory
+        run: cd mediarepo-api
 
       - name: Cache build data
         uses: actions/cache@v2
