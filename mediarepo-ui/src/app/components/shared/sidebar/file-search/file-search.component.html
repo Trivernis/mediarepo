@@ -13,7 +13,7 @@
                 <div class="tag-input-list-inner">
                     <div (click)="removeFilterExpression(filter)"
                          (contextmenu)="this.contextMenuFilters.onContextMenu($event); this.contextMenuFilter = filter"
-                         *ngFor="let filter of filters.getFilters()"
+                         *ngFor="let filter of this.displayedFilters"
                          class="tag-input-item"
                          mat-ripple>
                         <app-filter-expression-item [filter]="filter"></app-filter-expression-item>
