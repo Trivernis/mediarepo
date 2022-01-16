@@ -11,12 +11,13 @@ env:
 
 jobs:
   
-  defaults:
-    run:
-    shell: bash
-    working-directory: mediarepo-api
-  
   build:
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-api
+
     strategy:
       fail-fast: false
       matrix:

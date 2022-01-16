@@ -10,13 +10,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  
-  defaults:
-    run:
-      shell: bash
-      working-directory: mediarepo-daemon
 
   build:
+    
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-daemon
+
     strategy:
       fail-fast: false
       matrix:

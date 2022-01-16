@@ -9,13 +9,11 @@ on:
 
 jobs:
 
-  defaults:
-    run:
-      shell: bash
-      working-directory: mediarepo-ui
-
   build-debug:
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-ui
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -79,6 +77,11 @@ jobs:
           src-tauri/target/debug/mediarepo-ui*
 
   build-release:
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-ui
 
     runs-on: ${{ matrix.os }}
 
