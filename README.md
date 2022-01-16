@@ -1,5 +1,5 @@
 <h1 align="center">
-mediarepo-daemon
+mediarepo
 </h1>
 <p align="center">
 <img src="https://github.com/Trivernis/mediarepo-ui/raw/main/src-tauri/icons/64x64.png"/>
@@ -8,7 +8,9 @@ mediarepo-daemon
 
 - - -
 
-This repository contains a media repository daemon that allows one to manage their media.
+Mediarepo is a tool for managing media files.
+It works similar to image boards (boorus) as it allows one to assign tags to media entries and
+search for entries by using those tags. It is heavily inspired by [hydrus](https://github.com/hydrusnetwork/hydrus/).
 
 ## Usage
 

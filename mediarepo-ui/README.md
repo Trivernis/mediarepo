@@ -9,7 +9,7 @@ mediarepo-ui
 - - -
 
 This repository contains a frontend client to connect to
-the [mediarepo-daemon](https://github.com/Trivernis/mediarepo-daemon). It is written in tauri (yay).
+the [mediarepo-daemon](../mediarepo-daemon). It is written in tauri (yay).
 
 ## Usage
 
