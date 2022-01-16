@@ -8,6 +8,12 @@ on:
       - github-actions
 
 jobs:
+
+  defaults:
+    run:
+      shell: bash
+      working-directory: mediarepo-ui
+
   build-debug:
 
     runs-on: ${{ matrix.os }}
@@ -19,11 +25,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: switch working directory
-      run: cd mediarepo-ui
+      if: ${{ !env.ACT }}
 
     - name: Cache Dependencies
+      if: ${{ !env.ACT }}
       id: cache-dependencies
       uses: actions/cache@v2
       with:
@@ -58,13 +63,14 @@ jobs:
       uses: knicknic/os-specific-run@v1.0.3
       with:
         linux: |
-          sudo apt update
-          sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
     - name: Build project
       run: cargo tauri build --debug
 
     - name: Upload artifacts
+      if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         name: mediarepo-ui-${{ runner.os }}-debug
@@ -83,11 +89,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: switch working directory
-      run: cd mediarepo-ui
+      if: ${{ !env.ACT }}
 
     - name: Cache Dependencies
+      if: ${{ !env.ACT }}
       id: cache-dependencies
       uses: actions/cache@v2
       with:
@@ -122,13 +127,14 @@ jobs:
       uses: knicknic/os-specific-run@v1.0.3
       with:
         linux: |
-          sudo apt update
-          sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
     - name: Build project
       run: cargo tauri build
 
     - name: Upload artifacts
+      if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         name: mediarepo-ui-${{ runner.os }}-release
