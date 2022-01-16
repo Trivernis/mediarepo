@@ -202,8 +202,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         if (!this.displayImported && !this.displayDeleted && !this.displayArchived) {
             this.displayImported = true;
             this.displayArchived = true;
-            this.updateStatusFilters();
         }
+        this.updateStatusFilters();
     }
 
     private updateStatusFilters() {
