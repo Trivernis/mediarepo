@@ -42,8 +42,8 @@ jobs:
         uses: knicknic/os-specific-run@v1.0.3
         with:
           linux: |
-            apt-get update
-            DEBIAN_FRONTEND=noninteractive apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
+            sudo apt-get update
+            DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
       - name: Build
         run: cargo build
