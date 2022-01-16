@@ -1,5 +1,5 @@
 use sea_orm::DbErr;
-use std::fmt::{Display, Formatter};
+use std::fmt::{Debug, Formatter};
 use thiserror::Error;
 
 pub type RepoResult<T> = Result<T, RepoError>;
@@ -31,8 +31,14 @@ pub enum RepoError {
     #[error(transparent)]
     Thumbnailer(#[from] thumbnailer::error::ThumbError),
 
-    #[error("No free tcp port available")]
+    #[error("no free tcp port available")]
     PortUnavailable,
+
+    #[error("failed to decode data {0}")]
+    Decode(#[from] data_encoding::DecodeError),
+
+    #[error("Failed to read repo.toml configuration file {0}")]
+    Config(#[from] config::ConfigError),
 }
 
 #[derive(Error, Debug)]
@@ -56,9 +62,9 @@ pub enum RepoDatabaseError {
 #[derive(Debug)]
 pub struct StringError(String);
 
-impl Display for StringError {
+impl std::fmt::Display for StringError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
+        std::fmt::Display::fmt(&self.0, f)
     }
 }
 

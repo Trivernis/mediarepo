@@ -1,5 +1,6 @@
 use crate::error::RepoResult;
 use crate::utils::get_folder_size;
+use std::fmt::Debug;
 use std::io::Result;
 use std::path::PathBuf;
 use tokio::fs;
@@ -75,6 +76,37 @@ impl ThumbnailStore {
         }
 
         Ok(entries)
+    }
+
+    /// Renames a thumbnail parent
+    #[tracing::instrument(level = "debug")]
+    pub async fn rename_parent<S1: AsRef<str> + Debug, S2: AsRef<str> + Debug>(
+        &self,
+        src: S1,
+        dst: S2,
+    ) -> Result<()> {
+        let src_dir = self.path.join(src.as_ref());
+        if !src_dir.exists() {
+            tracing::warn!("directory {:?} doesn't exist", src_dir);
+            return Ok(());
+        }
+        let dst_dir = self.path.join(dst.as_ref());
+
+        fs::rename(src_dir, dst_dir).await
+    }
+
+    /// Deletes all thumbnails of a parent
+    #[tracing::instrument(level = "debug")]
+    pub async fn delete_parent<S: AsRef<str> + Debug>(&self, parent: S) -> Result<()> {
+        let path = PathBuf::from(parent.as_ref());
+
+        if !path.exists() {
+            tracing::warn!("directory {:?} doesn't exist", path);
+            return Ok(());
+        }
+        fs::remove_dir_all(&path).await?;
+
+        Ok(())
     }
 
     /// Returns the size of the folder

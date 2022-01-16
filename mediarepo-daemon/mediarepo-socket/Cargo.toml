@@ -11,6 +11,7 @@ serde = "^1.0.130"
 tracing = "^0.1.29"
 compare = "^0.1.0"
 port_check = "^0.1.5"
+rayon = "1.5.1"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"

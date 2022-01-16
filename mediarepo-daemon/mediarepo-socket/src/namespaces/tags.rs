@@ -1,10 +1,12 @@
 use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
 use mediarepo_core::bromine::prelude::*;
+use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
 use mediarepo_core::mediarepo_api::types::tags::{
     ChangeFileTagsRequest, NamespaceResponse, TagResponse,
 };
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 pub struct TagsNamespace;
 
@@ -78,7 +80,13 @@ impl TagsNamespace {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<GetFilesTagsRequest>()?;
         let tag_responses: Vec<TagResponse> = repo
-            .find_tags_for_hashes(request.hashes)
+            .find_tags_for_file_identifiers(
+                request
+                    .cds
+                    .into_par_iter()
+                    .filter_map(|c| decode_content_descriptor(c).ok())
+                    .collect(),
+            )
             .await?
             .into_iter()
             .map(TagResponse::from_model)

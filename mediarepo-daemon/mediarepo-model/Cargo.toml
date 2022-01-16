@@ -15,7 +15,6 @@ mime = "^0.3.16"
 tracing = "^0.1.29"
 async-trait = "^0.1.51"
 
-
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
 

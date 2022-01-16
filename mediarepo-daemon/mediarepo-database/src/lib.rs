@@ -1,6 +1,7 @@
 use mediarepo_core::error::RepoDatabaseResult;
-use sea_orm::{Database, DatabaseConnection};
+use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use sqlx::migrate::MigrateDatabase;
+use std::time::Duration;
 
 pub mod entities;
 pub mod queries;
@@ -8,7 +9,11 @@ pub mod queries;
 /// Connects to the database, runs migrations and returns the RepoDatabase wrapper type
 pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<DatabaseConnection> {
     migrate(uri.as_ref()).await?;
-    let conn = Database::connect(uri.as_ref()).await?;
+    let mut opt = ConnectOptions::new(uri.as_ref().to_string());
+    opt.connect_timeout(Duration::from_secs(10))
+        .idle_timeout(Duration::from_secs(10));
+
+    let conn = Database::connect(opt).await?;
 
     Ok(conn)
 }

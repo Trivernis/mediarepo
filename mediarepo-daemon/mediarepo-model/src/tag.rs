@@ -1,8 +1,8 @@
 use std::fmt::Debug;
 
 use mediarepo_core::error::RepoResult;
-use mediarepo_database::entities::hash;
-use mediarepo_database::entities::hash_tag;
+use mediarepo_database::entities::content_descriptor;
+use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 use sea_orm::prelude::*;
@@ -118,15 +118,18 @@ impl Tag {
 
     /// Returns all tags that are assigned to any of the passed hashes
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn for_hash_list(
-        db: DatabaseConnection,
-        hashes: Vec<String>,
-    ) -> RepoResult<Vec<Self>> {
+    pub async fn for_cd_list(db: DatabaseConnection, cds: Vec<Vec<u8>>) -> RepoResult<Vec<Self>> {
         let tags: Vec<Self> = tag::Entity::find()
             .find_also_related(namespace::Entity)
-            .join(JoinType::LeftJoin, hash_tag::Relation::Tag.def().rev())
-            .join(JoinType::InnerJoin, hash_tag::Relation::Hash.def())
-            .filter(hash::Column::Value.is_in(hashes))
+            .join(
+                JoinType::LeftJoin,
+                content_descriptor_tag::Relation::Tag.def().rev(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                content_descriptor_tag::Relation::ContentDescriptorId.def(),
+            )
+            .filter(content_descriptor::Column::Descriptor.is_in(cds))
             .group_by(tag::Column::Id)
             .all(&db)
             .await?

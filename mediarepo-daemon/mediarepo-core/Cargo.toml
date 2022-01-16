@@ -17,7 +17,9 @@ typemap_rev = "^0.1.5"
 futures = "^0.3.19"
 itertools = "^0.10.3"
 glob = "^0.3.0"
-tracing = "0.1.29"
+tracing = "^0.1.29"
+data-encoding = "^2.3.2"
+tokio-graceful-shutdown = "^0.4.3"
 
 [dependencies.thumbnailer]
 version = "^0.2.4"
@@ -36,9 +38,13 @@ features = ["migrate"]
 version = "^1.15.0"
 features = ["fs", "io-util", "io-std"]
 
+[dependencies.config]
+version = "^0.11.0"
+features = ["toml"]
+
 [dependencies.mediarepo-api]
 git = "https://github.com/Trivernis/mediarepo-api.git"
-rev = "0c897acfd959c776fc10bd8fabdd2eb22b437be3"
+rev = "9fd25e4696cdd68886fa98579aef4fa2ca561dc0"
 features = ["bromine"]
 
 [features]

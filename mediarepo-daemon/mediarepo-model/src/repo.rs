@@ -1,11 +1,14 @@
+use crate::content_descriptor::ContentDescriptor;
+use crate::file::filter::FilterProperty;
 use crate::file::File;
-use crate::file_type::FileType;
+use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
-use crate::storage::Storage;
 use crate::tag::Tag;
 use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
+use mediarepo_core::content_descriptor::{encode_content_descriptor, is_v1_content_descriptor};
 use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
@@ -20,29 +23,37 @@ use std::iter::FromIterator;
 use std::path::PathBuf;
 use std::str::FromStr;
 use tokio::fs::OpenOptions;
-use tokio::io::BufReader;
+use tokio::io::AsyncReadExt;
 
 #[derive(Clone)]
 pub struct Repo {
     db: DatabaseConnection,
-    main_storage: Option<Storage>,
-    thumbnail_storage: Option<ThumbnailStore>,
+    main_storage: FileHashStore,
+    thumbnail_storage: ThumbnailStore,
 }
 
 impl Repo {
-    pub(crate) fn new(db: DatabaseConnection) -> Self {
+    pub(crate) fn new(
+        db: DatabaseConnection,
+        file_store_path: PathBuf,
+        thumb_store_path: PathBuf,
+    ) -> Self {
         Self {
             db,
-            main_storage: None,
-            thumbnail_storage: None,
+            main_storage: FileHashStore::new(file_store_path),
+            thumbnail_storage: ThumbnailStore::new(thumb_store_path),
         }
     }
 
     /// Connects to the database with the given uri
     #[tracing::instrument(level = "debug")]
-    pub async fn connect<S: AsRef<str> + Debug>(uri: S) -> RepoResult<Self> {
+    pub async fn connect<S: AsRef<str> + Debug>(
+        uri: S,
+        file_store_path: PathBuf,
+        thumb_store_path: PathBuf,
+    ) -> RepoResult<Self> {
         let db = get_database(uri).await?;
-        Ok(Self::new(db))
+        Ok(Self::new(db, file_store_path, thumb_store_path))
     }
 
     /// Returns the database of the repo for raw sql queries
@@ -50,49 +61,10 @@ impl Repo {
         &self.db
     }
 
-    /// Returns all available storages
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn storages(&self) -> RepoResult<Vec<Storage>> {
-        Storage::all(self.db.clone()).await
-    }
-
-    /// Returns a storage by path
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn storage_by_path<S: ToString + Debug>(
-        &self,
-        path: S,
-    ) -> RepoResult<Option<Storage>> {
-        Storage::by_path(self.db.clone(), path).await
-    }
-
-    /// Sets the main storage
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_main_storage<S: ToString + Debug>(&mut self, name: S) -> RepoResult<()> {
-        self.main_storage = Storage::by_name(self.db.clone(), name.to_string()).await?;
-        Ok(())
-    }
-
-    /// Sets the default thumbnail storage
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn set_thumbnail_storage(&mut self, path: PathBuf) -> RepoResult<()> {
-        self.thumbnail_storage = Some(ThumbnailStore::new(path));
-        Ok(())
-    }
-
-    /// Adds a storage to the repository
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn add_storage<S1: ToString + Debug, S2: ToString + Debug>(
-        &self,
-        name: S1,
-        path: S2,
-    ) -> RepoResult<Storage> {
-        Storage::create(self.db.clone(), name, path).await
-    }
-
     /// Returns a file by its mapped hash
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn file_by_hash<S: AsRef<str> + Debug>(&self, hash: S) -> RepoResult<Option<File>> {
-        File::by_hash(self.db.clone(), hash).await
+    pub async fn file_by_cd(&self, cd: &[u8]) -> RepoResult<Option<File>> {
+        File::by_cd(self.db.clone(), cd).await
     }
 
     /// Returns a file by id
@@ -109,23 +81,17 @@ impl Repo {
 
     /// Finds all files by a list of tags
     #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files_by_tags(
+    pub async fn find_files_by_filters(
         &self,
-        tags: Vec<Vec<(String, bool)>>,
+        filters: Vec<Vec<FilterProperty>>,
     ) -> RepoResult<Vec<File>> {
-        let parsed_tags = tags
-            .iter()
-            .flat_map(|e| e.into_iter().map(|t| parse_namespace_and_tag(t.0.clone())))
-            .unique()
-            .collect();
+        File::find_by_filters(self.db.clone(), filters).await
+    }
 
-        let db_tags = self.tags_by_names(parsed_tags).await?;
-        let tag_map: HashMap<String, i64> =
-            HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
-
-        let tag_ids = process_filters_with_tag_ids(tags, tag_map);
-
-        File::find_by_tags(self.db.clone(), tag_ids).await
+    /// Returns all file metadata entries for the given file ids
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_file_metadata_for_ids(&self, ids: Vec<i64>) -> RepoResult<Vec<FileMetadata>> {
+        FileMetadata::all_by_ids(self.db.clone(), ids).await
     }
 
     /// Adds a file from bytes to the database
@@ -137,63 +103,69 @@ impl Repo {
         creation_time: NaiveDateTime,
         change_time: NaiveDateTime,
     ) -> RepoResult<File> {
-        let storage = self.get_main_storage()?;
+        let file_size = content.len();
         let reader = Cursor::new(content);
-        let hash = storage.store_entry(reader).await?;
+        let cd_binary = self.main_storage.add_file(reader, None).await?;
+        let cd = ContentDescriptor::add(self.db.clone(), cd_binary).await?;
 
-        let (mime_type, file_type) = mime_type
+        let mime_type = mime_type
             .and_then(|m| mime::Mime::from_str(&m).ok())
-            .map(|m| (Some(m.to_string()), FileType::from(m)))
-            .unwrap_or((None, FileType::Unknown));
+            .unwrap_or_else(|| mime::APPLICATION_OCTET_STREAM)
+            .to_string();
 
-        File::add(
+        let file = File::add(self.db.clone(), cd.id(), mime_type).await?;
+        FileMetadata::add(
             self.db.clone(),
-            storage.id(),
-            hash.id(),
-            file_type,
-            mime_type,
+            file.id(),
+            file_size as i64,
             creation_time,
             change_time,
         )
-        .await
+        .await?;
+
+        Ok(file)
     }
 
     /// Adds a file to the database by its readable path in the file system
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
-        let mime_match = mime_guess::from_path(&path).first();
+        let mime_type = mime_guess::from_path(&path).first().map(|m| m.to_string());
 
-        let (mime_type, file_type) = if let Some(mime) = mime_match {
-            (Some(mime.clone().to_string()), FileType::from(mime))
-        } else {
-            (None, FileType::Unknown)
-        };
-        let os_file = OpenOptions::new().read(true).open(&path).await?;
-        let reader = BufReader::new(os_file);
+        let mut os_file = OpenOptions::new().read(true).open(&path).await?;
+        let mut buf = Vec::new();
+        os_file.read_to_end(&mut buf).await?;
 
-        let storage = self.get_main_storage()?;
-        let hash = storage.store_entry(reader).await?;
-        File::add(
-            self.db.clone(),
-            storage.id(),
-            hash.id(),
-            file_type,
+        self.add_file(
             mime_type,
+            buf,
             Local::now().naive_local(),
             Local::now().naive_local(),
         )
         .await
     }
 
+    /// Deletes a file from the database and disk
+    #[tracing::instrument(level = "debug", skip(self, file))]
+    pub async fn delete_file(&self, file: File) -> RepoResult<()> {
+        let cd = file.cd().to_owned();
+        let cd_string = file.encoded_cd();
+        file.delete().await?;
+        self.main_storage.delete_file(&cd).await?;
+        self.thumbnail_storage.delete_parent(&cd_string).await?;
+
+        Ok(())
+    }
+
     /// Returns all thumbnails of a file
-    pub async fn get_file_thumbnails(&self, file_hash: String) -> RepoResult<Vec<Thumbnail>> {
-        let thumb_store = self.get_thumbnail_storage()?;
-        let thumbnails = thumb_store
-            .get_thumbnails(&file_hash)
+    pub async fn get_file_thumbnails(&self, file_cd: &[u8]) -> RepoResult<Vec<Thumbnail>> {
+        let file_cd = encode_content_descriptor(file_cd);
+        let thumbnails = self
+            .thumbnail_storage
+            .get_thumbnails(&file_cd)
             .await?
             .into_iter()
             .map(|(size, path)| Thumbnail {
-                file_hash: file_hash.to_owned(),
+                file_hash: file_cd.to_owned(),
                 path,
                 size,
                 mime_type: mime::IMAGE_PNG.to_string(),
@@ -203,18 +175,25 @@ impl Repo {
         Ok(thumbnails)
     }
 
+    pub async fn get_file_bytes(&self, file: &File) -> RepoResult<Vec<u8>> {
+        let mut buf = Vec::new();
+        let mut reader = file.get_reader(&self.main_storage).await?;
+        reader.read_to_end(&mut buf).await?;
+
+        Ok(buf)
+    }
+
     /// Creates thumbnails of all sizes for a file
     #[tracing::instrument(level = "debug", skip(self, file))]
     pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<Vec<Thumbnail>> {
-        let thumb_storage = self.get_thumbnail_storage()?;
         let size = ThumbnailSize::Medium;
         let (height, width) = size.dimensions();
-        let thumbs = file.create_thumbnail([size]).await?;
+        let thumbs = file.create_thumbnail(&self.main_storage, [size]).await?;
         let mut created_thumbs = Vec::with_capacity(1);
 
         for thumb in thumbs {
             let entry = self
-                .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
+                .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
                 .await?;
             created_thumbs.push(entry);
         }
@@ -228,15 +207,14 @@ impl Repo {
         file: &File,
         size: ThumbnailSize,
     ) -> RepoResult<Thumbnail> {
-        let thumb_storage = self.get_thumbnail_storage()?;
         let (height, width) = size.dimensions();
         let thumb = file
-            .create_thumbnail([size])
+            .create_thumbnail(&self.main_storage, [size])
             .await?
             .pop()
             .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
         let thumbnail = self
-            .store_single_thumbnail(file.hash().to_owned(), thumb_storage, height, width, thumb)
+            .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
             .await?;
 
         Ok(thumbnail)
@@ -246,7 +224,6 @@ impl Repo {
     async fn store_single_thumbnail(
         &self,
         file_hash: String,
-        thumb_storage: &ThumbnailStore,
         height: u32,
         width: u32,
         thumb: mediarepo_core::thumbnailer::Thumbnail,
@@ -254,7 +231,8 @@ impl Repo {
         let mut buf = Vec::new();
         thumb.write_png(&mut buf)?;
         let size = Dimensions { height, width };
-        let path = thumb_storage
+        let path = self
+            .thumbnail_storage
             .add_thumbnail(&file_hash, size.clone(), &buf)
             .await?;
 
@@ -280,6 +258,22 @@ impl Repo {
         Namespace::all(self.db.clone()).await
     }
 
+    /// Converts a list of tag names to tag ids
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn tag_names_to_ids(&self, tags: Vec<String>) -> RepoResult<HashMap<String, i64>> {
+        let parsed_tags = tags
+            .iter()
+            .map(|tag| parse_namespace_and_tag(tag.clone()))
+            .unique()
+            .collect();
+
+        let db_tags = self.tags_by_names(parsed_tags).await?;
+        let tag_map: HashMap<String, i64> =
+            HashMap::from_iter(db_tags.into_iter().map(|t| (t.normalized_name(), t.id())));
+
+        Ok(tag_map)
+    }
+
     /// Finds all tags by name
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags_by_names(&self, tags: Vec<(Option<String>, String)>) -> RepoResult<Vec<Tag>> {
@@ -288,8 +282,8 @@ impl Repo {
 
     /// Finds all tags that are assigned to the given list of hashes
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn find_tags_for_hashes(&self, hashes: Vec<String>) -> RepoResult<Vec<Tag>> {
-        Tag::for_hash_list(self.db.clone(), hashes).await
+    pub async fn find_tags_for_file_identifiers(&self, cds: Vec<Vec<u8>>) -> RepoResult<Vec<Tag>> {
+        Tag::for_cd_list(self.db.clone(), cds).await
     }
 
     /// Adds all tags that are not in the database to the database and returns the ones already existing as well
@@ -393,16 +387,14 @@ impl Repo {
     #[inline]
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_main_store_size(&self) -> RepoResult<u64> {
-        let main_storage = self.get_main_storage()?;
-        main_storage.get_size().await
+        self.main_storage.get_size().await
     }
 
     /// Returns the size of the thumbnail storage
     #[inline]
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_thumb_store_size(&self) -> RepoResult<u64> {
-        let thumb_storage = self.get_thumbnail_storage()?;
-        thumb_storage.get_size().await
+        self.thumbnail_storage.get_size().await
     }
 
     /// Returns all entity counts
@@ -412,67 +404,29 @@ impl Repo {
         get_all_counts(&self.db).await
     }
 
-    #[tracing::instrument(level = "trace", skip(self))]
-    fn get_main_storage(&self) -> RepoResult<&Storage> {
-        if let Some(storage) = &self.main_storage {
-            Ok(storage)
-        } else {
-            Err(RepoError::from("No main storage configured."))
-        }
-    }
+    pub async fn migrate(&self) -> RepoResult<()> {
+        let cds = ContentDescriptor::all(self.db.clone()).await?;
 
-    #[tracing::instrument(level = "trace", skip(self))]
-    fn get_thumbnail_storage(&self) -> RepoResult<&ThumbnailStore> {
-        if let Some(storage) = &self.thumbnail_storage {
-            Ok(storage)
-        } else {
-            Err(RepoError::from("No thumbnail storage configured."))
-        }
-    }
-}
+        tracing::info!("Converting content descriptors to v2 format...");
+        let mut converted_count = 0;
 
-fn process_filters_with_tag_ids(
-    filters: Vec<Vec<(String, bool)>>,
-    tag_ids: HashMap<String, i64>,
-) -> Vec<Vec<(i64, bool)>> {
-    let mut id_filters = Vec::new();
-
-    for expression in filters {
-        let mut id_sub_filters = Vec::new();
-        let mut negated_wildcard_filters = Vec::new();
-
-        for (tag, negate) in expression {
-            if tag.ends_with("*") {
-                let tag_prefix = tag.trim_end_matches('*');
-                let mut found_tag_ids = tag_ids
-                    .iter()
-                    .filter(|(k, _)| k.starts_with(tag_prefix))
-                    .map(|(_, id)| (*id, negate))
-                    .collect::<Vec<(i64, bool)>>();
-
-                if negate {
-                    negated_wildcard_filters.push(found_tag_ids)
-                } else {
-                    id_sub_filters.append(&mut found_tag_ids);
-                }
-            } else {
-                if let Some(id) = tag_ids.get(&tag) {
-                    id_sub_filters.push((*id, negate));
-                }
+        for mut cd in cds {
+            if is_v1_content_descriptor(cd.descriptor()) {
+                let src_cd = cd.descriptor().to_owned();
+                cd.convert_v1_to_v2().await?;
+                let dst_cd = cd.descriptor().to_owned();
+                self.main_storage.rename_file(&src_cd, &dst_cd).await?;
+                self.thumbnail_storage
+                    .rename_parent(
+                        encode_content_descriptor(&src_cd),
+                        encode_content_descriptor(&dst_cd),
+                    )
+                    .await?;
+                converted_count += 1;
             }
         }
-        if !negated_wildcard_filters.is_empty() {
-            for wildcard_filter in negated_wildcard_filters {
-                for query in wildcard_filter {
-                    let mut sub_filters = id_sub_filters.clone();
-                    sub_filters.push(query);
-                    id_filters.push(sub_filters)
-                }
-            }
-        } else if !id_sub_filters.is_empty() {
-            id_filters.push(id_sub_filters);
-        }
-    }
+        tracing::info!("Converted {} descriptors", converted_count);
 
-    id_filters
+        Ok(())
+    }
 }
