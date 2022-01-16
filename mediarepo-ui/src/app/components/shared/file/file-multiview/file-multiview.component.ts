@@ -1,28 +1,25 @@
-import {
-    AfterViewInit,
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-    ViewChild
-} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild} from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {FileGalleryComponent} from "./file-gallery/file-gallery.component";
 import {FileGridComponent} from "./file-grid/file-grid.component";
+import {FileActionBaseComponent} from "../../app-base/file-action-base/file-action-base.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {FileService} from "../../../../services/file/file.service";
 
 @Component({
     selector: "app-file-multiview",
     templateUrl: "./file-multiview.component.html",
     styleUrls: ["./file-multiview.component.scss"]
 })
-export class FileMultiviewComponent implements AfterViewInit {
+export class FileMultiviewComponent extends FileActionBaseComponent implements AfterViewInit {
 
     @Input() files!: File[];
     @Input() mode: "grid" | "gallery" = "grid";
 
     @Output() fileOpenEvent = new EventEmitter<File>();
     @Output() fileSelectEvent = new EventEmitter<File[]>();
-    @Output() modeChangeEvent = new EventEmitter<"grid"|"gallery">();
+    @Output() modeChangeEvent = new EventEmitter<"grid" | "gallery">();
 
     @ViewChild(FileGalleryComponent) fileGallery!: FileGalleryComponent;
     @ViewChild(FileGridComponent) fileGrid!: FileGridComponent;
@@ -30,7 +27,8 @@ export class FileMultiviewComponent implements AfterViewInit {
     public selectedFiles: File[] = [];
     @Input() public preselectedFile: File | undefined;
 
-    constructor() {
+    constructor(dialog: MatDialog, errorBroker: ErrorBrokerService, fileService: FileService) {
+        super(dialog, errorBroker, fileService);
     }
 
     public ngAfterViewInit(): void {
@@ -65,5 +63,19 @@ export class FileMultiviewComponent implements AfterViewInit {
     public setMode(mode: "grid" | "gallery") {
         this.mode = mode;
         this.modeChangeEvent.emit(mode);
+    }
+
+    public async onFileDelete(files: File[]): Promise<void> {
+        let deletePermanently = true;
+
+        for (const file of files) {
+            deletePermanently &&= file.status === "Deleted";
+        }
+
+        if (deletePermanently) {
+            await this.deletePermanently(files);
+        } else {
+            await this.updateStatus(files, "Deleted");
+        }
     }
 }

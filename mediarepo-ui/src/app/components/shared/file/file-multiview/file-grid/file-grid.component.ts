@@ -16,6 +16,7 @@ import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
 import {FileService} from "../../../../../services/file/file.service";
 import {Selectable} from "../../../../../models/Selectable";
+import {Key} from "w3c-keys";
 
 @Component({
     selector: "app-file-grid",
@@ -27,8 +28,9 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     @Input() files: File[] = [];
     @Input() columns: number = 6;
     @Input() preselectedFile: File | undefined;
-    @Output() fileOpenEvent = new EventEmitter<File>();
-    @Output() fileSelectEvent = new EventEmitter<File[]>();
+    @Output() fileOpen = new EventEmitter<File>();
+    @Output() fileSelect = new EventEmitter<File[]>();
+    @Output() fileDelete = new EventEmitter<File[]>();
 
     @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
@@ -89,7 +91,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                 this.selectedEntries.push(clickedEntry);
             }
         }
-        this.fileSelectEvent.emit(this.selectedEntries.map(g => g.data));
+        this.fileSelect.emit(this.selectedEntries.map(g => g.data));
     }
 
     public selectEntryWhenNotSelected(entry: Selectable<File>) {
@@ -119,26 +121,26 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         this.ctrlClicked ||= event.ctrlKey;
 
         switch (event.key) {
-            case "ArrowRight":
+            case Key.ArrowRight:
                 this.handleArrowSelect("right");
                 break;
-            case "ArrowLeft":
+            case Key.ArrowLeft:
                 this.handleArrowSelect("left");
                 break;
-            case "ArrowDown":
+            case Key.ArrowDown:
                 this.handleArrowSelect("down");
                 break;
-            case "ArrowUp":
+            case Key.ArrowUp:
                 this.handleArrowSelect("up");
                 break;
-            case "PageDown":
+            case Key.PageDown:
                 this.pageDown();
                 break;
-            case "PageUp":
+            case Key.PageUp:
                 this.pageUp();
                 break;
-            case "a":
-            case "A":
+            case Key.a:
+            case Key.A:
                 if (this.shiftClicked && this.ctrlClicked) {
                     this.selectNone();
                 } else if (this.ctrlClicked) {
@@ -146,10 +148,13 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                     this.selectAll();
                 }
                 break;
-            case "Enter":
+            case Key.Enter:
                 if (this.selectedEntries.length === 1) {
-                    this.fileOpenEvent.emit(this.selectedEntries[0].data);
+                    this.fileOpen.emit(this.selectedEntries[0].data);
                 }
+                break;
+            case Key.Delete:
+                this.fileDelete.emit(this.selectedEntries.map(e => e.data));
                 break;
         }
     }

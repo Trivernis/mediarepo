@@ -1,8 +1,8 @@
 <div #inner (keyDownEvent)="handleKeydownEvent($event)" appInputReceiver class="gallery-container" fxLayout="column">
-    <button (click)="this.closeEvent.emit(this)" class="close-button" mat-icon-button>
+    <button (click)="this.appClose.emit(this)" class="close-button" mat-icon-button>
         <ng-icon name="mat-close"></ng-icon>
     </button>
-    <div (dblclick)="this.selectedFile? this.fileDblClickEvent.emit(this.selectedFile.data) : null"
+    <div (dblclick)="this.selectedFile? this.fileDblClick.emit(this.selectedFile.data) : null"
          class="file-full-view"
          fxFlex="80%">
         <app-content-viewer (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, [this.selectedFile!.data])"

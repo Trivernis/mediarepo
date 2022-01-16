@@ -10,7 +10,7 @@
                 <app-file-card
                     (clickEvent)="setSelectedFile($event.entry)"
                     (contextmenu)="this.selectEntryWhenNotSelected(gridEntry); fileContextMenu.onContextMenu($event, this.getSelectedFiles())"
-                    (dblClickEvent)="fileOpenEvent.emit($event.entry.data)"
+                    (dblClickEvent)="fileOpen.emit($event.entry.data)"
                     *ngFor="let gridEntry of rowEntry"
                     [entry]="gridEntry"></app-file-card>
             </div>
@@ -19,7 +19,7 @@
 
 </div>
 <app-file-context-menu #fileContextMenu>
-    <button (click)="this.fileOpenEvent.emit(fileContextMenu.files[0])"
+    <button (click)="this.fileOpen.emit(fileContextMenu.files[0])"
             *ngIf="fileContextMenu.files.length === 1"
             content-before=""
             mat-menu-item>Open

@@ -8861,6 +8861,11 @@ void-elements@^2.0.0:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
+w3c-keys@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/w3c-keys/-/w3c-keys-1.0.3.tgz#822e055545943427d94b4233661aeb277db4846a"
+  integrity sha512-us/8uEJL9s/TXLgkJ+MCIh4/ceena10XW/Bl+7trCYCxLcUigspZkcqpRPTxTs4x4usm04BGfex7dENoTQ6JaA==
+
 watchpack@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-2.3.1.tgz#4200d9447b401156eeca7767ee610f8809bc9d25"

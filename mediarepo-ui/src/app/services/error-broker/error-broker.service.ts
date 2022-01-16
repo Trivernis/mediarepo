@@ -24,6 +24,15 @@ export class ErrorBrokerService {
         });
     }
 
+    async try<T>(fn: () => Promise<T>): Promise<T | undefined> {
+        try {
+            return await fn();
+        } catch (err) {
+            this.showError(err);
+            return;
+        }
+    }
+
     showInfo(info: string) {
         console.log(info);
         if (this.infoCb) {

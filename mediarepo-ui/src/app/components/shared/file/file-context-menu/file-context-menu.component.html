@@ -1,23 +1,25 @@
 <app-context-menu #contextMenu>
     <ng-content select="[content-before]"></ng-content>
     <ng-container *ngIf="this.files">
-        <button (click)="this.updateStatus('Archived')" *ngIf="actionArchive" mat-menu-item>Archive
+        <button (click)="this.updateStatus(this.files, 'Archived')" *ngIf="actionArchive" mat-menu-item>Archive
         </button>
-        <button (click)="this.updateStatus('Imported')" *ngIf="actionImported" mat-menu-item>Back to
+        <button (click)="this.updateStatus(this.files, 'Imported')" *ngIf="actionImported" mat-menu-item>Back to
             imported
         </button>
-        <button (click)="this.updateStatus('Deleted')"
+        <button (click)="this.updateStatus(this.files, 'Deleted')"
                 *ngIf="actionDelete"
                 mat-menu-item>Delete
         </button>
-        <button (click)="this.deletePermanently()" *ngIf="actionDeletePermantently" mat-menu-item>Delete permanently
+        <button (click)="this.deletePermanently(this.files)" *ngIf="actionDeletePermantently" mat-menu-item>Delete
+            permanently
         </button>
-        <button (click)="this.updateStatus('Archived')" *ngIf="actionRestore" mat-menu-item>Restore</button>
+        <button (click)="this.updateStatus(this.files, 'Archived')" *ngIf="actionRestore" mat-menu-item>Restore</button>
 
         <!-- everything that only applies to a single file -->
         <ng-container>
-            <button (click)="this.copyFileHash()" mat-menu-item>Copy Hash</button>
-            <button (click)="this.exportFile()" mat-menu-item>Save As...</button>
+            <button (click)="this.copyFileContentDescriptor(this.files[0])" mat-menu-item>Copy Content Descriptor
+            </button>
+            <button (click)="this.exportFile(this.files[0])" mat-menu-item>Save As...</button>
         </ng-container>
     </ng-container>
     <ng-content></ng-content>

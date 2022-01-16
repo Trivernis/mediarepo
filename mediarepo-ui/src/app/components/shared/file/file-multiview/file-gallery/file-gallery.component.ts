@@ -16,6 +16,7 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../../../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
+import {Key} from "w3c-keys";
 
 @Component({
     selector: "app-file-gallery",
@@ -26,9 +27,10 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     @Input() files: File[] = [];
     @Input() preselectedFile: File | undefined;
-    @Output() fileSelectEvent = new EventEmitter<File | undefined>();
-    @Output() fileDblClickEvent = new EventEmitter<File>();
-    @Output() closeEvent = new EventEmitter<FileGalleryComponent>();
+    @Output() fileSelect = new EventEmitter<File | undefined>();
+    @Output() fileDblClick = new EventEmitter<File>();
+    @Output() appClose = new EventEmitter<FileGalleryComponent>();
+    @Output() fileDelete = new EventEmitter<File>();
     entries: Selectable<File>[] = [];
 
     @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
@@ -86,11 +88,13 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
             if (this.virtualScroll) {
                 clearTimeout(this.scrollTimeout);
-                this.scrollTimeout = setTimeout(() => this.scrollToSelection(),
-                    0);  // we need to make sure the viewport has rendered
+                this.scrollTimeout = setTimeout(
+                    () => this.scrollToSelection(),
+                    0
+                );  // we need to make sure the viewport has rendered
             }
 
-            this.fileSelectEvent.emit(this.selectedFile.data);
+            this.fileSelect.emit(this.selectedFile.data);
         }
     }
 
@@ -150,14 +154,19 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     public async handleKeydownEvent(event: KeyboardEvent) {
         switch (event.key) {
-            case "ArrowRight":
+            case Key.ArrowRight:
                 await this.nextItem();
                 break;
-            case "ArrowLeft":
+            case Key.ArrowLeft:
                 await this.previousItem();
                 break;
-            case "Escape":
+            case Key.Escape:
                 this.onEscapeClick();
+                break;
+            case Key.Delete:
+                if (this.selectedFile) {
+                    this.fileDelete.emit(this.selectedFile.data);
+                }
                 break;
         }
     }
@@ -173,7 +182,8 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             if (selectedIndex > indexAdjustment) {
                 this.virtualScroll.scrollToOffset(
                     this.virtualScroll.measureScrollOffset("left") + 130,
-                    "smooth");
+                    "smooth"
+                );
             }
         }
     }
@@ -192,7 +202,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     private onEscapeClick(): void {
         if (this.escapeCount === 1) {
-            this.closeEvent.emit(this);
+            this.appClose.emit(this);
         } else {
             this.escapeCount++;
             setTimeout(() => this.escapeCount--, 500);
