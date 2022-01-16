@@ -1,0 +1,64 @@
+#content {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    overflow: hidden
+}
+
+mat-tab-group {
+    height: 100%;
+    width: 100%;
+}
+
+::ng-deep .mat-tab-body-wrapper {
+    height: 100%;
+    width: 100%;
+}
+
+::ng-deep .main-tab-group .mat-tab-label.mat-tab-disabled {
+    width: 2em;
+    min-width: 0;
+    color: white;
+}
+
+::ng-deep .main-tab-group .mat-tab-label {
+    ng-icon {
+        margin-top: -0.5em;
+        --ng-icon__size: 1em;
+    }
+
+    .close-tab-button {
+        float: right;
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        ng-icon {
+            font-size: 1.5em;
+            margin-top: calc(-50%);
+            --ng-icon__size: 0.4em;
+        }
+    }
+}
+
+.new-tab-content {
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    button {
+        display: flex;
+        margin: 1em auto auto;
+    }
+}
+
+.tab-label-div {
+    display: flex;
+}
+
+app-repositories-tab {
+    height: 100%;
+}

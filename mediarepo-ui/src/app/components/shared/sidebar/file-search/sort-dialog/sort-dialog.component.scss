@@ -1,0 +1,59 @@
+mat-dialog-content {
+    height: 100%;
+}
+
+.sort-input-list {
+    display: table;
+    width: 100%;
+}
+
+.sort-input-row {
+    display: table-row;
+    width: 100%;
+}
+
+mat-form-field, .filler, .drag-handle {
+    display: table-cell;
+    padding: 0 1em;
+}
+
+.dialog-actions {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+
+    button {
+        margin-left: 1em;
+    }
+}
+
+.drag-handle {
+    cursor: grab;
+    height: 100%;
+    width: 2em;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+::ng-deep .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+::ng-deep .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drag-placeholder {
+    display: block;
+    height: 71px;
+    width: 100%;
+    background-color: darken(dimgrey, 20);
+    border-radius: 1em;
+}

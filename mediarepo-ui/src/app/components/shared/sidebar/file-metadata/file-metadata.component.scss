@@ -1,0 +1,38 @@
+.file-metadata-inner {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+}
+
+.file-metadata-entries-scroll-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.file-metadata-entries {
+    padding: 0 0.5em;
+    user-select: none;
+    height: auto;
+
+    app-metadata-entry, app-editable-metadata-entry {
+        margin: 0.5em 0;
+        width: 100%;
+        display: block;
+    }
+    :first-child {
+        margin-top: 0;
+    }
+    :last-child {
+        margin-bottom: 0;
+    }
+}
+
+.file-metadata-header {
+    text-align: center;
+    height: 100px;
+    width: 100%;
+    h1 {
+        margin-top: 20px;
+    }
+}

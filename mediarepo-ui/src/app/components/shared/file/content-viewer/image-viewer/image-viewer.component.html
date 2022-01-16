@@ -1,0 +1,16 @@
+<div (mouseenter)="this.mouseInImageView = true" (mouseleave)="this.mouseInImageView = false"
+     class="image-full-view-inner">
+    <div class="zoom-slider">
+        <mat-slider (input)="this.imageZoom=$event.value ?? 1" [value]="this.imageZoom" max="4"
+                    min="0.5" step="0.1" vertical></mat-slider>
+        <button (click)="this.resetImage()" mat-icon-button>
+            <ng-icon name="mat-refresh"></ng-icon>
+        </button>
+    </div>
+    <div (cdkDragMoved)="this.onDragMoved($event)"
+         [cdkDragFreeDragPosition]="this.imagePosition" cdkDrag class="image-drag-container">
+        <div [style]="{scale: this.imageZoom}" class="image-scale-container">
+            <app-content-aware-image [imageSrc]="this.imageUrl" decoding="sync"></app-content-aware-image>
+        </div>
+    </div>
+</div>

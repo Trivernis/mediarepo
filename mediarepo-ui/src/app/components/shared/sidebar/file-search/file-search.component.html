@@ -1,0 +1,83 @@
+<div class="search-tab-inner" fxLayout="column">
+    <div id="file-search-input">
+        <div class="status-selector">
+            <mat-checkbox (change)="this.setDisplayImported($event)" [checked]="this.displayImported">Imported
+            </mat-checkbox>
+            <mat-checkbox (change)="this.setDisplayArchived($event)" [checked]="this.displayArchived">Archived
+            </mat-checkbox>
+            <mat-checkbox (change)="this.setDisplayDeleted($event)" [checked]="this.displayDeleted">Deleted
+            </mat-checkbox>
+        </div>
+        <div class="tag-input-list-and-actions">
+            <div #tagInputList class="tag-input-list">
+                <div class="tag-input-list-inner">
+                    <div (click)="removeFilterExpression(filter)"
+                         (contextmenu)="this.contextMenuFilters.onContextMenu($event); this.contextMenuFilter = filter"
+                         *ngFor="let filter of this.displayedFilters"
+                         class="tag-input-item"
+                         mat-ripple>
+                        <app-filter-expression-item [filter]="filter"></app-filter-expression-item>
+                    </div>
+                </div>
+            </div>
+
+            <button (click)="removeAllSearchTags()" id="delete-all-tags-button" mat-icon-button>
+                <ng-icon name="mat-delete-sweep"></ng-icon>
+            </button>
+        </div>
+
+        <app-filter-input (filterAdded)="addFilterExpression($event); searchForFiles()"
+                          [availableTags]="getValidSearchTags()"
+                          [value]="this.initialFilterInputValue"
+                          class="full-width">
+            <button (click)="openFilterDialog()" class="filter-dialog-button" mat-button>
+                <ng-icon name="mat-filter-alt"></ng-icon>
+            </button>
+        </app-filter-input>
+
+        <button (click)="openSortDialog()" id="sort-button" mat-flat-button>Sort: {{sortExpression.join(", ")}}</button>
+    </div>
+
+    <mat-divider fxFlex="1em"></mat-divider>
+    <div class="tag-list-header" fxFlex="40px">
+        <h2>Tags</h2>
+        <mat-divider></mat-divider>
+    </div>
+
+    <div class="file-tag-list" fxFlex fxFlexAlign="start" fxFlexFill>
+
+        <app-busy-indicator [blurBackground]="true" [busy]="this.tagsLoading" [darkenBackground]="false">
+            <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
+                <div (click)="addTagFilter(tag.getNormalizedOutput())"
+                     (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
+                     *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
+                    <app-tag-item [tag]="tag"></app-tag-item>
+                </div>
+            </cdk-virtual-scroll-viewport>
+        </app-busy-indicator>
+    </div>
+
+</div>
+
+<app-context-menu #contextMenu>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.getNormalizedOutput())" *ngIf="this.contextMenuTag"
+            mat-menu-item>Copy
+        "{{contextMenuTag!.getNormalizedOutput()}}"
+    </button>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.name)" *ngIf="this.contextMenuTag?.namespace"
+            mat-menu-item>Copy "{{this.contextMenuTag!.name}}"
+    </button>
+    <button (click)="this.copyToClipboard(this.contextMenuTag!.namespace!)" *ngIf="this.contextMenuTag?.namespace"
+            mat-menu-item>Copy "{{this.contextMenuTag!.namespace!}}"
+    </button>
+</app-context-menu>
+
+<app-context-menu #contextMenuFilters>
+    <button (click)="this.removeFilterExpression(this.contextMenuFilter!)" *ngIf="contextMenuFilter" mat-menu-item>
+        Remove
+    </button>
+    <button (click)="this.removeFilterExpression(this.contextMenuFilter!); this.addFilterToInput(this.contextMenuFilter!)"
+            *ngIf="contextMenuFilter"
+            mat-menu-item>Edit
+    </button>
+</app-context-menu>

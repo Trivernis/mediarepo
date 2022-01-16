@@ -1,0 +1,11 @@
+@import "src/colors";
+
+.property-name {
+    color: $text-darker-10
+}
+
+.comparator {
+    padding-left: .5em;
+    padding-right: .5em;
+    color: $primary-lighter-40;
+}

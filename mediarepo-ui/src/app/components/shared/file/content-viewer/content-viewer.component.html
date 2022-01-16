@@ -1,0 +1,9 @@
+<app-image-viewer *ngIf="getContentType() === 'image' && contentUrl" [imageUrl]="contentUrl"></app-image-viewer>
+<app-video-viewer *ngIf="getContentType() === 'video' && this.blobUrl" [blobUrl]="this.blobUrl!"></app-video-viewer>
+<app-audio-viewer *ngIf="getContentType() === 'audio' && this.blobUrl" [blobUrl]="this.blobUrl!"></app-audio-viewer>
+
+<div *ngIf="getContentType() === 'other'" class="download-prompt">
+    <span>Unsupported content type <b>{{this.file.mimeType}}</b></span>
+    <button (click)="this.downloadContent()" color="primary" mat-flat-button>Download</button>
+</div>
+<app-busy-indicator></app-busy-indicator>

@@ -1,0 +1,18 @@
+<mat-form-field appearance="fill">
+    <mat-label>
+        Enter a filter expression
+    </mat-label>
+    <input
+        (keydown.enter)="addExpressionByInput()"
+        [formControl]="formControl"
+        [matAutocomplete]="auto"
+        [value]="this.value"
+        matInput>
+    <ng-content></ng-content>
+    <mat-autocomplete #auto
+                      (optionSelected)="this.skipEnterOnce = true">
+        <mat-option *ngFor="let filter of autosuggestFilters | async" [value]="filter.value">
+            {{filter.display}}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

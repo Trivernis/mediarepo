@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+    width="120"
+    height="120"
+    viewBox="0 0 120 120"
+    version="1.1"
+    id="svg5"
+    sodipodi:docname="mediarepo-icon.svg"
+    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
+    inkscape:export-filename="/home/trivernis/Pictures/mediarepo-icon_32x32.png"
+    inkscape:export-xdpi="25.6"
+    inkscape:export-ydpi="25.6"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns="http://www.w3.org/2000/svg"
+>
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:lockguides="true"
+     objecttolerance="20"
+     guidetolerance="10000"
+     inkscape:zoom="5.6833333"
+     inkscape:cx="32.199413"
+     inkscape:cy="77.859238"
+     inkscape:window-width="2560"
+     inkscape:window-height="1359"
+     inkscape:window-x="1200"
+     inkscape:window-y="240"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid13779"
+       dotted="false"
+       spacingx="0.5"
+       spacingy="0.5" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Background"
+     style="display:none">
+    <rect
+       style="fill:#010001;fill-opacity:1;stroke:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect40027"
+       width="170"
+       height="142.5"
+       x="-20"
+       y="-10" />
+  </g>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <g
+       aria-label="M"
+       id="text13769"
+       style="font-size:120px;font-family:'DejaVu Sans', 'Bitstream Vera Sans';fill:#b300df;fill-opacity:1;stroke:none;stroke-opacity:1"
+       inkscape:export-filename="/home/trivernis/Pictures/mediarepo-icon_128x128.png"
+       inkscape:export-xdpi="102.4"
+       inkscape:export-ydpi="102.4">
+      <path
+         id="path14062"
+         style="fill:#b300df;fill-opacity:1;stroke:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 91.853516,14.957031 C 87.625624,14.940758 82.986173,16.079346 80,17.5 69.344922,22.56909 60,45 60,45 60,45 50.680027,22.566415 40,17.5 34.688445,14.980293 24.157014,13.342986 20,17.5 -0.61934311,38.119343 15,80 5,105 3.5782709,108.55432 17.01074,102.39141 20,100 32.5,90 33.253324,58.268354 32.5,47.5 33.314651,57.148409 35.039944,78.87714 50,90 c 5.349969,3.977723 14.654765,3.984082 20,0 10.464133,-7.799463 15.084189,-27.639159 17.5,-42.5 -1.296836,17.464817 0,42.5 12.5,52.5 3.00451,2.40361 16.42898,8.57246 15,5 -10,-25 5.61934,-66.880657 -15,-87.5 -1.818694,-1.818694 -4.858124,-2.530312 -8.146484,-2.542969 z M 60,50 c 8.28427,0 15,6.715729 15,15 0,8.28427 -6.71573,15 -15,15 -8.284271,0 -15,-6.71573 -15,-15 0,-8.284271 6.715729,-15 15,-15 z m 0,5.615234 c -5.182976,0 -9.384766,4.201791 -9.384766,9.384766 0,5.182975 4.20179,9.384766 9.384766,9.384766 5.182975,0 9.384766,-4.201791 9.384766,-9.384766 0,-5.182975 -4.201791,-9.384766 -9.384766,-9.384766 z"
+         sodipodi:nodetypes="sscsssscsscssssssssssssss" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<div class="repo-page-content" *ngIf="!selectedRepository">
+    <div class="add-repo-tools">
+        <button (click)="openAddRepositoryDialog()" color="primary" mat-flat-button>Add Repository</button>
+    </div>
+    <div class="repository-list">
+        <div *ngFor="let repository of repositories" class="repository-container">
+            <app-repository-card [repository]="repository" (openEvent)="this.onOpenRepository($event)"></app-repository-card>
+        </div>
+    </div>
+</div>
+<div class="repo-details" *ngIf="selectedRepository">
+    <app-repository-details-view [repository]="selectedRepository"></app-repository-details-view>
+</div>

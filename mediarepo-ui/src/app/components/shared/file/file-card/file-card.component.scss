@@ -1,0 +1,21 @@
+mat-card {
+    height: calc(100% - 32px);
+    width: calc(100% - 32px);
+    user-select: none;
+    cursor: pointer;
+}
+
+mat-card-content {
+    height: 100%;
+    width: 100%;
+}
+
+app-busy-indicator {
+    height: 100%;
+    width: 100%;
+}
+
+.entry-image {
+    width: 100%;
+    height: 100%;
+}

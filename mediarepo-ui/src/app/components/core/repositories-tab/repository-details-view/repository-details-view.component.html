@@ -1,0 +1,44 @@
+<mat-toolbar>
+    <span class="repository-name">{{repository.name}}</span>
+    <button class="button-close-repository" mat-flat-button color="primary" (click)="this.closeRepository()">Close
+    </button>
+</mat-toolbar>
+<div class="details-content" fxLayout="row">
+    <div class="repository-metadata" fxFlex="100%">
+        <h1>Stats</h1>
+        <app-metadata-entry *ngIf="repository.path" attributeName="Path">{{repository.path}}</app-metadata-entry>
+        <app-metadata-entry *ngIf="repository.address" attributeName="Address">{{repository.address}}</app-metadata-entry>
+        <app-metadata-entry attributeName="File Count">
+            <mat-progress-bar *ngIf="!metadata"></mat-progress-bar>
+            {{metadata? metadata!.file_count.toString() : ''}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Tag Count">
+            <mat-progress-bar *ngIf="!metadata"></mat-progress-bar>
+            {{metadata? metadata!.tag_count.toString() : ''}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Namespace Count">
+            <mat-progress-bar *ngIf="!metadata"></mat-progress-bar>
+            {{metadata? metadata!.namespace_count.toString() : ''}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Mapping Count">
+            <mat-progress-bar *ngIf="!metadata"></mat-progress-bar>
+            {{metadata? metadata!.mapping_count.toString() : ''}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Total Size">
+            <mat-progress-bar *ngIf="(this.totalSize | async) === undefined" mode="indeterminate"></mat-progress-bar>
+            {{this.totalSize | async}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="File Folder Size">
+            <mat-progress-bar *ngIf="(this.fileFolderSize | async) === undefined" mode="indeterminate"></mat-progress-bar>
+            {{this.fileFolderSize | async}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Thumbnail Folder Size">
+            <mat-progress-bar *ngIf="(this.thumbFolderSize | async) === undefined" mode="indeterminate"></mat-progress-bar>
+            {{this.thumbFolderSize | async}}
+        </app-metadata-entry>
+        <app-metadata-entry attributeName="Database File Size">
+            <mat-progress-bar *ngIf="(this.databaseFileSize | async) === undefined" mode="indeterminate"></mat-progress-bar>
+            {{this.databaseFileSize | async}}
+        </app-metadata-entry>
+    </div>
+</div>

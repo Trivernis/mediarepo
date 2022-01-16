@@ -1,0 +1,11 @@
+@import "src/colors";
+
+.or-expression {
+    .or-combinator {
+        color: $accent;
+    }
+
+    .or-combinator:last-child {
+        display: none;
+    }
+}

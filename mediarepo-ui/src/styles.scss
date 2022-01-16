@@ -1,0 +1,45 @@
+@use 'sass:map';
+@use "@angular/material" as mat;
+@use 'src/app/app.component-theme' as app;
+@use 'app/components/shared/file/file-card/file-card.component-theme' as file-card;
+@use 'app/components/shared/sidebar/file-search/file-search.component-theme' as file-search;
+
+@include mat.core();
+
+$theme: mat.define-dark-theme((
+    color: (
+        primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
+        accent: mat.define-palette(mat.$green-palette, A200, A100, A400),
+        warn: mat.define-palette(mat.$red-palette),
+        background: mat.define-palette(mat.$blue-grey-palette)
+    ),
+    typography: mat.define-typography-config(
+        $font-family: 'Noto Sans',
+    )
+));
+
+$color-config: mat.get-color-config($theme);
+$primary-palette: map.get($color-config, 'primary');
+$accent-pallette: map.get($color-config, 'accent');
+$background-pallette: map.get($color-config, 'background');
+$warn-palette: map.get($color-config, 'warn');
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+    background: #272727;
+}
+
+::-webkit-scrollbar-thumb {
+    background: mat.get-color-from-palette($primary-palette, 'darker');
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: mat.get-color-from-palette($primary-palette);
+}
+
+@include mat.all-component-themes($theme);
+@include app.theme($theme);
+@include file-card.theme($theme);
+@include file-search.theme($theme);

@@ -1,0 +1,18 @@
+<div class="file-metadata-inner">
+    <div class="file-metadata-header">
+        <h1>File Metadata</h1>
+        <mat-divider></mat-divider>
+    </div>
+    <app-busy-indicator [blurBackground]="true" [busy]="this.loading" [darkenBackground]="false">
+        <div class="file-metadata-entries-scroll-container">
+            <div class="file-metadata-entries">
+                <app-editable-metadata-entry *ngIf="fileMetadata" attributeName="Name" [value]="fileMetadata.name ?? ''" (valueChangeEvent)="this.saveFileName($event)"></app-editable-metadata-entry>
+                <app-metadata-entry attributeName="Content Descriptor (CD)">{{file.cd}}</app-metadata-entry>
+                <app-metadata-entry attributeName="Mime Type">{{file.mimeType}}</app-metadata-entry>
+                <app-metadata-entry *ngIf="fileMetadata" attributeName="Imported at">{{fileMetadata.import_time.toLocaleString()}}</app-metadata-entry>
+                <app-metadata-entry *ngIf="fileMetadata" attributeName="Created at">{{fileMetadata.creation_time.toLocaleString()}}</app-metadata-entry>
+                <app-metadata-entry *ngIf="fileMetadata" attributeName="Changed at">{{fileMetadata.change_time.toLocaleString()}}</app-metadata-entry>
+            </div>
+        </div>
+    </app-busy-indicator>
+</div>

@@ -1,0 +1,36 @@
+<div id="content">
+    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" animationDuration="0"
+                   class="main-tab-group">
+        <mat-tab [label]="this.selectedRepository? 'RepositoryData' : 'Repositories'">
+            <app-repositories-tab></app-repositories-tab>
+        </mat-tab>
+        <mat-tab *ngFor="let tab of tabs">
+            <ng-template mat-tab-label>
+                <div (click)="this.onMouseClickTabLabel(tab, $event)" class="tab-label-div">
+                    {{tab.category}}
+                    <button (click)="this.closeTab(tab)" class="close-tab-button" mat-icon-button>
+                        <ng-icon name="mat-close"></ng-icon>
+                    </button>
+                </div>
+            </ng-template>
+            <ng-template matTabContent>
+                <app-files-tab *ngIf="tab.category === 'Files'" [state]="tab"></app-files-tab>
+                <app-import-tab *ngIf="tab.category === 'Import'" [state]="tab"></app-import-tab>
+            </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="this.newTab" label="New Tab">
+            <div class="new-tab-content">
+                Select the tab type
+                <button (click)="this.addFilesTab()" color="primary" mat-flat-button>Files</button>
+                <button (click)="this.addImportTab()" color="primary" mat-flat-button>Import</button>
+            </div>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedRepository" disabled>
+            <ng-template mat-tab-label>
+                <button (click)="this.addTab()" class="new-tab-button" mat-icon-button>
+                    <ng-icon name="mat-plus"></ng-icon>
+                </button>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
+</div>

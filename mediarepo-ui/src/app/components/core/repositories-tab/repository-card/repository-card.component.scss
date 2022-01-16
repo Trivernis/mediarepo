@@ -1,0 +1,38 @@
+.repository-path {
+    color: lightgray;
+}
+
+.repository-address {
+    color: lightgray;
+    font-family: "Fira Code Light", Monospaced, Consolas, monospace;
+}
+
+.repository-status {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0.5em;
+    width: 3em;
+    text-align: center;
+    border-bottom-left-radius: 1em;
+
+    p {
+        margin: auto;
+    }
+}
+
+.status-local {
+    background-color: #2e237a;
+}
+
+.status-offline {
+    background-color: #8e1e2a;
+}
+
+.status-online {
+    background-color: #1b651b;
+}
+
+button.menu-button {
+    float: right;
+}

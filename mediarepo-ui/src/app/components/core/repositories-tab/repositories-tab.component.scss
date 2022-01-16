@@ -1,0 +1,33 @@
+.repository-container {
+    margin: 1em;
+}
+
+.repo-page-content {
+    margin: 0 10%;
+    height: calc(100% - 2em);
+}
+
+.add-repo-tools {
+    height: 5em;
+    display: flex;
+    flex-direction: row-reverse;
+
+    button {
+        margin: 1em;
+    }
+}
+
+.repository-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: calc(100% - 5em);
+}
+
+app-repository-card {
+    position: relative;
+}
+
+app-repository-details-view, .repo-details {
+    height: 100%;
+}

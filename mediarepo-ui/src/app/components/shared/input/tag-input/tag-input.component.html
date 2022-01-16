@@ -1,0 +1,16 @@
+<mat-form-field appearance="fill">
+    <mat-label>
+        Enter a tag
+    </mat-label>
+    <input #tagInput
+           (keydown)="addTagByInput($event)"
+           [formControl]="formControl"
+           [matAutocomplete]="auto"
+           matInput>
+    <ng-content></ng-content>
+    <mat-autocomplete #auto (optionSelected)="addTagByAutocomplete($event)">
+        <mat-option *ngFor="let tag of autosuggestTags | async" [value]="tag">
+            {{tag}}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

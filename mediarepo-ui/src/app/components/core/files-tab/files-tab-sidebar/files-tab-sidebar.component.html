@@ -1,0 +1,15 @@
+<div class="sidebar-inner">
+    <mat-tab-group headerPosition="below">
+        <mat-tab label="Search">
+            <app-file-search [state]="this.state" [availableTags]="this.allTags" [contextTags]="this.tags"
+                             (searchStartEvent)="this.searchStartEvent.emit($event)"
+                             (searchEndEvent)="this.onDisplayedFilesChange(); this.searchEndEvent.emit($event);" [tagsLoading]="this.tagsLoading"></app-file-search>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedFiles.length > 0" label="Edit Tags">
+            <app-tag-edit #fileedit [files]="this.selectedFiles"></app-tag-edit>
+        </mat-tab>
+        <mat-tab *ngIf="this.selectedFiles.length === 1" label="File Metadata">
+            <app-file-metadata [file]="this.selectedFiles[0]"></app-file-metadata>
+        </mat-tab>
+    </mat-tab-group>
+</div>

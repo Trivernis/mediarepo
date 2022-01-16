@@ -1,0 +1,35 @@
+mat-list {
+    height: 100%;
+    width: 100%;
+    display: block;
+    background-color: #353535;
+    padding: 0;
+    border-radius: 0.25em;
+}
+
+mat-list-item.or-filter-list-item {
+    padding: 0.5em 0;
+    height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    cursor: pointer;
+    user-select: none;
+
+    ::ng-deep .mat-list-item-content {
+        padding-right: 0;
+        margin-right: 0;
+    }
+}
+
+.selected {
+    background-color: #5c5c5c;
+}
+
+app-selectable {
+    width: 100%;
+    height: 100%;
+}
+
+.or-combinator {
+    color: #7dff70;
+}

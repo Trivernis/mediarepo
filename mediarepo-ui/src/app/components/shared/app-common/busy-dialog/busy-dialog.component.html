@@ -1,0 +1,12 @@
+<h1 class="title" mat-dialog-title>
+    {{title}}
+</h1>
+<div class="content" mat-dialog-content>
+    <mat-progress-bar [mode]="this.mode" [value]="this.progress" color="primary"></mat-progress-bar>
+    {{message}}
+</div>
+<div *ngIf="this.allowCancel" class="busy-dialog-actions" mat-dialog-actions>
+    <button (click)="this.dialogRef.close(false)" mat-flat-button>
+        Cancel
+    </button>
+</div>

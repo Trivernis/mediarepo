@@ -1,0 +1,27 @@
+.repository-name {
+    text-align: center;
+    align-self: center;
+    margin: auto;
+}
+
+.button-close-repository {
+    float: right
+}
+
+.repository-metadata {
+    padding: 1em 1em 1em 3em;
+    overflow-y: auto;
+    user-select: none;
+    margin-left: 20%;
+    margin-right: 20%;
+
+    app-metadata-entry {
+        margin-bottom: 0.5em;
+        display: block;
+    }
+}
+
+.details-content {
+    height: calc(100% - 64px);
+    overflow: hidden;
+}

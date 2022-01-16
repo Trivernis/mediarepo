@@ -1,0 +1,14 @@
+@import "src/colors";
+
+.tag-item-wrapper {
+    display: inline;
+    width: 100%;
+    padding: 0.25em;
+    word-break: break-all;
+    text-overflow: ellipsis;
+}
+
+.tag-item-namespace {
+    margin-right: 0.25em;
+    color: $tag-namespace
+}

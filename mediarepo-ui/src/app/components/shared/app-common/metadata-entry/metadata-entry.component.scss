@@ -1,0 +1,17 @@
+.metadata-entry-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-attribute {
+    opacity: 0.8;
+    text-overflow: ellipsis;
+    user-select: text;
+}
+
+.metadata-value {
+    margin-left: 0.5em;
+    word-break: break-all;
+    user-select: text;
+}

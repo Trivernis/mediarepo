@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>
+    {{title}}
+</h1>
+<div mat-dialog-content>
+    <app-content-aware-image *ngIf="this.image" [imageSrc]="this.image"></app-content-aware-image>
+    {{message}}
+</div>
+<div class="confirm-dialog-actions" mat-dialog-actions>
+    <button (click)="closeDialog(false)" [color]="this.denyColor" mat-stroked-button>{{denyAction}}</button>
+    <button (click)="closeDialog(true)" [color]="this.confirmColor" mat-flat-button>{{confirmAction}}</button>
+</div>

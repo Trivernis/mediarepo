@@ -1,0 +1,22 @@
+@use "@angular/material" as mat;
+@import "styles";
+
+$primary: mat.get-color-from-palette($primary-palette);
+$primary-lighter-10: lighten($primary, 10%);
+$primary-lighter-20: lighten($primary, 20%);
+$primary-lighter-30: lighten($primary, 30%);
+$primary-lighter-40: lighten($primary, 40%);
+$primary-darker-10: darken($primary, 10%);
+$primary-darker-20: darken($primary, 20%);
+$primary-darker-30: darken($primary, 30%);
+
+$accent: mat.get-color-from-palette($accent-pallette, 'text');
+$accent-lighter-10: lighten($accent, 10%);
+
+$text: #FFF;
+$text-darker-10: darken($text, 10%);
+
+$background: #424242;
+
+// specifics
+$tag-namespace: $accent-lighter-10;

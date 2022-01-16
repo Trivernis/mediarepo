@@ -1,0 +1,17 @@
+<mat-drawer-container (keyDownEvent)="this.onKeydown($event)" appInputReceiver autosize>
+    <mat-drawer disableClose mode="side" opened>
+        <app-files-tab-sidebar (searchEndEvent)="this.contentLoading = false;" (searchStartEvent)="this.contentLoading = true;"
+                               [selectedFiles]="this.selectedFiles"
+                               [state]="this.state"></app-files-tab-sidebar>
+    </mat-drawer>
+    <mat-drawer-content>
+        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading" [darkenBackground]="true">
+            <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)"
+                                (modeChangeEvent)="state.mode.next($event)"
+                                [files]="this.files"
+                                [mode]="state.mode.value"
+                                [preselectedFile]="this.getStateSelectedFile()"
+                                [tabState]="this.state"></app-file-multiview>
+        </app-busy-indicator>
+    </mat-drawer-content>
+</mat-drawer-container>
