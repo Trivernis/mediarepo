@@ -1,3 +1,5 @@
+@import "src/colors";
+
 .tag-item-wrapper {
     display: inline;
     width: 100%;
@@ -8,5 +10,5 @@
 
 .tag-item-namespace {
     margin-right: 0.25em;
-    opacity: 80%;
+    color: $tag-namespace
 }

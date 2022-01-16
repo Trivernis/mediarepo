@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
 import {PropertyQuery} from "../../../../../../../api/api-types/files";
-import {propertyQueryToString} from "../../../../../../utils/filter-utils";
+import {propertyQueryToStringParts} from "../../../../../../utils/filter-utils";
 
 @Component({
     selector: "app-property-query-item",
@@ -11,18 +11,20 @@ export class PropertyQueryItemComponent implements OnInit, OnChanges {
 
     @Input() propertyQuery!: PropertyQuery;
 
-    public stringExpression: string = "No Expression";
+    public propertyName: string = "No Property";
+    public comparator: string = "!!";
+    public value: string = "null";
 
     constructor() {
     }
 
     public ngOnInit(): void {
-        this.stringExpression = propertyQueryToString(this.propertyQuery);
+        [this.propertyName, this.comparator, this.value] = propertyQueryToStringParts(this.propertyQuery);
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes["propertyQuery"]) {
-            this.stringExpression = propertyQueryToString(this.propertyQuery);
+            [this.propertyName, this.comparator, this.value] = propertyQueryToStringParts(this.propertyQuery);
         }
     }
 }

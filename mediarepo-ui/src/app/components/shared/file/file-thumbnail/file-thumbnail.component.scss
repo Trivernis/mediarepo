@@ -1,3 +1,5 @@
+@import "src/colors";
+
 app-content-aware-image {
     height: 100%;
     width: 100%;
@@ -28,9 +30,11 @@ app-content-aware-image {
     position: absolute;
     top: 0;
     right: 0;
-    height: 20%;
-    width: 20%;
+    height: 18%;
+    width: 18%;
     display: flex;
+    border-bottom-left-radius: 50%;
+    background-color: transparentize($background, .5);
 
     ng-icon {
         align-self: flex-end;

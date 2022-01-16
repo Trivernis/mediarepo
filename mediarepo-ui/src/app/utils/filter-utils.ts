@@ -19,7 +19,7 @@ function filterQueryToString(query: FilterQuery): string {
     if ("Tag" in query) {
         return tagQueryToString(query.Tag);
     } else {
-        return propertyQueryToString(query.Property);
+        return buildExpression(...propertyQueryToStringParts(query.Property));
     }
 }
 
@@ -27,45 +27,45 @@ function tagQueryToString(tagQuery: TagQuery): string {
     return `${tagQuery.negate ? "-" : ""}${tagQuery.tag}`;
 }
 
-export function propertyQueryToString(propertyQuery: PropertyQuery): string {
+export function propertyQueryToStringParts(propertyQuery: PropertyQuery): [string, string, string] {
     if ("Status" in propertyQuery) {
-        return buildExpression("Status", "=", propertyQuery.Status);
+        return ["Status", "=", propertyQuery.Status];
     } else if ("FileSize" in propertyQuery) {
-        return buildExpression(
+        return [
             "FileSize",
             getComparator(propertyQuery.FileSize),
             getValue(propertyQuery.FileSize).toString()
-        );
+        ];
     } else if ("ImportedTime" in propertyQuery) {
-        return buildExpression(
+        return [
             "ImportedTime",
             getComparator(propertyQuery.ImportedTime),
             getValue(propertyQuery.ImportedTime).toISOString()
-        );
+        ];
     } else if ("ChangedTime" in propertyQuery) {
-        return buildExpression(
+        return [
             "ChangedTime",
             getComparator(propertyQuery.ChangedTime),
             getValue(propertyQuery.ChangedTime).toISOString()
-        );
+        ];
     } else if ("CreatedTime" in propertyQuery) {
-        return buildExpression(
+        return [
             "CreatedTime",
             getComparator(propertyQuery.CreatedTime),
             getValue(propertyQuery.CreatedTime).toISOString()
-        );
+        ];
     } else if ("TagCount" in propertyQuery) {
-        return buildExpression(
+        return [
             "TagCount",
             getComparator(propertyQuery.TagCount),
             getValue(propertyQuery.TagCount).toString()
-        );
+        ];
     } else if ("Cd" in propertyQuery) {
-        return buildExpression("ContentDescriptor", "=", propertyQuery.Cd);
+        return ["ContentDescriptor", "=", propertyQuery.Cd];
     } else if ("Id" in propertyQuery) {
-        return buildExpression("FileId", "=", propertyQuery.Id.toString());
+        return ["FileId", "=", propertyQuery.Id.toString()];
     } else {
-        return "Invalid Expression";
+        return ["Invalid Expression", "", ""];
     }
 }
 
