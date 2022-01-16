@@ -37,10 +37,6 @@ jobs:
         working-directory: mediarepo-daemon
         run: cargo check --no-default-features
 
-      - name: Check ui backend
-        working-directory: mediarepo-ui/src-tauri
-        run: cargo check
-
       - name: Install UI dependencies
         working-directory: mediarepo-ui
         run: |
