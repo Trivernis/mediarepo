@@ -20,4 +20,4 @@
         </cdk-virtual-scroll-viewport>
     </div>
 </div>
-<app-file-context-menu #fileContextMenu></app-file-context-menu>
+<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)"></app-file-context-menu>

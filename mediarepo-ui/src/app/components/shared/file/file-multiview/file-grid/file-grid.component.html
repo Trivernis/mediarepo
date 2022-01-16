@@ -18,7 +18,7 @@
     </cdk-virtual-scroll-viewport>
 
 </div>
-<app-file-context-menu #fileContextMenu>
+<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)">
     <button (click)="this.fileOpen.emit(fileContextMenu.files[0])"
             *ngIf="fileContextMenu.files.length === 1"
             content-before=""

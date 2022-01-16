@@ -1,14 +1,14 @@
 <div id="content">
-    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" class="main-tab-group"
-                   animationDuration="0">
+    <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" animationDuration="0"
+                   class="main-tab-group">
         <mat-tab [label]="this.selectedRepository? 'RepositoryData' : 'Repositories'">
             <app-repositories-tab></app-repositories-tab>
         </mat-tab>
         <mat-tab *ngFor="let tab of tabs">
             <ng-template mat-tab-label>
-                <div class="tab-label-div" (click)="this.onMouseClickTabLabel(tab, $event)">
+                <div (click)="this.onMouseClickTabLabel(tab, $event)" class="tab-label-div">
                     {{tab.category}}
-                    <button class="close-tab-button" mat-icon-button (click)="this.closeTab(tab)">
+                    <button (click)="this.closeTab(tab)" class="close-tab-button" mat-icon-button>
                         <ng-icon name="mat-close"></ng-icon>
                     </button>
                 </div>
@@ -21,13 +21,13 @@
         <mat-tab *ngIf="this.newTab" label="New Tab">
             <div class="new-tab-content">
                 Select the tab type
-                <button mat-flat-button (click)="this.addFilesTab()" color="primary">Files</button>
-                <button mat-flat-button (click)="this.addImportTab()" color="primary">Import</button>
+                <button (click)="this.addFilesTab()" color="primary" mat-flat-button>Files</button>
+                <button (click)="this.addImportTab()" color="primary" mat-flat-button>Import</button>
             </div>
         </mat-tab>
         <mat-tab *ngIf="this.selectedRepository" disabled>
             <ng-template mat-tab-label>
-                <button class="new-tab-button" mat-icon-button (click)="this.addTab()">
+                <button (click)="this.addTab()" class="new-tab-button" mat-icon-button>
                     <ng-icon name="mat-plus"></ng-icon>
                 </button>
             </ng-template>

@@ -6,6 +6,7 @@ import {FileActionBaseComponent} from "../../app-base/file-action-base/file-acti
 import {MatDialog} from "@angular/material/dialog";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {FileService} from "../../../../services/file/file.service";
+import {TabState} from "../../../../models/TabState";
 
 @Component({
     selector: "app-file-multiview",
@@ -16,6 +17,7 @@ export class FileMultiviewComponent extends FileActionBaseComponent implements A
 
     @Input() files!: File[];
     @Input() mode: "grid" | "gallery" = "grid";
+    @Input() tabState!: TabState;
 
     @Output() fileOpenEvent = new EventEmitter<File>();
     @Output() fileSelectEvent = new EventEmitter<File[]>();
@@ -73,9 +75,18 @@ export class FileMultiviewComponent extends FileActionBaseComponent implements A
         }
 
         if (deletePermanently) {
-            await this.deletePermanently(files);
+            const deleted = await this.deletePermanently(files);
+
+            if (deleted) {
+                this.onFileDeleted(files);
+            }
         } else {
             await this.updateStatus(files, "Deleted");
         }
+    }
+
+    public onFileDeleted(deletedFiles: File[]): void {
+        this.files = this.files.filter(f => deletedFiles.findIndex(df => df.id === f.id) < 0);
+        this.tabState.files.next(this.files);
     }
 }

@@ -79,7 +79,7 @@ export class FileActionBaseComponent {
         }
     }
 
-    public async deletePermanently(files: File[]) {
+    public async deletePermanently(files: File[]): Promise<boolean> {
         if (files.length === 1) {
             const deletionConfirmed = await this.openConfirmDialog(
                 "Confirm deletion",
@@ -90,6 +90,7 @@ export class FileActionBaseComponent {
             );
             if (deletionConfirmed) {
                 await this.errorBroker.try(() => this.fileService.deleteFile(files[0].id));
+                return true;
             }
         } else {
             const deletionConfirmed = await this.openConfirmDialog(
@@ -104,8 +105,10 @@ export class FileActionBaseComponent {
                     files,
                     (file) => this.errorBroker.try(() => this.fileService.deleteFile(file.id))
                 );
+                return true;
             }
         }
+        return false;
     }
 
     protected getImageThumbnail(file: File): SafeResourceUrl | undefined {

@@ -10,8 +10,9 @@
                 *ngIf="actionDelete"
                 mat-menu-item>Delete
         </button>
-        <button (click)="this.deletePermanently(this.files)" *ngIf="actionDeletePermantently" mat-menu-item>Delete
-            permanently
+        <button (click)="this.deleteFilesPermanently()"
+                *ngIf="actionDeletePermantently"
+                mat-menu-item>Delete permanently
         </button>
         <button (click)="this.updateStatus(this.files, 'Archived')" *ngIf="actionRestore" mat-menu-item>Restore</button>
 

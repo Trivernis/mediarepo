@@ -31,6 +31,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     @Output() fileOpen = new EventEmitter<File>();
     @Output() fileSelect = new EventEmitter<File[]>();
     @Output() fileDelete = new EventEmitter<File[]>();
+    @Output() fileDeleted = new EventEmitter<File[]>();
 
     @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;

@@ -31,11 +31,13 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     @Output() fileDblClick = new EventEmitter<File>();
     @Output() appClose = new EventEmitter<FileGalleryComponent>();
     @Output() fileDelete = new EventEmitter<File>();
-    entries: Selectable<File>[] = [];
+    @Output() fileDeleted = new EventEmitter<File[]>();
 
     @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
+
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
 
+    public entries: Selectable<File>[] = [];
     public selectedFile: Selectable<File> | undefined;
     public fileContentUrl: SafeResourceUrl | undefined;
 

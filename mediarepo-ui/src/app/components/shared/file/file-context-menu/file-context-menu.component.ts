@@ -30,7 +30,7 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
     public actionDeletePermantently = false;
 
     @ViewChild("contextMenu") contextMenu!: ContextMenuComponent;
-    @Output() fileUpdate = new EventEmitter<void>();
+    @Output() fileDeleted = new EventEmitter<File[]>();
 
     constructor(fileService: FileService, errorBroker: ErrorBrokerService, dialog: MatDialog) {
         super(dialog, errorBroker, fileService);
@@ -46,6 +46,14 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
         this.files = files;
         this.applyStatus();
         this.contextMenu.onContextMenu(event);
+    }
+
+    public async deleteFilesPermanently() {
+        const deleted = await this.deletePermanently(this.files);
+
+        if (deleted) {
+            this.fileDeleted.emit(this.files);
+        }
     }
 
     private applyStatus() {
