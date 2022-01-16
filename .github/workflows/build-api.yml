@@ -1,6 +1,7 @@
 name: Build and test api
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, develop ]
   pull_request:
@@ -10,8 +11,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-
+  
   build:
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: mediarepo-api
+
     strategy:
       fail-fast: false
       matrix:
@@ -19,11 +26,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-
-      - name: switch working directory
-        run: cd mediarepo-api
+        if: ${{ !env.ACT }}
 
       - name: Cache build data
+        if: ${{ !env.ACT }}
         uses: actions/cache@v2
         with:
           path: |
@@ -37,8 +43,8 @@ jobs:
         uses: knicknic/os-specific-run@v1.0.3
         with:
           linux: |
-            sudo apt update
-            sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
+            sudo apt-get update
+            DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
       - name: Build
         run: cargo build
