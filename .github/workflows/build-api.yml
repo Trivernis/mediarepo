@@ -1,8 +1,9 @@
 name: Build and test api
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ main, develop, gh-actions ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
 
