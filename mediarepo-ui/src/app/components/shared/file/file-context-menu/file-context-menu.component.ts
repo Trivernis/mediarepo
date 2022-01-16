@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output, ViewChild} from "@angular/core";
+import {Component, EventEmitter, OnChanges, Output, SimpleChanges, ViewChild} from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {ContextMenuComponent} from "../../app-common/context-menu/context-menu.component";
 import {clipboard} from "@tauri-apps/api";
@@ -6,9 +6,11 @@ import {FileService} from "../../../../services/file/file.service";
 import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
 import {FileHelper} from "../../../../services/file/file.helper";
 import {FileStatus} from "../../../../../api/api-types/files";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {BusyDialogComponent} from "../../app-common/busy-dialog/busy-dialog.component";
 import {BehaviorSubject} from "rxjs";
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../app-common/confirm-dialog/confirm-dialog.component";
+import {SafeResourceUrl} from "@angular/platform-browser";
 
 type ProgressDialogContext = {
     dialog: MatDialogRef<BusyDialogComponent>,
@@ -21,7 +23,7 @@ type ProgressDialogContext = {
     templateUrl: "./file-context-menu.component.html",
     styleUrls: ["./file-context-menu.component.scss"]
 })
-export class FileContextMenuComponent {
+export class FileContextMenuComponent implements OnChanges {
 
     public files: File[] = [];
 
@@ -35,6 +37,12 @@ export class FileContextMenuComponent {
     @Output() fileUpdate = new EventEmitter<void>();
 
     constructor(private fileService: FileService, private errorBroker: ErrorBrokerService, private dialog: MatDialog) {
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes["files"]) {
+            this.applyStatus();
+        }
     }
 
     public onContextMenu(event: MouseEvent, files: File[]) {
@@ -61,42 +69,101 @@ export class FileContextMenuComponent {
 
     public async updateStatus(status: FileStatus) {
         if (this.files.length === 1) {
-            const newFile = await this.fileService.updateFileStatus(this.files[0].id, status);
-            this.files[0].status = newFile.status;
+            let changeConfirmed;
+
+            if (status === "Deleted") {
+                changeConfirmed = await this.openConfirmDialog(
+                    "Confirm deletion",
+                    "Do you really want to move this file to trash?",
+                    "Delete",
+                    "warn",
+                    this.getImageThumbnail(this.files[0])
+                );
+            } else {
+                changeConfirmed = true;
+            }
+
+            if (changeConfirmed) {
+                const newFile = await this.fileService.updateFileStatus(this.files[0].id, status);
+                this.files[0].status = newFile.status;
+                this.fileUpdate.emit();
+                this.applyStatus();
+            }
         } else {
-            await this.iterateWithProgress(
-                `Updating file status to '${status}'`,
-                this.files,
-                async (file) => {
-                    const newFile = await this.fileService.updateFileStatus(file.id, status);
-                    file.status = newFile.status;
-                }
+            const statusChangeConfirmed = await this.openConfirmDialog(
+                "Confirm mass status change",
+                `Do you really want to change the status of ${this.files.length} files to '${status}'?`,
+                "Change status",
+                status === "Deleted" ? "warn" : "primary"
             );
+            if (statusChangeConfirmed) {
+                await this.iterateWithProgress(
+                    `Updating file status to '${status}'`,
+                    this.files,
+                    async (file) => {
+                        const newFile = await this.fileService.updateFileStatus(file.id, status);
+                        file.status = newFile.status;
+                    }
+                );
+                this.fileUpdate.emit();
+                this.applyStatus();
+            }
         }
-        this.fileUpdate.emit();
     }
 
     public async deletePermanently() {
         if (this.files.length === 1) {
-            await this.fileService.deleteFile(this.files[0].id);
-        } else {
-            await this.iterateWithProgress(
-                "Deleting files",
-                this.files,
-                async (file) => this.fileService.deleteFile(file.id)
+            const deletionConfirmed = await this.openConfirmDialog(
+                "Confirm deletion",
+                "Do you really want to permanently delete this file?",
+                "Delete permanently",
+                "warn",
+                this.getImageThumbnail(this.files[0]),
             );
+            if (deletionConfirmed) {
+                await this.fileService.deleteFile(this.files[0].id);
+                this.fileUpdate.emit();
+                this.applyStatus();
+            }
+        } else {
+            const deletionConfirmed = await this.openConfirmDialog(
+                "Confirm mass deletion",
+                `Do you really want to permanently delete ${this.files.length} files?`,
+                "Delete permanently",
+                "warn"
+            );
+            if (deletionConfirmed) {
+                await this.iterateWithProgress(
+                    "Deleting files",
+                    this.files,
+                    async (file) => this.fileService.deleteFile(file.id)
+                );
+                this.fileUpdate.emit();
+                this.applyStatus();
+            }
         }
-        this.fileUpdate.emit();
     }
 
     private applyStatus() {
         this.actionDeletePermantently = true;
+        this.actionDelete = this.actionArchive = this.actionImported = this.actionRestore = false;
+
         for (const file of this.files) {
             this.actionDeletePermantently &&= file.status === "Deleted";
             this.actionDelete ||= file.status !== "Deleted";
-            this.actionArchive ||= file.status !== "Archived";
-            this.actionImported ||= file.status !== "Imported";
+            this.actionArchive ||= file.status !== "Archived" && file.status !== "Deleted";
+            this.actionImported ||= file.status !== "Imported" && file.status !== "Deleted";
             this.actionRestore ||= file.status === "Deleted";
+        }
+    }
+
+    private getImageThumbnail(file: File): SafeResourceUrl | undefined {
+        const mimeParts = FileHelper.parseMime(file.mimeType);
+
+        if (mimeParts && ["image", "video"].includes(mimeParts[0])) {
+            return this.fileService.buildThumbnailUrl(file, 250, 250);
+        } else {
+            return;
         }
     }
 
@@ -134,5 +201,25 @@ export class FileContextMenuComponent {
             message: dialogMessage,
             progress: dialogProgress,
         };
+    }
+
+    private openConfirmDialog(
+        title: string,
+        question: string,
+        confirmAction: string,
+        confirmColor?: "primary" | "warn",
+        image?: SafeResourceUrl | string
+    ): Promise<boolean> {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+                title,
+                message: question,
+                confirmAction,
+                denyAction: "Cancel",
+                confirmColor,
+                image
+            }
+        } as MatDialogConfig & { data: ConfirmDialogData });
+        return dialog.afterClosed().toPromise();
     }
 }

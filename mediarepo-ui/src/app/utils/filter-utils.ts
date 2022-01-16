@@ -29,7 +29,7 @@ function tagQueryToString(tagQuery: TagQuery): string {
 
 export function propertyQueryToString(propertyQuery: PropertyQuery): string {
     if ("Status" in propertyQuery) {
-        return buildExpression("Status", "is", propertyQuery.Status);
+        return buildExpression("Status", "=", propertyQuery.Status);
     } else if ("FileSize" in propertyQuery) {
         return buildExpression(
             "FileSize",
@@ -61,9 +61,9 @@ export function propertyQueryToString(propertyQuery: PropertyQuery): string {
             getValue(propertyQuery.TagCount).toString()
         );
     } else if ("Cd" in propertyQuery) {
-        return buildExpression("ContentDescriptor", "is", propertyQuery.Cd);
+        return buildExpression("ContentDescriptor", "=", propertyQuery.Cd);
     } else if ("Id" in propertyQuery) {
-        return buildExpression("FileId", "is", propertyQuery.Id.toString());
+        return buildExpression("FileId", "=", propertyQuery.Id.toString());
     } else {
         return "Invalid Expression";
     }
