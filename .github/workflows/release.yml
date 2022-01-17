@@ -53,7 +53,7 @@ jobs:
       - name: Build Daemon
         run: cargo build --release --no-default-features
 
-      - uses: papeloto/action-zip@v1
+      - uses: vimtor/action-zip@v1
         with:
           files: target/release/mediarepo-daemon target/release/mediarepo-daemon.exe
           dest: mediarepo-daemon-${{ runner.os }}.zip
@@ -126,7 +126,7 @@ jobs:
       - name: Build project
         run: cargo tauri build
 
-      - uses: papeloto/action-zip@v1
+      - uses: vimtor/action-zip@v1
         with:
           files: src-tauri/target/release/bundle src-tauri/target/release/mediarepo-ui src-tauri/target/release/mediarepo-ui.exe
           dest: mediarepo-ui-${{ runner.os }}.zip
