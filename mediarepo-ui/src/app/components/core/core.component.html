@@ -4,7 +4,7 @@
         <mat-tab [label]="this.selectedRepository? 'RepositoryData' : 'Repositories'">
             <app-repositories-tab></app-repositories-tab>
         </mat-tab>
-        <mat-tab *ngFor="let tab of tabs">
+        <mat-tab *ngFor="let tab of tabs; trackBy: trackByTabId">
             <ng-template mat-tab-label>
                 <div (click)="this.onMouseClickTabLabel(tab, $event)" class="tab-label-div">
                     {{tab.category}}

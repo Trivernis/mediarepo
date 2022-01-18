@@ -27,7 +27,8 @@ export class CoreComponent {
         private tabService: TabService,
         private repoService: RepositoryService,
         private stateService: StateService,
-        private tagService: TagService) {
+        private tagService: TagService
+    ) {
         this.selectedRepository = this.repoService.selectedRepository.getValue();
 
         this.repoService.selectedRepository.subscribe(async (selected) => {
@@ -113,5 +114,9 @@ export class CoreComponent {
         if (event.button === 1) { // middle mouse button
             await this.closeTab(tab);
         }
+    }
+
+    public trackByTabId(index: number, item: TabState) {
+        return item.uuid;
     }
 }
