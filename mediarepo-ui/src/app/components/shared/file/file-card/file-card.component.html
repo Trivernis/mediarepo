@@ -1,5 +1,5 @@
 <mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)"
-          [ngClass]="{'selected': entry.selected}">
+          [class.selected]="this.entry.selected | async">
     <mat-card-content>
         <app-busy-indicator [busy]="this.loading">
             <app-file-thumbnail *ngIf="!loading"

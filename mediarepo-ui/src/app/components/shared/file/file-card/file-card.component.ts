@@ -1,5 +1,4 @@
 import {
-    AfterViewChecked,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -26,23 +25,22 @@ const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
     styleUrls: ["./file-card.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileCardComponent implements OnInit, OnChanges, OnDestroy, AfterViewChecked {
+export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild("card") card!: ElementRef;
     @Input() public entry!: Selectable<File>;
     @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
     @Output() clickEvent = new EventEmitter<FileCardComponent>();
     @Output() dblClickEvent = new EventEmitter<FileCardComponent>();
+
     public loading = false;
     private cachedId: number | undefined;
     private workId: number | undefined;
-    private selectedPrevious = false;
 
     constructor(private changeDetector: ChangeDetectorRef, private schedulingService: SchedulingService) {
     }
 
     async ngOnInit() {
         this.cachedId = this.entry.data.id;
-        this.selectedPrevious = this.entry.selected;
         this.setImageDelayed();
     }
 
@@ -53,13 +51,6 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         }
         if (changes["fileChanged"]) {
             this.fileChanged.subscribe(() => this.changeDetector.markForCheck());
-        }
-    }
-
-    public ngAfterViewChecked(): void {
-        if (this.entry.selected != this.selectedPrevious) {
-            this.selectedPrevious = this.entry.selected;
-            this.changeDetector.markForCheck();
         }
     }
 
