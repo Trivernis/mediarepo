@@ -1,8 +1,11 @@
 <mat-card #card (click)="clickEvent.emit(this)" (dblclick)="dblClickEvent.emit(this)"
-          [ngClass]="{'selected': entry.selected}">
+          [class.selected]="this.entry.selected | async">
     <mat-card-content>
         <app-busy-indicator [busy]="this.loading">
-            <app-file-thumbnail *ngIf="!loading" [file]="this.entry.data" class=".entry-image"></app-file-thumbnail>
+            <app-file-thumbnail *ngIf="!loading"
+                                [fileChanged]="this.fileChanged"
+                                [file]="this.entry.data"
+                                class=".entry-image"></app-file-thumbnail>
         </app-busy-indicator>
     </mat-card-content>
 </mat-card>

@@ -1,12 +1,18 @@
+import {BehaviorSubject} from "rxjs";
+
 export class Selectable<T> {
-    constructor(public data: T, public selected: boolean) {
+
+    public selected: BehaviorSubject<boolean>;
+
+    constructor(public data: T, selected: boolean) {
+        this.selected = new BehaviorSubject<boolean>(selected);
     }
 
     public select() {
-        this.selected = true;
+        this.selected.next(true);
     }
 
     public unselect() {
-        this.selected = false;
+        this.selected.next(false);
     }
 }

@@ -1,16 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
-import {
-    FilterExpression,
-    FilterQuery,
-    FilterQueryProperty,
-    FilterQueryTag
-} from "../../../../../../../api/api-types/files";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
+import {FilterExpression, FilterQuery} from "../../../../../../../api/api-types/files";
 import {enumerate} from "../../../../../../utils/list-utils";
 
 @Component({
     selector: "app-filter-expression-list-item",
     templateUrl: "./filter-expression-list-item.component.html",
-    styleUrls: ["./filter-expression-list-item.component.scss"]
+    styleUrls: ["./filter-expression-list-item.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterExpressionListItemComponent implements OnChanges {
 
@@ -33,18 +29,6 @@ export class FilterExpressionListItemComponent implements OnChanges {
         if (changes["filter"]) {
             this.parseFilter();
         }
-    }
-
-    public queryIs(query: FilterQuery, key: "Property" | "Tag"): boolean {
-        return key in query;
-    }
-
-    public propertyQuery(query: FilterQuery): FilterQueryProperty {
-        return query as FilterQueryProperty;
-    }
-
-    public tagQuery(query: FilterQuery): FilterQueryTag {
-        return query as FilterQueryTag;
     }
 
     private parseFilter() {

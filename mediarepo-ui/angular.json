@@ -11,7 +11,8 @@
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
-                    "style": "scss"
+                    "style": "scss",
+                    "changeDetection": "OnPush"
                 },
                 "@schematics/angular:application": {
                     "strict": true
@@ -67,7 +68,7 @@
                             "optimization": {
                                 "fonts": false,
                                 "styles": false,
-                                "scripts": true
+                                "scripts": false
                             },
                             "vendorChunk": true,
                             "extractLicenses": false,

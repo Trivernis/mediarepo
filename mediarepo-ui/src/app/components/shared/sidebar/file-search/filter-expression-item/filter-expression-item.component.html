@@ -1,15 +1,15 @@
-<span *ngIf="is('OrExpression')" class="or-expression">
-    <ng-container *ngFor="let query of this.orExpression().OrExpression">
-        <app-property-query-item *ngIf="this.queryIs(query, 'Property')"
-                                 [propertyQuery]="this.propertyQuery(query).Property"></app-property-query-item>
-        <app-tag-query-item *ngIf="this.queryIs(query, 'Tag')"
-                            [tagQuery]="this.tagQuery(query).Tag"></app-tag-query-item>
+<span *ngIf="this.orExpression" class="or-expression">
+    <ng-container *ngFor="let query of this.orExpression">
+    <app-property-query-item *ngIf="query | hasProperty: 'Property'"
+                             [propertyQuery]="query | getPropertyQuery"></app-property-query-item>
+    <app-tag-query-item *ngIf="query | hasProperty: 'Tag'"
+                        [tagQuery]="query | getTagQuery"></app-tag-query-item>
         <span class="or-combinator"> OR </span>
     </ng-container>
 </span>
-<span *ngIf="is('Query')" class="query">
-    <app-property-query-item *ngIf="this.queryIs(this.query().Query, 'Property')"
-                             [propertyQuery]="this.propertyQuery(this.query().Query).Property"></app-property-query-item>
-    <app-tag-query-item *ngIf="this.queryIs(this.query().Query, 'Tag')"
-                        [tagQuery]="this.tagQuery(this.query().Query).Tag"></app-tag-query-item>
+<span *ngIf="this.query" class="query">
+    <app-property-query-item *ngIf="this.query | hasProperty: 'Property'"
+                             [propertyQuery]="this.query | getPropertyQuery"></app-property-query-item>
+    <app-tag-query-item *ngIf="this.query | hasProperty: 'Tag'"
+                        [tagQuery]="this.query | getTagQuery"></app-tag-query-item>
 </span>

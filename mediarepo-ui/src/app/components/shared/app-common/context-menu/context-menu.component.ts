@@ -1,10 +1,11 @@
-import {Component, ViewChild,} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild,} from "@angular/core";
 import {MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
     selector: "app-context-menu",
     templateUrl: "./context-menu.component.html",
-    styleUrls: ["./context-menu.component.scss"]
+    styleUrls: ["./context-menu.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContextMenuComponent {
 
@@ -13,7 +14,7 @@ export class ContextMenuComponent {
 
     @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
     }
 
     public onContextMenu(event: MouseEvent) {
@@ -22,5 +23,6 @@ export class ContextMenuComponent {
         this.y = event.clientY + "px";
         this.menuTrigger.menu.focusFirstItem("mouse");
         this.menuTrigger.openMenu();
+        this.changeDetector.markForCheck();
     }
 }

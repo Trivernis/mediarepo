@@ -33,15 +33,14 @@ pub async fn get_folder_size(path: PathBuf) -> RepoResult<u64> {
 
     while !unchecked_dirs.is_empty() {
         let dir = unchecked_dirs.remove(0);
-        let mut read_dir = fs::read_dir(dir).await?;
 
-        while let Some(entry) = read_dir.next_entry().await? {
-            let file_type = entry.file_type().await?;
-
-            if file_type.is_file() {
-                all_files.push(entry.path());
-            } else if file_type.is_dir() {
-                unchecked_dirs.push(entry.path())
+        match get_files_and_dirs_for_dir(&dir).await {
+            Ok((mut files, mut dirs)) => {
+                all_files.append(&mut files);
+                unchecked_dirs.append(&mut dirs);
+            }
+            Err(e) => {
+                tracing::warn!("failed to read entries for directory {:?}: {}", dir, e);
             }
         }
     }
@@ -54,6 +53,25 @@ pub async fn get_folder_size(path: PathBuf) -> RepoResult<u64> {
         .fold(0u64, |acc, val| acc + val);
 
     Ok(size)
+}
+
+async fn get_files_and_dirs_for_dir(dir: &PathBuf) -> RepoResult<(Vec<PathBuf>, Vec<PathBuf>)> {
+    let mut files = Vec::new();
+    let mut directories = Vec::new();
+
+    let mut read_dir = fs::read_dir(dir).await?;
+
+    while let Some(entry) = read_dir.next_entry().await? {
+        let file_type = entry.file_type().await?;
+
+        if file_type.is_file() {
+            files.push(entry.path());
+        } else if file_type.is_dir() {
+            directories.push(entry.path())
+        }
+    }
+
+    Ok((files, directories))
 }
 
 async fn read_file_size(path: PathBuf) -> RepoResult<u64> {

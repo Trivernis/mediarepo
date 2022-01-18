@@ -73,7 +73,6 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             await this.runRepositoryStartupTasks(dialogContext);
             dialogContext.message.next("Restoring previous tabs...");
             await this.repoService.loadRepositories();
-            await this.stateService.loadState();
             dialogContext.dialog.close(true);
         } catch (err: any) {
             this.errorBroker.showError(err);

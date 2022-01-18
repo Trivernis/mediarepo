@@ -50,7 +50,7 @@
             <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="4000" minBufferPx="500">
                 <div (click)="addTagFilter(tag.getNormalizedOutput())"
                      (contextmenu)="contextMenuTag = tag; contextMenu.onContextMenu($event)"
-                     *cdkVirtualFor="let tag of contextTags" class="selectable-tag">
+                     *cdkVirtualFor="let tag of contextTags; trackBy: trackByTagId" class="selectable-tag">
                     <app-tag-item [tag]="tag"></app-tag-item>
                 </div>
             </cdk-virtual-scroll-viewport>

@@ -1,14 +1,16 @@
-import {Component, Inject} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {SortKey} from "../../../../../models/SortKey";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 import {Namespace} from "../../../../../../api/models/Namespace";
 import {TagService} from "../../../../../services/tag/tag.service";
+import {compareSearchResults} from "../../../../../utils/compare-utils";
 
 @Component({
     selector: "app-sort-dialog",
     templateUrl: "./sort-dialog.component.html",
-    styleUrls: ["./sort-dialog.component.scss"]
+    styleUrls: ["./sort-dialog.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SortDialogComponent {
 
@@ -22,20 +24,6 @@ export class SortDialogComponent {
         this.sortEntries = data.sortEntries;
         tagService.namespaces.subscribe(
             namespaces => this.namespaces = namespaces);
-    }
-
-    private static compareSuggestionNamespaces(query: string, l: string, r: string): number {
-        if (l.startsWith(query) && !r.startsWith(query)) {
-            return -1;
-        } else if (!l.startsWith(query) && r.startsWith(query)) {
-            return 1;
-        } else if (l.length < r.length) {
-            return -1;
-        } else if (l.length > r.length) {
-            return 1;
-        } else {
-            return l.localeCompare(r);
-        }
     }
 
     addNewSortKey() {
@@ -64,7 +52,7 @@ export class SortDialogComponent {
 
     public updateAutocompleteSuggestions(value: string): void {
         this.suggestedNamespaces = this.namespaces.sort(
-            (a, b) => SortDialogComponent.compareSuggestionNamespaces(value, a.name, b.name))
+            (a, b) => compareSearchResults(value, a.name, b.name))
             .slice(0, 50);
     }
 }

@@ -1,9 +1,10 @@
 import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     EventEmitter,
     Input,
     OnChanges,
-    OnInit,
     Output,
     SimpleChanges,
     ViewChild
@@ -12,31 +13,35 @@ import {File} from "../../../../../api/models/File";
 import {Tag} from "../../../../../api/models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TagService} from "../../../../services/tag/tag.service";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
 
 @Component({
     selector: "app-tag-edit",
     templateUrl: "./tag-edit.component.html",
-    styleUrls: ["./tag-edit.component.scss"]
+    styleUrls: ["./tag-edit.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TagEditComponent implements OnInit, OnChanges {
+export class TagEditComponent implements AfterViewInit, OnChanges {
 
     @Input() files: File[] = [];
     @Output() tagEditEvent = new EventEmitter<TagEditComponent>();
-    public tags: Tag[] = [];
 
+    @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
+    @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
+
+    public tags: Tag[] = [];
     public allTags: Tag[] = [];
     public editMode: string = "Toggle";
-    @ViewChild("tagScroll") tagScroll!: CdkVirtualScrollViewport;
     private fileTags: { [key: number]: Tag[] } = {};
 
-    public loading = false;
-
     constructor(
+        private errorBroker: ErrorBrokerService,
         private tagService: TagService,
     ) {
     }
 
-    async ngOnInit() {
+    async ngAfterViewInit() {
         this.tagService.tags.subscribe(tags => this.allTags = tags);
         await this.tagService.loadTags();
         await this.tagService.loadNamespaces();
@@ -50,7 +55,6 @@ export class TagEditComponent implements OnInit, OnChanges {
     }
 
     public async editTag(tag: string): Promise<void> {
-        this.loading = true;
         if (tag.length > 0) {
             let tagInstance = this.allTags.find(
                 t => t.getNormalizedOutput() === tag);
@@ -71,81 +75,91 @@ export class TagEditComponent implements OnInit, OnChanges {
                     break;
             }
         }
-        this.loading = false;
     }
 
     async toggleTag(tag: Tag) {
-        for (const file of this.files) {
-            const fileTags = this.fileTags[file.id];
-            let addedTags = [];
-            let removedTags = [];
-            if (fileTags.findIndex(i => i.id === tag.id) < 0) {
-                addedTags.push(tag.id);
-            } else {
-                removedTags.push(tag.id);
+        await this.wrapAsyncOperation(async () => {
+            for (const file of this.files) {
+                const fileTags = this.fileTags[file.id];
+                let addedTags = [];
+                let removedTags = [];
+                if (fileTags.findIndex(i => i.id === tag.id) < 0) {
+                    addedTags.push(tag.id);
+                } else {
+                    removedTags.push(tag.id);
+                }
+                this.fileTags[file.id] = await this.tagService.changeFileTags(
+                    file.id,
+                    addedTags, removedTags
+                );
+                if (addedTags.length > 0) {
+                    await this.tagService.loadTags();
+                    await this.tagService.loadNamespaces();
+                }
             }
-            this.fileTags[file.id] = await this.tagService.changeFileTags(
-                file.id,
-                addedTags, removedTags);
-            if (addedTags.length > 0) {
-                await this.tagService.loadTags();
-                await this.tagService.loadNamespaces();
+            this.mapFileTagsToTagList();
+            const index = this.tags.indexOf(tag);
+            if (index >= 0) {
+                this.tagScroll.scrollToIndex(index);
             }
-        }
-        this.mapFileTagsToTagList();
-        const index = this.tags.indexOf(tag);
-        if (index >= 0) {
-            this.tagScroll.scrollToIndex(index);
-        }
+        });
         this.tagEditEvent.emit(this);
     }
 
     async addTag(tag: Tag) {
-        for (const file of this.files) {
-            if ((this.fileTags[file.id] ?? []).findIndex(t => t.id === tag.id) < 0) {
-                this.fileTags[file.id] = await this.tagService.changeFileTags(
-                    file.id,
-                    [tag.id], []);
+        await this.wrapAsyncOperation(async () => {
+            for (const file of this.files) {
+                if ((this.fileTags[file.id] ?? []).findIndex(t => t.id === tag.id) < 0) {
+                    this.fileTags[file.id] = await this.tagService.changeFileTags(
+                        file.id,
+                        [tag.id], []
+                    );
+                }
             }
-        }
-        this.mapFileTagsToTagList();
-        const index = this.tags.indexOf(tag);
-        if (index >= 0) {
-            this.tagScroll.scrollToIndex(index);
-        }
+            this.mapFileTagsToTagList();
+            const index = this.tags.indexOf(tag);
+            if (index >= 0) {
+                this.tagScroll.scrollToIndex(index);
+            }
+            await this.tagService.loadTags();
+            await this.tagService.loadNamespaces();
+        });
         this.tagEditEvent.emit(this);
-        await this.tagService.loadTags();
-        await this.tagService.loadNamespaces();
     }
 
     public async removeTag(tag: Tag) {
-        this.loading = true;
-        for (const file of this.files) {
-            if (this.fileTags[file.id].findIndex(t => t.id === tag.id) >= 0) {
-                this.fileTags[file.id] = await this.tagService.changeFileTags(
-                    file.id,
-                    [], [tag.id]);
+        await this.wrapAsyncOperation(async () => {
+            for (const file of this.files) {
+                if (this.fileTags[file.id].findIndex(t => t.id === tag.id) >= 0) {
+                    this.fileTags[file.id] = await this.tagService.changeFileTags(
+                        file.id,
+                        [], [tag.id]
+                    );
+                }
             }
-        }
-        this.mapFileTagsToTagList();
-        this.loading = false;
+            this.mapFileTagsToTagList();
+        });
         this.tagEditEvent.emit(this);
     }
 
-    private async loadFileTags() {
-        this.loading = true;
-        const promises = [];
-        const loadFn = async (file: File) => {
-            this.fileTags[file.id] = await this.tagService.getTagsForFiles(
-                [file.cd]);
-        };
-        for (const file of this.files) {
-            promises.push(loadFn(file));
-        }
+    public trackByTagId(index: number, item: Tag) {
+        return item.id;
+    }
 
-        await Promise.all(promises);
-        this.mapFileTagsToTagList();
-        this.loading = false;
+    private async loadFileTags() {
+        await this.wrapAsyncOperation(async () => {
+            const promises = [];
+            const loadFn = async (file: File) => {
+                this.fileTags[file.id] = await this.tagService.getTagsForFiles(
+                    [file.cd]);
+            };
+            for (const file of this.files) {
+                promises.push(loadFn(file));
+            }
+
+            await Promise.all(promises);
+            this.mapFileTagsToTagList();
+        });
     }
 
     private mapFileTagsToTagList() {
@@ -159,5 +173,18 @@ export class TagEditComponent implements OnInit, OnChanges {
         this.tags = tags.sort(
             (a, b) => a.getNormalizedOutput()
                 .localeCompare(b.getNormalizedOutput()));
+    }
+
+    private async wrapAsyncOperation<T>(cb: () => Promise<T>): Promise<T | undefined> {
+        if (!this.busyIndicator) {
+            try {
+                return cb();
+            } catch (err: any) {
+                this.errorBroker.showError(err);
+                return undefined;
+            }
+        } else {
+            return this.busyIndicator.wrapAsyncOperation(cb);
+        }
     }
 }

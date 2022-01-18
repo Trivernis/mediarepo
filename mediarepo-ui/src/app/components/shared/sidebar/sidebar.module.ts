@@ -46,6 +46,8 @@ import {
 import {
     FilterExpressionListItemComponent
 } from "./file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component";
+import {GetTagQueryPipe} from "./file-search/filter-pipes/get-tag-query.pipe";
+import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-query.pipe";
 
 
 @NgModule({
@@ -62,6 +64,8 @@ import {
         TagQueryItemComponent,
         PropertyQueryItemComponent,
         FilterExpressionListItemComponent,
+        GetTagQueryPipe,
+        GetPropertyQueryPipe,
     ],
     exports: [
         TagEditComponent,

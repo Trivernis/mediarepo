@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
 import {Observable} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {Tag} from "../../../../../api/models/Tag";
@@ -15,7 +15,8 @@ type AutocompleteEntry = {
 @Component({
     selector: "app-filter-input",
     templateUrl: "./filter-input.component.html",
-    styleUrls: ["./filter-input.component.scss"]
+    styleUrls: ["./filter-input.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterInputComponent implements OnChanges {
 
