@@ -70,7 +70,6 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         });
         this.state.sortKeys.subscribe(s => this.sortExpression = s);
         this.applyStatusFromFilters();
-        await this.searchForFiles();
         this.needsScroll = true;
         this.assignDisplayedFilters();
     }
