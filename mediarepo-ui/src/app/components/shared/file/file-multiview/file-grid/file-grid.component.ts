@@ -1,5 +1,6 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     ElementRef,
     EventEmitter,
@@ -21,7 +22,8 @@ import {Key} from "w3c-keys";
 @Component({
     selector: "app-file-grid",
     templateUrl: "./file-grid.component.html",
-    styleUrls: ["./file-grid.component.scss"]
+    styleUrls: ["./file-grid.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
