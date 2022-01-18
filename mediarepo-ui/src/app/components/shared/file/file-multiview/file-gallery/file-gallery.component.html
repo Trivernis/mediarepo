@@ -13,7 +13,7 @@
     <div class="file-scroll-view" fxFlex="20%">
         <cdk-virtual-scroll-viewport #virtualScroll class="file-scroll-viewport" itemSize="260" maxBufferPx="3000"
                                      minBufferPx="1000" orientation="horizontal">
-            <div *cdkVirtualFor="let entry of entries" class="file-item">
+            <div *cdkVirtualFor="let entry of entries; trackBy: trackByFileId" class="file-item">
                 <app-file-card (clickEvent)="onEntrySelect($event.entry)"
                                [entry]="entry"></app-file-card>
             </div>

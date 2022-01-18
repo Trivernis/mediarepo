@@ -169,6 +169,14 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         this.ctrlClicked = event.ctrlKey ? false : this.ctrlClicked;
     }
 
+    public trackByFileRowId(index: number, item: Selectable<File>[]) {
+        return item.map(e => e.data.id).join("-");
+    }
+
+    public trackByFileId(index: number, item: Selectable<File>) {
+        return item.data.id;
+    }
+
     private setPartitionedGridEntries() {
         this.partitionedGridEntries = [];
         let scrollToIndex = -1;

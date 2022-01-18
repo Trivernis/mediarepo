@@ -142,6 +142,10 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
         this.tagEditEvent.emit(this);
     }
 
+    public trackByTagId(index: number, item: Tag) {
+        return item.id;
+    }
+
     private async loadFileTags() {
         await this.wrapAsyncOperation(async () => {
             const promises = [];

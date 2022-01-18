@@ -173,6 +173,10 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         }
     }
 
+    public trackByFileId(index: number, item: Selectable<File>) {
+        return item.data.id;
+    }
+
     private scrollToSelection(): void {
         if (this.selectedFile) {
             const selectedIndex = this.entries.indexOf(this.selectedFile);

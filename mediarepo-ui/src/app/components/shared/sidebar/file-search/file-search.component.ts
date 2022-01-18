@@ -198,6 +198,10 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         return deepEqual(tagFilter, filter);
     }
 
+    public trackByTagId(index: number, item: Tag) {
+        return item.id;
+    }
+
     private assignDisplayedFilters() {
         this.displayedFilters = this.filters.getFilters().filter(f => !this.isTagFilter(f));
     }
