@@ -1,4 +1,4 @@
-import {Component, Inject, OnChanges, SimpleChanges} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Inject, OnChanges, SimpleChanges} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {SortDialogComponent} from "../sort-dialog/sort-dialog.component";
 import {Tag} from "../../../../../../api/models/Tag";
@@ -13,7 +13,8 @@ type IndexableSelection<T> = {
 @Component({
     selector: "app-filter-dialog",
     templateUrl: "./filter-dialog.component.html",
-    styleUrls: ["./filter-dialog.component.scss"]
+    styleUrls: ["./filter-dialog.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterDialogComponent implements OnChanges {
     public availableTags: Tag[] = [];

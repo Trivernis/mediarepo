@@ -1,4 +1,14 @@
-import {AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
+import {
+    AfterViewChecked,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild
+} from "@angular/core";
 import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
@@ -18,7 +28,8 @@ import * as deepEqual from "fast-deep-equal";
 @Component({
     selector: "app-file-search",
     templateUrl: "./file-search.component.html",
-    styleUrls: ["./file-search.component.scss"]
+    styleUrls: ["./file-search.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileSearchComponent implements AfterViewChecked, OnInit {
     public sortExpression: SortKey[] = [];

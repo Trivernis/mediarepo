@@ -1,24 +1,33 @@
-import {Component, Input} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from "@angular/core";
 import {ProgressSpinnerMode} from "@angular/material/progress-spinner";
 
 @Component({
     selector: "app-busy-indicator",
     templateUrl: "./busy-indicator.component.html",
-    styleUrls: ["./busy-indicator.component.scss"]
+    styleUrls: ["./busy-indicator.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BusyIndicatorComponent {
-
+export class BusyIndicatorComponent implements OnChanges {
     @Input() busy: boolean = false;
     @Input() blurBackground: boolean = false;
     @Input() darkenBackground: boolean = false;
     @Input() mode: ProgressSpinnerMode = "indeterminate";
     @Input() value: number | undefined;
 
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes["busy"]) {
+            this.changeDetector.markForCheck();
+        }
     }
 
     public setBusy(busy: boolean) {
-        this.busy = busy;
+        if (busy != this.busy) {
+            this.busy = busy;
+            this.changeDetector.markForCheck();
+        }
     }
 
     public wrapOperation<T>(operation: Function): T | undefined {
@@ -36,6 +45,7 @@ export class BusyIndicatorComponent {
 
     public async wrapAsyncOperation<T>(operation: Function): Promise<T | undefined> {
         this.setBusy(true);
+        console.log("busy");
         try {
             const result = await operation();
             this.setBusy(false);
@@ -44,6 +54,7 @@ export class BusyIndicatorComponent {
             return undefined;
         } finally {
             this.setBusy(false);
+            console.log("not busy");
         }
     }
 }
