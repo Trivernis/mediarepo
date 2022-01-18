@@ -15,9 +15,11 @@
                                      minBufferPx="1000" orientation="horizontal">
             <div *cdkVirtualFor="let entry of entries; trackBy: trackByFileId" class="file-item">
                 <app-file-card (clickEvent)="onEntrySelect($event.entry)"
-                               [entry]="entry"></app-file-card>
+                               [entry]="entry" [fileChanged]="this.fileChanged"></app-file-card>
             </div>
         </cdk-virtual-scroll-viewport>
     </div>
 </div>
-<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)"></app-file-context-menu>
+<app-file-context-menu #fileContextMenu
+                       (fileDeleted)="this.fileDeleted.emit($event)"
+                       (fileStatusChange)="this.onFileStatusChange()"></app-file-context-menu>

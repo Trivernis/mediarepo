@@ -68,7 +68,7 @@
                             "optimization": {
                                 "fonts": false,
                                 "styles": false,
-                                "scripts": true
+                                "scripts": false
                             },
                             "vendorChunk": true,
                             "extractLicenses": false,

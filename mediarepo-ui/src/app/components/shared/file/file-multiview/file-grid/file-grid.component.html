@@ -12,13 +12,13 @@
                     (contextmenu)="this.selectEntryWhenNotSelected(gridEntry); fileContextMenu.onContextMenu($event, this.getSelectedFiles())"
                     (dblClickEvent)="fileOpen.emit($event.entry.data)"
                     *ngFor="let gridEntry of rowEntry; trackBy: trackByFileId"
-                    [entry]="gridEntry"></app-file-card>
+                    [entry]="gridEntry" [fileChanged]="this.fileChanged"></app-file-card>
             </div>
         </div>
     </cdk-virtual-scroll-viewport>
 
 </div>
-<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)">
+<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)" (fileStatusChange)="this.onFileStatusChange()">
     <button (click)="this.fileOpen.emit(fileContextMenu.files[0])"
             *ngIf="fileContextMenu.files.length === 1"
             content-before=""

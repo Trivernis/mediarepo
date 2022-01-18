@@ -7,6 +7,7 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {BusyDialogComponent} from "../../app-common/busy-dialog/busy-dialog.component";
 import {BehaviorSubject} from "rxjs";
 import {FileActionBaseComponent} from "../../app-base/file-action-base/file-action-base.component";
+import {FileStatus} from "../../../../../api/api-types/files";
 
 type ProgressDialogContext = {
     dialog: MatDialogRef<BusyDialogComponent>,
@@ -31,6 +32,7 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
 
     @ViewChild("contextMenu") contextMenu!: ContextMenuComponent;
     @Output() fileDeleted = new EventEmitter<File[]>();
+    @Output() fileStatusChange = new EventEmitter<File[]>();
 
     constructor(fileService: FileService, errorBroker: ErrorBrokerService, dialog: MatDialog) {
         super(dialog, errorBroker, fileService);
@@ -54,6 +56,11 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
         if (deleted) {
             this.fileDeleted.emit(this.files);
         }
+    }
+
+    public async changeFileStatus(status: FileStatus) {
+        await this.updateStatus(this.files, status);
+        this.fileStatusChange.emit(this.files);
     }
 
     private applyStatus() {

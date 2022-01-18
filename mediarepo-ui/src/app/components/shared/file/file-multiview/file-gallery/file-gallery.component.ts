@@ -17,6 +17,7 @@ import {Selectable} from "../../../../../models/Selectable";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
 import {Key} from "w3c-keys";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: "app-file-gallery",
@@ -40,11 +41,15 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     public entries: Selectable<File>[] = [];
     public selectedFile: Selectable<File> | undefined;
     public fileContentUrl: SafeResourceUrl | undefined;
+    public fileChanged = new BehaviorSubject<void>(undefined);
 
     private scrollTimeout: number | undefined;
     private escapeCount = 0;
 
-    constructor(private tabService: TabService, private fileService: FileService) {
+    constructor(
+        private tabService: TabService,
+        private fileService: FileService
+    ) {
         tabService.selectedTab.subscribe(() => this.adjustElementSizes());
     }
 
@@ -177,6 +182,10 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         return item.data.id;
     }
 
+    public onFileStatusChange(): void {
+        this.fileChanged.next();
+    }
+
     private scrollToSelection(): void {
         if (this.selectedFile) {
             const selectedIndex = this.entries.indexOf(this.selectedFile);
@@ -193,7 +202,6 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             }
         }
     }
-
 
     private getPreselectedEntry(): Selectable<File> | undefined {
         if (this.preselectedFile) {

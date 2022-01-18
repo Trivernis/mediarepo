@@ -18,6 +18,7 @@ import {TabService} from "../../../../../services/tab/tab.service";
 import {FileService} from "../../../../../services/file/file.service";
 import {Selectable} from "../../../../../models/Selectable";
 import {Key} from "w3c-keys";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: "app-file-grid",
@@ -38,8 +39,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
 
-    selectedEntries: Selectable<File>[] = [];
-    partitionedGridEntries: Selectable<File>[][] = [];
+    public fileChanged = new BehaviorSubject<void>(undefined);
+    public selectedEntries: Selectable<File>[] = [];
+    public partitionedGridEntries: Selectable<File>[][] = [];
+
     private shiftClicked = false;
     private ctrlClicked = false;
     private gridEntries: Selectable<File>[] = [];
@@ -177,6 +180,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
     public trackByFileId(index: number, item: Selectable<File>) {
         return item.data.id;
+    }
+
+    public onFileStatusChange(): void {
+        this.fileChanged.next();
     }
 
     private setPartitionedGridEntries() {

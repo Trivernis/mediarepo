@@ -16,6 +16,7 @@ import {
 import {File} from "../../../../../api/models/File";
 import {Selectable} from "../../../../models/Selectable";
 import {SchedulingService} from "../../../../services/scheduling/scheduling.service";
+import {BehaviorSubject} from "rxjs";
 
 const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
 
@@ -28,6 +29,7 @@ const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
 export class FileCardComponent implements OnInit, OnChanges, OnDestroy, AfterViewChecked {
     @ViewChild("card") card!: ElementRef;
     @Input() public entry!: Selectable<File>;
+    @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
     @Output() clickEvent = new EventEmitter<FileCardComponent>();
     @Output() dblClickEvent = new EventEmitter<FileCardComponent>();
     public loading = false;
@@ -48,6 +50,9 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         if (changes["entry"] && (this.cachedId === undefined || this.entry.data.id !== this.cachedId)) {
             this.cachedId = this.entry.data.id;
             this.setImageDelayed();
+        }
+        if (changes["fileChanged"]) {
+            this.fileChanged.subscribe(() => this.changeDetector.markForCheck());
         }
     }
 
