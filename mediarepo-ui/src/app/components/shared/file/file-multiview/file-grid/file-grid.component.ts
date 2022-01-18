@@ -1,5 +1,6 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     ElementRef,
     EventEmitter,
@@ -17,11 +18,13 @@ import {TabService} from "../../../../../services/tab/tab.service";
 import {FileService} from "../../../../../services/file/file.service";
 import {Selectable} from "../../../../../models/Selectable";
 import {Key} from "w3c-keys";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: "app-file-grid",
     templateUrl: "./file-grid.component.html",
-    styleUrls: ["./file-grid.component.scss"]
+    styleUrls: ["./file-grid.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
@@ -36,8 +39,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     @ViewChild("virtualScrollGrid") virtualScroll!: CdkVirtualScrollViewport;
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
 
-    selectedEntries: Selectable<File>[] = [];
-    partitionedGridEntries: Selectable<File>[][] = [];
+    public fileChanged = new BehaviorSubject<void>(undefined);
+    public selectedEntries: Selectable<File>[] = [];
+    public partitionedGridEntries: Selectable<File>[][] = [];
+
     private shiftClicked = false;
     private ctrlClicked = false;
     private gridEntries: Selectable<File>[] = [];
@@ -75,14 +80,14 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     setSelectedFile(clickedEntry: Selectable<File>) {
         if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
             this.selectedEntries.forEach(entry => {
-                if (entry !== clickedEntry) entry.selected = false;
+                if (entry !== clickedEntry) entry.unselect();
             });
             this.selectedEntries = [];
         }
         if (this.shiftClicked && this.selectedEntries.length > 0) {
             this.handleShiftSelect(clickedEntry);
         } else {
-            clickedEntry.selected = !clickedEntry.selected;
+            clickedEntry.selected.next(!clickedEntry.selected.value);
             if (!clickedEntry.selected) {
                 const index = this.selectedEntries.indexOf(clickedEntry);
                 if (index > -1) {
@@ -169,6 +174,18 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         this.ctrlClicked = event.ctrlKey ? false : this.ctrlClicked;
     }
 
+    public trackByFileRowId(index: number, item: Selectable<File>[]) {
+        return item.map(e => e.data.id).join("-");
+    }
+
+    public trackByFileId(index: number, item: Selectable<File>) {
+        return item.data.id;
+    }
+
+    public onFileStatusChange(): void {
+        this.fileChanged.next();
+    }
+
     private setPartitionedGridEntries() {
         this.partitionedGridEntries = [];
         let scrollToIndex = -1;
@@ -196,7 +213,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
                     this.virtualScroll?.scrollToIndex(scrollToIndex);
 
                     if (selectedEntry) {
-                        selectedEntry.selected = true;
+                        selectedEntry.select();
                         this.selectedEntries.push(selectedEntry);
                     }
                 }
@@ -208,7 +225,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
         const newSelection: Selectable<File>[] = this.gridEntries.filter(
             entry => this.selectedEntries.findIndex(
                 e => e.data.id == entry.data.id) >= 0);
-        newSelection.forEach(entry => entry.selected = true);
+        newSelection.forEach(entry => entry.select());
         this.selectedEntries = newSelection;
     }
 
@@ -223,7 +240,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
         for (const gridEntry of this.gridEntries) {
             if (found) {
-                gridEntry.selected = true;
+                gridEntry.select();
                 this.selectedEntries.push(gridEntry);
                 if (gridEntry === clickedEntry || gridEntry == lastEntry) {
                     return;
@@ -231,7 +248,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
             } else if (gridEntry === lastEntry || gridEntry === clickedEntry) {
                 found = true;
                 if (gridEntry === clickedEntry) {
-                    gridEntry.selected = true;
+                    gridEntry.select();
                     this.selectedEntries.push(gridEntry);
                 }
             }

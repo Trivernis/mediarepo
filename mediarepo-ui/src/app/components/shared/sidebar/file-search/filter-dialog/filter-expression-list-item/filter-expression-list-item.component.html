@@ -7,10 +7,10 @@
             <app-selectable #componentSelectable
                             (appSelect)="this.entrySelect.emit(entry)"
                             (appUnselect)="this.entryUnselect.emit(entry)">
-                <app-property-query-item *ngIf="this.queryIs(entry[1], 'Property')"
-                                         [propertyQuery]="this.propertyQuery(entry[1]).Property"></app-property-query-item>
-                <app-tag-query-item *ngIf="this.queryIs(entry[1], 'Tag')"
-                                    [tagQuery]="this.tagQuery(entry[1]).Tag"></app-tag-query-item>
+                <app-property-query-item *ngIf="entry[1] | hasProperty: 'Property'"
+                                         [propertyQuery]="entry[1] | getPropertyQuery"></app-property-query-item>
+                <app-tag-query-item *ngIf="entry[1] | hasProperty: 'Tag'"
+                                    [tagQuery]="entry[1] | getTagQuery"></app-tag-query-item>
             </app-selectable>
         </mat-list-item>
     </mat-list>
@@ -19,9 +19,9 @@
     <app-selectable #singleSelectable
                     (appSelect)="this.appSelect.emit(this.query)"
                     (appUnselect)="this.appUnselect.emit(this.query)">
-        <app-property-query-item *ngIf="this.queryIs(this.query, 'Property')"
-                                 [propertyQuery]="this.propertyQuery(this.query).Property"></app-property-query-item>
-        <app-tag-query-item *ngIf="this.queryIs(this.query, 'Tag')"
-                            [tagQuery]="this.tagQuery(this.query).Tag"></app-tag-query-item>
+        <app-property-query-item *ngIf="this.query | hasProperty: 'Property'"
+                                 [propertyQuery]="this.query | getPropertyQuery"></app-property-query-item>
+        <app-tag-query-item *ngIf="this.query | hasProperty: 'Tag'"
+                            [tagQuery]="this.query | getTagQuery"></app-tag-query-item>
     </app-selectable>
 </span>

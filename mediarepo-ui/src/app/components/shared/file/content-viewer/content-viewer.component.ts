@@ -1,5 +1,6 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     Input,
     OnChanges,
@@ -11,25 +12,23 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
-import {
-    ErrorBrokerService
-} from "../../../../services/error-broker/error-broker.service";
-import {
-    BusyIndicatorComponent
-} from "../../app-common/busy-indicator/busy-indicator.component";
+import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
 
 type ContentType = "image" | "video" | "audio" | "other";
 
 @Component({
     selector: "app-content-viewer",
     templateUrl: "./content-viewer.component.html",
-    styleUrls: ["./content-viewer.component.scss"]
+    styleUrls: ["./content-viewer.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestroy {
     @Input() file!: File;
 
     public contentUrl: SafeResourceUrl | undefined;
     public blobUrl: SafeResourceUrl | undefined;
+    public contentType: ContentType = "other";
 
     @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
 
@@ -40,7 +39,8 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
     }
 
     public async ngAfterViewInit() {
-        if (["audio", "video"].includes(this.getContentType())) {
+        this.contentType = this.getContentType();
+        if (["audio", "video"].includes(this.contentType)) {
             await this.loadBlobUrl();
         } else {
             this.contentUrl = this.fileService.buildContentUrl(this.file);
@@ -49,8 +49,9 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
 
     public async ngOnChanges(changes: SimpleChanges) {
         if (changes["file"]) {
-            if (["audio", "video"].includes(
-                this.getContentType()) && this.busyIndicator) {
+            this.contentType = this.getContentType();
+
+            if (["audio", "video"].includes(this.contentType) && this.busyIndicator) {
                 await this.loadBlobUrl();
             } else {
                 this.contentUrl = this.fileService.buildContentUrl(this.file);
@@ -61,23 +62,6 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
 
     public ngOnDestroy(): void {
         this.unloadBlobUrl();
-    }
-
-    public getContentType(): ContentType {
-        let mimeParts = this.file.mimeType.split("/");
-        const type = mimeParts.shift() ?? "other";
-        const subtype = mimeParts.shift() ?? "*";
-
-        switch (type) {
-            case "image":
-                return "image";
-            case "video":
-                return "video";
-            case "audio":
-                return "audio";
-            default:
-                return "other";
-        }
     }
 
     public async downloadContent() {
@@ -101,6 +85,22 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
                 this.blobUrl = url;
             }
         });
+    }
+
+    private getContentType(): ContentType {
+        let mimeParts = this.file.mimeType.split("/");
+        const type = mimeParts.shift() ?? "other";
+
+        switch (type) {
+            case "image":
+                return "image";
+            case "video":
+                return "video";
+            case "audio":
+                return "audio";
+            default:
+                return "other";
+        }
     }
 
     private unloadBlobUrl() {

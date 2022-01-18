@@ -1,11 +1,11 @@
-<div class="file-edit-inner" fxLayout="column">
+<app-busy-indicator [blurBackground]="true" class="file-edit-inner" fxLayout="column">
     <div class="file-edit-header" fxFlex="100px">
         <h1>Edit Tags</h1>
         <mat-divider></mat-divider>
     </div>
     <div class="tag-edit-list" fxFlex fxFlexAlign="start" fxFlexFill>
         <cdk-virtual-scroll-viewport #tagScroll itemSize="50" maxBufferPx="2000" minBufferPx="1000">
-            <div *cdkVirtualFor="let tag of tags" class="editable-tag">
+            <div *cdkVirtualFor="let tag of tags; trackBy: trackByTagId" class="editable-tag">
                 <app-tag-item [tag]="tag"></app-tag-item>
                 <button (click)="removeTag(tag)" class="tag-remove-button" mat-icon-button>
                     <ng-icon name="mat-remove"></ng-icon>
@@ -33,5 +33,4 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <app-busy-indicator *ngIf="this.loading" [busy]="this.loading" [blurBackground]="true"></app-busy-indicator>
-</div>
+</app-busy-indicator>

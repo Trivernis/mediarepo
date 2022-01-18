@@ -14,6 +14,7 @@ import {MetadataEntryComponent} from "./metadata-entry/metadata-entry.component"
 import {BusyDialogComponent} from "./busy-dialog/busy-dialog.component";
 import {SelectableComponent} from "./selectable/selectable.component";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {HasPropertyPipe} from "./pipes/has-property.pipe";
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         MetadataEntryComponent,
         BusyDialogComponent,
         SelectableComponent,
+        HasPropertyPipe,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -35,6 +37,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         InputReceiverDirective,
         MetadataEntryComponent,
         SelectableComponent,
+        HasPropertyPipe,
     ],
     imports: [
         CommonModule,
