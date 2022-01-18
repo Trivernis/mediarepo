@@ -14,6 +14,8 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
     @Input() file!: File;
 
     public thumbUrl: SafeResourceUrl | undefined;
+    public fileType!: string;
+    public thumbnailSupported: boolean = false;
 
     private supportedThumbnailTypes = ["image", "video"];
 
@@ -21,7 +23,9 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
     }
 
     public async ngAfterViewInit() {
-        this.thumbUrl = this.fileService.buildThumbnailUrl(this.file, 250, 250);
+        if (this.thumbnailSupported) {
+            this.thumbUrl = this.fileService.buildThumbnailUrl(this.file, 250, 250);
+        }
     }
 
     public async ngOnChanges(changes: SimpleChanges) {
@@ -29,6 +33,8 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit {
             this.thumbUrl = this.fileService.buildThumbnailUrl(this.file,
                 250, 250
             );
+            this.fileType = this.getFileType();
+            this.thumbnailSupported = this.getThumbnailSupported();
         }
     }
 
