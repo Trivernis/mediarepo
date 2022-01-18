@@ -1,47 +1,35 @@
-import {Component, Input} from "@angular/core";
-import {
-    FilterExpression,
-    FilterExpressionOrExpression,
-    FilterExpressionQuery,
-    FilterQuery,
-    FilterQueryProperty,
-    FilterQueryTag
-} from "../../../../../../api/api-types/files";
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
+import {FilterExpression, FilterQuery} from "../../../../../../api/api-types/files";
 
 @Component({
     selector: "app-filter-expression-item",
     templateUrl: "./filter-expression-item.component.html",
-    styleUrls: ["./filter-expression-item.component.scss"]
+    styleUrls: ["./filter-expression-item.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterExpressionItemComponent {
-
-
+export class FilterExpressionItemComponent implements OnInit, OnChanges {
     @Input() filter!: FilterExpression;
+    public orExpression?: FilterQuery[];
+    public query?: FilterQuery;
 
     constructor() {
     }
 
-    public is(key: "OrExpression" | "Query"): boolean {
-        return key in this.filter;
+    public ngOnInit(): void {
+        this.parseQuery();
     }
 
-    public orExpression(): FilterExpressionOrExpression {
-        return this.filter as FilterExpressionOrExpression;
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes["filter"]) {
+            this.parseQuery();
+        }
     }
 
-    public query(): FilterExpressionQuery {
-        return this.filter as FilterExpressionQuery;
-    }
-
-    public queryIs(query: FilterQuery, key: "Property" | "Tag"): boolean {
-        return key in query;
-    }
-
-    public propertyQuery(query: FilterQuery): FilterQueryProperty {
-        return query as FilterQueryProperty;
-    }
-
-    public tagQuery(query: FilterQuery): FilterQueryTag {
-        return query as FilterQueryTag;
+    private parseQuery() {
+        if ("Query" in this.filter) {
+            this.query = this.filter.Query;
+        } else {
+            this.orExpression = this.filter.OrExpression;
+        }
     }
 }
