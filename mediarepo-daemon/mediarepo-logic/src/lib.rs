@@ -6,3 +6,4 @@ pub mod repo;
 pub mod tag;
 pub mod thumbnail;
 pub mod type_keys;
+pub mod dto;
