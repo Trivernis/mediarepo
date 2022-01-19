@@ -217,11 +217,7 @@ impl File {
                 JoinType::LeftJoin,
                 content_descriptor_tag::Relation::Tag.def().rev(),
             )
-            .join(
-                JoinType::InnerJoin,
-                content_descriptor_tag::Relation::ContentDescriptorId.def(),
-            )
-            .filter(content_descriptor::Column::Id.eq(self.content_descriptor.id))
+            .filter(content_descriptor_tag::Column::CdId.eq(self.content_descriptor.id))
             .all(&self.db)
             .await?;
         let tags = tags
@@ -251,16 +247,21 @@ impl File {
             return Ok(());
         }
         let cd_id = self.content_descriptor.id;
+        let own_tag_ids = self.tags().await?.into_iter().map(|t| t.id()).collect::<Vec<i64>>();
+
         let models: Vec<content_descriptor_tag::ActiveModel> = tag_ids
             .into_iter()
+            .filter(|tag_id|!own_tag_ids.contains(tag_id))
             .map(|tag_id| content_descriptor_tag::ActiveModel {
                 cd_id: Set(cd_id),
                 tag_id: Set(tag_id),
             })
             .collect();
-        content_descriptor_tag::Entity::insert_many(models)
-            .exec(&self.db)
-            .await?;
+        if models.len() > 0 {
+            content_descriptor_tag::Entity::insert_many(models)
+                .exec(&self.db)
+                .await?;
+        }
 
         Ok(())
     }

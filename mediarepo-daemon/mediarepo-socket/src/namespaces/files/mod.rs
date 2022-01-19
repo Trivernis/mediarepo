@@ -18,6 +18,7 @@ use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use tokio::io::AsyncReadExt;
+use mediarepo_core::content_descriptor::create_content_descriptor;
 
 pub struct FilesNamespace;
 
@@ -135,15 +136,22 @@ impl FilesNamespace {
             .into_inner();
         let AddFileRequestHeader { metadata, tags } = request;
         let repo = get_repo_from_context(ctx).await;
+        let bytes = bytes.into_inner();
+        let cd = create_content_descriptor(&bytes);
 
-        let file = repo
-            .add_file(
-                metadata.mime_type,
-                bytes.into_inner(),
-                metadata.creation_time,
-                metadata.change_time,
-            )
-            .await?;
+        let file = if let Some(file) = repo.file_by_cd(&cd).await? {
+            tracing::debug!("Inserted file already exists");
+            file
+        } else {
+            repo
+                .add_file(
+                    metadata.mime_type,
+                    bytes,
+                    metadata.creation_time,
+                    metadata.change_time,
+                )
+                .await?
+        };
         file.metadata().await?.set_name(metadata.name).await?;
 
         let tags = repo
