@@ -5,9 +5,9 @@ use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::mediarepo_api::types::repo::SizeType;
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_core::utils::get_folder_size;
-use mediarepo_model::file::File;
-use mediarepo_model::repo::Repo;
-use mediarepo_model::type_keys::RepoKey;
+use mediarepo_logic::file::File;
+use mediarepo_logic::repo::Repo;
+use mediarepo_logic::type_keys::RepoKey;
 use std::sync::Arc;
 use tokio::fs;
 

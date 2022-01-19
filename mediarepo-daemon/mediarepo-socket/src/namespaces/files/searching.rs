@@ -4,10 +4,10 @@ use mediarepo_core::mediarepo_api::types::files::FileStatus as ApiFileStatus;
 use mediarepo_core::mediarepo_api::types::filtering::{
     FilterExpression, FilterQuery, PropertyQuery, TagQuery, ValueComparator,
 };
-use mediarepo_model::file::filter::NegatableComparator::{Is, IsNot};
-use mediarepo_model::file::filter::{FilterFileProperty, FilterProperty, OrderingComparator};
-use mediarepo_model::file::{File, FileStatus};
-use mediarepo_model::repo::Repo;
+use mediarepo_logic::file::filter::NegatableComparator::{Is, IsNot};
+use mediarepo_logic::file::filter::{FilterFileProperty, FilterProperty, OrderingComparator};
+use mediarepo_logic::file::{File, FileStatus};
+use mediarepo_logic::repo::Repo;
 use std::collections::HashMap;
 
 #[tracing::instrument(level = "debug", skip(repo))]

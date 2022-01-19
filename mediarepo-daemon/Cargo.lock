@@ -1225,7 +1225,7 @@ dependencies = [
  "glob",
  "log",
  "mediarepo-core",
- "mediarepo-model",
+ "mediarepo-logic",
  "mediarepo-socket",
  "num-integer",
  "rolling-file",
@@ -1251,7 +1251,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mediarepo-model"
+name = "mediarepo-logic"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -1275,7 +1275,7 @@ dependencies = [
  "compare",
  "mediarepo-core",
  "mediarepo-database",
- "mediarepo-model",
+ "mediarepo-logic",
  "port_check",
  "rayon",
  "serde 1.0.132",

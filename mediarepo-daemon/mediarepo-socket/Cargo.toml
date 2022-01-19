@@ -19,8 +19,8 @@ path = "../mediarepo-core"
 [dependencies.mediarepo-database]
 path = "../mediarepo-database"
 
-[dependencies.mediarepo-model]
-path = "../mediarepo-model"
+[dependencies.mediarepo-logic]
+path = "../mediarepo-logic"
 
 [dependencies.tokio]
 version = "^1.15.0"

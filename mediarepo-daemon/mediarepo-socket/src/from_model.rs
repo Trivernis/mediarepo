@@ -2,11 +2,11 @@ use mediarepo_core::mediarepo_api::types::files::{
     FileBasicDataResponse, FileMetadataResponse, FileStatus, ThumbnailMetadataResponse,
 };
 use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse};
-use mediarepo_model::file::{File, FileStatus as FileStatusModel};
-use mediarepo_model::file_metadata::FileMetadata;
-use mediarepo_model::namespace::Namespace;
-use mediarepo_model::tag::Tag;
-use mediarepo_model::thumbnail::Thumbnail;
+use mediarepo_logic::file::{File, FileStatus as FileStatusModel};
+use mediarepo_logic::file_metadata::FileMetadata;
+use mediarepo_logic::namespace::Namespace;
+use mediarepo_logic::tag::Tag;
+use mediarepo_logic::thumbnail::Thumbnail;
 
 pub trait FromModel<M> {
     fn from_model(model: M) -> Self;

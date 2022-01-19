@@ -9,7 +9,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::drop_file::DropFile;
 use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
-use mediarepo_model::repo::Repo;
+use mediarepo_logic::repo::Repo;
 use mediarepo_socket::start_tcp_server;
 use std::env;
 use std::time::Duration;
