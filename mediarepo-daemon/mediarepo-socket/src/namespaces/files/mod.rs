@@ -1,10 +1,5 @@
-mod searching;
-mod sorting;
+use tokio::io::AsyncReadExt;
 
-use crate::from_model::FromModel;
-use crate::namespaces::files::searching::find_files_for_filters;
-use crate::namespaces::files::sorting::sort_files_by_properties;
-use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::content_descriptor::{create_content_descriptor, encode_content_descriptor};
 use mediarepo_core::error::RepoError;
@@ -21,7 +16,14 @@ use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_logic::dao::DaoProvider;
 use mediarepo_logic::dto::{AddFileDto, UpdateFileDto, UpdateFileMetadataDto};
-use tokio::io::AsyncReadExt;
+
+use crate::from_model::FromModel;
+use crate::namespaces::files::searching::find_files_for_filters;
+use crate::namespaces::files::sorting::sort_files_by_properties;
+use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
+
+mod searching;
+mod sorting;
 
 pub struct FilesNamespace;
 

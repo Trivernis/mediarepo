@@ -1,7 +1,10 @@
+use std::env;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use structopt::StructOpt;
 use tokio::fs;
+use tokio::io::AsyncWriteExt;
 use tokio::runtime;
 use tokio::runtime::Runtime;
 
@@ -11,9 +14,6 @@ use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 use mediarepo_logic::dao::repo::Repo;
 use mediarepo_socket::start_tcp_server;
-use std::env;
-use std::time::Duration;
-use tokio::io::AsyncWriteExt;
 
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 

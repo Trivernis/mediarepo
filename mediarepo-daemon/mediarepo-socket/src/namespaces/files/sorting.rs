@@ -1,18 +1,20 @@
+use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::iter::FromIterator;
+
 use chrono::NaiveDateTime;
 use compare::Compare;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::filtering::{SortDirection, SortKey};
 use mediarepo_database::queries::tags::{
     get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
 };
-use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dto::{FileDto, FileMetadataDto};
-use mediarepo_logic::file_metadata::FileMetadata;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::iter::FromIterator;
+
 
 pub struct FileSortContext {
     name: Option<String>,

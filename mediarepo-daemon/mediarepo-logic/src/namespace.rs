@@ -1,10 +1,12 @@
-use mediarepo_core::error::RepoResult;
-use mediarepo_database::entities::namespace;
-use sea_orm::prelude::*;
+use std::fmt::Debug;
+
 use sea_orm::{
     Condition, ConnectionTrait, DatabaseBackend, DatabaseConnection, InsertResult, Set, Statement,
 };
-use std::fmt::Debug;
+use sea_orm::prelude::*;
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_database::entities::namespace;
 
 #[derive(Clone)]
 pub struct Namespace {

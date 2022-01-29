@@ -1,10 +1,12 @@
-use crate::dto::FileMetadataDto;
 use chrono::NaiveDateTime;
+
 use mediarepo_core::content_descriptor::encode_content_descriptor;
 use mediarepo_core::mediarepo_api::types::files::FileStatus as ApiFileStatus;
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::file_metadata;
+
+use crate::dto::FileMetadataDto;
 
 #[derive(Clone, Debug)]
 pub struct FileDto {

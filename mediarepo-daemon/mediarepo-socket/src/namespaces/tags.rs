@@ -1,5 +1,5 @@
-use crate::from_model::FromModel;
-use crate::utils::{file_by_identifier, get_repo_from_context};
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
+
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
@@ -7,7 +7,9 @@ use mediarepo_core::mediarepo_api::types::tags::{
     ChangeFileTagsRequest, NamespaceResponse, TagResponse,
 };
 use mediarepo_logic::dao::DaoProvider;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
+
+use crate::from_model::FromModel;
+use crate::utils::{file_by_identifier, get_repo_from_context};
 
 pub struct TagsNamespace;
 

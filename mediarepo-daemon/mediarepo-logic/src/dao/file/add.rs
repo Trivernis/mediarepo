@@ -1,12 +1,14 @@
-use crate::dto::{AddFileDto, FileDto};
-use chrono::{Local, NaiveDateTime};
-use mediarepo_core::error::RepoResult;
-use mediarepo_database::entities::{content_descriptor, file, file_metadata};
-use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, ConnectionTrait, DatabaseTransaction};
 use std::io::Cursor;
 
+use chrono::{Local, NaiveDateTime};
+use sea_orm::ActiveValue::Set;
+use sea_orm::{ActiveModelTrait, ConnectionTrait, DatabaseTransaction};
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_database::entities::{content_descriptor, file, file_metadata};
+
 use crate::dao::file::FileDao;
+use crate::dto::{AddFileDto, FileDto};
 
 impl FileDao {
     #[tracing::instrument(level = "debug", skip(self))]

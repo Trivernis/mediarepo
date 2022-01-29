@@ -1,5 +1,6 @@
-pub use mediarepo_database::entities::tag;
 pub use mediarepo_database::entities::namespace;
+pub use mediarepo_database::entities::tag;
+
 use crate::dto::NamespaceDto;
 
 #[derive(Clone, Debug)]
@@ -12,7 +13,7 @@ impl TagDto {
     pub(crate) fn new(model: tag::Model, namespace_model: Option<namespace::Model>) -> Self {
         Self {
             model,
-            namespace: namespace_model.map(NamespaceDto::new)
+            namespace: namespace_model.map(NamespaceDto::new),
         }
     }
 

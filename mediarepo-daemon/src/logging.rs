@@ -1,21 +1,22 @@
-use console_subscriber::ConsoleLayer;
-use rolling_file::RollingConditionBasic;
 use std::fs;
 use std::path::PathBuf;
 
-use mediarepo_core::settings::LoggingSettings;
+use console_subscriber::ConsoleLayer;
+use rolling_file::RollingConditionBasic;
 use tracing::Level;
 use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_flame::FlameLayer;
 use tracing_log::LogTracer;
-use tracing_subscriber::filter::{self, Targets};
-use tracing_subscriber::fmt::format::FmtSpan;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::{
     fmt::{self},
     Layer, Registry,
 };
+use tracing_subscriber::filter::{self, Targets};
+use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
+
+use mediarepo_core::settings::LoggingSettings;
 
 #[allow(dyn_drop)]
 pub type DropGuard = Box<dyn Drop>;

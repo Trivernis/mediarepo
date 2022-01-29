@@ -1,7 +1,9 @@
-use crate::settings::Settings;
-use sea_orm::DatabaseConnection;
 use std::sync::Arc;
+
+use sea_orm::DatabaseConnection;
 use tokio::sync::Mutex;
+
+use crate::settings::Settings;
 
 #[derive(Clone, Default)]
 pub struct Context {

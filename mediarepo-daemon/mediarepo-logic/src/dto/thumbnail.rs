@@ -1,9 +1,11 @@
-use mediarepo_core::error::RepoResult;
-use mediarepo_core::fs::thumbnail_store::Dimensions;
 use std::path::PathBuf;
+
 use tokio::fs;
 use tokio::fs::{File, OpenOptions};
 use tokio::io::BufReader;
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_core::fs::thumbnail_store::Dimensions;
 
 #[derive(Clone, Debug)]
 pub struct ThumbnailDto {

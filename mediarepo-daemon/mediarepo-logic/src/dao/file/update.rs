@@ -1,18 +1,20 @@
-use crate::dto::{FileDto, FileMetadataDto, ThumbnailDto, UpdateFileDto, UpdateFileMetadataDto};
-use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::fs::thumbnail_store::Dimensions;
-use mediarepo_core::thumbnailer;
-use mediarepo_core::thumbnailer::{Thumbnail, ThumbnailSize};
-use mediarepo_database::entities::{content_descriptor, file, file_metadata};
-use sea_orm::prelude::*;
-use sea_orm::ActiveValue::{Set, Unchanged};
-use sea_orm::{ConnectionTrait, NotSet};
 use std::fmt::Debug;
 use std::io::Cursor;
 use std::str::FromStr;
 
+use sea_orm::prelude::*;
+use sea_orm::ActiveValue::{Set, Unchanged};
+use sea_orm::{ConnectionTrait, NotSet};
+
+use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::fs::thumbnail_store::Dimensions;
+use mediarepo_core::thumbnailer;
+use mediarepo_core::thumbnailer::{ThumbnailSize};
+use mediarepo_database::entities::{content_descriptor, file, file_metadata};
+
 use crate::dao::file::FileDao;
 use crate::dao::opt_to_active_val;
+use crate::dto::{FileDto, FileMetadataDto, ThumbnailDto, UpdateFileDto, UpdateFileMetadataDto};
 
 impl FileDao {
     #[tracing::instrument(level = "debug", skip(self))]

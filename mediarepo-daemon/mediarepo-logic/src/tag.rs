@@ -1,15 +1,16 @@
 use std::fmt::Debug;
 
+use sea_orm::{Condition, DatabaseBackend, DatabaseConnection, JoinType, Set, Statement};
+use sea_orm::{InsertResult, QuerySelect};
+use sea_orm::prelude::*;
+use sea_orm::query::ConnectionTrait;
+use sea_orm::sea_query::Expr;
+
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
-use sea_orm::prelude::*;
-use sea_orm::query::ConnectionTrait;
-use sea_orm::sea_query::Expr;
-use sea_orm::{Condition, DatabaseBackend, DatabaseConnection, JoinType, Set, Statement};
-use sea_orm::{InsertResult, QuerySelect};
 
 use crate::namespace::Namespace;
 

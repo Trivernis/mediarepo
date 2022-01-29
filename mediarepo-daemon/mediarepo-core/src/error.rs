@@ -1,5 +1,6 @@
-use sea_orm::DbErr;
 use std::fmt::{Debug, Formatter};
+
+use sea_orm::DbErr;
 use thiserror::Error;
 
 pub type RepoResult<T> = Result<T, RepoError>;

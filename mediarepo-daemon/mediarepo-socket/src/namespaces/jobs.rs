@@ -1,10 +1,11 @@
-use crate::utils::{calculate_size, get_repo_from_context};
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
 use mediarepo_core::mediarepo_api::types::repo::SizeType;
 use mediarepo_core::type_keys::SizeMetadataKey;
 use mediarepo_logic::dao::DaoProvider;
+
+use crate::utils::{calculate_size, get_repo_from_context};
 
 pub struct JobsNamespace;
 

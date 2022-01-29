@@ -1,8 +1,10 @@
-use crate::error::RepoResult;
-use futures::future;
 use std::path::PathBuf;
+
+use futures::future;
 use tokio::fs::{self, OpenOptions};
 use tokio::io::{AsyncBufReadExt, BufReader};
+
+use crate::error::RepoResult;
 
 /// Parses a normalized tag into its two components of namespace and tag
 pub fn parse_namespace_and_tag(norm_tag: String) -> (Option<String>, String) {

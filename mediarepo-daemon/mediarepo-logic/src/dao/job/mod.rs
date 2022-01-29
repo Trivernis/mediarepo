@@ -1,12 +1,14 @@
-use crate::dao::{DaoContext, DaoProvider};
+use sea_orm::ActiveValue::Set;
+use sea_orm::ConnectionTrait;
+use sea_orm::prelude::*;
+
 use mediarepo_core::content_descriptor::{
     convert_v1_descriptor_to_v2, encode_content_descriptor, is_v1_content_descriptor,
 };
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor;
-use sea_orm::prelude::*;
-use sea_orm::ActiveValue::Set;
-use sea_orm::ConnectionTrait;
+
+use crate::dao::{DaoContext, DaoProvider};
 
 pub struct JobDao {
     ctx: DaoContext,
@@ -30,13 +32,13 @@ impl JobDao {
         tracing::info!("Converting content descriptors to v2 format...");
         let mut converted_count = 0;
 
-        for mut cd in cds {
+        for cd in cds {
             if is_v1_content_descriptor(&cd.descriptor) {
                 let trx = self.ctx.db.begin().await?;
                 let src_cd = cd.descriptor;
                 let dst_cd = convert_v1_descriptor_to_v2(&src_cd)?;
 
-                let active_model = content_descriptor::ActiveModel {
+                let _active_model = content_descriptor::ActiveModel {
                     id: Set(cd.id),
                     descriptor: Set(dst_cd.clone()),
                 };

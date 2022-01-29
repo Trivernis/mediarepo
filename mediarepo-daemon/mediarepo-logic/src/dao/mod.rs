@@ -1,14 +1,16 @@
-pub mod file;
-pub mod job;
-pub mod repo;
-pub mod tag;
+use sea_orm::{ActiveValue, DatabaseConnection};
+
+use mediarepo_core::fs::file_hash_store::FileHashStore;
+use mediarepo_core::fs::thumbnail_store::ThumbnailStore;
 
 use crate::dao::file::FileDao;
 use crate::dao::job::JobDao;
 use crate::dao::tag::TagDao;
-use mediarepo_core::fs::file_hash_store::FileHashStore;
-use mediarepo_core::fs::thumbnail_store::ThumbnailStore;
-use sea_orm::{ActiveValue, DatabaseConnection};
+
+pub mod file;
+pub mod job;
+pub mod repo;
+pub mod tag;
 
 #[derive(Clone)]
 pub struct DaoContext {

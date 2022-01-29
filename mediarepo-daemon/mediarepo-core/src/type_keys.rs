@@ -1,9 +1,11 @@
-use crate::settings::Settings;
-use mediarepo_api::types::repo::SizeType;
 use std::collections::HashMap;
 use std::path::PathBuf;
+
+use mediarepo_api::types::repo::SizeType;
 use tokio_graceful_shutdown::SubsystemHandle;
 use typemap_rev::TypeMapKey;
+
+use crate::settings::Settings;
 
 pub struct SettingsKey;
 

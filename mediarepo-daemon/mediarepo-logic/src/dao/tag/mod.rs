@@ -1,12 +1,14 @@
-pub mod mappings;
+use sea_orm::prelude::*;
+use sea_orm::QuerySelect;
+use sea_orm::{JoinType};
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
 
 use crate::dao::{DaoContext, DaoProvider};
 use crate::dto::TagDto;
-use mediarepo_core::error::RepoResult;
-use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
-use sea_orm::prelude::*;
-use sea_orm::QuerySelect;
-use sea_orm::{DatabaseConnection, JoinType};
+
+pub mod mappings;
 
 pub struct TagDao {
     ctx: DaoContext,

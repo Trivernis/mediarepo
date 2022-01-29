@@ -1,29 +1,30 @@
+use std::collections::{HashMap, HashSet};
+use std::fmt::Debug;
+
+use std::iter::FromIterator;
+use std::path::PathBuf;
+
+
+
+use sea_orm::DatabaseConnection;
+
+
+
+
+use mediarepo_core::error::{RepoResult};
+use mediarepo_core::fs::file_hash_store::FileHashStore;
+use mediarepo_core::fs::thumbnail_store::{ThumbnailStore};
+use mediarepo_core::itertools::Itertools;
+
+use mediarepo_core::utils::parse_namespace_and_tag;
+
+use mediarepo_database::get_database;
+use mediarepo_database::queries::analysis::{Counts, get_all_counts};
+
 use crate::dao::{DaoContext, DaoProvider};
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
 use crate::tag::Tag;
-use chrono::{Local, NaiveDateTime};
-use mediarepo_core::content_descriptor::{
-    convert_v1_descriptor_to_v2, encode_content_descriptor, is_v1_content_descriptor,
-};
-use mediarepo_core::error::{RepoError, RepoResult};
-use mediarepo_core::fs::file_hash_store::FileHashStore;
-use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
-use mediarepo_core::itertools::Itertools;
-use mediarepo_core::thumbnailer::ThumbnailSize;
-use mediarepo_core::utils::parse_namespace_and_tag;
-use mediarepo_database::entities::content_descriptor;
-use mediarepo_database::get_database;
-use mediarepo_database::queries::analysis::{get_all_counts, Counts};
-use sea_orm::DatabaseConnection;
-use std::collections::{HashMap, HashSet};
-use std::fmt::Debug;
-use std::io::Cursor;
-use std::iter::FromIterator;
-use std::path::PathBuf;
-use std::str::FromStr;
-use tokio::fs::OpenOptions;
-use tokio::io::AsyncReadExt;
 
 #[derive(Clone)]
 pub struct Repo {

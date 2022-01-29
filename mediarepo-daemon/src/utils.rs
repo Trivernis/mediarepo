@@ -1,9 +1,11 @@
-use mediarepo_core::error::RepoResult;
-use mediarepo_core::settings::v1::SettingsV1;
-use mediarepo_core::settings::{PathSettings, Settings};
-use mediarepo_logic::dao::repo::Repo;
 use std::path::PathBuf;
+
 use tokio::fs;
+
+use mediarepo_core::error::RepoResult;
+use mediarepo_core::settings::{PathSettings, Settings};
+use mediarepo_core::settings::v1::SettingsV1;
+use mediarepo_logic::dao::repo::Repo;
 
 /// Loads the settings from a toml path
 pub fn load_settings(root_path: &PathBuf) -> RepoResult<Settings> {
