@@ -1,7 +1,7 @@
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::settings::v1::SettingsV1;
 use mediarepo_core::settings::{PathSettings, Settings};
-use mediarepo_logic::repo::Repo;
+use mediarepo_logic::dao::repo::Repo;
 use std::path::PathBuf;
 use tokio::fs;
 

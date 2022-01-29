@@ -5,9 +5,11 @@ use mediarepo_core::mediarepo_api::types::filtering::{SortDirection, SortKey};
 use mediarepo_database::queries::tags::{
     get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
 };
+use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dto::{FileDto, FileMetadataDto};
 use mediarepo_logic::file::File;
 use mediarepo_logic::file_metadata::FileMetadata;
-use mediarepo_logic::repo::Repo;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -28,7 +30,7 @@ pub struct FileSortContext {
 pub async fn sort_files_by_properties(
     repo: &Repo,
     sort_expression: Vec<SortKey>,
-    files: &mut Vec<File>,
+    files: &mut Vec<FileDto>,
 ) -> RepoResult<()> {
     let contexts = build_sort_context(repo, files).await?;
 
@@ -45,7 +47,7 @@ pub async fn sort_files_by_properties(
 
 async fn build_sort_context(
     repo: &Repo,
-    files: &Vec<File>,
+    files: &Vec<FileDto>,
 ) -> RepoResult<HashMap<i64, FileSortContext>> {
     let hash_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
     let file_ids: Vec<i64> = files.par_iter().map(|f| f.id()).collect();
@@ -54,9 +56,9 @@ async fn build_sort_context(
         get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
     let mut cid_tag_counts = get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
 
-    let files_metadata = repo.get_file_metadata_for_ids(file_ids).await?;
+    let files_metadata = repo.file().all_metadata(file_ids).await?;
 
-    let mut file_metadata_map: HashMap<i64, FileMetadata> =
+    let mut file_metadata_map: HashMap<i64, FileMetadataDto> =
         HashMap::from_iter(files_metadata.into_iter().map(|m| (m.file_id(), m)));
 
     let mut contexts = HashMap::new();
@@ -64,7 +66,7 @@ async fn build_sort_context(
     for file in files {
         if let Some(metadata) = file_metadata_map.remove(&file.id()) {
             let context = FileSortContext {
-                name: metadata.name().to_owned(),
+                name: metadata.name().cloned(),
                 size: metadata.size() as u64,
                 mime_type: file.mime_type().to_owned(),
                 namespaces: cid_nsp

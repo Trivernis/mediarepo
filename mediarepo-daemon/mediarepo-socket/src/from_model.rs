@@ -2,7 +2,10 @@ use mediarepo_core::mediarepo_api::types::files::{
     FileBasicDataResponse, FileMetadataResponse, FileStatus, ThumbnailMetadataResponse,
 };
 use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse};
-use mediarepo_logic::file::{File, FileStatus as FileStatusModel};
+use mediarepo_logic::dto::{
+    FileDto, FileMetadataDto, FileStatus as FileStatusModel, TagDto, ThumbnailDto,
+};
+use mediarepo_logic::file::File;
 use mediarepo_logic::file_metadata::FileMetadata;
 use mediarepo_logic::namespace::Namespace;
 use mediarepo_logic::tag::Tag;
@@ -25,6 +28,19 @@ impl FromModel<FileMetadata> for FileMetadataResponse {
     }
 }
 
+impl FromModel<FileMetadataDto> for FileMetadataResponse {
+    fn from_model(model: FileMetadataDto) -> Self {
+        Self {
+            file_id: model.file_id(),
+            name: model.name().cloned(),
+            comment: model.comment().cloned(),
+            creation_time: model.creation_time().to_owned(),
+            change_time: model.change_time().to_owned(),
+            import_time: model.import_time().to_owned(),
+        }
+    }
+}
+
 impl FromModel<File> for FileBasicDataResponse {
     fn from_model(file: File) -> Self {
         FileBasicDataResponse {
@@ -32,6 +48,17 @@ impl FromModel<File> for FileBasicDataResponse {
             status: FileStatus::from_model(file.status()),
             cd: file.encoded_cd(),
             mime_type: file.mime_type().to_owned(),
+        }
+    }
+}
+
+impl FromModel<FileDto> for FileBasicDataResponse {
+    fn from_model(model: FileDto) -> Self {
+        FileBasicDataResponse {
+            id: model.id(),
+            status: FileStatus::from_model(model.status()),
+            cd: model.encoded_cd(),
+            mime_type: model.mime_type().to_owned(),
         }
     }
 }
@@ -56,6 +83,16 @@ impl FromModel<Tag> for TagResponse {
     }
 }
 
+impl FromModel<TagDto> for TagResponse {
+    fn from_model(model: TagDto) -> Self {
+        Self {
+            id: model.id(),
+            namespace: model.namespace().map(|n| n.name().to_owned()),
+            name: model.name().to_owned(),
+        }
+    }
+}
+
 impl FromModel<Thumbnail> for ThumbnailMetadataResponse {
     fn from_model(model: Thumbnail) -> Self {
         Self {
@@ -63,6 +100,17 @@ impl FromModel<Thumbnail> for ThumbnailMetadataResponse {
             height: model.size.height,
             width: model.size.width,
             mime_type: model.mime_type.to_owned(),
+        }
+    }
+}
+
+impl FromModel<ThumbnailDto> for ThumbnailMetadataResponse {
+    fn from_model(model: ThumbnailDto) -> Self {
+        Self {
+            file_hash: model.parent_cd().to_owned(),
+            height: model.size().height,
+            width: model.size().width,
+            mime_type: model.mime_type().to_owned(),
         }
     }
 }

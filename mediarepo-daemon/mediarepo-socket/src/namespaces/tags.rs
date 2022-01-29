@@ -6,6 +6,7 @@ use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTa
 use mediarepo_core::mediarepo_api::types::tags::{
     ChangeFileTagsRequest, NamespaceResponse, TagResponse,
 };
+use mediarepo_logic::dao::DaoProvider;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 pub struct TagsNamespace;
@@ -65,7 +66,7 @@ impl TagsNamespace {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<GetFileTagsRequest>()?;
         let file = file_by_identifier(request.id, &repo).await?;
-        let tags = file.tags().await?;
+        let tags = repo.tag().tags_for_cd(file.cd_id()).await?;
         let responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from_model).collect();
 
         ctx.emit_to(Self::name(), "tags_for_file", responses)
@@ -126,14 +127,19 @@ impl TagsNamespace {
         let file = file_by_identifier(request.file_id, &repo).await?;
 
         if !request.added_tags.is_empty() {
-            file.add_tags(request.added_tags).await?;
+            repo.tag()
+                .upsert_mappings(vec![file.cd_id()], request.added_tags)
+                .await?;
         }
         if !request.removed_tags.is_empty() {
-            file.remove_tags(request.removed_tags).await?;
+            repo.tag()
+                .remove_mappings(vec![file.cd_id()], request.removed_tags)
+                .await?;
         }
 
-        let responses: Vec<TagResponse> = file
-            .tags()
+        let responses: Vec<TagResponse> = repo
+            .tag()
+            .tags_for_cd(file.cd_id())
             .await?
             .into_iter()
             .map(TagResponse::from_model)

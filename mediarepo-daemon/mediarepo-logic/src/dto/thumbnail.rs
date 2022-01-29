@@ -1,15 +1,25 @@
+use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::thumbnail_store::Dimensions;
+use std::path::PathBuf;
+use tokio::fs::{File, OpenOptions};
+use tokio::io::BufReader;
 
 #[derive(Clone, Debug)]
 pub struct ThumbnailDto {
+    path: PathBuf,
     parent_cd: String,
     size: Dimensions,
     mime_type: String,
 }
 
 impl ThumbnailDto {
-    pub fn new(parent_cd: String, size: Dimensions, mime_type: String) -> Self {
-        Self {parent_cd, size, mime_type}
+    pub fn new(path: PathBuf, parent_cd: String, size: Dimensions, mime_type: String) -> Self {
+        Self {
+            path,
+            parent_cd,
+            size,
+            mime_type,
+        }
     }
 
     pub fn parent_cd(&self) -> &String {
@@ -22,5 +32,11 @@ impl ThumbnailDto {
 
     pub fn mime_type(&self) -> &String {
         &self.mime_type
+    }
+
+    #[tracing::instrument(level = "debug")]
+    pub async fn get_reader(&self) -> RepoResult<BufReader<File>> {
+        let file = OpenOptions::new().read(true).open(&self.path).await?;
+        Ok(BufReader::new(file))
     }
 }

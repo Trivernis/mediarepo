@@ -1,4 +1,4 @@
-use crate::repo::Repo;
+use crate::dao::repo::Repo;
 use std::sync::Arc;
 use typemap_rev::TypeMapKey;
 

@@ -5,8 +5,9 @@ use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::mediarepo_api::types::repo::SizeType;
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_core::utils::get_folder_size;
-use mediarepo_logic::file::File;
-use mediarepo_logic::repo::Repo;
+use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dto::FileDto;
 use mediarepo_logic::type_keys::RepoKey;
 use std::sync::Arc;
 use tokio::fs;
@@ -17,10 +18,10 @@ pub async fn get_repo_from_context(ctx: &Context) -> Arc<Repo> {
     Arc::clone(repo)
 }
 
-pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<File> {
+pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<FileDto> {
     let file = match identifier {
-        FileIdentifier::ID(id) => repo.file_by_id(id).await,
-        FileIdentifier::CD(cd) => repo.file_by_cd(&decode_content_descriptor(cd)?).await,
+        FileIdentifier::ID(id) => repo.file().by_id(id).await,
+        FileIdentifier::CD(cd) => repo.file().by_cd(decode_content_descriptor(cd)?).await,
     }?;
     file.ok_or_else(|| RepoError::from("File not found"))
 }
@@ -29,7 +30,8 @@ pub async fn cd_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoRe
     match identifier {
         FileIdentifier::ID(id) => {
             let file = repo
-                .file_by_id(id)
+                .file()
+                .by_id(id)
                 .await?
                 .ok_or_else(|| "Thumbnail not found")?;
             Ok(file.cd().to_owned())

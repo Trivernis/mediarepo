@@ -1,5 +1,5 @@
 use crate::content_descriptor::ContentDescriptor;
-use crate::file::filter::FilterProperty;
+use crate::dao::{DaoContext, DaoProvider};
 use crate::file::File;
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
@@ -32,6 +32,16 @@ pub struct Repo {
     thumbnail_storage: ThumbnailStore,
 }
 
+impl DaoProvider for Repo {
+    fn dao_ctx(&self) -> DaoContext {
+        DaoContext {
+            db: self.db.clone(),
+            main_storage: self.main_storage.clone(),
+            thumbnail_storage: self.thumbnail_storage.clone(),
+        }
+    }
+}
+
 impl Repo {
     pub(crate) fn new(
         db: DatabaseConnection,
@@ -59,33 +69,6 @@ impl Repo {
     /// Returns the database of the repo for raw sql queries
     pub fn db(&self) -> &DatabaseConnection {
         &self.db
-    }
-
-    /// Returns a file by its mapped hash
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn file_by_cd(&self, cd: &[u8]) -> RepoResult<Option<File>> {
-        File::by_cd(self.db.clone(), cd).await
-    }
-
-    /// Returns a file by id
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn file_by_id(&self, id: i64) -> RepoResult<Option<File>> {
-        File::by_id(self.db.clone(), id).await
-    }
-
-    /// Returns a list of all stored files
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn files(&self) -> RepoResult<Vec<File>> {
-        File::all(self.db.clone()).await
-    }
-
-    /// Finds all files by a list of tags
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn find_files_by_filters(
-        &self,
-        filters: Vec<Vec<FilterProperty>>,
-    ) -> RepoResult<Vec<File>> {
-        File::find_by_filters(self.db.clone(), filters).await
     }
 
     /// Returns all file metadata entries for the given file ids

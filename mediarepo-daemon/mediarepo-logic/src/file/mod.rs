@@ -1,5 +1,3 @@
-pub mod filter;
-
 use std::fmt::Debug;
 use std::io::Cursor;
 use std::str::FromStr;
@@ -10,11 +8,12 @@ use sea_orm::{ConnectionTrait, DatabaseConnection, Set};
 use sea_orm::{JoinType, QuerySelect};
 use tokio::io::{AsyncReadExt, BufReader};
 
-use crate::file::filter::FilterProperty;
+use crate::dao::file::find;
+use crate::dao::file::find::FilterProperty;
+use crate::dto::FileStatus;
 use crate::file_metadata::FileMetadata;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::file_hash_store::FileHashStore;
-use mediarepo_core::mediarepo_api::types::files::FileStatus as ApiFileStatus;
 use mediarepo_core::thumbnailer::{self, Thumbnail as ThumbnailerThumb, ThumbnailSize};
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
@@ -24,22 +23,6 @@ use mediarepo_database::entities::namespace;
 use mediarepo_database::entities::tag;
 
 use crate::tag::Tag;
-
-pub enum FileStatus {
-    Imported = 10,
-    Archived = 20,
-    Deleted = 30,
-}
-
-impl From<ApiFileStatus> for FileStatus {
-    fn from(s: ApiFileStatus) -> Self {
-        match s {
-            ApiFileStatus::Imported => Self::Imported,
-            ApiFileStatus::Archived => Self::Archived,
-            ApiFileStatus::Deleted => Self::Deleted,
-        }
-    }
-}
 
 #[derive(Clone)]
 pub struct File {
@@ -109,29 +92,6 @@ impl File {
         } else {
             Ok(None)
         }
-    }
-
-    /// Finds the file by tags
-    #[tracing::instrument(level = "debug", skip(db))]
-    pub(crate) async fn find_by_filters(
-        db: DatabaseConnection,
-        filters: Vec<Vec<FilterProperty>>,
-    ) -> RepoResult<Vec<Self>> {
-        let main_condition = filter::build_find_filter_conditions(filters);
-
-        let results: Vec<(content_descriptor::Model, Option<file::Model>)> =
-            content_descriptor::Entity::find()
-                .find_also_related(file::Entity)
-                .filter(main_condition)
-                .group_by(file::Column::Id)
-                .all(&db)
-                .await?;
-        let files: Vec<Self> = results
-            .into_iter()
-            .filter_map(|(hash, tag)| Some(Self::new(db.clone(), tag?, hash)))
-            .collect();
-
-        Ok(files)
     }
 
     /// Adds a file with its hash to the database
@@ -247,11 +207,16 @@ impl File {
             return Ok(());
         }
         let cd_id = self.content_descriptor.id;
-        let own_tag_ids = self.tags().await?.into_iter().map(|t| t.id()).collect::<Vec<i64>>();
+        let own_tag_ids = self
+            .tags()
+            .await?
+            .into_iter()
+            .map(|t| t.id())
+            .collect::<Vec<i64>>();
 
         let models: Vec<content_descriptor_tag::ActiveModel> = tag_ids
             .into_iter()
-            .filter(|tag_id|!own_tag_ids.contains(tag_id))
+            .filter(|tag_id| !own_tag_ids.contains(tag_id))
             .map(|tag_id| content_descriptor_tag::ActiveModel {
                 cd_id: Set(cd_id),
                 tag_id: Set(tag_id),

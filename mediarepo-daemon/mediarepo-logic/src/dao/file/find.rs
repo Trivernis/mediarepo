@@ -1,11 +1,14 @@
+use crate::dao::file::{map_cd_and_file, FileDao};
+use crate::dto::FileDto;
 use chrono::NaiveDateTime;
+use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::entities::content_descriptor_tag;
 use mediarepo_database::entities::file;
 use mediarepo_database::entities::file_metadata;
 use sea_orm::sea_query::{Alias, Expr, Query, SimpleExpr};
-use sea_orm::ColumnTrait;
 use sea_orm::Condition;
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QuerySelect};
 
 macro_rules! apply_ordering_comparator {
     ($column:expr, $filter:expr) => {
@@ -53,8 +56,28 @@ pub enum NegatableComparator<T> {
     IsNot(T),
 }
 
+impl FileDao {
+    /// Finds files by filters
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn find(&self, filters: Vec<Vec<FilterProperty>>) -> RepoResult<Vec<FileDto>> {
+        let main_condition = build_find_filter_conditions(filters);
+
+        let files = content_descriptor::Entity::find()
+            .find_also_related(file::Entity)
+            .filter(main_condition)
+            .group_by(file::Column::Id)
+            .all(&self.ctx.db)
+            .await?
+            .into_iter()
+            .filter_map(map_cd_and_file)
+            .collect();
+
+        Ok(files)
+    }
+}
+
 #[tracing::instrument(level = "debug")]
-pub fn build_find_filter_conditions(filters: Vec<Vec<FilterProperty>>) -> Condition {
+fn build_find_filter_conditions(filters: Vec<Vec<FilterProperty>>) -> Condition {
     filters
         .into_iter()
         .fold(Condition::all(), |all_cond, mut expression| {

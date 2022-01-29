@@ -8,7 +8,7 @@ pub struct FileMetadataDto {
 
 impl FileMetadataDto {
     pub(crate) fn new(model: file_metadata::Model) -> Self {
-        Self {model}
+        Self { model }
     }
 
     pub fn file_id(&self) -> i64 {
@@ -38,4 +38,13 @@ impl FileMetadataDto {
     pub fn change_time(&self) -> NaiveDateTime {
         self.model.change_time
     }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct UpdateFileMetadataDto {
+    pub file_id: i64,
+    pub name: Option<Option<String>>,
+    pub comment: Option<Option<String>>,
+    pub size: Option<i64>,
+    pub change_time: Option<NaiveDateTime>,
 }

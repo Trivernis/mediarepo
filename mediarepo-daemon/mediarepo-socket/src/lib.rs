@@ -4,7 +4,7 @@ use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::{PortSetting, Settings};
 use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey, SubsystemKey};
-use mediarepo_logic::repo::Repo;
+use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::type_keys::RepoKey;
 use std::net::SocketAddr;
 use std::path::PathBuf;
