@@ -8,7 +8,6 @@ use mediarepo_database::queries::tags::{
 use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dao::DaoProvider;
 use mediarepo_logic::dto::{FileDto, FileMetadataDto};
-use mediarepo_logic::file::File;
 use mediarepo_logic::file_metadata::FileMetadata;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::cmp::Ordering;

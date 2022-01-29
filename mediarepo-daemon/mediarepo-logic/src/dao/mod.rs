@@ -1,8 +1,10 @@
 pub mod file;
+pub mod job;
 pub mod repo;
 pub mod tag;
 
 use crate::dao::file::FileDao;
+use crate::dao::job::JobDao;
 use crate::dao::tag::TagDao;
 use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::fs::thumbnail_store::ThumbnailStore;
@@ -24,6 +26,10 @@ pub trait DaoProvider {
 
     fn tag(&self) -> TagDao {
         TagDao::new(self.dao_ctx())
+    }
+
+    fn job(&self) -> JobDao {
+        JobDao::new(self.dao_ctx())
     }
 }
 

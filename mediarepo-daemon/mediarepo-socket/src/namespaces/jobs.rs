@@ -4,6 +4,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
 use mediarepo_core::mediarepo_api::types::repo::SizeType;
 use mediarepo_core::type_keys::SizeMetadataKey;
+use mediarepo_logic::dao::DaoProvider;
 
 pub struct JobsNamespace;
 
@@ -23,10 +24,10 @@ impl JobsNamespace {
     #[tracing::instrument(skip_all)]
     pub async fn run_job(ctx: &Context, event: Event) -> IPCResult<()> {
         let run_request = event.payload::<RunJobRequest>()?;
-        let repo = get_repo_from_context(ctx).await;
+        let job_dao = get_repo_from_context(ctx).await.job();
 
         match run_request.job_type {
-            JobType::MigrateContentDescriptors => repo.migrate().await?,
+            JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
             JobType::CheckIntegrity => {}
         }

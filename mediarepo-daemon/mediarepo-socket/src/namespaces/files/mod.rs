@@ -350,7 +350,7 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let id = event.payload::<FileIdentifier>()?;
         let file = file_by_identifier(id, &repo).await?;
-        let thumbnails = repo.get_file_thumbnails(file.cd()).await?;
+        let thumbnails = repo.file().thumbnails(file.encoded_cd()).await?;
 
         for thumb in thumbnails {
             thumb.delete().await?;

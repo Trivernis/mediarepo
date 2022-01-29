@@ -1,9 +1,6 @@
-pub mod content_descriptor;
-pub mod file;
+pub mod dao;
+pub mod dto;
 pub mod file_metadata;
 pub mod namespace;
 pub mod tag;
-pub mod thumbnail;
 pub mod type_keys;
-pub mod dto;
-pub mod dao;

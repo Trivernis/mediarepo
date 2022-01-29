@@ -1,18 +1,18 @@
-use crate::content_descriptor::ContentDescriptor;
 use crate::dao::{DaoContext, DaoProvider};
-use crate::file::File;
 use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
 use crate::tag::Tag;
-use crate::thumbnail::Thumbnail;
 use chrono::{Local, NaiveDateTime};
-use mediarepo_core::content_descriptor::{encode_content_descriptor, is_v1_content_descriptor};
+use mediarepo_core::content_descriptor::{
+    convert_v1_descriptor_to_v2, encode_content_descriptor, is_v1_content_descriptor,
+};
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::fs::thumbnail_store::{Dimensions, ThumbnailStore};
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
+use mediarepo_database::entities::content_descriptor;
 use mediarepo_database::get_database;
 use mediarepo_database::queries::analysis::{get_all_counts, Counts};
 use sea_orm::DatabaseConnection;
@@ -75,158 +75,6 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_file_metadata_for_ids(&self, ids: Vec<i64>) -> RepoResult<Vec<FileMetadata>> {
         FileMetadata::all_by_ids(self.db.clone(), ids).await
-    }
-
-    /// Adds a file from bytes to the database
-    #[tracing::instrument(level = "debug", skip(self, content))]
-    pub async fn add_file(
-        &self,
-        mime_type: Option<String>,
-        content: Vec<u8>,
-        creation_time: NaiveDateTime,
-        change_time: NaiveDateTime,
-    ) -> RepoResult<File> {
-        let file_size = content.len();
-        let reader = Cursor::new(content);
-        let cd_binary = self.main_storage.add_file(reader, None).await?;
-        let cd = ContentDescriptor::add(self.db.clone(), cd_binary).await?;
-
-        let mime_type = mime_type
-            .and_then(|m| mime::Mime::from_str(&m).ok())
-            .unwrap_or_else(|| mime::APPLICATION_OCTET_STREAM)
-            .to_string();
-
-        let file = File::add(self.db.clone(), cd.id(), mime_type).await?;
-        FileMetadata::add(
-            self.db.clone(),
-            file.id(),
-            file_size as i64,
-            creation_time,
-            change_time,
-        )
-        .await?;
-
-        Ok(file)
-    }
-
-    /// Adds a file to the database by its readable path in the file system
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn add_file_by_path(&self, path: PathBuf) -> RepoResult<File> {
-        let mime_type = mime_guess::from_path(&path).first().map(|m| m.to_string());
-
-        let mut os_file = OpenOptions::new().read(true).open(&path).await?;
-        let mut buf = Vec::new();
-        os_file.read_to_end(&mut buf).await?;
-
-        self.add_file(
-            mime_type,
-            buf,
-            Local::now().naive_local(),
-            Local::now().naive_local(),
-        )
-        .await
-    }
-
-    /// Deletes a file from the database and disk
-    #[tracing::instrument(level = "debug", skip(self, file))]
-    pub async fn delete_file(&self, file: File) -> RepoResult<()> {
-        let cd = file.cd().to_owned();
-        let cd_string = file.encoded_cd();
-        file.delete().await?;
-        self.main_storage.delete_file(&cd).await?;
-        self.thumbnail_storage.delete_parent(&cd_string).await?;
-
-        Ok(())
-    }
-
-    /// Returns all thumbnails of a file
-    pub async fn get_file_thumbnails(&self, file_cd: &[u8]) -> RepoResult<Vec<Thumbnail>> {
-        let file_cd = encode_content_descriptor(file_cd);
-        let thumbnails = self
-            .thumbnail_storage
-            .get_thumbnails(&file_cd)
-            .await?
-            .into_iter()
-            .map(|(size, path)| Thumbnail {
-                file_hash: file_cd.to_owned(),
-                path,
-                size,
-                mime_type: mime::IMAGE_PNG.to_string(),
-            })
-            .collect_vec();
-
-        Ok(thumbnails)
-    }
-
-    pub async fn get_file_bytes(&self, file: &File) -> RepoResult<Vec<u8>> {
-        let mut buf = Vec::new();
-        let mut reader = file.get_reader(&self.main_storage).await?;
-        reader.read_to_end(&mut buf).await?;
-
-        Ok(buf)
-    }
-
-    /// Creates thumbnails of all sizes for a file
-    #[tracing::instrument(level = "debug", skip(self, file))]
-    pub async fn create_thumbnails_for_file(&self, file: &File) -> RepoResult<Vec<Thumbnail>> {
-        let size = ThumbnailSize::Medium;
-        let (height, width) = size.dimensions();
-        let thumbs = file.create_thumbnail(&self.main_storage, [size]).await?;
-        let mut created_thumbs = Vec::with_capacity(1);
-
-        for thumb in thumbs {
-            let entry = self
-                .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
-                .await?;
-            created_thumbs.push(entry);
-        }
-
-        Ok(created_thumbs)
-    }
-
-    #[tracing::instrument(level = "debug", skip(self, file))]
-    pub async fn create_file_thumbnail(
-        &self,
-        file: &File,
-        size: ThumbnailSize,
-    ) -> RepoResult<Thumbnail> {
-        let (height, width) = size.dimensions();
-        let thumb = file
-            .create_thumbnail(&self.main_storage, [size])
-            .await?
-            .pop()
-            .ok_or_else(|| RepoError::from("Failed to create thumbnail"))?;
-        let thumbnail = self
-            .store_single_thumbnail(file.encoded_cd(), height, width, thumb)
-            .await?;
-
-        Ok(thumbnail)
-    }
-
-    /// Stores a single thumbnail
-    async fn store_single_thumbnail(
-        &self,
-        file_hash: String,
-        height: u32,
-        width: u32,
-        thumb: mediarepo_core::thumbnailer::Thumbnail,
-    ) -> RepoResult<Thumbnail> {
-        let mut buf = Vec::new();
-        thumb.write_png(&mut buf)?;
-        let size = Dimensions { height, width };
-        let path = self
-            .thumbnail_storage
-            .add_thumbnail(&file_hash, size.clone(), &buf)
-            .await?;
-
-        let thumbnail = Thumbnail {
-            file_hash,
-            path,
-            size,
-            mime_type: mime::IMAGE_PNG.to_string(),
-        };
-
-        Ok(thumbnail)
     }
 
     /// Returns all tags stored in the database
@@ -385,31 +233,5 @@ impl Repo {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn get_counts(&self) -> RepoResult<Counts> {
         get_all_counts(&self.db).await
-    }
-
-    pub async fn migrate(&self) -> RepoResult<()> {
-        let cds = ContentDescriptor::all(self.db.clone()).await?;
-
-        tracing::info!("Converting content descriptors to v2 format...");
-        let mut converted_count = 0;
-
-        for mut cd in cds {
-            if is_v1_content_descriptor(cd.descriptor()) {
-                let src_cd = cd.descriptor().to_owned();
-                cd.convert_v1_to_v2().await?;
-                let dst_cd = cd.descriptor().to_owned();
-                self.main_storage.rename_file(&src_cd, &dst_cd).await?;
-                self.thumbnail_storage
-                    .rename_parent(
-                        encode_content_descriptor(&src_cd),
-                        encode_content_descriptor(&dst_cd),
-                    )
-                    .await?;
-                converted_count += 1;
-            }
-        }
-        tracing::info!("Converted {} descriptors", converted_count);
-
-        Ok(())
     }
 }
