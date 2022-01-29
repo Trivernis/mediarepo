@@ -36,7 +36,8 @@ impl TagsNamespace {
     async fn all_tags(ctx: &Context, _event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags: Vec<TagResponse> = repo
-            .tags()
+            .tag()
+            .all()
             .await?
             .into_iter()
             .map(TagResponse::from_model)
@@ -51,7 +52,8 @@ impl TagsNamespace {
     async fn all_namespaces(ctx: &Context, _event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let namespaces: Vec<NamespaceResponse> = repo
-            .namespaces()
+            .tag()
+            .all_namespaces()
             .await?
             .into_iter()
             .map(NamespaceResponse::from_model)

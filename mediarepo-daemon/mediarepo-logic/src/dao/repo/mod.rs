@@ -4,25 +4,19 @@ use std::fmt::Debug;
 use std::iter::FromIterator;
 use std::path::PathBuf;
 
-
-
 use sea_orm::DatabaseConnection;
 
-
-
-
-use mediarepo_core::error::{RepoResult};
+use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::file_hash_store::FileHashStore;
-use mediarepo_core::fs::thumbnail_store::{ThumbnailStore};
+use mediarepo_core::fs::thumbnail_store::ThumbnailStore;
 use mediarepo_core::itertools::Itertools;
 
 use mediarepo_core::utils::parse_namespace_and_tag;
 
 use mediarepo_database::get_database;
-use mediarepo_database::queries::analysis::{Counts, get_all_counts};
+use mediarepo_database::queries::analysis::{get_all_counts, Counts};
 
 use crate::dao::{DaoContext, DaoProvider};
-use crate::file_metadata::FileMetadata;
 use crate::namespace::Namespace;
 use crate::tag::Tag;
 
@@ -70,24 +64,6 @@ impl Repo {
     /// Returns the database of the repo for raw sql queries
     pub fn db(&self) -> &DatabaseConnection {
         &self.db
-    }
-
-    /// Returns all file metadata entries for the given file ids
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn get_file_metadata_for_ids(&self, ids: Vec<i64>) -> RepoResult<Vec<FileMetadata>> {
-        FileMetadata::all_by_ids(self.db.clone(), ids).await
-    }
-
-    /// Returns all tags stored in the database
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn tags(&self) -> RepoResult<Vec<Tag>> {
-        Tag::all(self.db.clone()).await
-    }
-
-    /// Returns all namespaces stored in the database
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub async fn namespaces(&self) -> RepoResult<Vec<Namespace>> {
-        Namespace::all(self.db.clone()).await
     }
 
     /// Converts a list of tag names to tag ids

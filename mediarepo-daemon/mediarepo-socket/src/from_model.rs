@@ -3,7 +3,7 @@ use mediarepo_core::mediarepo_api::types::files::{
 };
 use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse};
 use mediarepo_logic::dto::{
-    FileDto, FileMetadataDto, FileStatus as FileStatusModel, TagDto, ThumbnailDto,
+    FileDto, FileMetadataDto, FileStatus as FileStatusModel, NamespaceDto, TagDto, ThumbnailDto,
 };
 use mediarepo_logic::file_metadata::FileMetadata;
 use mediarepo_logic::namespace::Namespace;
@@ -93,6 +93,15 @@ impl FromModel<ThumbnailDto> for ThumbnailMetadataResponse {
 
 impl FromModel<Namespace> for NamespaceResponse {
     fn from_model(model: Namespace) -> Self {
+        Self {
+            id: model.id(),
+            name: model.name().to_owned(),
+        }
+    }
+}
+
+impl FromModel<NamespaceDto> for NamespaceResponse {
+    fn from_model(model: NamespaceDto) -> Self {
         Self {
             id: model.id(),
             name: model.name().to_owned(),
