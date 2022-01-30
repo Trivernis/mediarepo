@@ -1,4 +1,5 @@
 pub mod migrate_content_descriptors;
+pub mod sqlite_operations;
 
 use crate::dao::{DaoContext, DaoProvider};
 

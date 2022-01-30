@@ -30,7 +30,7 @@ impl JobsNamespace {
         match run_request.job_type {
             JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
-            JobType::CheckIntegrity => {}
+            JobType::CheckIntegrity => job_dao.check_integrity().await?,
         }
 
         ctx.emit_to(Self::name(), "run_job", ()).await?;

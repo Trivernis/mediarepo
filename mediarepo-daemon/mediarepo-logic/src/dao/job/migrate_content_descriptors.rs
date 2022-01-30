@@ -9,6 +9,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::ConnectionTrait;
 
 impl JobDao {
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn migrate_content_descriptors(&self) -> RepoResult<()> {
         let cds: Vec<content_descriptor::Model> =
             content_descriptor::Entity::find().all(&self.ctx.db).await?;
