@@ -13,7 +13,7 @@ import {File} from "../../../../../api/models/File";
 import {Tag} from "../../../../../api/models/Tag";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TagService} from "../../../../services/tag/tag.service";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
 
 @Component({
@@ -36,7 +36,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
     private fileTags: { [key: number]: Tag[] } = {};
 
     constructor(
-        private errorBroker: ErrorBrokerService,
+        private errorBroker: LoggingService,
         private tagService: TagService,
     ) {
     }
@@ -180,7 +180,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
             try {
                 return cb();
             } catch (err: any) {
-                this.errorBroker.showError(err);
+                this.errorBroker.error(err);
                 return undefined;
             }
         } else {

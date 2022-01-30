@@ -70,6 +70,7 @@ impl TagDao {
                 content_descriptor_tag::Relation::ContentDescriptorId.def(),
             )
             .filter(content_descriptor::Column::Descriptor.is_in(cds))
+            .group_by(tag::Column::Id)
             .all(&self.ctx.db)
             .await?
             .into_iter()

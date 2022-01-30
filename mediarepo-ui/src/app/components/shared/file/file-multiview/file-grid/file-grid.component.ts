@@ -19,6 +19,7 @@ import {FileService} from "../../../../../services/file/file.service";
 import {Selectable} from "../../../../../models/Selectable";
 import {Key} from "w3c-keys";
 import {BehaviorSubject} from "rxjs";
+import {LoggingService} from "../../../../../services/logging/logging.service";
 
 @Component({
     selector: "app-file-grid",
@@ -48,6 +49,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     private gridEntries: Selectable<File>[] = [];
 
     constructor(
+        private logger: LoggingService,
         private tabService: TabService,
         private fileService: FileService,
     ) {
@@ -88,12 +90,14 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
             this.handleShiftSelect(clickedEntry);
         } else {
             clickedEntry.selected.next(!clickedEntry.selected.value);
-            if (!clickedEntry.selected) {
+            if (!clickedEntry.selected.value) {
+                this.logger.trace("File wasn't selected");
                 const index = this.selectedEntries.indexOf(clickedEntry);
                 if (index > -1) {
                     this.selectedEntries.splice(index, 1);
                 }
             } else {
+                this.logger.trace("File was selected");
                 this.selectedEntries.push(clickedEntry);
             }
         }
@@ -258,11 +262,13 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     private selectAll() {
         this.selectedEntries = this.gridEntries;
         this.gridEntries.forEach(g => g.select());
+        this.fileSelect.emit(this.selectedEntries.map(e => e.data));
     }
 
     private selectNone() {
         this.selectedEntries = [];
         this.gridEntries.forEach(g => g.unselect());
+        this.fileSelect.emit([]);
     }
 
     private handleArrowSelect(direction: "up" | "down" | "left" | "right") {

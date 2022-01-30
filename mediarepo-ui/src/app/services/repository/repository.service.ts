@@ -3,7 +3,7 @@ import {Repository} from "../../../api/models/Repository";
 import {BehaviorSubject} from "rxjs";
 import {listen} from "@tauri-apps/api/event";
 import {Info} from "../../models/Info";
-import {ErrorBrokerService} from "../error-broker/error-broker.service";
+import {LoggingService} from "../logging/logging.service";
 import {RepositoryMetadata} from "../../models/RepositoryMetadata";
 import {MediarepoApi} from "../../../api/Api";
 import {mapMany, mapNew, mapOptional,} from "../../../api/models/adaptors";
@@ -17,7 +17,7 @@ export class RepositoryService {
     public selectedRepository = new BehaviorSubject<Repository | undefined>(
         undefined);
 
-    constructor(private errorBroker: ErrorBrokerService) {
+    constructor(private errorBroker: LoggingService) {
         this.registerListener().catch(err => console.error(err));
     }
 
@@ -25,7 +25,7 @@ export class RepositoryService {
     async registerListener() {
         await listen("info", (event: { payload: Info }) => {
             const message = `Connected to ${event.payload.name}, Version: ${event.payload.version}`;
-            this.errorBroker.showInfo(message);
+            this.errorBroker.info(message);
         });
     }
 
@@ -68,7 +68,7 @@ export class RepositoryService {
                 console.warn(err);
             }
         }
-        await MediarepoApi.selectRepository({name: repo.name});
+        await MediarepoApi.selectRepository({ name: repo.name });
     }
 
     /**
@@ -98,7 +98,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async addRepository(name: string, path: string | undefined, address: string | undefined, local: boolean) {
-        let repos = await MediarepoApi.addRepository({name, path, address, local}).then(mapMany(mapNew(Repository)));
+        let repos = await MediarepoApi.addRepository({ name, path, address, local }).then(mapMany(mapNew(Repository)));
         this.repositories.next(repos);
     }
 
@@ -108,7 +108,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkDaemonRunning(address: string): Promise<boolean> {
-        return MediarepoApi.checkDaemonRunning({address});
+        return MediarepoApi.checkDaemonRunning({ address });
     }
 
     /**
@@ -117,7 +117,7 @@ export class RepositoryService {
      * @returns {Promise<boolean>}
      */
     public async checkLocalRepositoryExists(path: string): Promise<boolean> {
-        return await MediarepoApi.checkLocalRepositoryExists({path});
+        return await MediarepoApi.checkLocalRepositoryExists({ path });
     }
 
     /**
@@ -126,7 +126,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async removeRepository(name: string): Promise<void> {
-        await MediarepoApi.removeRepository({name});
+        await MediarepoApi.removeRepository({ name });
         await this.loadRepositories();
     }
 
@@ -136,7 +136,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async deleteRepository(name: string): Promise<void> {
-        await MediarepoApi.deleteRepository({name});
+        await MediarepoApi.deleteRepository({ name });
         await this.removeRepository(name);
     }
 
@@ -146,7 +146,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async startDaemon(repoPath: string): Promise<void> {
-        return MediarepoApi.startDaemon({repoPath});
+        return MediarepoApi.startDaemon({ repoPath });
     }
 
     /**
@@ -155,7 +155,7 @@ export class RepositoryService {
      * @returns {Promise<void>}
      */
     public async initRepository(repoPath: string): Promise<void> {
-        return MediarepoApi.initRepository({repoPath});
+        return MediarepoApi.initRepository({ repoPath });
     }
 
     /**
@@ -172,7 +172,7 @@ export class RepositoryService {
      * @param sizeType
      */
     public async getSize(sizeType: SizeType): Promise<SizeMetadata> {
-        return MediarepoApi.getSize({sizeType});
+        return MediarepoApi.getSize({ sizeType });
     }
 
     async loadSelectedRepository() {

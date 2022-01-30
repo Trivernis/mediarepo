@@ -12,7 +12,7 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
 
 type ContentType = "image" | "video" | "audio" | "other";
@@ -33,7 +33,7 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
     @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
 
     constructor(
-        private errorBroker: ErrorBrokerService,
+        private errorBroker: LoggingService,
         private fileService: FileService
     ) {
     }
@@ -70,8 +70,8 @@ export class ContentViewerComponent implements AfterViewInit, OnChanges, OnDestr
         if (path) {
             try {
                 await this.fileService.saveFile(this.file, path);
-            } catch (err) {
-                this.errorBroker.showError(err);
+            } catch (err: any) {
+                this.errorBroker.error(err);
             }
         }
     }

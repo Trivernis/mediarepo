@@ -30,6 +30,7 @@ export class FilesTabComponent implements OnInit {
         } else {
             this.state.selectedCD.next(undefined);
         }
+        console.debug(this.selectedFiles);
     }
 
     public getStateSelectedFile(): File | undefined {

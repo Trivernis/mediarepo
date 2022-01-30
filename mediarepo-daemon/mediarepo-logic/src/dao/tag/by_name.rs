@@ -4,7 +4,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{namespace, tag};
 use sea_orm::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::Condition;
+use sea_orm::{Condition, QuerySelect};
 
 #[derive(Clone, Debug)]
 pub struct TagByNameQuery {
@@ -30,6 +30,7 @@ impl TagDao {
         let tags = tag::Entity::find()
             .find_also_related(namespace::Entity)
             .filter(condition)
+            .group_by(tag::Column::Id)
             .all(&self.ctx.db)
             .await?
             .into_iter()

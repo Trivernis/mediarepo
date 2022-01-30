@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Output} from "@angular/core";
 import {ImportService} from "../../../../../services/import/import.service";
-import {ErrorBrokerService} from "../../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../../services/logging/logging.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
 import {File} from "../../../../../../api/models/File";
 import {DialogFilter} from "@tauri-apps/api/dialog";
@@ -36,7 +36,7 @@ export class FilesystemImportComponent {
     public importing = false;
     public importingProgress = 0;
 
-    constructor(private errorBroker: ErrorBrokerService, private importService: ImportService) {
+    constructor(private errorBroker: LoggingService, private importService: ImportService) {
     }
 
     public async setSelectedPaths(paths: string[]) {
@@ -44,9 +44,9 @@ export class FilesystemImportComponent {
         try {
             this.files = await this.importService.resolvePathsToFiles(paths);
             this.fileCount = this.files.length;
-        } catch (err) {
+        } catch (err: any) {
             console.log(err);
-            this.errorBroker.showError(err);
+            this.errorBroker.error(err);
         }
         this.resolving = false;
     }
@@ -64,9 +64,9 @@ export class FilesystemImportComponent {
                     this.importOptions
                 );
                 this.fileImported.emit(resultFile);
-            } catch (err) {
+            } catch (err: any) {
                 console.log(err);
-                this.errorBroker.showError(err);
+                this.errorBroker.error(err);
             }
             count++;
             this.importingProgress = (count / this.fileCount) * 100;
