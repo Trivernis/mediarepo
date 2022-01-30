@@ -1,3 +1,4 @@
 export type JobType = "MigrateContentDescriptors"
     | "CalculateSizes"
-    | "CheckIntegrity";
+    | "CheckIntegrity"
+    | "Vacuum";
