@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::tauri_plugin::commands::ApiAccess;
 use crate::tauri_plugin::error::PluginResult;
 use crate::types::identifier::FileIdentifier;
@@ -39,6 +40,14 @@ pub async fn get_tags_for_files(
     let tags = api.tag.get_tags_for_files(cds).await?;
 
     Ok(tags)
+}
+
+#[tauri::command]
+pub async fn get_file_tag_map(cds: Vec<String>, api_state: ApiAccess<'_>) -> PluginResult<HashMap<String, Vec<TagResponse>>> {
+    let api = api_state.api().await?;
+    let mappings = api.tag.get_file_tag_map(cds).await?;
+
+    Ok(mappings)
 }
 
 #[tauri::command]

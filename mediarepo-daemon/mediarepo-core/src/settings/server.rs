@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub struct ServerSettings {

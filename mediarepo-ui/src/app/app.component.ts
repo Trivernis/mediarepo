@@ -1,7 +1,9 @@
 import {Component, OnInit} from "@angular/core";
 import {RepositoryService} from "./services/repository/repository.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {ErrorBrokerService} from "./services/error-broker/error-broker.service";
+import {LoggingService} from "./services/logging/logging.service";
+import {LogEntry, LogLevel} from "./services/logging/LogEntry";
+import {environment} from "../environments/environment";
 
 @Component({
     selector: "app-root",
@@ -13,21 +15,39 @@ export class AppComponent implements OnInit {
 
     constructor(
         private snackBar: MatSnackBar,
-        private errorBroker: ErrorBrokerService,
+        private logger: LoggingService,
         private repoService: RepositoryService,
     ) {
     }
 
     async ngOnInit() {
-        this.errorBroker.errorCb = (err: { message: string }) => this.showError(
-            err);
-        this.errorBroker.infoCb = (info: string) => this.showInfo(info);
+        this.logger.logs.subscribe(entry => {
+            this.logEntry(entry);
+            switch (entry.getLevel()) {
+                case LogLevel.Info:
+                    this.showInfo(entry.getMessage());
+                    break;
+                case LogLevel.Warn:
+                    this.showWarning(entry.getMessage());
+                    break;
+                case LogLevel.Error:
+                    this.showError(entry.getMessage());
+                    break;
+            }
+        });
         await this.repoService.loadRepositories();
     }
 
-    private showError(err: { message: string }) {
-        this.snackBar.open(err.message, undefined, {
-            panelClass: "warn",
+    private showError(err: string) {
+        this.snackBar.open(err, undefined, {
+            panelClass: "app-error",
+            duration: 2000,
+        });
+    }
+
+    private showWarning(err: string) {
+        this.snackBar.open(err, undefined, {
+            panelClass: "app-warn",
             duration: 2000,
         });
     }
@@ -37,5 +57,27 @@ export class AppComponent implements OnInit {
             panelClass: "primary",
             duration: 2000,
         });
+    }
+
+    private logEntry(entry: LogEntry) {
+        if (!environment.production) {
+            switch (entry.getLevel()) {
+                case LogLevel.Trace:
+                    console.trace(entry.getMessage());
+                    break;
+                case LogLevel.Debug:
+                    console.debug(entry.getMessage());
+                    break;
+                case LogLevel.Info:
+                    console.info(entry.getMessage());
+                    break;
+                case LogLevel.Warn:
+                    console.warn(entry.getMessage());
+                    break;
+            }
+        }
+        if (entry.getLevel() == LogLevel.Error) {
+            console.error(entry.getMessage(), entry.getError());
+        }
     }
 }

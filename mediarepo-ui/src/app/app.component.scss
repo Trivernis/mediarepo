@@ -1,7 +1,18 @@
+@import "src/colors";
+
 ::ng-deep .mat-button-wrapper > ng-icon {
     font-size: 26px;
 }
 
 ::ng-deep ng-icon {
     font-size: 24px;
+}
+
+::ng-deep .app-warn {
+    background-color: $warn-chill;
+}
+
+::ng-deep .app-error {
+    background-color: $warn;
+    color: $text;
 }

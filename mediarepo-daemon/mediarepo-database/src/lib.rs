@@ -1,7 +1,9 @@
-use mediarepo_core::error::RepoDatabaseResult;
+use std::time::Duration;
+
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use sqlx::migrate::MigrateDatabase;
-use std::time::Duration;
+
+use mediarepo_core::error::RepoDatabaseResult;
 
 pub mod entities;
 pub mod queries;

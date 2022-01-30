@@ -1,14 +1,8 @@
 import {Component, Inject, ViewChild} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {
-    RepositoryFormComponent
-} from "../repository-form/repository-form.component";
-import {
-    RepositoryService
-} from "../../../../../services/repository/repository.service";
-import {
-    ErrorBrokerService
-} from "../../../../../services/error-broker/error-broker.service";
+import {RepositoryFormComponent} from "../repository-form/repository-form.component";
+import {RepositoryService} from "../../../../../services/repository/repository.service";
+import {LoggingService} from "../../../../../services/logging/logging.service";
 
 @Component({
     selector: "app-add-repository-dialog",
@@ -21,9 +15,10 @@ export class AddRepositoryDialogComponent {
 
     constructor(
         public repoService: RepositoryService,
-        public errorBroker: ErrorBrokerService,
+        public errorBroker: LoggingService,
         public dialogRef: MatDialogRef<AddRepositoryDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) data: any) {
+        @Inject(MAT_DIALOG_DATA) data: any
+    ) {
     }
 
     public async checkLocalRepoExists() {
@@ -35,22 +30,23 @@ export class AddRepositoryDialogComponent {
         const path = this.repositoryForm.formGroup.value.path;
         try {
             await this.repoService.initRepository(path);
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.errorBroker.error(err);
         }
         await this.checkLocalRepoExists();
     }
 
     public async addRepository() {
-        let {name, repositoryType, path, address} = this.repositoryForm.formGroup.value;
+        let { name, repositoryType, path, address } = this.repositoryForm.formGroup.value;
         path = repositoryType === "local" ? path : undefined;
         address = repositoryType === "remote" ? address : undefined;
         try {
             await this.repoService.addRepository(name, path, address,
-                repositoryType === "local");
+                repositoryType === "local"
+            );
             this.dialogRef.close();
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.errorBroker.error(err);
         }
     }
 

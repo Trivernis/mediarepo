@@ -12,7 +12,7 @@ import {
 import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../../api/models/Tag";
 import {clipboard} from "@tauri-apps/api";
@@ -57,7 +57,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     private needsScroll = false;
 
     constructor(
-        private errorBroker: ErrorBrokerService,
+        private logger: LoggingService,
         public dialog: MatDialog
     ) {
         this.assignDisplayedFilters();
@@ -85,8 +85,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
         this.searchStartEvent.emit();
         try {
             await this.state.findFiles();
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.logger.error(err);
         }
         this.searchEndEvent.emit();
     }

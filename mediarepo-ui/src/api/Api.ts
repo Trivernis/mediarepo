@@ -13,6 +13,7 @@ import {
     DeleteThumbnailsRequest,
     FindFilesRequest,
     GetFileMetadataRequest,
+    GetFileTagMapRequest,
     GetSizeRequest,
     GetTagsForFilesRequest,
     InitRepositoryRequest,
@@ -28,7 +29,7 @@ import {
     UpdateFileStatusRequest
 } from "./api-types/requests";
 import {RepositoryData, RepositoryMetadata, SizeMetadata} from "./api-types/repo";
-import {NamespaceData, TagData} from "./api-types/tags";
+import {CdTagMappings, NamespaceData, TagData} from "./api-types/tags";
 import {ShortCache} from "./ShortCache";
 
 export class MediarepoApi {
@@ -143,6 +144,15 @@ export class MediarepoApi {
             () => this.invokePlugin(ApiFunction.GetTagsForFiles, request),
             1000,
             "getTagsForFiles"
+        );
+    }
+
+    public static async getFileTagMap(request: GetFileTagMapRequest): Promise<CdTagMappings> {
+        return ShortCache.cached(
+            request,
+            () => this.invokePlugin(ApiFunction.GetFileTagMap, request),
+            1000,
+            "getFileTagMap"
         );
     }
 

@@ -1,5 +1,6 @@
-use crate::error::RepoResult;
 use multihash::{Code, MultihashDigest};
+
+use crate::error::RepoResult;
 
 /// Creates a new content descriptor for the given file
 pub fn create_content_descriptor(bytes: &[u8]) -> Vec<u8> {

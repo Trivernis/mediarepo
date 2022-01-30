@@ -1,10 +1,12 @@
-use crate::content_descriptor::{create_content_descriptor, encode_content_descriptor};
-use crate::error::RepoResult;
-use crate::utils::get_folder_size;
 use std::path::PathBuf;
+
 use tokio::fs;
 use tokio::fs::{File, OpenOptions};
 use tokio::io::{AsyncRead, AsyncReadExt, BufReader};
+
+use crate::content_descriptor::{create_content_descriptor, encode_content_descriptor};
+use crate::error::RepoResult;
+use crate::utils::get_folder_size;
 
 #[derive(Clone, Debug)]
 pub struct FileHashStore {

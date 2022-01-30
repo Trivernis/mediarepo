@@ -1,10 +1,12 @@
-use mediarepo_core::error::RepoResult;
-use sea_orm::DbBackend;
-use sea_orm::FromQueryResult;
-use sea_orm::{DatabaseConnection, Statement};
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::iter::FromIterator;
+
+use sea_orm::{DatabaseConnection, Statement};
+use sea_orm::DbBackend;
+use sea_orm::FromQueryResult;
+
+use mediarepo_core::error::RepoResult;
 
 #[derive(Debug, FromQueryResult)]
 struct CIDNamespaceTag {

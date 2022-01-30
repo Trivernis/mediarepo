@@ -1,5 +1,6 @@
-use sea_orm::DbErr;
 use std::fmt::{Debug, Formatter};
+
+use sea_orm::DbErr;
 use thiserror::Error;
 
 pub type RepoResult<T> = Result<T, RepoError>;
@@ -37,8 +38,11 @@ pub enum RepoError {
     #[error("failed to decode data {0}")]
     Decode(#[from] data_encoding::DecodeError),
 
-    #[error("Failed to read repo.toml configuration file {0}")]
+    #[error("failed to read repo.toml configuration file {0}")]
     Config(#[from] config::ConfigError),
+
+    #[error("the database file is corrupted {0}")]
+    Corrupted(String),
 }
 
 #[derive(Error, Debug)]

@@ -23,13 +23,18 @@ export class BusyDialogComponent {
     public progress = 0;
     public mode: ProgressBarMode = "indeterminate";
 
-    constructor(public dialogRef: MatDialogRef<BusyDialogComponent>, @Inject(MAT_DIALOG_DATA) data: BusyDialogData) {
+    constructor(
+        public dialogRef: MatDialogRef<BusyDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) data: BusyDialogData
+    ) {
         this.title = data.title;
         if (data.message) {
             data.message.subscribe(m => this.message = m);
         }
         if (data.progress) {
-            data.progress.subscribe(p => this.progress = p);
+            data.progress.subscribe(p => {
+                this.progress = Math.floor(p * 100);
+            });
             this.mode = "determinate";
         }
         this.allowCancel = data.allowCancel ?? false;

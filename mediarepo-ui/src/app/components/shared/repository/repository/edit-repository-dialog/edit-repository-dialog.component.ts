@@ -1,13 +1,7 @@
 import {Component, Inject, ViewChild} from "@angular/core";
-import {
-    RepositoryFormComponent
-} from "../repository-form/repository-form.component";
-import {
-    RepositoryService
-} from "../../../../../services/repository/repository.service";
-import {
-    ErrorBrokerService
-} from "../../../../../services/error-broker/error-broker.service";
+import {RepositoryFormComponent} from "../repository-form/repository-form.component";
+import {RepositoryService} from "../../../../../services/repository/repository.service";
+import {LoggingService} from "../../../../../services/logging/logging.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Repository} from "../../../../../../api/models/Repository";
 
@@ -25,9 +19,10 @@ export class EditRepositoryDialogComponent {
 
     constructor(
         public repoService: RepositoryService,
-        public errorBroker: ErrorBrokerService,
+        public errorBroker: LoggingService,
         public dialogRef: MatDialogRef<EditRepositoryDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) data: any) {
+        @Inject(MAT_DIALOG_DATA) data: any
+    ) {
         this.selectedRepository = data.repository;
         this.originalName = this.selectedRepository.name;
     }
@@ -41,14 +36,14 @@ export class EditRepositoryDialogComponent {
         const path = this.repositoryForm.formGroup.value.path;
         try {
             await this.repoService.initRepository(path);
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.errorBroker.error(err);
         }
         await this.checkLocalRepoExists();
     }
 
     public async addRepository() {
-        let {name, repositoryType, path, address} = this.repositoryForm.formGroup.value;
+        let { name, repositoryType, path, address } = this.repositoryForm.formGroup.value;
         path = repositoryType === "local" ? path : undefined;
         address = repositoryType === "remote" ? address : undefined;
 
@@ -61,12 +56,13 @@ export class EditRepositoryDialogComponent {
                 await this.repoService.removeRepository(this.originalName);
             }
             await this.repoService.addRepository(name, path, address,
-                repositoryType === "local");
-            this.selectedRepository.update({name, local: repositoryType === "local", path, address});
+                repositoryType === "local"
+            );
+            this.selectedRepository.update({ name, local: repositoryType === "local", path, address });
 
             this.dialogRef.close();
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.errorBroker.error(err);
         }
     }
 
