@@ -5,7 +5,7 @@
      class="file-gallery-inner">
     <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="260" maxBufferPx="2000"
                                  minBufferPx="500">
-        <div *cdkVirtualFor="let rowEntry of partitionedGridEntries; trackByFileRowId">
+        <div *cdkVirtualFor="let rowEntry of partitionedGridEntries; trackBy: trackByFileRowId">
             <div class="file-row">
                 <app-file-card
                     (clickEvent)="setSelectedFile($event.entry)"
@@ -18,7 +18,9 @@
     </cdk-virtual-scroll-viewport>
 
 </div>
-<app-file-context-menu #fileContextMenu (fileDeleted)="this.fileDeleted.emit($event)" (fileStatusChange)="this.onFileStatusChange()">
+<app-file-context-menu #fileContextMenu
+                       (fileDeleted)="this.fileDeleted.emit($event)"
+                       (fileStatusChange)="this.onFileStatusChange()">
     <button (click)="this.fileOpen.emit(fileContextMenu.files[0])"
             *ngIf="fileContextMenu.files.length === 1"
             content-before=""
