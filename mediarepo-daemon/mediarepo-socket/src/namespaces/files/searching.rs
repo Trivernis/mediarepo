@@ -1,25 +1,27 @@
+use std::collections::HashMap;
+
 use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::files::FileStatus as ApiFileStatus;
 use mediarepo_core::mediarepo_api::types::filtering::{
     FilterExpression, FilterQuery, PropertyQuery, TagQuery, ValueComparator,
 };
-use mediarepo_model::file::filter::NegatableComparator::{Is, IsNot};
-use mediarepo_model::file::filter::{FilterFileProperty, FilterProperty, OrderingComparator};
-use mediarepo_model::file::{File, FileStatus};
-use mediarepo_model::repo::Repo;
-use std::collections::HashMap;
+use mediarepo_logic::dao::file::find::NegatableComparator::{Is, IsNot};
+use mediarepo_logic::dao::file::find::{FilterFileProperty, FilterProperty, OrderingComparator};
+use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dto::{FileDto, FileStatus};
 
 #[tracing::instrument(level = "debug", skip(repo))]
 pub async fn find_files_for_filters(
     repo: &Repo,
     expressions: Vec<FilterExpression>,
-) -> RepoResult<Vec<File>> {
+) -> RepoResult<Vec<FileDto>> {
     let tag_names = get_tag_names_from_expressions(&expressions);
-    let tag_id_map = repo.tag_names_to_ids(tag_names).await?;
+    let tag_id_map = repo.tag().normalized_tags_to_ids(tag_names).await?;
     let filters = build_filters_from_expressions(expressions, &tag_id_map);
 
-    repo.find_files_by_filters(filters).await
+    repo.file().find(filters).await
 }
 
 #[tracing::instrument(level = "debug")]

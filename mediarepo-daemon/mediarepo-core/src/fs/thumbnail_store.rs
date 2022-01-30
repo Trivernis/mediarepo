@@ -1,11 +1,13 @@
-use crate::error::RepoResult;
-use crate::utils::get_folder_size;
 use std::fmt::Debug;
 use std::io::Result;
 use std::path::PathBuf;
+
 use tokio::fs;
 use tokio::fs::OpenOptions;
 use tokio::io::{AsyncWriteExt, BufWriter};
+
+use crate::error::RepoResult;
+use crate::utils::get_folder_size;
 
 #[derive(Clone, Debug)]
 pub struct ThumbnailStore {

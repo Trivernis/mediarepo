@@ -1,11 +1,8 @@
-mod searching;
-mod sorting;
+use tokio::io::AsyncReadExt;
 
-use crate::from_model::FromModel;
-use crate::namespaces::files::searching::find_files_for_filters;
-use crate::namespaces::files::sorting::sort_files_by_properties;
-use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
 use mediarepo_core::bromine::prelude::*;
+use mediarepo_core::content_descriptor::{create_content_descriptor, encode_content_descriptor};
+use mediarepo_core::error::RepoError;
 use mediarepo_core::fs::thumbnail_store::Dimensions;
 use mediarepo_core::itertools::Itertools;
 use mediarepo_core::mediarepo_api::types::files::{
@@ -17,7 +14,16 @@ use mediarepo_core::mediarepo_api::types::filtering::FindFilesRequest;
 use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
-use tokio::io::AsyncReadExt;
+use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dto::{AddFileDto, AddTagDto, UpdateFileDto, UpdateFileMetadataDto};
+
+use crate::from_model::FromModel;
+use crate::namespaces::files::searching::find_files_for_filters;
+use crate::namespaces::files::sorting::sort_files_by_properties;
+use crate::utils::{cd_by_identifier, file_by_identifier, get_repo_from_context};
+
+mod searching;
+mod sorting;
 
 pub struct FilesNamespace;
 
@@ -50,7 +56,7 @@ impl FilesNamespace {
     #[tracing::instrument(skip_all)]
     async fn all_files(ctx: &Context, _event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
-        let files = repo.files().await?;
+        let files = repo.file().all().await?;
 
         let responses: Vec<FileBasicDataResponse> = files
             .into_iter()
@@ -80,7 +86,17 @@ impl FilesNamespace {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
-        let metadata = file.metadata().await?;
+        let file_id = file.id();
+
+        let metadata = if let Some(metadata) = file.into_metadata() {
+            metadata
+        } else {
+            repo.file()
+                .metadata(file_id)
+                .await?
+                .ok_or_else(|| RepoError::from("file metadata not found"))?
+        };
+
         ctx.emit_to(
             Self::name(),
             "get_file_metadata",
@@ -135,22 +151,38 @@ impl FilesNamespace {
             .into_inner();
         let AddFileRequestHeader { metadata, tags } = request;
         let repo = get_repo_from_context(ctx).await;
+        let bytes = bytes.into_inner();
+        let cd = create_content_descriptor(&bytes);
 
-        let file = repo
-            .add_file(
-                metadata.mime_type,
-                bytes.into_inner(),
-                metadata.creation_time,
-                metadata.change_time,
-            )
-            .await?;
-        file.metadata().await?.set_name(metadata.name).await?;
+        let file = if let Some(file) = repo.file().by_cd(cd).await? {
+            tracing::debug!("Inserted file already exists");
+            file
+        } else {
+            let add_dto = AddFileDto {
+                content: bytes,
+                mime_type: metadata
+                    .mime_type
+                    .unwrap_or(String::from("application/octet-stream")),
+                creation_time: metadata.creation_time,
+                change_time: metadata.change_time,
+                name: Some(metadata.name),
+            };
+            repo.file().add(add_dto).await?
+        };
 
         let tags = repo
-            .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
+            .tag()
+            .add_all(
+                tags.into_iter()
+                    .map(parse_namespace_and_tag)
+                    .map(AddTagDto::from_tuple)
+                    .collect(),
+            )
             .await?;
         let tag_ids: Vec<i64> = tags.into_iter().map(|t| t.id()).unique().collect();
-        file.add_tags(tag_ids).await?;
+        repo.tag()
+            .upsert_mappings(vec![file.cd_id()], tag_ids)
+            .await?;
 
         ctx.emit_to(
             Self::name(),
@@ -167,7 +199,14 @@ impl FilesNamespace {
         let request = event.payload::<UpdateFileStatusRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let mut file = file_by_identifier(request.file_id, &repo).await?;
-        file.set_status(request.status.into()).await?;
+        file = repo
+            .file()
+            .update(UpdateFileDto {
+                id: file.id(),
+                status: Some(request.status.into()),
+                ..Default::default()
+            })
+            .await?;
         ctx.emit_to(
             Self::name(),
             "update_file_status",
@@ -184,7 +223,7 @@ impl FilesNamespace {
         let request = event.payload::<ReadFileRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(request.id, &repo).await?;
-        let bytes = repo.get_file_bytes(&file).await?;
+        let bytes = repo.file().get_bytes(file.cd()).await?;
 
         ctx.emit_to(Self::name(), "read_file", BytePayload::new(bytes))
             .await?;
@@ -198,7 +237,7 @@ impl FilesNamespace {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
-        repo.delete_file(file).await?;
+        repo.file().delete(file).await?;
 
         ctx.emit_to(Self::name(), "delete_file", ()).await?;
 
@@ -211,12 +250,18 @@ impl FilesNamespace {
         let request = event.payload::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
-        let mut thumbnails = repo.get_file_thumbnails(&file_cd).await?;
+        let mut thumbnails = repo
+            .file()
+            .thumbnails(encode_content_descriptor(&file_cd))
+            .await?;
 
         if thumbnails.is_empty() {
             tracing::debug!("No thumbnails for file found. Creating thumbnails...");
             let file = file_by_identifier(request.id, &repo).await?;
-            thumbnails = repo.create_thumbnails_for_file(&file).await?;
+            thumbnails = repo
+                .file()
+                .create_thumbnails(file, vec![ThumbnailSize::Medium])
+                .await?;
             tracing::debug!("Thumbnails for file created.");
         }
 
@@ -236,17 +281,20 @@ impl FilesNamespace {
         let request = event.payload::<GetFileThumbnailOfSizeRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
-        let thumbnails = repo.get_file_thumbnails(&file_cd).await?;
         let min_size = request.min_size;
         let max_size = request.max_size;
+        let thumbnails = repo
+            .file()
+            .thumbnails(encode_content_descriptor(&file_cd))
+            .await?;
 
         let found_thumbnail = thumbnails.into_iter().find(|thumb| {
-            let Dimensions { height, width } = thumb.size;
+            let Dimensions { height, width } = thumb.size();
 
-            height >= min_size.0
-                && height <= max_size.0
-                && width >= min_size.1
-                && width <= max_size.1
+            *height >= min_size.0
+                && *height <= max_size.0
+                && *width >= min_size.1
+                && *width <= max_size.1
         });
 
         let thumbnail = if let Some(thumbnail) = found_thumbnail {
@@ -255,10 +303,14 @@ impl FilesNamespace {
             let file = file_by_identifier(request.id, &repo).await?;
             let middle_size = ((max_size.0 + min_size.0) / 2, (max_size.1 + min_size.1) / 2);
             let thumbnail = repo
-                .create_file_thumbnail(&file, ThumbnailSize::Custom(middle_size))
+                .file()
+                .create_thumbnails(file, vec![ThumbnailSize::Custom(middle_size)])
                 .await?;
 
             thumbnail
+                .into_iter()
+                .next()
+                .ok_or_else(|| RepoError::from("thumbnail could not be created"))?
         };
         let mut buf = Vec::new();
         thumbnail.get_reader().await?.read_to_end(&mut buf).await?;
@@ -280,8 +332,15 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<UpdateFileNameRequest>()?;
         let file = file_by_identifier(request.file_id, &repo).await?;
-        let mut metadata = file.metadata().await?;
-        metadata.set_name(request.name).await?;
+
+        let metadata = repo
+            .file()
+            .update_metadata(UpdateFileMetadataDto {
+                file_id: file.id(),
+                name: Some(Some(request.name)),
+                ..Default::default()
+            })
+            .await?;
 
         ctx.emit_to(
             Self::name(),
@@ -299,7 +358,7 @@ impl FilesNamespace {
         let repo = get_repo_from_context(ctx).await;
         let id = event.payload::<FileIdentifier>()?;
         let file = file_by_identifier(id, &repo).await?;
-        let thumbnails = repo.get_file_thumbnails(file.cd()).await?;
+        let thumbnails = repo.file().thumbnails(file.encoded_cd()).await?;
 
         for thumb in thumbnails {
             thumb.delete().await?;

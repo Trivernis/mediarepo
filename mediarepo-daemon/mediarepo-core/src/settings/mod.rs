@@ -1,18 +1,20 @@
-mod logging;
-mod paths;
-mod server;
-pub mod v1;
-
-use crate::error::RepoResult;
-use crate::settings::v1::SettingsV1;
-use config::{Config, FileFormat};
-use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+
+use config::{Config, FileFormat};
+use serde::{Deserialize, Serialize};
 
 pub use logging::*;
 pub use paths::*;
 pub use server::*;
+
+use crate::error::RepoResult;
+use crate::settings::v1::SettingsV1;
+
+mod logging;
+mod paths;
+mod server;
+pub mod v1;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub struct Settings {

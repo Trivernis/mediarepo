@@ -1,6 +1,8 @@
-use crate::error::RepoResult;
-use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
+
+use serde::{Deserialize, Serialize};
+
+use crate::error::RepoResult;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SettingsV1 {

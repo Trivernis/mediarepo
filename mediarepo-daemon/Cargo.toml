@@ -1,6 +1,6 @@
 [workspace]
-members = ["mediarepo-core", "mediarepo-database", "mediarepo-model", "mediarepo-socket", "."]
-default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-model", "mediarepo-socket", "."]
+members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
+default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
 
 [package]
 name = "mediarepo-daemon"
@@ -31,8 +31,8 @@ log = "^0.4.14"
 [dependencies.mediarepo-core]
 path = "./mediarepo-core"
 
-[dependencies.mediarepo-model]
-path = "./mediarepo-model"
+[dependencies.mediarepo-logic]
+path = "mediarepo-logic"
 
 [dependencies.mediarepo-socket]
 path = "./mediarepo-socket"
@@ -47,4 +47,4 @@ features = ["env-filter", "ansi", "json"]
 
 [features]
 default = ["ffmpeg"]
-ffmpeg = ["mediarepo-core/ffmpeg", "mediarepo-model/ffmpeg"]
+ffmpeg = ["mediarepo-core/ffmpeg", "mediarepo-logic/ffmpeg"]
