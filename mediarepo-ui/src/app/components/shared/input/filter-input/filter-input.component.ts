@@ -113,7 +113,7 @@ export class FilterInputComponent implements OnChanges {
 
     private validateFilters(filters: FilterQuery[]): boolean {
         for (const filter of filters) {
-            if ("Tag" in filter && !this.tagsForAutocomplete.includes(filter["Tag"].tag)) {
+            if ("Tag" in filter && !filter.Tag.tag.endsWith("*") && !this.tagsForAutocomplete.includes(filter.Tag.tag)) {
                 console.debug("tags don't include", filter);
                 return false;
             }
