@@ -69,7 +69,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_file_metadata,
                 run_job,
                 update_file_status,
-                delete_file
+                delete_file,
+                get_file_tag_map
             ]),
         }
     }

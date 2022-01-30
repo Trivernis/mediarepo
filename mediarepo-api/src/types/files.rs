@@ -31,6 +31,11 @@ pub struct GetFilesTagsRequest {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GetFileTagMapRequest {
+    pub cds: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileBasicDataResponse {
     pub id: i64,
     pub status: FileStatus,

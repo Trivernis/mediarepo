@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::iter::FromIterator;
 
 use mediarepo_core::error::RepoResult;
+use mediarepo_core::itertools::Itertools;
 
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
@@ -57,7 +58,7 @@ impl TagDao {
         Ok(namespaces)
     }
 
-    #[tracing::instrument(level = "debug", skip(self))]
+    #[tracing::instrument(level = "debug", skip(self, cds))]
     pub async fn all_for_cds(&self, cds: Vec<Vec<u8>>) -> RepoResult<Vec<TagDto>> {
         let tags = tag::Entity::find()
             .find_also_related(namespace::Entity)
@@ -78,6 +79,51 @@ impl TagDao {
             .collect();
 
         Ok(tags)
+    }
+
+    #[tracing::instrument(level = "debug", skip(self, cds))]
+    pub async fn all_for_cds_map(
+        &self,
+        cds: Vec<Vec<u8>>,
+    ) -> RepoResult<HashMap<Vec<u8>, Vec<TagDto>>> {
+        let tag_cd_entries: Vec<(
+            content_descriptor_tag::Model,
+            Option<content_descriptor::Model>,
+        )> = content_descriptor_tag::Entity::find()
+            .find_also_related(content_descriptor::Entity)
+            .filter(content_descriptor::Column::Descriptor.is_in(cds))
+            .all(&self.ctx.db)
+            .await?;
+
+        let tag_ids: Vec<i64> = tag_cd_entries
+            .iter()
+            .map(|(t, _)| t.tag_id)
+            .unique()
+            .collect();
+
+        let tags: Vec<TagDto> = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .filter(tag::Column::Id.is_in(tag_ids))
+            .all(&self.ctx.db)
+            .await?
+            .into_iter()
+            .map(map_tag_dto)
+            .collect();
+
+        let tag_id_map = tags
+            .into_iter()
+            .map(|t| (t.id(), t))
+            .collect::<HashMap<i64, TagDto>>();
+        let cd_tag_map = tag_cd_entries
+            .into_iter()
+            .filter_map(|(t, cd)| Some((cd?, tag_id_map.get(&t.tag_id)?.clone())))
+            .sorted_by_key(|(cd, _)| cd.id)
+            .group_by(|(cd, _)| cd.descriptor.to_owned())
+            .into_iter()
+            .map(|(key, group)| (key, group.map(|(_, t)| t).collect::<Vec<TagDto>>()))
+            .collect();
+
+        Ok(cd_tag_map)
     }
 
     #[tracing::instrument(level = "debug", skip(self))]

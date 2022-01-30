@@ -8,3 +8,7 @@ export type NamespaceData = {
     id: number,
     name: string,
 };
+
+export type CdTagMappings = {
+    [key: string]: TagData[],
+};

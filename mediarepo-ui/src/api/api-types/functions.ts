@@ -29,6 +29,7 @@ export enum ApiFunction {
     GetAllTags = "get_all_tags",
     GetAllNamespace = "get_all_namespaces",
     GetTagsForFiles = "get_tags_for_files",
+    GetFileTagMap = "get_file_tag_map",
     CreateTags = "create_tags",
     ChangeFileTags = "change_file_tags",
     // import

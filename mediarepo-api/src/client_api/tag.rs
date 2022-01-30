@@ -1,6 +1,7 @@
+use std::collections::HashMap;
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
-use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
+use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest, GetFileTagMapRequest};
 use crate::types::identifier::FileIdentifier;
 use crate::types::tags::{ChangeFileTagsRequest, NamespaceResponse, TagResponse};
 use async_trait::async_trait;
@@ -70,6 +71,12 @@ impl TagApi {
             Some(Duration::from_secs(10)),
         )
         .await
+    }
+
+    /// Returns a map from files to assigned tags
+    #[tracing::instrument(level = "debug", skip_all)]
+    pub async fn get_file_tag_map(&self, cds: Vec<String>) -> ApiResult<HashMap<String, Vec<TagResponse>>> {
+        self.emit_and_get("file_tag_map", GetFileTagMapRequest{cds}, Some(Duration::from_secs(10))).await
     }
 
     /// Creates a new tag and returns the created tag object
