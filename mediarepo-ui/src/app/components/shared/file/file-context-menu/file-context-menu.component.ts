@@ -2,7 +2,7 @@ import {Component, EventEmitter, OnChanges, Output, SimpleChanges, ViewChild} fr
 import {File} from "../../../../../api/models/File";
 import {ContextMenuComponent} from "../../app-common/context-menu/context-menu.component";
 import {FileService} from "../../../../services/file/file.service";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {BusyDialogComponent} from "../../app-common/busy-dialog/busy-dialog.component";
 import {BehaviorSubject} from "rxjs";
@@ -34,7 +34,7 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
     @Output() fileDeleted = new EventEmitter<File[]>();
     @Output() fileStatusChange = new EventEmitter<File[]>();
 
-    constructor(fileService: FileService, errorBroker: ErrorBrokerService, dialog: MatDialog) {
+    constructor(fileService: FileService, errorBroker: LoggingService, dialog: MatDialog) {
         super(dialog, errorBroker, fileService);
     }
 

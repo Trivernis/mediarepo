@@ -6,7 +6,7 @@ import {DownloadDaemonDialogComponent} from "./download-daemon-dialog/download-d
 import {
     AddRepositoryDialogComponent
 } from "../../shared/repository/repository/add-repository-dialog/add-repository-dialog.component";
-import {ErrorBrokerService} from "../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../services/logging/logging.service";
 import {BehaviorSubject} from "rxjs";
 import {BusyDialogComponent} from "../../shared/app-common/busy-dialog/busy-dialog.component";
 import {JobService} from "../../../services/job/job.service";
@@ -24,7 +24,7 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
     public selectedRepository?: Repository;
 
     constructor(
-        private errorBroker: ErrorBrokerService,
+        private logger: LoggingService,
         private repoService: RepositoryService,
         private jobService: JobService,
         private stateService: StateService,
@@ -60,8 +60,8 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
                 });
             }
             await this.selectRepository(repository, dialogContext);
-        } catch (err) {
-            this.errorBroker.showError(err);
+        } catch (err: any) {
+            this.logger.error(err);
         }
     }
 
@@ -75,7 +75,7 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             await this.repoService.loadRepositories();
             dialogContext.dialog.close(true);
         } catch (err: any) {
-            this.errorBroker.showError(err);
+            this.logger.error(err);
             dialogContext.message.next(
                 "Failed to open repository: " + err.toString());
             await this.forceCloseRepository();

@@ -9,7 +9,7 @@ import {BehaviorSubject} from "rxjs";
 import {BusyDialogComponent} from "../../app-common/busy-dialog/busy-dialog.component";
 import {ConfirmDialogComponent, ConfirmDialogData} from "../../app-common/confirm-dialog/confirm-dialog.component";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 
 type ProgressDialogContext = {
     dialog: MatDialogRef<BusyDialogComponent>,
@@ -22,7 +22,7 @@ type ProgressDialogContext = {
     template: "<h1>Do not use</h1>",
 })
 export class FileActionBaseComponent {
-    constructor(private dialog: MatDialog, private errorBroker: ErrorBrokerService, private fileService: FileService) {
+    constructor(private dialog: MatDialog, private errorBroker: LoggingService, private fileService: FileService) {
     }
 
     public async copyFileContentDescriptor(file: File): Promise<void> {

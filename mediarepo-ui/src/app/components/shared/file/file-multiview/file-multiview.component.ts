@@ -4,7 +4,7 @@ import {FileGalleryComponent} from "./file-gallery/file-gallery.component";
 import {FileGridComponent} from "./file-grid/file-grid.component";
 import {FileActionBaseComponent} from "../../app-base/file-action-base/file-action-base.component";
 import {MatDialog} from "@angular/material/dialog";
-import {ErrorBrokerService} from "../../../../services/error-broker/error-broker.service";
+import {LoggingService} from "../../../../services/logging/logging.service";
 import {FileService} from "../../../../services/file/file.service";
 import {TabState} from "../../../../models/TabState";
 
@@ -29,7 +29,7 @@ export class FileMultiviewComponent extends FileActionBaseComponent implements A
     public selectedFiles: File[] = [];
     @Input() public preselectedFile: File | undefined;
 
-    constructor(dialog: MatDialog, errorBroker: ErrorBrokerService, fileService: FileService) {
+    constructor(dialog: MatDialog, errorBroker: LoggingService, fileService: FileService) {
         super(dialog, errorBroker, fileService);
     }
 
