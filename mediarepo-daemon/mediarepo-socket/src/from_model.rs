@@ -5,25 +5,9 @@ use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse}
 use mediarepo_logic::dto::{
     FileDto, FileMetadataDto, FileStatus as FileStatusModel, NamespaceDto, TagDto, ThumbnailDto,
 };
-use mediarepo_logic::file_metadata::FileMetadata;
-use mediarepo_logic::namespace::Namespace;
-use mediarepo_logic::tag::Tag;
 
 pub trait FromModel<M> {
     fn from_model(model: M) -> Self;
-}
-
-impl FromModel<FileMetadata> for FileMetadataResponse {
-    fn from_model(metadata: FileMetadata) -> Self {
-        Self {
-            file_id: metadata.file_id(),
-            name: metadata.name().to_owned(),
-            comment: metadata.comment().to_owned(),
-            creation_time: metadata.creation_time().to_owned(),
-            change_time: metadata.change_time().to_owned(),
-            import_time: metadata.import_time().to_owned(),
-        }
-    }
 }
 
 impl FromModel<FileMetadataDto> for FileMetadataResponse {
@@ -60,16 +44,6 @@ impl FromModel<FileStatusModel> for FileStatus {
     }
 }
 
-impl FromModel<Tag> for TagResponse {
-    fn from_model(model: Tag) -> Self {
-        Self {
-            id: model.id(),
-            namespace: model.namespace().map(|n| n.name().to_owned()),
-            name: model.name().to_owned(),
-        }
-    }
-}
-
 impl FromModel<TagDto> for TagResponse {
     fn from_model(model: TagDto) -> Self {
         Self {
@@ -87,15 +61,6 @@ impl FromModel<ThumbnailDto> for ThumbnailMetadataResponse {
             height: model.size().height,
             width: model.size().width,
             mime_type: model.mime_type().to_owned(),
-        }
-    }
-}
-
-impl FromModel<Namespace> for NamespaceResponse {
-    fn from_model(model: Namespace) -> Self {
-        Self {
-            id: model.id(),
-            name: model.name().to_owned(),
         }
     }
 }

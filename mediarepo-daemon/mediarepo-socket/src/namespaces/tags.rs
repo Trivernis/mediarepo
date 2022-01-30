@@ -6,7 +6,9 @@ use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTa
 use mediarepo_core::mediarepo_api::types::tags::{
     ChangeFileTagsRequest, NamespaceResponse, TagResponse,
 };
+use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_logic::dao::DaoProvider;
+use mediarepo_logic::dto::AddTagDto;
 
 use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
@@ -85,7 +87,8 @@ impl TagsNamespace {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<GetFilesTagsRequest>()?;
         let tag_responses: Vec<TagResponse> = repo
-            .find_tags_for_file_identifiers(
+            .tag()
+            .all_for_cds(
                 request
                     .cds
                     .into_par_iter()
@@ -102,17 +105,21 @@ impl TagsNamespace {
         Ok(())
     }
 
-    /// Creates all tags given as input or returns the existing tag
+    /// Creates all tags given as input or returns the existing tags
     #[tracing::instrument(skip_all)]
     async fn create_tags(ctx: &Context, event: Event) -> IPCResult<()> {
         let repo = get_repo_from_context(ctx).await;
         let tags = event.payload::<Vec<String>>()?;
-        let mut created_tags = Vec::new();
+        let created_tags = repo
+            .tag()
+            .add_all(
+                tags.into_iter()
+                    .map(parse_namespace_and_tag)
+                    .map(AddTagDto::from_tuple)
+                    .collect(),
+            )
+            .await?;
 
-        for tag in tags {
-            let created_tag = repo.add_or_find_tag(tag).await?;
-            created_tags.push(created_tag);
-        }
         let responses: Vec<TagResponse> = created_tags
             .into_iter()
             .map(TagResponse::from_model)

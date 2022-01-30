@@ -58,6 +58,28 @@ impl TagDao {
     }
 
     #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn all_for_cds(&self, cds: Vec<Vec<u8>>) -> RepoResult<Vec<TagDto>> {
+        let tags = tag::Entity::find()
+            .find_also_related(namespace::Entity)
+            .join(
+                JoinType::LeftJoin,
+                content_descriptor_tag::Relation::Tag.def().rev(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                content_descriptor_tag::Relation::ContentDescriptorId.def(),
+            )
+            .filter(content_descriptor::Column::Descriptor.is_in(cds))
+            .all(&self.ctx.db)
+            .await?
+            .into_iter()
+            .map(map_tag_dto)
+            .collect();
+
+        Ok(tags)
+    }
+
+    #[tracing::instrument(level = "debug", skip(self))]
     pub async fn tags_for_cd(&self, cd_id: i64) -> RepoResult<Vec<TagDto>> {
         let tags = tag::Entity::find()
             .find_also_related(namespace::Entity)
