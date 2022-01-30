@@ -36,7 +36,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
     private fileTags: { [key: number]: Tag[] } = {};
 
     constructor(
-        private errorBroker: LoggingService,
+        private logger: LoggingService,
         private tagService: TagService,
     ) {
     }
@@ -148,16 +148,12 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
 
     private async loadFileTags() {
         await this.wrapAsyncOperation(async () => {
-            const promises = [];
-            const loadFn = async (file: File) => {
-                this.fileTags[file.id] = await this.tagService.getTagsForFiles(
-                    [file.cd]);
-            };
-            for (const file of this.files) {
-                promises.push(loadFn(file));
-            }
+            console.log("loading tags");
+            const mappings = await this.tagService.getFileTagMappings(this.files.map(f => f.cd));
 
-            await Promise.all(promises);
+            for (const file of this.files) {
+                this.fileTags[file.id] = mappings[file.cd];
+            }
             this.mapFileTagsToTagList();
         });
     }
@@ -176,11 +172,11 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
     }
 
     private async wrapAsyncOperation<T>(cb: () => Promise<T>): Promise<T | undefined> {
-        if (!this.busyIndicator) {
+        if (!this.busyIndicator?.wrapAsyncOperation) {
             try {
                 return cb();
             } catch (err: any) {
-                this.errorBroker.error(err);
+                this.logger.error(err);
                 return undefined;
             }
         } else {

@@ -73,6 +73,10 @@ export type GetTagsForFilesRequest = {
     cds: string[]
 };
 
+export type GetFileTagMapRequest = {
+    cds: string[]
+};
+
 export type CreateTagsRequest = {
     tags: string[]
 };

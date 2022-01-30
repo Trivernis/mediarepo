@@ -111,13 +111,15 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
     }
 
     private async runRepositoryStartupTasks(dialogContext: BusyDialogContext): Promise<void> {
+        dialogContext.message.next("Checking integrity...");
+        await this.jobService.runJob("CheckIntegrity");
+        dialogContext.message.next("Running a vacuum on the database...");
+        await this.jobService.runJob("Vacuum");
         dialogContext.message.next(
             "Migrating content descriptors to new format...");
         await this.jobService.runJob("MigrateContentDescriptors");
         dialogContext.message.next("Calculating repository sizes...");
         await this.jobService.runJob("CalculateSizes");
-        dialogContext.message.next("Checking integrity...");
-        await this.jobService.runJob("CheckIntegrity");
         dialogContext.message.next("Finished repository startup");
     }
 

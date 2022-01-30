@@ -11,4 +11,5 @@ pub enum JobType {
     MigrateContentDescriptors,
     CalculateSizes,
     CheckIntegrity,
+    Vacuum,
 }

@@ -1,8 +1,11 @@
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use std::collections::HashMap;
 
 use mediarepo_core::bromine::prelude::*;
-use mediarepo_core::content_descriptor::decode_content_descriptor;
-use mediarepo_core::mediarepo_api::types::files::{GetFileTagsRequest, GetFilesTagsRequest};
+use mediarepo_core::content_descriptor::{decode_content_descriptor, encode_content_descriptor};
+use mediarepo_core::mediarepo_api::types::files::{
+    GetFileTagMapRequest, GetFileTagsRequest, GetFilesTagsRequest,
+};
 use mediarepo_core::mediarepo_api::types::tags::{
     ChangeFileTagsRequest, NamespaceResponse, TagResponse,
 };
@@ -26,6 +29,7 @@ impl NamespaceProvider for TagsNamespace {
             "all_namespaces" => Self::all_namespaces,
             "tags_for_file" => Self::tags_for_file,
             "tags_for_files" => Self::tags_for_files,
+            "file_tag_map" => Self::tag_cd_map_for_files,
             "create_tags" => Self::create_tags,
             "change_file_tags" => Self::change_file_tags
         );
@@ -101,6 +105,38 @@ impl TagsNamespace {
             .collect();
         ctx.emit_to(Self::name(), "tags_for_files", tag_responses)
             .await?;
+
+        Ok(())
+    }
+
+    /// Returns a map of content descriptors to assigned tags
+    #[tracing::instrument(skip_all)]
+    async fn tag_cd_map_for_files(ctx: &Context, event: Event) -> IPCResult<()> {
+        let request = event.payload::<GetFileTagMapRequest>()?;
+        let repo = get_repo_from_context(ctx).await;
+        let cds = request
+            .cds
+            .into_iter()
+            .filter_map(|c| decode_content_descriptor(c).ok())
+            .collect();
+
+        let mappings = repo
+            .tag()
+            .all_for_cds_map(cds)
+            .await?
+            .into_iter()
+            .map(|(cd, tags)| (encode_content_descriptor(&cd), tags))
+            .map(|(cd, tags)| {
+                (
+                    cd,
+                    tags.into_iter()
+                        .map(TagResponse::from_model)
+                        .collect::<Vec<TagResponse>>(),
+                )
+            })
+            .collect::<HashMap<String, Vec<TagResponse>>>();
+
+        ctx.emit_to(Self::name(), "file_tag_map", mappings).await?;
 
         Ok(())
     }

@@ -63,21 +63,21 @@ export class AppComponent implements OnInit {
         if (!environment.production) {
             switch (entry.getLevel()) {
                 case LogLevel.Trace:
-                    console.trace(entry.getMessage(), entry);
+                    console.trace(entry.getMessage());
                     break;
                 case LogLevel.Debug:
-                    console.debug(entry.getMessage(), entry);
+                    console.debug(entry.getMessage());
                     break;
                 case LogLevel.Info:
-                    console.info(entry.getMessage(), entry);
+                    console.info(entry.getMessage());
                     break;
                 case LogLevel.Warn:
-                    console.warn(entry.getMessage(), entry);
+                    console.warn(entry.getMessage());
                     break;
             }
         }
         if (entry.getLevel() == LogLevel.Error) {
-            console.error(entry.getMessage(), entry.getError(), entry);
+            console.error(entry.getMessage(), entry.getError());
         }
     }
 }
