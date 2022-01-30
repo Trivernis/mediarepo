@@ -55,7 +55,7 @@ jobs:
 
       - uses: vimtor/action-zip@v1
         with:
-          files: target/release/mediarepo-daemon target/release/mediarepo-daemon.exe
+          files: mediarepo-daemon/target/release/mediarepo-daemon mediarepo-daemon/target/release/mediarepo-daemon.exe
           dest: mediarepo-daemon-${{ runner.os }}.zip
 
       - name: Upload Release Asset
@@ -128,7 +128,7 @@ jobs:
 
       - uses: vimtor/action-zip@v1
         with:
-          files: src-tauri/target/release/bundle src-tauri/target/release/mediarepo-ui src-tauri/target/release/mediarepo-ui.exe
+          files: mediarepo-ui/src-tauri/target/release/bundle mediarepo-ui/src-tauri/target/release/mediarepo-ui mediarepo-ui/src-tauri/target/release/mediarepo-ui.exe
           dest: mediarepo-ui-${{ runner.os }}.zip
 
       - name: Upload Release Asset
