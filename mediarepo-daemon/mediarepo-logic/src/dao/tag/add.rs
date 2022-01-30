@@ -21,8 +21,13 @@ impl TagDao {
         let existing_tag_map: HashMap<String, TagDto> =
             HashMap::from_iter(existing_tags.into_iter().map(|t| (t.normalized_name(), t)));
 
-        let namespace_map = add_or_get_all_namespaces(&trx, namespaces).await?;
         tags.retain(|dto| !existing_tag_map.contains_key(&dto.normalized_name()));
+        let namespace_map = add_or_get_all_namespaces(&trx, namespaces).await?;
+
+        if tags.is_empty() {
+            return Ok(existing_tag_map.into_values().collect());
+        }
+
         let tag_models: Vec<tag::ActiveModel> = tags
             .iter()
             .map(|t| tag::ActiveModel {
@@ -38,7 +43,7 @@ impl TagDao {
         tag::Entity::insert_many(tag_models).exec(&trx).await?;
         let mut tag_dtos = tags_by_name(&trx, tags).await?;
         trx.commit().await?;
-        tag_dtos.append(&mut existing_tag_map.into_iter().map(|(_, dto)| dto).collect());
+        tag_dtos.append(&mut existing_tag_map.into_values().collect());
 
         Ok(tag_dtos)
     }
@@ -48,6 +53,9 @@ async fn add_or_get_all_namespaces(
     trx: &DatabaseTransaction,
     mut namespaces: Vec<String>,
 ) -> RepoResult<HashMap<String, NamespaceDto>> {
+    if namespaces.is_empty() {
+        return Ok(HashMap::with_capacity(0));
+    }
     let existing_namespaces = namespaces_by_name(trx, namespaces.clone()).await?;
     let mut namespace_map = HashMap::from_iter(
         existing_namespaces
@@ -58,6 +66,9 @@ async fn add_or_get_all_namespaces(
         return Ok(namespace_map);
     }
     namespaces.retain(|nsp| !namespace_map.contains_key(nsp));
+    if namespaces.is_empty() {
+        return Ok(namespace_map);
+    }
     let namespace_models: Vec<namespace::ActiveModel> = namespaces
         .iter()
         .map(|nsp| namespace::ActiveModel {
@@ -81,6 +92,9 @@ async fn namespaces_by_name(
     trx: &DatabaseTransaction,
     names: Vec<String>,
 ) -> RepoResult<Vec<NamespaceDto>> {
+    if names.is_empty() {
+        return Ok(vec![]);
+    }
     let namespaces: Vec<NamespaceDto> = namespace::Entity::find()
         .filter(namespace::Column::Name.is_in(names))
         .all(trx)
@@ -93,6 +107,9 @@ async fn namespaces_by_name(
 }
 
 async fn tags_by_name(trx: &DatabaseTransaction, tags: Vec<AddTagDto>) -> RepoResult<Vec<TagDto>> {
+    if tags.is_empty() {
+        return Ok(vec![]);
+    }
     let condition = tags
         .into_iter()
         .map(build_tag_condition)

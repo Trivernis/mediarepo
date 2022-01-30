@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::iter::FromIterator;
 
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::mediarepo_api::types::filtering::TagQuery;
+
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
 

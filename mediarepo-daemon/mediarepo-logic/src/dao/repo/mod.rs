@@ -1,7 +1,7 @@
-use std::collections::{HashMap, HashSet};
+
 use std::fmt::Debug;
 
-use std::iter::FromIterator;
+
 use std::path::PathBuf;
 
 use sea_orm::DatabaseConnection;
@@ -9,14 +9,14 @@ use sea_orm::DatabaseConnection;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::file_hash_store::FileHashStore;
 use mediarepo_core::fs::thumbnail_store::ThumbnailStore;
-use mediarepo_core::itertools::Itertools;
+
 
 use mediarepo_core::utils::parse_namespace_and_tag;
 
 use mediarepo_database::get_database;
 use mediarepo_database::queries::analysis::{get_all_counts, Counts};
 
-use crate::dao::tag::by_name::TagByNameQuery;
+
 use crate::dao::{DaoContext, DaoProvider};
 use crate::namespace::Namespace;
 use crate::tag::Tag;
