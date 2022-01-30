@@ -1,13 +1,20 @@
 use sea_orm::prelude::*;
 use sea_orm::JoinType;
 use sea_orm::QuerySelect;
+use std::collections::HashMap;
+use std::iter::FromIterator;
 
 use mediarepo_core::error::RepoResult;
+use mediarepo_core::mediarepo_api::types::filtering::TagQuery;
+use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
 
+use crate::dao::tag::by_name::TagByNameQuery;
 use crate::dao::{DaoContext, DaoProvider};
 use crate::dto::{NamespaceDto, TagDto};
 
+pub mod add;
+pub mod by_name;
 pub mod mappings;
 
 pub struct TagDao {
@@ -70,6 +77,26 @@ impl TagDao {
             .collect();
 
         Ok(tags)
+    }
+
+    /// Returns a map mapping tag names to ids
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn normalized_tags_to_ids(
+        &self,
+        names: Vec<String>,
+    ) -> RepoResult<HashMap<String, i64>> {
+        let queries = names
+            .into_iter()
+            .map(parse_namespace_and_tag)
+            .map(|(namespace, name)| TagByNameQuery { namespace, name })
+            .collect();
+        let tags = self.all_by_name(queries).await?;
+        let tag_map = HashMap::from_iter(
+            tags.into_iter()
+                .map(|tag| (tag.normalized_name(), tag.id())),
+        );
+
+        Ok(tag_map)
     }
 }
 

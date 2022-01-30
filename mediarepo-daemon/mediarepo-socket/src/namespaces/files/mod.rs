@@ -15,7 +15,7 @@ use mediarepo_core::mediarepo_api::types::identifier::FileIdentifier;
 use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_logic::dao::DaoProvider;
-use mediarepo_logic::dto::{AddFileDto, UpdateFileDto, UpdateFileMetadataDto};
+use mediarepo_logic::dto::{AddFileDto, AddTagDto, UpdateFileDto, UpdateFileMetadataDto};
 
 use crate::from_model::FromModel;
 use crate::namespaces::files::searching::find_files_for_filters;
@@ -171,7 +171,13 @@ impl FilesNamespace {
         };
 
         let tags = repo
-            .add_all_tags(tags.into_iter().map(parse_namespace_and_tag).collect())
+            .tag()
+            .add_all(
+                tags.into_iter()
+                    .map(parse_namespace_and_tag)
+                    .map(AddTagDto::from_tuple)
+                    .collect(),
+            )
             .await?;
         let tag_ids: Vec<i64> = tags.into_iter().map(|t| t.id()).unique().collect();
         repo.tag()

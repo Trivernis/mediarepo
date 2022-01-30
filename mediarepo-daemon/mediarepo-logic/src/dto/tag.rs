@@ -28,4 +28,35 @@ impl TagDto {
     pub fn namespace(&self) -> Option<&NamespaceDto> {
         self.namespace.as_ref()
     }
+
+    /// Returns the normalized name of the tag (namespace:tag)
+    pub fn normalized_name(&self) -> String {
+        if let Some(namespace) = &self.namespace {
+            format!("{}:{}", namespace.name(), self.name())
+        } else {
+            self.name().to_owned()
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct AddTagDto {
+    pub namespace: Option<String>,
+    pub name: String,
+}
+
+impl AddTagDto {
+    pub fn from_tuple(tuple: (Option<String>, String)) -> Self {
+        let (namespace, name) = tuple;
+        Self { namespace, name }
+    }
+
+    /// Returns the normalized name of the tag (namespace:tag)
+    pub fn normalized_name(&self) -> String {
+        if let Some(namespace) = &self.namespace {
+            format!("{}:{}", namespace, &self.name)
+        } else {
+            self.name.to_owned()
+        }
+    }
 }
