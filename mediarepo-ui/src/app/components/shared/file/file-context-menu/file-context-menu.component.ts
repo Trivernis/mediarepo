@@ -3,17 +3,9 @@ import {File} from "../../../../../api/models/File";
 import {ContextMenuComponent} from "../../app-common/context-menu/context-menu.component";
 import {FileService} from "../../../../services/file/file.service";
 import {LoggingService} from "../../../../services/logging/logging.service";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {BusyDialogComponent} from "../../app-common/busy-dialog/busy-dialog.component";
-import {BehaviorSubject} from "rxjs";
+import {MatDialog} from "@angular/material/dialog";
 import {FileActionBaseComponent} from "../../app-base/file-action-base/file-action-base.component";
 import {FileStatus} from "../../../../../api/api-types/files";
-
-type ProgressDialogContext = {
-    dialog: MatDialogRef<BusyDialogComponent>,
-    progress: BehaviorSubject<number>,
-    message: BehaviorSubject<string>,
-};
 
 @Component({
     selector: "app-file-context-menu",
