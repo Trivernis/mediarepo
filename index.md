@@ -1,3 +1,3 @@
 ## mediarepo
 
-Coming soon :tm:
+Coming soon™
