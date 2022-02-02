@@ -132,6 +132,8 @@ fn build_tag_condition(tag: AddTagDto) -> Condition {
             .add(tag::Column::Name.eq(tag.name))
             .add(namespace::Column::Name.eq(namespace))
     } else {
-        Condition::all().add(tag::Column::Name.eq(tag.name))
+        Condition::all()
+            .add(tag::Column::Name.eq(tag.name))
+            .add(tag::Column::NamespaceId.is_null())
     }
 }
