@@ -1,60 +1,11 @@
 use std::collections::HashMap;
 use std::fmt::Display;
-use std::iter::FromIterator;
 
-use sea_orm::{DatabaseConnection, Statement};
 use sea_orm::DbBackend;
 use sea_orm::FromQueryResult;
+use sea_orm::{DatabaseConnection, Statement};
 
 use mediarepo_core::error::RepoResult;
-
-#[derive(Debug, FromQueryResult)]
-struct CIDNamespaceTag {
-    cd_id: i64,
-    namespace: String,
-    tag: String,
-}
-
-#[tracing::instrument(level = "debug", skip_all)]
-pub async fn get_cids_with_namespaced_tags(
-    db: &DatabaseConnection,
-    hash_ids: Vec<i64>,
-) -> RepoResult<HashMap<i64, HashMap<String, Vec<String>>>> {
-    let hash_namespace_tags: Vec<CIDNamespaceTag> =
-        CIDNamespaceTag::find_by_statement(Statement::from_sql_and_values(
-            DbBackend::Sqlite,
-            format!(
-                r#"SELECT ctm.cd_id, n.name as namespace, t.name as tag
-            FROM cd_tag_mappings ctm
-                     INNER JOIN tags t on ctm.tag_id = t.id
-                     JOIN namespaces n on t.namespace_id = n.id
-            WHERE t.namespace_id IS NOT NULL
-              AND ctm.cd_id IN ({}) ORDER BY t.namespace_id;"#,
-                vec_to_query_list(hash_ids)
-            )
-            .as_str(),
-            vec![],
-        ))
-        .all(db)
-        .await?;
-    let mut cd_id_namespaces: HashMap<i64, HashMap<String, Vec<String>>> = HashMap::new();
-    for hnt in hash_namespace_tags {
-        if let Some(entry) = cd_id_namespaces.get_mut(&hnt.cd_id) {
-            if let Some(nsp_entry) = entry.get_mut(&hnt.namespace) {
-                nsp_entry.push(hnt.tag);
-            } else {
-                entry.insert(hnt.namespace, vec![hnt.tag]);
-            }
-        } else {
-            cd_id_namespaces.insert(
-                hnt.cd_id,
-                HashMap::from_iter(vec![(hnt.namespace, vec![hnt.tag])].into_iter()),
-            );
-        }
-    }
-
-    Ok(cd_id_namespaces)
-}
 
 #[derive(Debug, FromQueryResult)]
 struct CIDTagCount {

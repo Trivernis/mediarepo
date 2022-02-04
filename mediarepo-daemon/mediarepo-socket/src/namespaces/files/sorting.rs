@@ -8,13 +8,10 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::filtering::{SortDirection, SortKey};
-use mediarepo_database::queries::tags::{
-    get_cids_with_namespaced_tags, get_content_descriptors_with_tag_count,
-};
-use mediarepo_logic::dao::DaoProvider;
+use mediarepo_database::queries::tags::get_content_descriptors_with_tag_count;
 use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::dao::DaoProvider;
 use mediarepo_logic::dto::{FileDto, FileMetadataDto};
-
 
 pub struct FileSortContext {
     name: Option<String>,
@@ -50,12 +47,14 @@ async fn build_sort_context(
     repo: &Repo,
     files: &Vec<FileDto>,
 ) -> RepoResult<HashMap<i64, FileSortContext>> {
-    let hash_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
+    let cd_ids: Vec<i64> = files.par_iter().map(|f| f.cd_id()).collect();
     let file_ids: Vec<i64> = files.par_iter().map(|f| f.id()).collect();
 
-    let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> =
-        get_cids_with_namespaced_tags(repo.db(), hash_ids.clone()).await?;
-    let mut cid_tag_counts = get_content_descriptors_with_tag_count(repo.db(), hash_ids).await?;
+    let mut cid_nsp: HashMap<i64, HashMap<String, Vec<String>>> = repo
+        .tag()
+        .cdids_with_namespaced_tags(cd_ids.clone())
+        .await?;
+    let mut cid_tag_counts = get_content_descriptors_with_tag_count(repo.db(), cd_ids).await?;
 
     let files_metadata = repo.file().all_metadata(file_ids).await?;
 
