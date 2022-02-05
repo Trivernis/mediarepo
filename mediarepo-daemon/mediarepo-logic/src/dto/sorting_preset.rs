@@ -1,3 +1,7 @@
+use crate::dto::KeyType::{
+    FileChangeTime, FileCreatedTime, FileImportedTime, FileName, FileSize, FileType, Namespace,
+    NumTags,
+};
 use mediarepo_database::entities::sort_key;
 use mediarepo_database::entities::sorting_preset;
 
@@ -35,8 +39,8 @@ impl SortKeyDto {
         self.model.id
     }
 
-    pub fn key_type(&self) -> i32 {
-        self.model.key_type
+    pub fn key_type(&self) -> Option<KeyType> {
+        KeyType::from_number(self.model.key_type)
     }
 
     pub fn ascending(&self) -> bool {
@@ -46,4 +50,48 @@ impl SortKeyDto {
     pub fn value(&self) -> Option<&String> {
         self.model.value.as_ref()
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialOrd, PartialEq)]
+pub enum KeyType {
+    Namespace = 0,
+    FileName = 1,
+    FileSize = 2,
+    FileImportedTime = 3,
+    FileCreatedTime = 4,
+    FileChangeTime = 5,
+    FileType = 6,
+    NumTags = 7,
+}
+
+impl KeyType {
+    pub fn from_number(number: i32) -> Option<KeyType> {
+        match number {
+            0 => Some(Namespace),
+            1 => Some(FileName),
+            2 => Some(FileSize),
+            3 => Some(FileImportedTime),
+            4 => Some(FileCreatedTime),
+            5 => Some(FileChangeTime),
+            6 => Some(FileType),
+            7 => Some(NumTags),
+            _ => None,
+        }
+    }
+
+    pub fn to_number(&self) -> i32 {
+        self.clone() as i32
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct AddSortingPresetDto {
+    pub keys: Vec<AddSortKeyDto>,
+}
+
+#[derive(Clone, Debug)]
+pub struct AddSortKeyDto {
+    pub key_type: KeyType,
+    pub ascending: bool,
+    pub value: Option<String>,
 }

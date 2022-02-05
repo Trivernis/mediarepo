@@ -1,3 +1,5 @@
+pub mod add;
+
 use crate::dao_provider;
 use crate::dto::{SortKeyDto, SortingPresetDto};
 use mediarepo_core::error::RepoResult;
