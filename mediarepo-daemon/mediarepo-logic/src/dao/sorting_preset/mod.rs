@@ -5,7 +5,7 @@ use crate::dto::{SortKeyDto, SortingPresetDto};
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{sort_key, sorting_preset, sorting_preset_key};
 use sea_orm::prelude::*;
-use sea_orm::{JoinType, QueryOrder, QuerySelect};
+use sea_orm::QueryOrder;
 
 dao_provider!(SortingPresetDao);
 
@@ -14,10 +14,6 @@ impl SortingPresetDao {
     pub async fn all(&self) -> RepoResult<Vec<SortingPresetDto>> {
         let presets = sorting_preset::Entity::find()
             .find_with_related(sort_key::Entity)
-            .join(
-                JoinType::InnerJoin,
-                sorting_preset_key::Relation::SortingKey.def(),
-            )
             .order_by_asc(sorting_preset_key::Column::KeyIndex)
             .all(&self.ctx.db)
             .await?

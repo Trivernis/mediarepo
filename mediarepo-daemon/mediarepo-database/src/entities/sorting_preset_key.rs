@@ -9,6 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     key_id: i32,
 
+    #[sea_orm(primary_key)]
     key_index: i32,
 }
 

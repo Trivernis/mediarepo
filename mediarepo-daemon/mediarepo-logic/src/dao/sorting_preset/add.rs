@@ -4,7 +4,13 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{sort_key, sorting_preset, sorting_preset_key};
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{Condition, ConnectionTrait, DatabaseTransaction, JoinType, QuerySelect};
+use sea_orm::{
+    Condition, ConnectionTrait, DatabaseTransaction, DbBackend, FromQueryResult, JoinType,
+    QuerySelect, Statement,
+};
+
+#[allow(unused_imports)]
+use sea_orm::TryGetableMany; // otherwise intellijrust hates on me
 
 impl SortingPresetDao {
     #[tracing::instrument(level = "debug", skip(self))]
@@ -33,10 +39,17 @@ impl SortingPresetDao {
             trx.commit().await?;
             return Ok(SortingPresetDto::new(model, keys));
         }
-        let preset_model = sorting_preset::ActiveModel {
-            ..Default::default()
-        };
-        let preset_model = preset_model.insert(&trx).await?;
+
+        // sea_orm currently doesn't support all-default-value inserts.
+        // TODOD: Replace after the change for default inserts has been merged
+        let preset_model = sorting_preset::Model::find_by_statement(Statement::from_string(
+            DbBackend::Sqlite,
+            "INSERT INTO sorting_presets DEFAULT VALUES RETURNING *;".to_string(),
+        ))
+        .one(&trx)
+        .await?
+        .expect("failed to insert new sorting preset");
+
         let mapping_models = key_ids
             .into_iter()
             .map(|(idx, key)| sorting_preset_key::ActiveModel {
@@ -45,9 +58,12 @@ impl SortingPresetDao {
                 key_index: Set(idx as i32),
             })
             .collect::<Vec<sorting_preset_key::ActiveModel>>();
-        sorting_preset_key::Entity::insert_many(mapping_models)
-            .exec(&trx)
-            .await?;
+
+        if !mapping_models.is_empty() {
+            sorting_preset_key::Entity::insert_many(mapping_models)
+                .exec(&trx)
+                .await?;
+        }
         trx.commit().await?;
 
         Ok(SortingPresetDto::new(preset_model, keys))
@@ -56,19 +72,21 @@ impl SortingPresetDao {
 
 async fn add_keys(
     trx: &DatabaseTransaction,
-    mut keys: Vec<AddSortKeyDto>,
+    keys: Vec<AddSortKeyDto>,
 ) -> RepoResult<Vec<SortKeyDto>> {
     let mut key_dtos = find_sort_keys(trx, &keys).await?;
+    let mut insert_keys = keys.clone();
+
     key_dtos.iter().for_each(|key| {
-        keys.retain(|k| {
+        insert_keys.retain(|k| {
             k.ascending != key.ascending()
-                && Some(k.key_type) != key.key_type()
-                && key.value() != key.value()
+                || k.key_type != key.key_type().unwrap()
+                || !compare_opts_eq(key.value(), k.value.as_ref())
         })
     });
 
-    if !keys.is_empty() {
-        let active_models: Vec<sort_key::ActiveModel> = keys
+    if !insert_keys.is_empty() {
+        let active_models: Vec<sort_key::ActiveModel> = insert_keys
             .iter()
             .cloned()
             .map(|key| sort_key::ActiveModel {
@@ -81,7 +99,7 @@ async fn add_keys(
         sort_key::Entity::insert_many(active_models)
             .exec(trx)
             .await?;
-        let mut new_keys = find_sort_keys(trx, &keys).await?;
+        let mut new_keys = find_sort_keys(trx, &insert_keys).await?;
         key_dtos.append(&mut new_keys);
     }
 
@@ -91,9 +109,9 @@ async fn add_keys(
             key_dtos
                 .iter()
                 .find(|key| {
-                    k.ascending != key.ascending()
-                        && Some(k.key_type) != key.key_type()
-                        && key.value() != key.value()
+                    k.ascending == key.ascending()
+                        && k.key_type == key.key_type().unwrap()
+                        && compare_opts_eq(key.value(), k.value.as_ref())
                 })
                 .cloned()
         })
@@ -143,4 +161,12 @@ fn create_mapping_condition(entry: (usize, i32)) -> Condition {
     Condition::all()
         .add(sorting_preset_key::Column::KeyId.eq(entry.1))
         .add(sorting_preset_key::Column::KeyIndex.eq(entry.0 as i32))
+}
+
+fn compare_opts_eq<T: Eq>(opt1: Option<T>, opt2: Option<T>) -> bool {
+    if let (Some(opt1), Some(opt2)) = (&opt1, &opt2) {
+        opt1 == opt2
+    } else {
+        opt1.is_none() && opt2.is_none()
+    }
 }

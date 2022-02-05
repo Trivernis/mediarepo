@@ -65,6 +65,8 @@ impl PresetsNamespace {
         let id = event.payload::<i32>()?;
         let repo = get_repo_from_context(ctx).await;
         repo.sorting_preset().delete(id).await?;
+        ctx.emit_to(Self::name(), "delete_sorting_preset", ())
+            .await?;
 
         Ok(())
     }
