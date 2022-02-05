@@ -4,16 +4,24 @@
 </div>
 <div class="dialog-buttons" mat-dialog-actions>
     <button (click)="closeDialog()" color="accent" mat-stroked-button>Cancel</button>
-    <button (click)="addRepository()" *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote' || repoForm.localRepoExists"
-            [disabled]="!repoForm.formGroup.valid" color="primary" mat-flat-button
+    <button (click)="addRepository()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote' || repoForm.localRepoExists"
+            [disabled]="!repoForm.formGroup.valid"
+            color="primary"
+            mat-flat-button
             matTooltip="Add the existing repository">Add
     </button>
-    <button (click)="this.initLocalRepository()" *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'local' && !repoForm.localRepoExists"
+    <button (click)="this.initLocalRepository()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'local' && !repoForm.localRepoExists"
             [disabled]="!repoForm.formGroup.valid"
-            color="accent" mat-flat-button
+            color="accent"
+            mat-flat-button
             matTooltip="Initialize the repository in the specified path">Init
     </button>
-    <button (click)="repoForm.checkRepositoryStatus()" *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote'" [disabled]="!repoForm.formGroup.valid"
-            class="check-connection-button" mat-stroked-button>Check Connection
+    <button (click)="repoForm.checkRepositoryStatus()"
+            *ngIf="repoForm.formGroup.get('repositoryType')?.value === 'remote'"
+            [disabled]="!repoForm.formGroup.valid"
+            class="check-connection-button"
+            mat-stroked-button>Check Connection
     </button>
 </div>

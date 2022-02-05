@@ -1,8 +1,6 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {
-    EditableMetadataEntryComponent
-} from "./editable-metadata-entry.component";
+import {EditableMetadataEntryComponent} from "./editable-metadata-entry.component";
 
 describe("EditableMetadataEntryComponent", () => {
     let component: EditableMetadataEntryComponent;
@@ -10,7 +8,7 @@ describe("EditableMetadataEntryComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ EditableMetadataEntryComponent ]
+            declarations: [EditableMetadataEntryComponent]
         })
             .compileComponents();
     });

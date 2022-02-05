@@ -1,8 +1,6 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {
-    DownloadDaemonDialogComponent
-} from "./download-daemon-dialog.component";
+import {DownloadDaemonDialogComponent} from "./download-daemon-dialog.component";
 
 describe("DownloadDaemonDialogComponent", () => {
     let component: DownloadDaemonDialogComponent;
@@ -10,7 +8,7 @@ describe("DownloadDaemonDialogComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ DownloadDaemonDialogComponent ]
+            declarations: [DownloadDaemonDialogComponent]
         })
             .compileComponents();
     });

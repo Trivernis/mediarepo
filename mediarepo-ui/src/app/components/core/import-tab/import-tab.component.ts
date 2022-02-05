@@ -20,7 +20,7 @@ export class ImportTabComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.state.files.subscribe(files => files? this.files = files : undefined);
+        this.state.files.subscribe(files => files ? this.files = files : undefined);
     }
 
     /**

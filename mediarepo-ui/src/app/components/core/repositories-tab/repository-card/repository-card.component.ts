@@ -1,22 +1,9 @@
-import {
-    Component, EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output,
-    ViewChild
-} from "@angular/core";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from "@angular/core";
 import {Repository} from "../../../../../api/models/Repository";
-import {
-    RepositoryService
-} from "../../../../services/repository/repository.service";
+import {RepositoryService} from "../../../../services/repository/repository.service";
 import {MatDialog} from "@angular/material/dialog";
-import {
-    ConfirmDialogComponent
-} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
-import {
-    BusyIndicatorComponent
-} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
+import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/confirm-dialog.component";
+import {BusyIndicatorComponent} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
 import {
     EditRepositoryDialogComponent
 } from "../../../shared/repository/repository/edit-repository-dialog/edit-repository-dialog.component";
@@ -39,7 +26,8 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
 
     constructor(
         public repoService: RepositoryService,
-        public dialog: MatDialog) {
+        public dialog: MatDialog
+    ) {
     }
 
     public async ngOnInit() {
@@ -81,28 +69,6 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
         }
     }
 
-    private async promtDeleteRepository() {
-        if (this.repository.local) {
-            const deleteContents = await this.dialog.open(
-                ConfirmDialogComponent, {
-                    data: {
-                        title: "Delete repository content",
-                        message: "Do you want to remove the contents of the repository as well?",
-                        confirmAction: "Delete",
-                        confirmColor: "warn",
-                        denyAction: "No",
-                    }
-                }).afterClosed().toPromise();
-            if (deleteContents) {
-                await this.repoService.deleteRepository(this.repository.name);
-            } else {
-                await this.repoService.removeRepository(this.repository.name);
-            }
-        } else {
-            await this.repoService.removeRepository(this.repository.name);
-        }
-    }
-
     public getDaemonStatusText(): string {
         if (this.repository.local) {
             return "Local";
@@ -137,5 +103,27 @@ export class RepositoryCardComponent implements OnInit, OnDestroy {
                 repository: this.repository
             }
         });
+    }
+
+    private async promtDeleteRepository() {
+        if (this.repository.local) {
+            const deleteContents = await this.dialog.open(
+                ConfirmDialogComponent, {
+                    data: {
+                        title: "Delete repository content",
+                        message: "Do you want to remove the contents of the repository as well?",
+                        confirmAction: "Delete",
+                        confirmColor: "warn",
+                        denyAction: "No",
+                    }
+                }).afterClosed().toPromise();
+            if (deleteContents) {
+                await this.repoService.deleteRepository(this.repository.name);
+            } else {
+                await this.repoService.removeRepository(this.repository.name);
+            }
+        } else {
+            await this.repoService.removeRepository(this.repository.name);
+        }
     }
 }

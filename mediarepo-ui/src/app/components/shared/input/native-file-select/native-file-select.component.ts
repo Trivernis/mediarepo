@@ -1,12 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges
-} from "@angular/core";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from "@angular/core";
 import {FormControl} from "@angular/forms";
 import {dialog} from "@tauri-apps/api";
 import {DialogFilter} from "@tauri-apps/api/dialog";

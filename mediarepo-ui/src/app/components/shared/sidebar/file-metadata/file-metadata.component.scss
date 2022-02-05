@@ -20,9 +20,11 @@
         width: 100%;
         display: block;
     }
+
     :first-child {
         margin-top: 0;
     }
+
     :last-child {
         margin-bottom: 0;
     }
@@ -32,6 +34,7 @@
     text-align: center;
     height: 100px;
     width: 100%;
+
     h1 {
         margin-top: 20px;
     }
