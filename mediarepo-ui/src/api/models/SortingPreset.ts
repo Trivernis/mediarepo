@@ -36,4 +36,8 @@ export class SortingPreset {
         preset.keys = keys;
         return preset;
     }
+
+    public toString(): string {
+        return this.sortKeys.join(", ");
+    }
 }

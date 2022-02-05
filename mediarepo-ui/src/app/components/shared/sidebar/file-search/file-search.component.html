@@ -35,8 +35,9 @@
             </button>
         </app-filter-input>
 
-        <button (click)="openSortDialog()" id="sort-button" mat-flat-button>
-            Sort: {{sortingPreset.sortKeys.join(", ")}}</button>
+        <app-sort-button (click)="openSortDialog()"
+                         [selectedPreset]="this.sortingPreset"
+                         id="sort-button"></app-sort-button>
     </div>
 
     <mat-divider fxFlex="1em"></mat-divider>
