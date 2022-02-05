@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {SortKey} from "../../../../../models/SortKey";
+import {SortKey} from "../../../../../../api/models/SortKey";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 import {Namespace} from "../../../../../../api/models/Namespace";
 import {TagService} from "../../../../../services/tag/tag.service";
@@ -22,12 +22,13 @@ export class SortDialogComponent {
     constructor(public tagService: TagService, public dialogRef: MatDialogRef<SortDialogComponent>, @Inject(
         MAT_DIALOG_DATA) data: any) {
         this.sortEntries = data.sortEntries;
+        console.debug(this.sortEntries);
         tagService.namespaces.subscribe(
             namespaces => this.namespaces = namespaces);
     }
 
     addNewSortKey() {
-        const sortKey = new SortKey("FileName", "Ascending", undefined);
+        const sortKey = SortKey.fromValues("FileName", "Ascending", undefined);
         this.sortEntries.push(sortKey);
     }
 

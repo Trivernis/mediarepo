@@ -40,4 +40,8 @@ export enum ApiFunction {
     SetFrontendState = "set_frontend_state",
     // jobs
     RunJob = "run_job",
+    // presets
+    GetAllSortingPresets = "all_sorting_presets",
+    AddSortingPreset = "add_sorting_preset",
+    DeleteSortingPreset = "delete_sorting_preset",
 }

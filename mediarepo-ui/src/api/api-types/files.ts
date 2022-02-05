@@ -41,7 +41,7 @@ export type ValueComparator<T> =
     | { Greater: T }
     | { Between: T[] }
 
-export type SortKey = { Namespace: SortNamespace }
+export type SortKeyData = { Namespace: SortNamespace }
     | { FileName: SortDirection }
     | { FileSize: SortDirection }
     | { FileImportedTime: SortDirection }

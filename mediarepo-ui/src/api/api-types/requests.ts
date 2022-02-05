@@ -1,4 +1,4 @@
-import {FileOsMetadata, FileStatus, FilterExpression, SortKey} from "./files";
+import {FileOsMetadata, FileStatus, FilterExpression, SortKeyData} from "./files";
 import {RepositoryData, SizeType} from "./repo";
 import {JobType} from "./job";
 
@@ -40,7 +40,7 @@ export type GetSizeRequest = {
 
 export type FindFilesRequest = {
     filters: FilterExpression[],
-    sortBy: SortKey[]
+    sortBy: SortKeyData[]
 };
 
 export type UpdateFileNameRequest = {
@@ -107,4 +107,12 @@ export type SetFrontendStateRequest = {
 
 export type RunJobRequest = {
     jobType: JobType,
-}
+};
+
+export type AddSortingPresetRequest = {
+    sort_keys: SortKeyData[]
+};
+
+export type DeleteSortingPresetRequest = {
+    id: number
+};

@@ -4,12 +4,14 @@ import {ApiFunction} from "./api-types/functions";
 import {
     AddLocalFileREquest,
     AddRepositoryRequest,
+    AddSortingPresetRequest,
     ChangeFileTagsRequest,
     CheckDaemonRunningRequest,
     CheckLocalRepositoryExistsRequest,
     CreateTagsRequest,
     DeleteFileRequest,
     DeleteRepositoryRequest,
+    DeleteSortingPresetRequest,
     DeleteThumbnailsRequest,
     FindFilesRequest,
     GetFileMetadataRequest,
@@ -31,6 +33,7 @@ import {
 import {RepositoryData, RepositoryMetadata, SizeMetadata} from "./api-types/repo";
 import {CdTagMappings, NamespaceData, TagData} from "./api-types/tags";
 import {ShortCache} from "./ShortCache";
+import {SortingPresetData} from "./api-types/presets";
 
 export class MediarepoApi {
 
@@ -182,6 +185,18 @@ export class MediarepoApi {
 
     public static async runJob(request: RunJobRequest): Promise<void> {
         return this.invokePlugin(ApiFunction.RunJob, request);
+    }
+
+    public static async getAllSortingPresets(): Promise<SortingPresetData[]> {
+        return ShortCache.cached("sorting-presets", () => this.invokePlugin(ApiFunction.GetAllSortingPresets), 1000);
+    }
+
+    public static async addSortingPreset(request: AddSortingPresetRequest): Promise<SortingPresetData> {
+        return this.invokePlugin(ApiFunction.AddSortingPreset, request);
+    }
+
+    public static async deleteSortingPreset(request: DeleteSortingPresetRequest): Promise<void> {
+        return this.invokePlugin(ApiFunction.DeleteSortingPreset, request);
     }
 
     private static async invokePlugin<T>(fn: ApiFunction, args?: any): Promise<T> {

@@ -2,10 +2,11 @@ import {BehaviorSubject} from "rxjs";
 import {TabCategory} from "./TabCategory";
 import {FileService} from "../services/file/file.service";
 import {File} from "../../api/models/File";
-import {SortKey} from "./SortKey";
+import {SortKey} from "../../api/models/SortKey";
 import {debounceTime} from "rxjs/operators";
 import {mapNew} from "../../api/models/adaptors";
 import {SearchFilters} from "../../api/models/SearchFilters";
+import {SortKeyData} from "../../api/api-types/files";
 
 export class TabState {
     public uuid: number;
@@ -17,7 +18,7 @@ export class TabState {
     public files = new BehaviorSubject<File[]>([]);
     public filters = new BehaviorSubject<SearchFilters>(new SearchFilters([]));
     public sortKeys = new BehaviorSubject<SortKey[]>(
-        [new SortKey(
+        [SortKey.fromValues(
             "FileImportedTime",
             "Ascending",
             undefined
@@ -50,14 +51,7 @@ export class TabState {
             dto.category,
             fileService
         );
-        const sortKeys = dto.sortKeys.map(
-            (s: { sortType: any, sortDirection: any, namespaceName: any }) =>
-                new SortKey(
-                    s.sortType,
-                    s.sortDirection,
-                    s.namespaceName
-                )
-        );
+        const sortKeys = dto.sortKeys.map((data: SortKeyData) => new SortKey(data));
         state.filters.next(new SearchFilters(dto.filters ?? []));
         state.sortKeys.next(sortKeys);
         state.mode.next(dto.mode ?? "grid");
@@ -90,7 +84,7 @@ export class TabState {
             uuid: this.uuid,
             category: this.category,
             filters: this.filters.value.getFilters(),
-            sortKeys: this.sortKeys.value,
+            sortKeys: this.sortKeys.value.map(key => key.rawData()),
             mode: this.mode.value,
             selectedFileHash: this.selectedCD.value,
             files: this.category === TabCategory.Import ? this.files.value.map(

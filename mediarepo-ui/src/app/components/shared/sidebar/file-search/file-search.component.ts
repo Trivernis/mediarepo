@@ -9,7 +9,7 @@ import {
     Output,
     ViewChild
 } from "@angular/core";
-import {SortKey} from "../../../../models/SortKey";
+import {SortKey} from "../../../../../api/models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
 import {LoggingService} from "../../../../services/logging/logging.service";
@@ -128,10 +128,8 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     public openSortDialog() {
         const sortEntries = this.sortExpression.map(
-            key => JSON.parse(JSON.stringify(key))).map(
-            key => new SortKey(key.sortType, key.sortDirection,
-                key.namespaceName
-            ));
+            key => JSON.parse(JSON.stringify(key.rawData()))).map(
+            data => new SortKey(data));
         const openedDialog = this.dialog.open(SortDialogComponent, {
             minWidth: "40vw",
             data: {
