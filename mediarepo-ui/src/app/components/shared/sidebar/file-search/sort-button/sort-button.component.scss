@@ -1,0 +1,9 @@
+@import "src/colors";
+
+.sort-button {
+    width: 100%;
+    align-items: center;
+    background-color: $background-lighter-10;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

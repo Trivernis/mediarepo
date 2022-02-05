@@ -1,14 +1,8 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {
-    AddRepositoryDialogComponent
-} from "./add-repository-dialog/add-repository-dialog.component";
-import {
-    RepositoryFormComponent
-} from "./repository-form/repository-form.component";
-import {
-    EditRepositoryDialogComponent
-} from "./edit-repository-dialog/edit-repository-dialog.component";
+import {AddRepositoryDialogComponent} from "./add-repository-dialog/add-repository-dialog.component";
+import {RepositoryFormComponent} from "./repository-form/repository-form.component";
+import {EditRepositoryDialogComponent} from "./edit-repository-dialog/edit-repository-dialog.component";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTooltipModule} from "@angular/material/tooltip";
@@ -37,7 +31,7 @@ import {MatFolder} from "@ng-icons/material-icons";
         MatSelectModule,
         MatInputModule,
         ReactiveFormsModule,
-        NgIconsModule.withIcons({MatFolder})
+        NgIconsModule.withIcons({ MatFolder })
     ]
 })
 export class RepositoryModule {

@@ -22,7 +22,7 @@ export class Repository {
         return this.repoData.local;
     }
 
-    public update(data: {name?: string, address?: string, path?: string, local?: boolean}) {
+    public update(data: { name?: string, address?: string, path?: string, local?: boolean }) {
         this.repoData = Object.assign(this.repoData, data);
     }
 }

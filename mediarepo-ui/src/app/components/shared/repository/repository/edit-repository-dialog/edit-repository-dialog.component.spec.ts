@@ -1,8 +1,6 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {
-    EditRepositoryDialogComponent
-} from "./edit-repository-dialog.component";
+import {EditRepositoryDialogComponent} from "./edit-repository-dialog.component";
 
 describe("EditRepositoryDialogComponent", () => {
     let component: EditRepositoryDialogComponent;
@@ -10,7 +8,7 @@ describe("EditRepositoryDialogComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ EditRepositoryDialogComponent ]
+            declarations: [EditRepositoryDialogComponent]
         })
             .compileComponents();
     });

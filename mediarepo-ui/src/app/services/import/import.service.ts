@@ -19,7 +19,7 @@ export class ImportService {
      * @returns {Promise<FileOsMetadata[]>}
      */
     public async resolvePathsToFiles(paths: string[]): Promise<FileOsMetadata[]> {
-        return MediarepoApi.resolvePathsToFiles({paths});
+        return MediarepoApi.resolvePathsToFiles({ paths });
     }
 
     /**
@@ -29,6 +29,6 @@ export class ImportService {
      * @returns {Promise<File>}
      */
     public async addLocalFile(metadata: FileOsMetadata, options: AddFileOptions): Promise<File> {
-        return MediarepoApi.addLocalFile({metadata, options}).then(mapNew(File));
+        return MediarepoApi.addLocalFile({ metadata, options }).then(mapNew(File));
     }
 }

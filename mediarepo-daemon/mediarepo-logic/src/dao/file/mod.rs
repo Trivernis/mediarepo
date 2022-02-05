@@ -1,10 +1,10 @@
 use sea_orm::prelude::*;
 use tokio::io::AsyncReadExt;
 
+use crate::dao_provider;
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{content_descriptor, file, file_metadata};
 
-use crate::dao::{DaoContext, DaoProvider};
 use crate::dto::{FileDto, FileMetadataDto, ThumbnailDto};
 
 pub mod add;
@@ -12,21 +12,9 @@ pub mod delete;
 pub mod find;
 pub mod update;
 
-pub struct FileDao {
-    ctx: DaoContext,
-}
-
-impl DaoProvider for FileDao {
-    fn dao_ctx(&self) -> DaoContext {
-        self.ctx.clone()
-    }
-}
+dao_provider!(FileDao);
 
 impl FileDao {
-    pub fn new(ctx: DaoContext) -> Self {
-        Self { ctx }
-    }
-
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn all(&self) -> RepoResult<Vec<FileDto>> {
         let files = file::Entity::find()

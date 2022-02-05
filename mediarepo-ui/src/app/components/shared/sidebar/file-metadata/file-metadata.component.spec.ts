@@ -8,7 +8,7 @@ describe("FileMetadataComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ FileMetadataComponent ]
+            declarations: [FileMetadataComponent]
         })
             .compileComponents();
     });

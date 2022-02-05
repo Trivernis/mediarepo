@@ -59,6 +59,16 @@ export class StateService {
         this.state.next(state);
     }
 
+    /**
+     * Sets the state of the frontend
+     * @returns {Promise<void>}
+     */
+    public async saveState(): Promise<void> {
+        if (this.repoService.selectedRepository.value) {
+            await MediarepoApi.setFrontendState({ state: this.state.value.serializeJson() });
+        }
+    }
+
     private subscribeToState(state: AppState) {
         state.tabs.subscribe(async tabs => {
             this.tabSubscriptions.forEach(s => s.unsubscribe());
@@ -70,22 +80,12 @@ export class StateService {
     private subscribeToTab(tab: TabState) {
         this.tabSubscriptions.push(tab.filters
             .subscribe(() => this.stateChange.next()));
-        this.tabSubscriptions.push(tab.sortKeys
+        this.tabSubscriptions.push(tab.sortingPreset
             .subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(
             tab.selectedCD.subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(
             tab.mode.subscribe(() => this.stateChange.next()));
         this.tabSubscriptions.push(tab.files.subscribe(() => this.stateChange.next()));
-    }
-
-    /**
-     * Sets the state of the frontend
-     * @returns {Promise<void>}
-     */
-    public async saveState(): Promise<void> {
-        if (this.repoService.selectedRepository.value) {
-            await MediarepoApi.setFrontendState({state: this.state.value.serializeJson()});
-        }
     }
 }

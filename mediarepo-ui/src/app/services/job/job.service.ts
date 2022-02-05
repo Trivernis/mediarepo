@@ -11,6 +11,6 @@ export class JobService {
     }
 
     public async runJob(jobType: JobType): Promise<void> {
-        return MediarepoApi.runJob({jobType});
+        return MediarepoApi.runJob({ jobType });
     }
 }

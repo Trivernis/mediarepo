@@ -291,10 +291,8 @@ impl FilesNamespace {
         let found_thumbnail = thumbnails.into_iter().find(|thumb| {
             let Dimensions { height, width } = thumb.size();
 
-            *height >= min_size.0
-                && *height <= max_size.0
-                && *width >= min_size.1
-                && *width <= max_size.1
+            (*height <= max_size.0 && *width <= max_size.1)
+                && (*width >= min_size.1 || *height >= min_size.0)
         });
 
         let thumbnail = if let Some(thumbnail) = found_thumbnail {

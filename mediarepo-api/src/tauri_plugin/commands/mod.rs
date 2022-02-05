@@ -5,6 +5,7 @@ pub use file::*;
 pub use job::*;
 pub use repo::*;
 pub use tag::*;
+pub use preset::*;
 
 use crate::tauri_plugin::state::{ApiState, AppState, BufferState};
 
@@ -13,6 +14,7 @@ pub mod file;
 pub mod job;
 pub mod repo;
 pub mod tag;
+pub mod preset;
 
 pub type ApiAccess<'a> = State<'a, ApiState>;
 pub type AppAccess<'a> = State<'a, AppState>;

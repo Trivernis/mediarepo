@@ -22,11 +22,11 @@ export class File {
         return this.basicData.status;
     }
 
-    public get mimeType(): string {
-        return this.basicData.mime_type;
-    }
-
     public set status(value: FileStatus) {
         this.basicData.status = value;
+    }
+
+    public get mimeType(): string {
+        return this.basicData.mime_type;
     }
 }

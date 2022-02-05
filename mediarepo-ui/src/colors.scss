@@ -6,6 +6,7 @@ $primary-lighter-10: lighten($primary, 10%);
 $primary-lighter-20: lighten($primary, 20%);
 $primary-lighter-30: lighten($primary, 30%);
 $primary-lighter-40: lighten($primary, 40%);
+$primary-lighter-50: lighten($primary, 50%);
 $primary-darker-10: darken($primary, 10%);
 $primary-darker-20: darken($primary, 20%);
 $primary-darker-30: darken($primary, 30%);
@@ -21,6 +22,8 @@ $text: #FFF;
 $text-darker-10: darken($text, 10%);
 
 $background: #424242;
+$background-lighter-05: lighten($background, 4%);
+$background-lighter-10: lighten($background, 10%);
 
 // specifics
 $tag-namespace: $accent-lighter-10;

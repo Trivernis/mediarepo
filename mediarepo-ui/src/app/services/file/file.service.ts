@@ -1,7 +1,7 @@
 import {Inject, Injectable} from "@angular/core";
 import {File} from "../../../api/models/File";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {SortKey} from "../../models/SortKey";
+import {SortKey} from "../../../api/models/SortKey";
 import {MediarepoApi} from "../../../api/Api";
 import {mapMany, mapNew} from "../../../api/models/adaptors";
 import {FileMetadata, FileStatus} from "../../../api/api-types/files";
@@ -26,7 +26,7 @@ export class FileService {
         return MediarepoApi.findFiles(
             {
                 filters: filters.getFilters(),
-                sortBy: sortBy.map(k => k.toBackendType())
+                sortBy: sortBy.map(k => k.rawData)
             })
             .then(mapMany(mapNew(File)));
     }

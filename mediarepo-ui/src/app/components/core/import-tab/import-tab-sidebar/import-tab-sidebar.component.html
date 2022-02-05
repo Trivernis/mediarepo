@@ -1,12 +1,13 @@
 <div class="import-tab-inner">
     <mat-tab-group headerPosition="below">
         <mat-tab label="Import">
-            <app-file-import (importFinished)="importFinished.emit($event)" (fileImported)="fileImported.emit($event)"></app-file-import>
+            <app-file-import (fileImported)="fileImported.emit($event)"
+                             (importFinished)="importFinished.emit($event)"></app-file-import>
         </mat-tab>
-        <mat-tab label="Edit Tags" *ngIf="selectedFiles.length > 0">
+        <mat-tab *ngIf="selectedFiles.length > 0" label="Edit Tags">
             <app-tag-edit [files]="selectedFiles"></app-tag-edit>
         </mat-tab>
-        <mat-tab label="File Metadata" *ngIf="selectedFiles.length === 1">
+        <mat-tab *ngIf="selectedFiles.length === 1" label="File Metadata">
             <app-file-metadata [file]="selectedFiles[0]"></app-file-metadata>
         </mat-tab>
     </mat-tab-group>
