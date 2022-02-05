@@ -28,7 +28,7 @@ impl PresetApi {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn all_sorting_presets(&self) -> ApiResult<Vec<SortingPreset>> {
         self.emit_and_get(
-            "sorting_presets",
+            "all_sorting_presets",
             (),
             Some(Duration::from_secs(1))
         )
