@@ -116,8 +116,8 @@ export class SortDialogComponent implements OnInit {
     }
 
     public selectPreset(presetId: number): void {
-        const preset = this.availablePresets.find(p => p.id == presetId);
-        
+        const preset = this.availablePresets.find(p => p.id == presetId) ?? this.emptyPreset;
+
         if (preset) {
             this.sortingPreset.setData(JSON.parse(JSON.stringify(preset.rawData)));
             this.previousId = preset.id;

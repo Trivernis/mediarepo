@@ -5,7 +5,7 @@
     <mat-form-field *ngIf="this.availablePresets.length > 0" class="preset-selection">
         <mat-label>Preset</mat-label>
         <mat-select (selectionChange)="this.selectPreset($event.value)" [value]="this.previousId">
-            <mat-option [value]="this.emptyPreset"></mat-option>
+            <mat-option [value]="-1"></mat-option>
             <mat-option *ngFor="let preset of this.availablePresets"
                         [matTooltipShowDelay]="1000"
                         [matTooltip]="preset.toString()"
