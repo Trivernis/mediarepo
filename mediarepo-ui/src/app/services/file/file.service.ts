@@ -26,7 +26,7 @@ export class FileService {
         return MediarepoApi.findFiles(
             {
                 filters: filters.getFilters(),
-                sortBy: sortBy.map(k => k.rawData())
+                sortBy: sortBy.map(k => k.rawData)
             })
             .then(mapMany(mapNew(File)));
     }

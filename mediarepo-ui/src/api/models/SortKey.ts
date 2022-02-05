@@ -69,13 +69,17 @@ export class SortKey {
         }
     }
 
+    public get rawData(): SortKeyData {
+        return this.data;
+    }
+
     public static fromValues(
         sortType: SortType,
         sortDirection: SortDirection,
         namespaceName: string | undefined
     ) {
         let data;
-        
+
         if (sortType === "Namespace") {
             data = {
                 Namespace: {
@@ -98,9 +102,5 @@ export class SortKey {
         } else {
             return `${this.sortType} ${this.sortDirection}`;
         }
-    }
-
-    public rawData(): SortKeyData {
-        return this.data;
     }
 }

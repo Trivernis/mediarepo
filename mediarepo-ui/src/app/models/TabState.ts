@@ -6,7 +6,7 @@ import {SortKey} from "../../api/models/SortKey";
 import {debounceTime} from "rxjs/operators";
 import {mapNew} from "../../api/models/adaptors";
 import {SearchFilters} from "../../api/models/SearchFilters";
-import {SortKeyData} from "../../api/api-types/files";
+import {SortingPreset} from "../../api/models/SortingPreset";
 
 export class TabState {
     public uuid: number;
@@ -17,12 +17,14 @@ export class TabState {
 
     public files = new BehaviorSubject<File[]>([]);
     public filters = new BehaviorSubject<SearchFilters>(new SearchFilters([]));
-    public sortKeys = new BehaviorSubject<SortKey[]>(
+    public sortingPreset = new BehaviorSubject<SortingPreset>(SortingPreset.fromValues(
+        -1,
         [SortKey.fromValues(
             "FileImportedTime",
             "Ascending",
             undefined
-        )]);
+        )]
+    ));
 
     private fileService: FileService;
 
@@ -37,7 +39,7 @@ export class TabState {
         if (this.category === TabCategory.Files) {
             this.filters.pipe(debounceTime(500))
                 .subscribe(async () => await this.findFiles());
-            this.sortKeys.pipe(debounceTime(100))
+            this.sortingPreset.pipe(debounceTime(100))
                 .subscribe(async () => await this.findFiles());
         }
     }
@@ -51,9 +53,9 @@ export class TabState {
             dto.category,
             fileService
         );
-        const sortKeys = dto.sortKeys.map((data: SortKeyData) => new SortKey(data));
+
         state.filters.next(new SearchFilters(dto.filters ?? []));
-        state.sortKeys.next(sortKeys);
+        state.sortingPreset.next(new SortingPreset(dto.sortingPreset));
         state.mode.next(dto.mode ?? "grid");
         state.selectedCD.next(dto.selectedFileHash);
         state.files.next((dto.files ?? []).map(mapNew(File)));
@@ -65,7 +67,7 @@ export class TabState {
         this.loading.next(true);
         const files = await this.fileService.findFiles(
             this.filters.value,
-            this.sortKeys.value
+            this.sortingPreset.value.sortKeys
         );
         this.files.next(files);
         this.loading.next(false);
@@ -75,8 +77,8 @@ export class TabState {
         this.filters.next(filters);
     }
 
-    public setSortKeys(keys: SortKey[]) {
-        this.sortKeys.next(keys);
+    public setSortingPreset(preset: SortingPreset) {
+        this.sortingPreset.next(preset);
     }
 
     public getDTO(): any {
@@ -84,7 +86,7 @@ export class TabState {
             uuid: this.uuid,
             category: this.category,
             filters: this.filters.value.getFilters(),
-            sortKeys: this.sortKeys.value.map(key => key.rawData()),
+            sortingPreset: this.sortingPreset.value.rawData,
             mode: this.mode.value,
             selectedFileHash: this.selectedCD.value,
             files: this.category === TabCategory.Import ? this.files.value.map(

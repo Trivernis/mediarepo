@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Sort Entries</h1>
 <div mat-dialog-content>
     <div (cdkDropListDropped)="this.onSortEntryDrop($event)" cdkDropList class="sort-input-list">
-        <div *ngFor="let sortKey of sortEntries" cdkDrag class="sort-input-row">
+        <div *ngFor="let sortKey of sortingPreset.sortKeys" cdkDrag class="sort-input-row">
             <div *cdkDragPlaceholder class="drag-placeholder"></div>
             <div cdkDragHandle class="drag-handle">
                 <ng-icon name="mat-drag-handle"></ng-icon>
@@ -21,14 +21,16 @@
             </mat-form-field>
             <mat-form-field *ngIf="sortKey.sortType === 'Namespace'">
                 <mat-label>Namespace Name</mat-label>
-                <input #namespaceInput (change)="sortKey.namespaceName = namespaceInput.value"
-                       [matAutocomplete]="namespaceAutocomplete"
-                       (keyup)="this.updateAutocompleteSuggestions(namespaceInput.value)"
+                <input #namespaceInput
+                       (change)="this.handlePresetChange(); sortKey.namespaceName = namespaceInput.value"
                        (focus)="this.updateAutocompleteSuggestions(namespaceInput.value)"
+                       (keyup)="this.updateAutocompleteSuggestions(namespaceInput.value)"
+                       [matAutocomplete]="namespaceAutocomplete"
                        [value]="sortKey.namespaceName ?? ''"
                        matInput
                        required>
-                <mat-autocomplete #namespaceAutocomplete (optionSelected)="sortKey.namespaceName = $event.option.value">
+                <mat-autocomplete #namespaceAutocomplete
+                                  (optionSelected)="this.handlePresetChange(); sortKey.namespaceName = $event.option.value">
                     <mat-option *ngFor="let namespace of suggestedNamespaces" [value]="namespace.name">
                         {{namespace.name}}
                     </mat-option>
@@ -37,16 +39,18 @@
             <div *ngIf="sortKey.sortType !== 'Namespace'" class="filler"></div>
             <mat-form-field>
                 <mat-label>Direction</mat-label>
-                <mat-select [(value)]="sortKey.sortDirection" required>
+                <mat-select (selectionChange)="this.handlePresetChange()" [(value)]="sortKey.sortDirection" required>
                     <mat-option value="Ascending">Ascending</mat-option>
                     <mat-option value="Descending">Descending</mat-option>
                 </mat-select>
             </mat-form-field>
-            <button (click)="addNewSortKey()" *ngIf="sortEntries.indexOf(sortKey) === sortEntries.length -1"
+            <button (click)="addNewSortKey()"
+                    *ngIf="sortingPreset.sortKeys.indexOf(sortKey) === sortingPreset.sortKeys.length - 1"
                     mat-flat-button>
                 <ng-icon name="mat-add"></ng-icon>
             </button>
-            <button (click)="removeSortKey(sortKey)" *ngIf="sortEntries.indexOf(sortKey) !== sortEntries.length -1"
+            <button (click)="removeSortKey(sortKey)"
+                    *ngIf="sortingPreset.sortKeys.indexOf(sortKey) !== sortingPreset.sortKeys.length -1"
                     mat-flat-button>
                 <ng-icon name="mat-remove"></ng-icon>
             </button>
