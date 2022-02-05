@@ -98,9 +98,13 @@ export class SortKey {
 
     public toString(): string {
         if (this.sortType == "Namespace") {
-            return `${this.sortType} '${this.namespaceName}' ${this.sortDirection}`;
+            return `${this.sortType} '${this.namespaceName}' ${this.getDirectionString()}`;
         } else {
-            return `${this.sortType} ${this.sortDirection}`;
+            return `${this.sortType} ${this.getDirectionString()}`;
         }
+    }
+
+    private getDirectionString(): string {
+        return this.sortDirection === "Ascending" ? "▲" : "▼";
     }
 }

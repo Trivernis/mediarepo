@@ -18,12 +18,17 @@ mat-form-field, .filler, .drag-handle {
 }
 
 .dialog-actions {
-    display: flex;
-    flex-direction: row-reverse;
     width: 100%;
+    display: block;
 
     button {
         margin-left: 1em;
+        float: right;
+    }
+
+    button.button-left {
+        float: left;
+        margin-right: 1em;
     }
 }
 
@@ -56,4 +61,10 @@ mat-form-field, .filler, .drag-handle {
     width: 100%;
     background-color: darken(dimgrey, 20);
     border-radius: 1em;
+}
+
+.preset-selection {
+    width: calc(100% - 2em);
+    display: block;
+    font-size: 1em;
 }

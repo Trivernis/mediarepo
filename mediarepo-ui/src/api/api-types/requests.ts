@@ -110,7 +110,7 @@ export type RunJobRequest = {
 };
 
 export type AddSortingPresetRequest = {
-    sort_keys: SortKeyData[]
+    sortKeys: SortKeyData[]
 };
 
 export type DeleteSortingPresetRequest = {

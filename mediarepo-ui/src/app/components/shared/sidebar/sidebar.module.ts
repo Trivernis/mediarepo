@@ -52,6 +52,7 @@ import {GetTagQueryPipe} from "./file-search/filter-pipes/get-tag-query.pipe";
 import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-query.pipe";
 import {SortButtonComponent} from "./file-search/sort-button/sort-button.component";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import { SortPresetItemComponent } from './file-search/sort-preset-item/sort-preset-item.component';
 
 
 @NgModule({
@@ -71,6 +72,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
         GetTagQueryPipe,
         GetPropertyQueryPipe,
         SortButtonComponent,
+        SortPresetItemComponent,
     ],
     exports: [
         TagEditComponent,

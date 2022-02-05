@@ -4,11 +4,5 @@
         class="sort-button"
         mat-flat-button>
     <i>Sort: </i>
-    <span *ngFor="let key of this.selectedPreset.sortKeys" class="sort-key">
-        <span class="sort-key-type">{{key.sortType}}</span>
-        <span *ngIf="key.sortType === 'Namespace'" class="sort-key-namespace"> {{key.namespaceName}}</span>
-        <ng-icon *ngIf="key.sortDirection === 'Ascending'" class="sort-key-direction" name="matExpandLess"></ng-icon>
-        <ng-icon *ngIf="key.sortDirection === 'Descending'" class="sort-key-direction" name="matExpandMore"></ng-icon>
-        <span class="key-divider">| </span>
-    </span>
+    <app-sort-preset-item [preset]="this.selectedPreset"></app-sort-preset-item>
 </button>

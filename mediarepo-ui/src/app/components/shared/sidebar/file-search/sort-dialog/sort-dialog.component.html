@@ -1,5 +1,19 @@
-<h1 mat-dialog-title>Sort Entries</h1>
+<h1 mat-dialog-title>
+    Sort Entries
+</h1>
 <div mat-dialog-content>
+    <mat-form-field *ngIf="this.availablePresets.length > 0" class="preset-selection">
+        <mat-label>Preset</mat-label>
+        <mat-select (selectionChange)="this.selectPreset($event.value)" [value]="this.previousId">
+            <mat-option [value]="this.emptyPreset"></mat-option>
+            <mat-option *ngFor="let preset of this.availablePresets"
+                        [matTooltipShowDelay]="1000"
+                        [matTooltip]="preset.toString()"
+                        [value]="preset.id">
+                {{preset.toString()}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <div (cdkDropListDropped)="this.onSortEntryDrop($event)" cdkDropList class="sort-input-list">
         <div *ngFor="let sortKey of sortingPreset.sortKeys" cdkDrag class="sort-input-row">
             <div *cdkDragPlaceholder class="drag-placeholder"></div>
@@ -58,6 +72,22 @@
     </div>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
-    <button (click)="confirmSort()" color="primary" mat-flat-button>Sort</button>
+    <button (click)="deletePreset()" *ngIf="this.previousId >= 0" class="button-left" color="warn" mat-stroked-button>
+        Delete
+    </button>
+    <button (click)="saveNewPreset()"
+            *ngIf="this.sortingPreset.sortKeys.length > 0"
+            class="button-left"
+            color="accent"
+            mat-stroked-button>Save new
+    </button>
+    <button (click)="savePreset()"
+            *ngIf="this.sortingPreset.sortKeys.length > 0 && this.previousId >= 0"
+            class="button-left"
+            color="accent"
+            mat-flat-button>Save
+    </button>
+
     <button (click)="cancelSort()" color="accent" mat-stroked-button>Cancel</button>
+    <button (click)="confirmSort()" color="primary" mat-flat-button>Sort</button>
 </div>

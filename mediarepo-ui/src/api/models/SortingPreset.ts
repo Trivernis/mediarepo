@@ -37,6 +37,11 @@ export class SortingPreset {
         return preset;
     }
 
+    public setData(data: SortingPresetData) {
+        this._id = data.id;
+        this.keys = data.keys.map(mapNew(SortKey));
+    }
+
     public toString(): string {
         return this.sortKeys.join(", ");
     }
