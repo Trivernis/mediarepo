@@ -27,6 +27,16 @@ impl SortingPresetDao {
 
         Ok(presets)
     }
+
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn delete(&self, id: i32) -> RepoResult<()> {
+        sorting_preset::Entity::delete_many()
+            .filter(sorting_preset::Column::Id.eq(id))
+            .exec(&self.ctx.db)
+            .await?;
+
+        Ok(())
+    }
 }
 
 fn map_sorting_preset_dto(
