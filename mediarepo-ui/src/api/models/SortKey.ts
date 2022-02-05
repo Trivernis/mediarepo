@@ -30,9 +30,7 @@ export class SortKey {
             };
         } else {
             this.data = {
-                [value]: {
-                    direction: this.sortDirection
-                }
+                [value]: this.sortDirection
             } as SortKeyData;
         }
     }

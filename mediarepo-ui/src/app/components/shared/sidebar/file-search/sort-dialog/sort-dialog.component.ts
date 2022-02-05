@@ -20,7 +20,9 @@ export class SortDialogComponent implements OnInit {
     public sortingPreset: SortingPreset = SortingPreset.fromValues(-1, []);
     public availablePresets: SortingPreset[] = [];
     public suggestedNamespaces: Namespace[] = [];
-    public emptyPreset = SortingPreset.fromValues(-1, []);
+    public emptyPreset = SortingPreset.fromValues(-1, [
+        SortKey.fromValues("FileImportedTime", "Ascending", undefined)
+    ]);
 
     public previousId: number = -1;
     private namespaces: Namespace[] = [];
