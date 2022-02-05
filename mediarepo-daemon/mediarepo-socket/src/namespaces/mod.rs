@@ -3,6 +3,7 @@ use mediarepo_core::bromine::{namespace, namespace::Namespace, IPCBuilder};
 
 pub mod files;
 pub mod jobs;
+pub mod presets;
 pub mod repo;
 pub mod tags;
 
@@ -12,4 +13,5 @@ pub fn build_namespaces<L: AsyncStreamProtocolListener>(builder: IPCBuilder<L>) 
         .add_namespace(namespace!(tags::TagsNamespace))
         .add_namespace(namespace!(repo::RepoNamespace))
         .add_namespace(namespace!(jobs::JobsNamespace))
+        .add_namespace(namespace!(presets::PresetsNamespace))
 }

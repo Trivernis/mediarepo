@@ -7,17 +7,17 @@ workspace = ".."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "^0.4.19"
-tracing = "^0.1.29"
+chrono = "0.4.19"
+tracing = "0.1.30"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
 
 [dependencies.sqlx]
-version = "^0.5.10"
+version = "0.5.10"
 features = ["migrate"]
 
 [dependencies.sea-orm]
-version = "^0.5.0"
+version = "0.5.0"
 features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"]
 default-features = false

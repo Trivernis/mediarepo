@@ -23,6 +23,10 @@ impl SortingPresetDto {
     pub fn keys(&self) -> &Vec<SortKeyDto> {
         &self.keys
     }
+
+    pub fn into_keys(self) -> Vec<SortKeyDto> {
+        self.keys
+    }
 }
 
 #[derive(Clone, Debug)]
