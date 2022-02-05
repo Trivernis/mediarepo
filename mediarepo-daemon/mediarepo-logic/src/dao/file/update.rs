@@ -9,7 +9,7 @@ use sea_orm::{ConnectionTrait, NotSet};
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::thumbnail_store::Dimensions;
 use mediarepo_core::thumbnailer;
-use mediarepo_core::thumbnailer::{ThumbnailSize};
+use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_database::entities::{content_descriptor, file, file_metadata};
 
 use crate::dao::file::FileDao;
@@ -69,7 +69,7 @@ impl FileDao {
         let mut dtos = Vec::new();
 
         for thumbnail in thumbnails {
-            let mut buf = Vec::new();
+            let mut buf = Cursor::new(Vec::new());
             let size = thumbnail.size();
             let size = Dimensions {
                 height: size.1,
@@ -80,7 +80,7 @@ impl FileDao {
             let path = self
                 .ctx
                 .thumbnail_storage
-                .add_thumbnail(file.encoded_cd(), size.clone(), &buf)
+                .add_thumbnail(file.encoded_cd(), size.clone(), &buf.into_inner())
                 .await?;
             dtos.push(ThumbnailDto::new(
                 path,

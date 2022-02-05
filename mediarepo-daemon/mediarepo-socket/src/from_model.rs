@@ -1,9 +1,13 @@
 use mediarepo_core::mediarepo_api::types::files::{
     FileBasicDataResponse, FileMetadataResponse, FileStatus, ThumbnailMetadataResponse,
 };
+use mediarepo_core::mediarepo_api::types::filtering::{
+    SortDirection, SortKey, SortNamespace, SortingPreset,
+};
 use mediarepo_core::mediarepo_api::types::tags::{NamespaceResponse, TagResponse};
 use mediarepo_logic::dto::{
-    FileDto, FileMetadataDto, FileStatus as FileStatusModel, NamespaceDto, TagDto, ThumbnailDto,
+    FileDto, FileMetadataDto, FileStatus as FileStatusModel, KeyType, NamespaceDto, SortKeyDto,
+    SortingPresetDto, TagDto, ThumbnailDto,
 };
 
 pub trait FromModel<M> {
@@ -71,5 +75,44 @@ impl FromModel<NamespaceDto> for NamespaceResponse {
             id: model.id(),
             name: model.name().to_owned(),
         }
+    }
+}
+
+impl FromModel<SortingPresetDto> for SortingPreset {
+    fn from_model(model: SortingPresetDto) -> Self {
+        SortingPreset {
+            id: model.id(),
+            keys: model
+                .into_keys()
+                .into_iter()
+                .filter_map(map_sort_dto_to_key)
+                .collect(),
+        }
+    }
+}
+
+fn map_sort_dto_to_key(dto: SortKeyDto) -> Option<SortKey> {
+    let direction = map_direction(dto.ascending());
+
+    match dto.key_type()? {
+        KeyType::Namespace => Some(SortKey::Namespace(SortNamespace {
+            name: dto.value()?.to_owned(),
+            direction,
+        })),
+        KeyType::FileName => Some(SortKey::FileName(direction)),
+        KeyType::FileSize => Some(SortKey::FileSize(direction)),
+        KeyType::FileImportedTime => Some(SortKey::FileImportedTime(direction)),
+        KeyType::FileCreatedTime => Some(SortKey::FileCreatedTime(direction)),
+        KeyType::FileChangeTime => Some(SortKey::FileChangeTime(direction)),
+        KeyType::FileType => Some(SortKey::FileType(direction)),
+        KeyType::NumTags => Some(SortKey::NumTags(direction)),
+    }
+}
+
+fn map_direction(ascending: bool) -> SortDirection {
+    if ascending {
+        SortDirection::Ascending
+    } else {
+        SortDirection::Descending
     }
 }

@@ -4,7 +4,7 @@ default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "m
 
 [package]
 name = "mediarepo-daemon"
-version = "0.13.3"
+version = "0.13.4"
 edition = "2018"
 license = "gpl-3"
 repository = "https://github.com/Trivernis/mediarepo-daemon"
@@ -16,17 +16,17 @@ name = "mediarepo-daemon"
 path = "src/main.rs"
 
 [dependencies]
-tracing = "^0.1.29"
-toml = "^0.5.8"
-structopt ="^0.3.25"
-glob = "^0.3.0"
-tracing-flame = "^0.2.0"
-tracing-appender = "^0.2.0"
-tracing-log = "^0.1.2"
-rolling-file = "^0.1.0"
-num-integer = "^0.1.44"
-console-subscriber = "^0.1.0"
-log = "^0.4.14"
+tracing = "0.1.30"
+toml = "0.5.8"
+structopt = "0.3.26"
+glob = "0.3.0"
+tracing-flame = "0.2.0"
+tracing-appender = "0.2.0"
+tracing-log = "0.1.2"
+rolling-file = "0.1.0"
+num-integer = "0.1.44"
+console-subscriber = "0.1.1"
+log = "0.4.14"
 
 [dependencies.mediarepo-core]
 path = "./mediarepo-core"
@@ -38,11 +38,11 @@ path = "mediarepo-logic"
 path = "./mediarepo-socket"
 
 [dependencies.tokio]
-version = "1.15.0"
+version = "1.16.1"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]
-version="0.3.0"
+version= "0.3.8"
 features = ["env-filter", "ansi", "json"]
 
 [features]

@@ -27,7 +27,8 @@ impl ThumbnailStore {
 
     /// Adds a thumbnail to be stored for a parent id
     /// if the thumbnail already exists it will be recreated without warning
-    pub async fn add_thumbnail<S: ToString>(
+    #[tracing::instrument(level = "debug", skip(self, data))]
+    pub async fn add_thumbnail<S: ToString + Debug>(
         &self,
         parent_id: S,
         size: Dimensions,
@@ -53,7 +54,8 @@ impl ThumbnailStore {
     }
 
     /// Returns all thumbnails for a parent id
-    pub async fn get_thumbnails<S: ToString>(
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn get_thumbnails<S: ToString + Debug>(
         &self,
         parent_id: S,
     ) -> Result<Vec<(Dimensions, PathBuf)>> {

@@ -1,25 +1,10 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewChild
-} from "@angular/core";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from "@angular/core";
 import {Tag} from "../../../../../api/models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
 import {File} from "../../../../../api/models/File";
-import {
-    FileSearchComponent
-} from "../../../shared/sidebar/file-search/file-search.component";
-import {
-    RepositoryService
-} from "../../../../services/repository/repository.service";
-import {
-    TagEditComponent
-} from "../../../shared/sidebar/tag-edit/tag-edit.component";
+import {FileSearchComponent} from "../../../shared/sidebar/file-search/file-search.component";
+import {RepositoryService} from "../../../../services/repository/repository.service";
+import {TagEditComponent} from "../../../shared/sidebar/tag-edit/tag-edit.component";
 import {TabState} from "../../../../models/TabState";
 
 @Component({

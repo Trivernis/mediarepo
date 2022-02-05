@@ -4,7 +4,8 @@
 <div mat-dialog-content>
     No daemon could be found on the system. Please download and install a daemon executable.
     <br>
-    <button class="download-button" mat-flat-button color="primary" (click)="this.onClickDownloadDaemon()">Download</button>
+    <button (click)="this.onClickDownloadDaemon()" class="download-button" color="primary" mat-flat-button>Download
+    </button>
 </div>
 <div class="download-dialog-actions" mat-dialog-actions>
     <button (click)="closeDialog(false)" color="accent" mat-stroked-button>Cancel</button>

@@ -7,9 +7,11 @@ import {
     MatAddCircle,
     MatChangeCircle,
     MatDeleteSweep,
+    MatExpandLess,
+    MatExpandMore,
     MatFilterAlt,
     MatRemove,
-    MatRemoveCircle
+    MatRemoveCircle,
 } from "@ng-icons/material-icons";
 import {MatRippleModule} from "@angular/material/core";
 import {MatButtonModule} from "@angular/material/button";
@@ -48,6 +50,9 @@ import {
 } from "./file-search/filter-dialog/filter-expression-list-item/filter-expression-list-item.component";
 import {GetTagQueryPipe} from "./file-search/filter-pipes/get-tag-query.pipe";
 import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-query.pipe";
+import {SortButtonComponent} from "./file-search/sort-button/sort-button.component";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {SortPresetItemComponent} from "./file-search/sort-preset-item/sort-preset-item.component";
 
 
 @NgModule({
@@ -66,6 +71,8 @@ import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-quer
         FilterExpressionListItemComponent,
         GetTagQueryPipe,
         GetPropertyQueryPipe,
+        SortButtonComponent,
+        SortPresetItemComponent,
     ],
     exports: [
         TagEditComponent,
@@ -81,7 +88,9 @@ import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-quer
             MatAddCircle,
             MatRemoveCircle,
             MatDeleteSweep,
-            MatFilterAlt
+            MatFilterAlt,
+            MatExpandMore,
+            MatExpandLess,
         }),
         MatRippleModule,
         MatButtonModule,
@@ -102,6 +111,7 @@ import {GetPropertyQueryPipe} from "./file-search/filter-pipes/get-property-quer
         MatMenuModule,
         ReactiveFormsModule,
         MatAutocompleteModule,
+        MatTooltipModule,
     ]
 })
 export class SidebarModule {

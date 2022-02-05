@@ -9,9 +9,11 @@ import {shell} from "@tauri-apps/api";
 })
 export class DownloadDaemonDialogComponent {
 
-    constructor(public dialogRef: MatDialogRef<DownloadDaemonDialogComponent>,
-                @Inject(
-                    MAT_DIALOG_DATA) data: any) {
+    constructor(
+        public dialogRef: MatDialogRef<DownloadDaemonDialogComponent>,
+        @Inject(
+            MAT_DIALOG_DATA) data: any
+    ) {
     }
 
 

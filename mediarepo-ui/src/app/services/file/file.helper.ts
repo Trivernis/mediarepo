@@ -19,7 +19,7 @@ export class FileHelper {
             filters: [{
                 name: file.mimeType,
                 extensions: [extension ?? "*"]
-            }, {name: "All", extensions: ["*"]}]
+            }, { name: "All", extensions: ["*"] }]
         });
     }
 

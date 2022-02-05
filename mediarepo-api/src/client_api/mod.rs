@@ -4,6 +4,7 @@ pub mod job;
 pub mod protocol;
 pub mod repo;
 pub mod tag;
+pub mod preset;
 
 use crate::client_api::error::{ApiError, ApiResult};
 use crate::client_api::file::FileApi;
@@ -15,6 +16,7 @@ use async_trait::async_trait;
 use bromine::ipc::stream_emitter::EmitMetadata;
 use bromine::prelude::*;
 use tokio::time::Duration;
+use crate::client_api::preset::PresetApi;
 
 #[async_trait]
 pub trait IPCApi {
@@ -48,6 +50,7 @@ pub struct ApiClient {
     pub tag: TagApi,
     pub repo: RepoApi,
     pub job: JobApi,
+    pub preset: PresetApi,
 }
 
 impl Clone for ApiClient {
@@ -58,6 +61,7 @@ impl Clone for ApiClient {
             tag: self.tag.clone(),
             repo: self.repo.clone(),
             job: self.job.clone(),
+            preset: self.preset.clone(),
         }
     }
 }
@@ -70,6 +74,7 @@ impl ApiClient {
             tag: TagApi::new(ctx.clone()),
             repo: RepoApi::new(ctx.clone()),
             job: JobApi::new(ctx.clone()),
+            preset: PresetApi::new(ctx.clone()),
             ctx,
         }
     }

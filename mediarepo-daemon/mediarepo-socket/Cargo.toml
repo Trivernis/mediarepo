@@ -7,10 +7,10 @@ workspace = ".."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "^1.0.130"
-tracing = "^0.1.29"
-compare = "^0.1.0"
-port_check = "^0.1.5"
+serde = "1.0.136"
+tracing = "0.1.30"
+compare = "0.1.0"
+port_check = "0.1.5"
 rayon = "1.5.1"
 
 [dependencies.mediarepo-core]
@@ -23,11 +23,11 @@ path = "../mediarepo-database"
 path = "../mediarepo-logic"
 
 [dependencies.tokio]
-version = "^1.15.0"
+version = "1.16.1"
 features = ["net"]
 
 [dependencies.chrono]
-version = "^0.4.19"
+version = "0.4.19"
 features = ["serde"]
 
 [dependencies.tracing-futures]

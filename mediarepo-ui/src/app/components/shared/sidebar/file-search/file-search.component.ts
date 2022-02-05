@@ -9,7 +9,6 @@ import {
     Output,
     ViewChild
 } from "@angular/core";
-import {SortKey} from "../../../../models/SortKey";
 import {MatDialog} from "@angular/material/dialog";
 import {SortDialogComponent} from "./sort-dialog/sort-dialog.component";
 import {LoggingService} from "../../../../services/logging/logging.service";
@@ -23,6 +22,7 @@ import {FileStatus, FilterExpression,} from "../../../../../api/api-types/files"
 import {filterExpressionToString} from "../../../../utils/filter-utils";
 import {MatCheckboxChange} from "@angular/material/checkbox";
 import * as deepEqual from "fast-deep-equal";
+import {SortingPreset} from "../../../../../api/models/SortingPreset";
 
 
 @Component({
@@ -32,7 +32,7 @@ import * as deepEqual from "fast-deep-equal";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileSearchComponent implements AfterViewChecked, OnInit {
-    public sortExpression: SortKey[] = [];
+    public sortingPreset: SortingPreset = new SortingPreset({ id: -1, keys: [] });
     public filters: SearchFilters = new SearchFilters([]);
 
     @Input() availableTags: Tag[] = [];
@@ -68,7 +68,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             this.filters = f;
             this.assignDisplayedFilters();
         });
-        this.state.sortKeys.subscribe(s => this.sortExpression = s);
+        this.state.sortingPreset.subscribe(s => this.sortingPreset = s);
         this.applyStatusFromFilters();
         this.needsScroll = true;
         this.assignDisplayedFilters();
@@ -127,22 +127,18 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     }
 
     public openSortDialog() {
-        const sortEntries = this.sortExpression.map(
-            key => JSON.parse(JSON.stringify(key))).map(
-            key => new SortKey(key.sortType, key.sortDirection,
-                key.namespaceName
-            ));
+        const sortingPreset = new SortingPreset(JSON.parse(JSON.stringify(this.sortingPreset.rawData)));
         const openedDialog = this.dialog.open(SortDialogComponent, {
             minWidth: "40vw",
             data: {
-                sortEntries,
+                sortingPreset,
             },
             disableClose: true,
         });
-        openedDialog.afterClosed().subscribe(async (sortExpression) => {
-            if (sortExpression) {
-                this.sortExpression = sortExpression;
-                this.state.setSortKeys(this.sortExpression);
+        openedDialog.afterClosed().subscribe(async (sortingPreset) => {
+            if (sortingPreset) {
+                this.sortingPreset = sortingPreset;
+                this.state.setSortingPreset(this.sortingPreset);
             }
         });
     }

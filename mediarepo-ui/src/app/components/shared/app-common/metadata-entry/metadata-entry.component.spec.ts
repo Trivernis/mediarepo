@@ -8,7 +8,7 @@ describe("MetadataEntryComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ MetadataEntryComponent ]
+            declarations: [MetadataEntryComponent]
         })
             .compileComponents();
     });

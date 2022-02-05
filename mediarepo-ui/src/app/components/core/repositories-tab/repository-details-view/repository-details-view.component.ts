@@ -1,21 +1,10 @@
-import {
-    Component,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges
-} from "@angular/core";
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from "@angular/core";
 import {Repository} from "../../../../../api/models/Repository";
-import {
-    RepositoryService
-} from "../../../../services/repository/repository.service";
+import {RepositoryService} from "../../../../services/repository/repository.service";
 import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
 import {BehaviorSubject} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
-import {
-    BusyDialogComponent
-} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
+import {BusyDialogComponent} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
 
 @Component({
     selector: "app-repository-details-view",
@@ -26,12 +15,11 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
     @Input() repository!: Repository;
 
     public metadata?: RepositoryMetadata;
-    private refreshMetadataInterval?: number;
-
     public totalSize = new BehaviorSubject<string | undefined>(undefined);
     public fileFolderSize = new BehaviorSubject<string | undefined>(undefined);
     public thumbFolderSize = new BehaviorSubject<string | undefined>(undefined);
     public databaseFileSize = new BehaviorSubject<string | undefined>(undefined);
+    private refreshMetadataInterval?: number;
 
     constructor(private repoService: RepositoryService, public dialog: MatDialog) {
     }

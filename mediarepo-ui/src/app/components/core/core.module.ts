@@ -1,17 +1,11 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {CoreComponent} from "./core.component";
-import {
-    RepositoriesTabComponent
-} from "./repositories-tab/repositories-tab.component";
+import {RepositoriesTabComponent} from "./repositories-tab/repositories-tab.component";
 import {FilesTabComponent} from "./files-tab/files-tab.component";
-import {
-    FilesTabSidebarComponent
-} from "./files-tab/files-tab-sidebar/files-tab-sidebar.component";
+import {FilesTabSidebarComponent} from "./files-tab/files-tab-sidebar/files-tab-sidebar.component";
 import {ImportTabComponent} from "./import-tab/import-tab.component";
-import {
-    ImportTabSidebarComponent
-} from "./import-tab/import-tab-sidebar/import-tab-sidebar.component";
+import {ImportTabSidebarComponent} from "./import-tab/import-tab-sidebar/import-tab-sidebar.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
@@ -30,9 +24,7 @@ import {SidebarModule} from "../shared/sidebar/sidebar.module";
 import {FileModule} from "../shared/file/file.module";
 import {AppCommonModule} from "../shared/app-common/app-common.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {
-    RepositoryCardComponent
-} from "./repositories-tab/repository-card/repository-card.component";
+import {RepositoryCardComponent} from "./repositories-tab/repository-card/repository-card.component";
 import {MatCardModule} from "@angular/material/card";
 import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
@@ -42,9 +34,7 @@ import {TagModule} from "../shared/tag/tag.module";
 import {
     DownloadDaemonDialogComponent
 } from "./repositories-tab/download-daemon-dialog/download-daemon-dialog.component";
-import {
-    RepositoryModule
-} from "../shared/repository/repository/repository.module";
+import {RepositoryModule} from "../shared/repository/repository/repository.module";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {
     RepositoryDetailsViewComponent
@@ -76,7 +66,7 @@ import {
         MatProgressBarModule,
         MatCheckboxModule,
         ScrollingModule,
-        NgIconsModule.withIcons({...materialIcons}),
+        NgIconsModule.withIcons({ ...materialIcons }),
         FlexModule,
         MatButtonModule,
         MatMenuModule,

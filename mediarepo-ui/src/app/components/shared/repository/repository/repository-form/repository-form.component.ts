@@ -1,15 +1,7 @@
 import {Component, Input, OnInit, Output} from "@angular/core";
-import {
-    AbstractControl,
-    FormControl,
-    FormGroup,
-    ValidationErrors,
-    Validators
-} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {Repository} from "../../../../../../api/models/Repository";
-import {
-    RepositoryService
-} from "../../../../../services/repository/repository.service";
+import {RepositoryService} from "../../../../../services/repository/repository.service";
 import {dialog} from "@tauri-apps/api";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -101,7 +93,7 @@ export class RepositoryFormComponent implements OnInit {
         const value = control?.value;
 
         if (this.validateNameDuplicate && this.repositories.find(r => r.name === value)) {
-            control?.setErrors({nameAlreadyExists: value});
+            control?.setErrors({ nameAlreadyExists: value });
         }
     }
 
@@ -110,7 +102,7 @@ export class RepositoryFormComponent implements OnInit {
             "repositoryType")?.value ?? "local";
 
         if (repositoryType === "local") {
-            return control.value.length > 0 ? null : {valueRequired: control.value};
+            return control.value.length > 0 ? null : { valueRequired: control.value };
         }
         return null;
     }
@@ -121,7 +113,7 @@ export class RepositoryFormComponent implements OnInit {
 
         if (repositoryType === "remote") {
             const match = /(\d+\.){3}\d+:\d+|\S+:\d+/.test(control.value);
-            return match ? null : {invalidAddress: control.value};
+            return match ? null : { invalidAddress: control.value };
         }
 
         return null;

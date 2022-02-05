@@ -8,7 +8,7 @@ describe("RepositoryFormComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ RepositoryFormComponent ]
+            declarations: [RepositoryFormComponent]
         })
             .compileComponents();
     });

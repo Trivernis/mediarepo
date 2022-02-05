@@ -1,8 +1,11 @@
 <h1 mat-dialog-title>Edit {{this.selectedRepository.name}}</h1>
 <div mat-dialog-content>
-    <app-repository-form #repoForm [name]="selectedRepository.name" [address]="selectedRepository.address ?? ''"
+    <app-repository-form #repoForm
+                         [address]="selectedRepository.address ?? ''"
+                         [name]="selectedRepository.name"
+                         [path]="selectedRepository.path ?? ''"
                          [repositoryType]="selectedRepository.local? 'local' : 'remote'"
-                         [path]="selectedRepository.path ?? ''" [validateNameDuplicate]="false"></app-repository-form>
+                         [validateNameDuplicate]="false"></app-repository-form>
 </div>
 <div class="dialog-buttons" mat-dialog-actions>
     <button (click)="closeDialog()" color="accent" mat-stroked-button>Cancel</button>

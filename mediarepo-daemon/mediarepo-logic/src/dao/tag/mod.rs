@@ -10,29 +10,18 @@ use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_database::entities::{content_descriptor, content_descriptor_tag, namespace, tag};
 
 use crate::dao::tag::by_name::TagByNameQuery;
-use crate::dao::{DaoContext, DaoProvider};
+use crate::dao_provider;
 use crate::dto::{NamespaceDto, TagDto};
 
 pub mod add;
 pub mod all_for_cds_map;
 pub mod by_name;
+pub mod cdids_with_namespaced_tags;
 pub mod mappings;
 
-pub struct TagDao {
-    ctx: DaoContext,
-}
-
-impl DaoProvider for TagDao {
-    fn dao_ctx(&self) -> DaoContext {
-        self.ctx.clone()
-    }
-}
+dao_provider!(TagDao);
 
 impl TagDao {
-    pub fn new(ctx: DaoContext) -> Self {
-        Self { ctx }
-    }
-
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn all(&self) -> RepoResult<Vec<TagDto>> {
         let tags = tag::Entity::find()

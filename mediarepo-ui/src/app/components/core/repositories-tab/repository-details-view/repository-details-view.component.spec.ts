@@ -1,8 +1,6 @@
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import {
-    RepositoryDetailsViewComponent
-} from "./repository-details-view.component";
+import {RepositoryDetailsViewComponent} from "./repository-details-view.component";
 
 describe("RepositoryDetailsViewComponent", () => {
     let component: RepositoryDetailsViewComponent;
@@ -10,7 +8,7 @@ describe("RepositoryDetailsViewComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ RepositoryDetailsViewComponent ]
+            declarations: [RepositoryDetailsViewComponent]
         })
             .compileComponents();
     });
