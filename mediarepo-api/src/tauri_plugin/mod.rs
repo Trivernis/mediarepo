@@ -70,7 +70,10 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 run_job,
                 update_file_status,
                 delete_file,
-                get_file_tag_map
+                get_file_tag_map,
+                all_sorting_presets,
+                add_sorting_preset,
+                delete_sorting_preset
             ]),
         }
     }

@@ -71,3 +71,9 @@ pub enum SortDirection {
 }
 
 impl Eq for SortDirection {}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SortingPreset {
+    pub id: i32,
+    pub keys: Vec<SortKey>,
+}
