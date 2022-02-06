@@ -13,8 +13,8 @@ use crate::client_api::repo::RepoApi;
 use crate::client_api::tag::TagApi;
 use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
 use async_trait::async_trait;
-use bromine::ipc::stream_emitter::EmitMetadata;
 use bromine::prelude::*;
+use bromine::prelude::emit_metadata::EmitMetadata;
 use tokio::time::Duration;
 use crate::client_api::preset::PresetApi;
 
@@ -84,12 +84,14 @@ impl ApiClient {
     pub async fn connect<L: AsyncStreamProtocolListener>(
         address: L::AddressType,
     ) -> ApiResult<Self> {
+        tracing::debug!("Connecting to {:?}", address);
         let ctx = IPCBuilder::<L>::new()
             .address(address)
             .timeout(Duration::from_secs(10))
             .build_pooled_client(8)
             .await?;
         let client = Self::new(ctx);
+        tracing::debug!("Retrieving info on daemon version...");
         let info = client.info().await?;
         let server_api_version = info.api_version();
 
@@ -113,6 +115,8 @@ impl ApiClient {
     pub async fn info(&self) -> ApiResult<InfoResponse> {
         let ctx = self.ctx.acquire();
         let res = ctx.emit("info", ()).await_reply().await?;
+        tracing::trace!("Got info event {:?}", res);
+
         Ok(res.payload::<InfoResponse>()?)
     }
 

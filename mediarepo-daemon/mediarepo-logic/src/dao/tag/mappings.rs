@@ -1,6 +1,6 @@
-use sea_orm::{ConnectionTrait, DatabaseTransaction};
-use sea_orm::ActiveValue::Set;
 use sea_orm::prelude::*;
+use sea_orm::ActiveValue::Set;
+use sea_orm::{DatabaseTransaction, TransactionTrait};
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor_tag;

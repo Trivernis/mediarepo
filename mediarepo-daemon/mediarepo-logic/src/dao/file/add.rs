@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, ConnectionTrait, DatabaseTransaction};
+use sea_orm::{ActiveModelTrait, DatabaseTransaction, TransactionTrait};
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{content_descriptor, file, file_metadata};

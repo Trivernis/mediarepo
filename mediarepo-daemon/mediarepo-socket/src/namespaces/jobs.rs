@@ -23,7 +23,7 @@ impl NamespaceProvider for JobsNamespace {
 
 impl JobsNamespace {
     #[tracing::instrument(skip_all)]
-    pub async fn run_job(ctx: &Context, event: Event) -> IPCResult<()> {
+    pub async fn run_job(ctx: &Context, event: Event) -> IPCResult<Response> {
         let run_request = event.payload::<RunJobRequest>()?;
         let job_dao = get_repo_from_context(ctx).await.job();
 
@@ -34,9 +34,7 @@ impl JobsNamespace {
             JobType::Vacuum => job_dao.vacuum().await?,
         }
 
-        ctx.emit_to(Self::name(), "run_job", ()).await?;
-
-        Ok(())
+        Ok(Response::empty())
     }
 }
 

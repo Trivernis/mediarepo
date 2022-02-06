@@ -27,14 +27,17 @@ impl JobApi {
     /// Runs a job of the given type and returns when it has finished
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn run_job(&self, job_type: JobType) -> ApiResult<()> {
-        self.emit_and_get(
+        self.emit(
             "run_job",
             RunJobRequest {
                 job_type,
                 sync: true,
             },
-            Some(Duration::from_secs(3600)),
         )
-        .await
+        .await_reply()
+        .with_timeout(Duration::from_secs(3600))
+        .await?;
+
+        Ok(())
     }
 }

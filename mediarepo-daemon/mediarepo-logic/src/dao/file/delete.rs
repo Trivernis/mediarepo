@@ -1,12 +1,12 @@
-use sea_orm::ConnectionTrait;
 use sea_orm::prelude::*;
+use sea_orm::TransactionTrait;
 
-use mediarepo_core::error::{RepoResult};
+use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{
     content_descriptor, content_descriptor_tag, file, file_metadata,
 };
 
-use crate::dao::file::{FileDao};
+use crate::dao::file::FileDao;
 use crate::dto::FileDto;
 
 impl FileDao {

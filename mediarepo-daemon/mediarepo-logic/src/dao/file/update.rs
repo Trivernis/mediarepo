@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::{Set, Unchanged};
-use sea_orm::{ConnectionTrait, NotSet};
+use sea_orm::{NotSet, TransactionTrait};
 
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::thumbnail_store::Dimensions;

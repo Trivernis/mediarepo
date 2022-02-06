@@ -29,7 +29,7 @@ impl NamespaceProvider for RepoNamespace {
 
 impl RepoNamespace {
     #[tracing::instrument(skip_all)]
-    async fn get_metadata(ctx: &Context, _: Event) -> IPCResult<()> {
+    async fn get_metadata(ctx: &Context, _: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let counts = repo.get_counts().await?;
 
@@ -43,14 +43,12 @@ impl RepoNamespace {
         };
 
         tracing::debug!("metadata = {:?}", metadata);
-        ctx.emit_to(Self::name(), "repository_metadata", metadata)
-            .await?;
 
-        Ok(())
+        ctx.response(metadata)
     }
 
     #[tracing::instrument(skip_all)]
-    async fn get_size_metadata(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn get_size_metadata(ctx: &Context, event: Event) -> IPCResult<Response> {
         let size_type = event.payload::<SizeType>()?;
         let data = ctx.data.read().await;
         let size_cache = data.get::<SizeMetadataKey>().unwrap();
@@ -61,38 +59,25 @@ impl RepoNamespace {
             calculate_size(&size_type, ctx).await?
         };
 
-        ctx.emit_to(
-            Self::name(),
-            "size_metadata",
-            SizeMetadata { size, size_type },
-        )
-        .await?;
-
-        Ok(())
+        ctx.response(SizeMetadata { size, size_type })
     }
 
     #[tracing::instrument(skip_all)]
-    async fn frontend_state(ctx: &Context, _: Event) -> IPCResult<()> {
+    async fn frontend_state(ctx: &Context, _: Event) -> IPCResult<Response> {
         let path = get_frontend_state_path(ctx).await?;
         let state_string = if path.exists() {
             Some(fs::read_to_string(path).await?)
         } else {
             None
         };
-        ctx.emit_to(
-            Self::name(),
-            "frontend_state",
-            FrontendState {
-                state: state_string,
-            },
-        )
-        .await?;
 
-        Ok(())
+        ctx.response(FrontendState {
+            state: state_string,
+        })
     }
 
     #[tracing::instrument(skip_all)]
-    async fn set_frontend_state(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn set_frontend_state(ctx: &Context, event: Event) -> IPCResult<Response> {
         let path = get_frontend_state_path(ctx).await?;
         let state = event.payload::<FrontendState>()?.state;
         if let Some(state_string) = state {
@@ -101,7 +86,7 @@ impl RepoNamespace {
             fs::remove_file(path).await?;
         }
 
-        Ok(())
+        Ok(Response::empty())
     }
 }
 
