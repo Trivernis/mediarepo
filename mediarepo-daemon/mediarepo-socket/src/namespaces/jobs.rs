@@ -27,11 +27,17 @@ impl JobsNamespace {
         let run_request = event.payload::<RunJobRequest>()?;
         let job_dao = get_repo_from_context(ctx).await.job();
 
+        if !run_request.sync {
+            // early response to indicate that the job will be run
+            ctx.emit_to(Self::name(), "run_job", ()).await?;
+        }
+
         match run_request.job_type {
             JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
             JobType::CheckIntegrity => job_dao.check_integrity().await?,
             JobType::Vacuum => job_dao.vacuum().await?,
+            JobType::GenerateThumbnails => job_dao.generate_missing_thumbnails().await?,
         }
 
         Ok(Response::empty())

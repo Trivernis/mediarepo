@@ -119,7 +119,9 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             "Migrating content descriptors to new format...");
         await this.jobService.runJob("MigrateContentDescriptors");
         dialogContext.message.next("Calculating repository sizes...");
-        await this.jobService.runJob("CalculateSizes");
+        await this.jobService.runJob("CalculateSizes", false);
+        dialogContext.message.next("Generating missing thumbnails...");
+        await this.jobService.runJob("GenerateThumbnails");
         dialogContext.message.next("Finished repository startup");
     }
 

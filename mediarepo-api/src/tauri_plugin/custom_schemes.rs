@@ -122,8 +122,8 @@ async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Resu
             .file
             .get_thumbnail_of_size(
                 FileIdentifier::CD(hash.to_string()),
-                ((height as f32 * 0.8) as u32, (width as f32 * 0.8) as u32),
-                ((height as f32 * 1.2) as u32, (width as f32 * 1.2) as u32),
+                ((height as f32 * 0.5) as u32, (width as f32 * 0.5) as u32),
+                ((height as f32 * 1.5) as u32, (width as f32 * 1.5) as u32),
             )
             .await?;
         tracing::debug!("Received {} content bytes", bytes.len());

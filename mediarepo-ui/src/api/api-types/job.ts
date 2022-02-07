@@ -1,4 +1,5 @@
 export type JobType = "MigrateContentDescriptors"
     | "CalculateSizes"
     | "CheckIntegrity"
-    | "Vacuum";
+    | "Vacuum"
+    | "GenerateThumbnails";

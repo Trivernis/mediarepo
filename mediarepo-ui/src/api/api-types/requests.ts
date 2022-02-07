@@ -107,6 +107,7 @@ export type SetFrontendStateRequest = {
 
 export type RunJobRequest = {
     jobType: JobType,
+    sync: boolean,
 };
 
 export type AddSortingPresetRequest = {
