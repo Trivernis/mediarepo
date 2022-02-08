@@ -1,11 +1,12 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../../api/models/File";
 import {TabState} from "../../../models/TabState";
 
 @Component({
     selector: "app-import-tab",
     templateUrl: "./import-tab.component.html",
-    styleUrls: ["./import-tab.component.scss"]
+    styleUrls: ["./import-tab.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportTabComponent implements OnInit {
 
@@ -16,7 +17,7 @@ export class ImportTabComponent implements OnInit {
 
     private newFiles: File[] = [];
 
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
     }
 
     public ngOnInit(): void {
@@ -29,19 +30,8 @@ export class ImportTabComponent implements OnInit {
      * @returns {Promise<void>}
      */
     public async addFileFromImport(file: File) {
-        this.newFiles.push(file);
-        if (this.newFiles.length % 50 === 0) {  // refresh every 50 pictures
-            this.refreshFileView();
-        }
-    }
-
-    /**
-     * Refreshes the file view
-     * @returns {Promise<void>}
-     */
-    public refreshFileView() {
-        this.state.files.next([...this.state.files.value, ...this.newFiles]);
-        this.newFiles = [];
+        this.state.files.next([...this.state.files.value, file]);
+        this.changeDetector.markForCheck();
     }
 
     public onFileSelect(files: File[]) {
@@ -61,5 +51,9 @@ export class ImportTabComponent implements OnInit {
         } else {
             return undefined;
         }
+    }
+
+    public refreshFileView(): void {
+        this.changeDetector.markForCheck();
     }
 }

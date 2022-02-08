@@ -29,7 +29,7 @@
 
 <button (click)="import()" [disabled]="importing || this.fileCount === 0" class="import-button" color="primary"
         mat-flat-button>
-    {{importing ? "Importing..." : "Import"}}
+    {{importing ? "Importing... (" + this.importingProgressTotal + "/" + this.fileCount + ")" : "Import"}}
 </button>
 <mat-progress-bar *ngIf="importing" [value]="this.importingProgress" color="primary"
                   mode="determinate"></mat-progress-bar>

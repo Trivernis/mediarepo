@@ -1,10 +1,11 @@
-import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
 import {File} from "../../../../../api/models/File";
 
 @Component({
     selector: "app-import-tab-sidebar",
     templateUrl: "./import-tab-sidebar.component.html",
-    styleUrls: ["./import-tab-sidebar.component.scss"]
+    styleUrls: ["./import-tab-sidebar.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportTabSidebarComponent {
 

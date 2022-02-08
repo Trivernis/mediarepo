@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Output} from "@angular/core";
 import {ImportService} from "../../../../../services/import/import.service";
 import {LoggingService} from "../../../../../services/logging/logging.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
@@ -9,7 +9,8 @@ import {FileOsMetadata} from "../../../../../../api/api-types/files";
 @Component({
     selector: "app-filesystem-import",
     templateUrl: "./filesystem-import.component.html",
-    styleUrls: ["./filesystem-import.component.scss"]
+    styleUrls: ["./filesystem-import.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilesystemImportComponent {
 
@@ -35,11 +36,17 @@ export class FilesystemImportComponent {
     public resolving = false;
     public importing = false;
     public importingProgress = 0;
+    public importingProgressTotal = 0;
 
-    constructor(private errorBroker: LoggingService, private importService: ImportService) {
+    constructor(
+        private changeDetector: ChangeDetectorRef,
+        private errorBroker: LoggingService,
+        private importService: ImportService
+    ) {
     }
 
     public async setSelectedPaths(paths: string[]) {
+        this.changeDetector.markForCheck();
         this.resolving = true;
         try {
             this.files = await this.importService.resolvePathsToFiles(paths);
@@ -49,6 +56,7 @@ export class FilesystemImportComponent {
             this.errorBroker.error(err);
         }
         this.resolving = false;
+        this.changeDetector.markForCheck();
     }
 
     public async import() {
@@ -70,6 +78,7 @@ export class FilesystemImportComponent {
             }
             count++;
             this.importingProgress = (count / this.fileCount) * 100;
+            this.importingProgressTotal = count;
         }
 
         this.importing = false;
