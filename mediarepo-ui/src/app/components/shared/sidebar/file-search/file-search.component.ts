@@ -53,8 +53,10 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public displayImported = true;
     public displayArchived = true;
     public displayDeleted = false;
+    public searchDuration = 0;
 
     private needsScroll = false;
+    private searchStart = Date.now();
 
     constructor(
         private logger: LoggingService,
@@ -69,6 +71,13 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             this.assignDisplayedFilters();
         });
         this.state.sortingPreset.subscribe(s => this.sortingPreset = s);
+        this.state.loading.subscribe(l => {
+            if (l) {
+                this.searchStart = Date.now();
+            } else {
+                this.searchDuration = Math.round((Date.now() - this.searchStart) / 100) / 10;
+            }
+        });
         this.applyStatusFromFilters();
         this.needsScroll = true;
         this.assignDisplayedFilters();

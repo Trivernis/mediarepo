@@ -41,6 +41,10 @@
     </div>
 
     <mat-divider fxFlex="1em"></mat-divider>
+    <h3 class="search-result-display">{{this.state.files.value.length}} files found
+        in {{this.searchDuration < 0.1 ? " < 0.1" : this.searchDuration}}
+        seconds</h3>
+    <mat-divider fxFlex="1em"></mat-divider>
     <div class="tag-list-header" fxFlex="40px">
         <h2>{{contextTags.length}} Tags</h2>
         <mat-divider></mat-divider>
