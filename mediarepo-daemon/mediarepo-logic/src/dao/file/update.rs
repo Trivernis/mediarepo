@@ -58,7 +58,7 @@ impl FileDao {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_thumbnails<I: IntoIterator<Item = ThumbnailSize> + Debug>(
         &self,
-        file: FileDto,
+        file: &FileDto,
         sizes: I,
     ) -> RepoResult<Vec<ThumbnailDto>> {
         let bytes = self.get_bytes(file.cd()).await?;

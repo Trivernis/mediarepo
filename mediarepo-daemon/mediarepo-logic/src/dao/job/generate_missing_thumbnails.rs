@@ -19,8 +19,9 @@ impl JobDao {
         }
 
         futures::future::join_all(missing_thumbnails.into_iter().map(|f| async {
+            let file = f;
             file_dao
-                .create_thumbnails(f, vec![ThumbnailSize::Medium])
+                .create_thumbnails(&file, vec![ThumbnailSize::Medium])
                 .await
         }))
         .await;

@@ -231,7 +231,7 @@ impl FilesNamespace {
             let file = file_by_identifier(request.id, &repo).await?;
             thumbnails = repo
                 .file()
-                .create_thumbnails(file, vec![ThumbnailSize::Medium])
+                .create_thumbnails(&file, vec![ThumbnailSize::Medium])
                 .await?;
             tracing::debug!("Thumbnails for file created.");
         }
@@ -271,7 +271,7 @@ impl FilesNamespace {
             let middle_size = ((max_size.0 + min_size.0) / 2, (max_size.1 + min_size.1) / 2);
             let thumbnail = repo
                 .file()
-                .create_thumbnails(file, vec![ThumbnailSize::Custom(middle_size)])
+                .create_thumbnails(&file, vec![ThumbnailSize::Custom(middle_size)])
                 .await?;
 
             thumbnail

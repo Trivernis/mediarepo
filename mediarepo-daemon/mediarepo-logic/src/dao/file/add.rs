@@ -5,6 +5,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, DatabaseTransaction, TransactionTrait};
 
 use mediarepo_core::error::RepoResult;
+use mediarepo_core::thumbnailer::ThumbnailSize;
 use mediarepo_database::entities::{content_descriptor, file, file_metadata};
 
 use crate::dao::file::FileDao;
@@ -44,8 +45,11 @@ impl FileDao {
         .await?;
 
         trx.commit().await?;
+        let dto = FileDto::new(file, cd, Some(metadata));
+        self.create_thumbnails(&dto, vec![ThumbnailSize::Medium])
+            .await?;
 
-        Ok(FileDto::new(file, cd, Some(metadata)))
+        Ok(dto)
     }
 }
 
