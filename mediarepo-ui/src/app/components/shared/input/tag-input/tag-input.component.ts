@@ -5,6 +5,7 @@ import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
 import {debounceTime, map, startWith} from "rxjs/operators";
 import {compareSearchResults} from "../../../../utils/compare-utils";
+import {normalizeTag} from "../../../../utils/tag-utils";
 
 @Component({
     selector: "app-tag-input",
@@ -35,24 +36,6 @@ export class TagInputComponent implements OnChanges {
         );
     }
 
-    /**
-     * Normalizes the tag by removing whitespaces
-     * @param {string} tag
-     * @returns {string}
-     * @private
-     */
-    private static normalizeTag(tag: string): string {
-        let normalizedTag = tag.trim();
-        let parts = normalizedTag.split(":");
-
-        if (parts.length > 1) {
-            const namespace = parts.shift()!.trim();
-            const name = parts.join(":").trim();
-            return namespace + ":" + name;
-        } else {
-            return normalizedTag;
-        }
-    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes["availableTags"]) {
@@ -72,7 +55,7 @@ export class TagInputComponent implements OnChanges {
     }
 
     private addTag(value: string) {
-        const tag = TagInputComponent.normalizeTag(value);
+        const tag = normalizeTag(value);
         if (tag.length > 0 && (this.allowInvalid || this.checkTagValid(tag))) {
             this.tagAdded.emit(tag);
             this.formControl.setValue("");
@@ -81,7 +64,7 @@ export class TagInputComponent implements OnChanges {
     }
 
     private filterSuggestionTag(tag: string) {
-        let normalizedTag = TagInputComponent.normalizeTag(tag);
+        let normalizedTag = normalizeTag(tag);
         const negated = normalizedTag.startsWith("-") && this.allowNegation;
         normalizedTag = this.allowNegation ? normalizedTag.replace(
             /^-/,
@@ -100,7 +83,7 @@ export class TagInputComponent implements OnChanges {
             .slice(0, 50);
 
         if (containsWildcard) {
-            autocompleteTags.unshift(TagInputComponent.normalizeTag(tag));
+            autocompleteTags.unshift(normalizeTag(tag));
         }
 
         return autocompleteTags;

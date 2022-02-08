@@ -7,7 +7,7 @@ pub struct NamespaceDto {
 
 impl NamespaceDto {
     pub(crate) fn new(model: namespace::Model) -> Self {
-        Self {model}
+        Self { model }
     }
 
     pub fn id(&self) -> i64 {
