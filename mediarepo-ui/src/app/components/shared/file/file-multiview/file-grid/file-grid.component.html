@@ -2,7 +2,7 @@
      (keyDownEvent)="handleKeydownEvent($event)"
      (keyUpEvent)="handleKeyupEvent($event)"
      appInputReceiver
-     class="file-gallery-inner">
+     class="file-grid-inner">
     <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="260" maxBufferPx="2000"
                                  minBufferPx="500">
         <div *cdkVirtualFor="let rowEntry of partitionedGridEntries; trackBy: trackByFileRowId">

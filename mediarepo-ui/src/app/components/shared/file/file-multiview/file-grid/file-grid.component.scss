@@ -1,3 +1,5 @@
+@import "src/colors";
+
 app-file-card {
     height: 250px;
     width: 100%;
@@ -9,11 +11,12 @@ app-file-card {
     width: 100%;
 }
 
-.file-gallery-inner {
+.file-grid-inner {
     width: 100%;
     height: 100%;
     display: block;
     overflow: hidden;
+    background: $background-darker-05;
 }
 
 .file-row {
