@@ -1,0 +1,44 @@
+@import "colors";
+
+.mat-form-field.mat-focused .mat-form-field-label {
+    color: $primary-lighter-30;
+}
+
+.mat-input-element {
+    caret-color: $primary-lighter-20;
+}
+
+.mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple) {
+    background: rgba(255, 255, 255, 0.05);
+    color: $primary-lighter-20;
+}
+
+.mat-dialog-container {
+    background: $background;
+}
+
+.mat-drawer {
+    background: $background;
+}
+
+.mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
+    background: $background;
+}
+
+// scrollbar
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+    background: $background-darker-05;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $primary-darker-10;
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: $primary;
+    border-radius: 5px;
+}

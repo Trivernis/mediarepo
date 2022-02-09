@@ -1,3 +1,8 @@
+@import "src/colors";
+
+.image-full-view-inner {
+    background-color: $background-darker-05;
+}
 
 .image-drag-container, .image-scale-container {
     height: 100%;

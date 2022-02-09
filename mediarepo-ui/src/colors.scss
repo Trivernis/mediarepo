@@ -21,8 +21,9 @@ $warn-chill: #fcd349;
 $text: #FFF;
 $text-darker-10: darken($text, 10%);
 
-$background: #424242;
-$background-lighter-05: lighten($background, 4%);
+$background: darken(#424242, 5%);
+$background-darker-05: darken($background, 5%);
+$background-lighter-05: lighten($background, 5%);
 $background-lighter-10: lighten($background, 10%);
 
 // specifics

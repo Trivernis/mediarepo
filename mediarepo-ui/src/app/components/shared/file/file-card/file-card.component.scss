@@ -1,8 +1,15 @@
+@import "src/colors";
+
 mat-card {
     height: calc(100% - 32px);
     width: calc(100% - 32px);
     user-select: none;
     cursor: pointer;
+    background: $background-lighter-05;
+}
+
+mat-card.selected {
+    background: $primary-darker-10;
 }
 
 mat-card-content {
