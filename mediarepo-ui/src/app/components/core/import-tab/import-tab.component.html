@@ -1,14 +1,14 @@
-<mat-drawer-container autosize>
-    <mat-drawer disableClose="true" mode="side" opened>
+<app-drawer-page>
+    <app-drawer-page-side>
         <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)"
                                 (importFinished)="this.refreshFileView()"
                                 [selectedFiles]="selectedFiles"></app-import-tab-sidebar>
-    </mat-drawer>
-    <mat-drawer-content>
+    </app-drawer-page-side>
+    <app-drawer-page-content>
         <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)"
                             (modeChangeEvent)="this.state.mode.next($event)"
                             [files]="this.files"
                             [mode]="this.state.mode.value"
                             [preselectedFile]="this.getSelectedFileFromState()"></app-file-multiview>
-    </mat-drawer-content>
-</mat-drawer-container>
+    </app-drawer-page-content>
+</app-drawer-page>

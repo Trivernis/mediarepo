@@ -15,8 +15,6 @@ export class ImportTabComponent implements OnInit {
     public files: File[] = [];
     public selectedFiles: File[] = [];
 
-    private newFiles: File[] = [];
-
     constructor(private changeDetector: ChangeDetectorRef) {
     }
 

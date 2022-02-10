@@ -4,6 +4,7 @@ import {BusyIndicatorComponent} from "./busy-indicator/busy-indicator.component"
 import {ContextMenuComponent} from "./context-menu/context-menu.component";
 import {CommonModule} from "@angular/common";
 import {NgIconsModule} from "@ng-icons/core";
+import {MatChevronLeft, MatChevronRight} from "@ng-icons/material-icons";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatButtonModule} from "@angular/material/button";
 import {MatDialogModule} from "@angular/material/dialog";
@@ -15,6 +16,12 @@ import {BusyDialogComponent} from "./busy-dialog/busy-dialog.component";
 import {SelectableComponent} from "./selectable/selectable.component";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {HasPropertyPipe} from "./pipes/has-property.pipe";
+import {DrawerPageComponent} from "./drawer-page/drawer-page.component";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {DrawerPageSideComponent} from "./drawer-page/drawer-page-side/drawer-page-side.component";
+import {DrawerPageContentComponent} from "./drawer-page/drawer-page-content/drawer-page-content.component";
+import {FlexLayoutModule} from "@angular/flex-layout";
+import {MatRippleModule} from "@angular/material/core";
 
 
 @NgModule({
@@ -28,6 +35,9 @@ import {HasPropertyPipe} from "./pipes/has-property.pipe";
         BusyDialogComponent,
         SelectableComponent,
         HasPropertyPipe,
+        DrawerPageComponent,
+        DrawerPageSideComponent,
+        DrawerPageContentComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -38,15 +48,21 @@ import {HasPropertyPipe} from "./pipes/has-property.pipe";
         MetadataEntryComponent,
         SelectableComponent,
         HasPropertyPipe,
+        DrawerPageComponent,
+        DrawerPageSideComponent,
+        DrawerPageContentComponent,
     ],
     imports: [
         CommonModule,
-        NgIconsModule.withIcons({}),
+        NgIconsModule.withIcons({ MatChevronLeft, MatChevronRight }),
         MatProgressSpinnerModule,
         MatButtonModule,
         MatDialogModule,
         MatMenuModule,
-        MatProgressBarModule
+        MatProgressBarModule,
+        MatSidenavModule,
+        FlexLayoutModule,
+        MatRippleModule
     ]
 })
 export class AppCommonModule {

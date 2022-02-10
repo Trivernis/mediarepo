@@ -1,0 +1,13 @@
+<mat-drawer-container autosize>
+    <mat-drawer [opened]="this.drawerOpened" disableClose mode="side">
+        <ng-content select="app-drawer-page-side"></ng-content>
+    </mat-drawer>
+    <mat-drawer-content>
+        <ng-content select="app-drawer-page-content"></ng-content>
+
+        <div (click)="this.toggleDrawer()" class="drawer-open-button-float" mat-ripple>
+            <ng-icon *ngIf="!this.drawerOpened" name="mat-chevron-right"></ng-icon>
+            <ng-icon *ngIf="this.drawerOpened" name="mat-chevron-left"></ng-icon>
+        </div>
+    </mat-drawer-content>
+</mat-drawer-container>
