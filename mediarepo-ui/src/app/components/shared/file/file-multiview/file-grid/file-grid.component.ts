@@ -1,6 +1,8 @@
 import {
+    AfterViewChecked,
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     EventEmitter,
@@ -27,10 +29,9 @@ import {LoggingService} from "../../../../../services/logging/logging.service";
     styleUrls: ["./file-grid.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
+export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, AfterViewChecked {
 
     @Input() files: File[] = [];
-    @Input() columns: number = 6;
     @Input() preselectedFile: File | undefined;
     @Output() fileOpen = new EventEmitter<File>();
     @Output() fileSelect = new EventEmitter<File[]>();
@@ -44,11 +45,14 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
     public selectedEntries: Selectable<File>[] = [];
     public partitionedGridEntries: Selectable<File>[][] = [];
 
+    private columns = 6;
+    private entrySizePx = 260;
     private shiftClicked = false;
     private ctrlClicked = false;
     private gridEntries: Selectable<File>[] = [];
 
     constructor(
+        private changeDetector: ChangeDetectorRef,
         private logger: LoggingService,
         private tabService: TabService,
         private fileService: FileService,
@@ -64,6 +68,11 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
     public ngAfterViewInit(): void {
         this.focus();
+        this.calculateColumnCount();
+    }
+
+    public ngAfterViewChecked(): void {
+        this.calculateColumnCount();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -188,6 +197,20 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit {
 
     public onFileStatusChange(): void {
         this.fileChanged.next();
+    }
+
+    public calculateColumnCount() {
+        if (this.inner && this.inner.nativeElement) {
+            const width = Math.abs(this.inner.nativeElement.clientWidth);
+            const columns = Math.floor(width / this.entrySizePx);
+
+            if (columns != this.columns) {
+                console.debug("grid displaying", columns, "columns");
+                this.columns = Math.max(columns, 1);
+                this.setPartitionedGridEntries();
+                this.changeDetector.detectChanges();
+            }
+        }
     }
 
     private setPartitionedGridEntries() {

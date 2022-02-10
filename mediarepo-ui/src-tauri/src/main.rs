@@ -3,6 +3,7 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+use tauri::{LogicalSize, Size};
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -15,7 +16,8 @@ fn main() {
         .init();
     mediarepo_api::tauri_plugin::register_plugin(tauri::Builder::default())
         .on_page_load(|window, _| {
-            window.set_title(format!("mediarepo {}", env!("CARGO_PKG_VERSION")).as_str()).unwrap();
+            window.set_title(format!("mediarepo {}", env!("CARGO_PKG_VERSION")).as_str()).expect("failed to set window title");
+            window.set_min_size(Some(Size::Logical(LogicalSize { width: 1000.0, height: 750.0 }))).expect("failed to set minimal size");
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
