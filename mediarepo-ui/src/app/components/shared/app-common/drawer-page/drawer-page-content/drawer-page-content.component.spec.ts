@@ -1,25 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { DrawerPageContentComponent } from './drawer-page-content.component';
+import {DrawerPageContentComponent} from "./drawer-page-content.component";
 
-describe('DrawerPageContentComponent', () => {
-  let component: DrawerPageContentComponent;
-  let fixture: ComponentFixture<DrawerPageContentComponent>;
+describe("DrawerPageContentComponent", () => {
+    let component: DrawerPageContentComponent;
+    let fixture: ComponentFixture<DrawerPageContentComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ DrawerPageContentComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DrawerPageContentComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DrawerPageContentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DrawerPageContentComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it("should create", () => {
+        expect(component).toBeTruthy();
+    });
 });
