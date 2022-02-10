@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, Component} from "@angular/core";
 
 @Component({
     selector: "app-drawer-page-side",
@@ -6,12 +6,8 @@ import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
     styleUrls: ["./drawer-page-side.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DrawerPageSideComponent implements OnInit {
+export class DrawerPageSideComponent {
 
     constructor() {
     }
-
-    ngOnInit(): void {
-    }
-
 }
