@@ -22,7 +22,7 @@ import {DrawerPageSideComponent} from "./drawer-page/drawer-page-side/drawer-pag
 import {DrawerPageContentComponent} from "./drawer-page/drawer-page-content/drawer-page-content.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
-import { FlapButtonComponent } from './flap-button/flap-button.component';
+import {FlapButtonComponent} from "./flap-button/flap-button.component";
 
 
 @NgModule({
@@ -53,6 +53,7 @@ import { FlapButtonComponent } from './flap-button/flap-button.component';
         DrawerPageComponent,
         DrawerPageSideComponent,
         DrawerPageContentComponent,
+        FlapButtonComponent,
     ],
     imports: [
         CommonModule,

@@ -18,11 +18,13 @@ import {
     MatAutoDelete,
     MatClose,
     MatDescription,
+    MatExpandLess,
+    MatExpandMore,
     MatFiberNew,
     MatGif,
     MatImage,
     MatMovie,
-    MatRefresh,
+    MatRefresh
 } from "@ng-icons/material-icons";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {MatButtonModule} from "@angular/material/button";
@@ -64,6 +66,8 @@ import {MatCardModule} from "@angular/material/card";
             MatDescription,
             MatAutoDelete,
             MatFiberNew,
+            MatExpandMore,
+            MatExpandLess
         }),
         DragDropModule,
         MatButtonModule,

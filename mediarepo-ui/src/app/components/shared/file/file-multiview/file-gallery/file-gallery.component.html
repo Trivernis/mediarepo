@@ -1,16 +1,21 @@
-<div #inner (keyDownEvent)="handleKeydownEvent($event)" appInputReceiver class="gallery-container" fxLayout="column">
+<div #inner (keyDownEvent)="handleKeydownEvent($event)" appInputReceiver class="gallery-container">
     <button (click)="this.appClose.emit(this)" class="close-button" mat-icon-button>
         <ng-icon name="mat-close"></ng-icon>
     </button>
     <div (dblclick)="this.selectedFile? this.fileDblClick.emit(this.selectedFile.data) : null"
-         class="file-full-view"
-         fxFlex="80%">
+         [class.full-size]="!this.previewStripVisible"
+         class="file-full-view">
         <app-content-viewer (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, [this.selectedFile!.data])"
                             *ngIf="this.selectedFile"
                             [file]="this.selectedFile!.data"></app-content-viewer>
+        <app-flap-button (click)="this.togglePreviewStrip()" align="center" attach="bottom">
+            <ng-icon *ngIf="previewStripVisible" name="mat-expand-more"></ng-icon>
+            <ng-icon *ngIf="!previewStripVisible" name="mat-expand-less"></ng-icon>
+        </app-flap-button>
     </div>
-    <mat-divider fxFlex></mat-divider>
-    <div class="file-scroll-view" fxFlex="20%">
+    <div
+        class="file-scroll-view">
+        <mat-divider></mat-divider>
         <cdk-virtual-scroll-viewport #virtualScroll class="file-scroll-viewport" itemSize="260" maxBufferPx="3000"
                                      minBufferPx="1000" orientation="horizontal">
             <div *cdkVirtualFor="let entry of entries; trackBy: trackByFileId" class="file-item">

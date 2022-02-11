@@ -43,6 +43,9 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     public fileContentUrl: SafeResourceUrl | undefined;
     public fileChanged = new BehaviorSubject<void>(undefined);
 
+    public imageViewHeightPercent = 80;
+    public previewStripVisible = true;
+
     private scrollTimeout: number | undefined;
     private escapeCount = 0;
 
@@ -184,6 +187,16 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     public onFileStatusChange(): void {
         this.fileChanged.next();
+    }
+
+    public togglePreviewStrip(): void {
+        if (this.previewStripVisible) {
+            this.imageViewHeightPercent = 100;
+            this.previewStripVisible = false;
+        } else {
+            this.imageViewHeightPercent = 80;
+            this.previewStripVisible = true;
+        }
     }
 
     private scrollToSelection(): void {
