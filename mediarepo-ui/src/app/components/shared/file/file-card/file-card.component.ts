@@ -2,15 +2,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
     EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
     Output,
-    SimpleChanges,
-    ViewChild
+    SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {Selectable} from "../../../../models/Selectable";
@@ -26,7 +24,7 @@ const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
-    @ViewChild("card") card!: ElementRef;
+
     @Input() public entry!: Selectable<File>;
     @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
     @Output() clickEvent = new EventEmitter<FileCardComponent>();
@@ -58,6 +56,11 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
         if (this.workId) {
             this.schedulingService.cancelWork(LOADING_WORK_KEY, this.workId);
         }
+    }
+
+    public onClick(): void {
+        console.debug(this.entry.data.id);
+        this.clickEvent.emit(this);
     }
 
     private setImageDelayed() {

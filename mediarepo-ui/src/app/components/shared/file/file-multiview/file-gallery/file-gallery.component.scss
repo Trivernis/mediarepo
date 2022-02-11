@@ -49,9 +49,11 @@
     .file-item {
         width: 100%;
         overflow: hidden;
-        height: calc(100%);
+        height: 100%;
 
-        ::ng-deep mat-card {
+        app-file-card {
+            height: 100%;
+            width: 100%;
             border-left: 2px solid $background;
             border-radius: 0;
         }

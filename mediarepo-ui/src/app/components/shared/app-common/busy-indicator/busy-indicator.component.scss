@@ -1,3 +1,11 @@
+:host {
+    display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
 .busy-indicator-overlay {
     position: absolute;
     top: 0;
@@ -5,12 +13,16 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    display: flex;
+    display: block;
     z-index: 998;
 
     mat-progress-spinner {
         z-index: 999;
-        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
     }
 }
 

@@ -89,6 +89,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, Afte
      * @param {FileCardComponent} clickedEntry
      */
     setSelectedFile(clickedEntry: Selectable<File>) {
+        console.debug(clickedEntry);
         if (!(this.shiftClicked || this.ctrlClicked) && this.selectedEntries.length > 0) {
             this.selectedEntries.forEach(entry => {
                 if (entry !== clickedEntry) entry.unselect();
@@ -100,13 +101,11 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, Afte
         } else {
             clickedEntry.selected.next(!clickedEntry.selected.value);
             if (!clickedEntry.selected.value) {
-                this.logger.trace("File wasn't selected");
                 const index = this.selectedEntries.indexOf(clickedEntry);
                 if (index > -1) {
                     this.selectedEntries.splice(index, 1);
                 }
             } else {
-                this.logger.trace("File was selected");
                 this.selectedEntries.push(clickedEntry);
             }
         }
