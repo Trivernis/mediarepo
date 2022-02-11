@@ -55,7 +55,14 @@ fn main() -> RepoResult<()> {
 
     let settings = if opt.repo.exists() {
         opt.repo = opt.repo.canonicalize().unwrap();
-        load_settings(&opt.repo)?
+
+        match load_settings(&opt.repo) {
+            Ok(s) => s,
+            Err(e) => {
+                log::warn!("failed to read settings {}", e);
+                Settings::default()
+            }
+        }
     } else {
         Settings::default()
     };
