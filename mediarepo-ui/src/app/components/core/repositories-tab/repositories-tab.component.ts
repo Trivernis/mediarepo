@@ -130,7 +130,7 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             "Opening repository...");
         let dialog = this.dialog.open(BusyDialogComponent, {
             data: {
-                title: `Opening repository ${repository.name}`,
+                title: `Opening repository '${repository.name}'`,
                 message: dialogMessage,
                 allowCancel: true,
             }, disableClose: true,

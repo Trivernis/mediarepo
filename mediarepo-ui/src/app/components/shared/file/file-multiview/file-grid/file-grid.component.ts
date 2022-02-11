@@ -213,6 +213,10 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, Afte
         }
     }
 
+    public onResize(): void {
+        this.changeDetector.markForCheck();
+    }
+
     private setPartitionedGridEntries() {
         this.partitionedGridEntries = [];
         let scrollToIndex = -1;

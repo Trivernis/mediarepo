@@ -1,5 +1,8 @@
 import {
+    AfterViewChecked,
     AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     EventEmitter,
@@ -14,7 +17,6 @@ import {File} from "../../../../../../api/models/File";
 import {FileService} from "../../../../../services/file/file.service";
 import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../../../../models/Selectable";
-import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TabService} from "../../../../../services/tab/tab.service";
 import {Key} from "w3c-keys";
 import {BehaviorSubject} from "rxjs";
@@ -22,9 +24,10 @@ import {BehaviorSubject} from "rxjs";
 @Component({
     selector: "app-file-gallery",
     templateUrl: "./file-gallery.component.html",
-    styleUrls: ["./file-gallery.component.scss"]
+    styleUrls: ["./file-gallery.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
+export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit, AfterViewChecked {
 
     @Input() files: File[] = [];
     @Input() preselectedFile: File | undefined;
@@ -34,9 +37,8 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
     @Output() fileDelete = new EventEmitter<File>();
     @Output() fileDeleted = new EventEmitter<File[]>();
 
-    @ViewChild("virtualScroll") virtualScroll!: CdkVirtualScrollViewport;
-
     @ViewChild("inner") inner!: ElementRef<HTMLDivElement>;
+    @ViewChild("previewStripContainer") stripContainer!: ElementRef<HTMLDivElement>;
 
     public entries: Selectable<File>[] = [];
     public selectedFile: Selectable<File> | undefined;
@@ -45,15 +47,16 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
 
     public imageViewHeightPercent = 80;
     public previewStripVisible = true;
+    public previewedEntries: (Selectable<File> | undefined)[] = [];
 
-    private scrollTimeout: number | undefined;
+    private previewStripCount = 5;
     private escapeCount = 0;
 
     constructor(
+        private changeDetector: ChangeDetectorRef,
         private tabService: TabService,
         private fileService: FileService
     ) {
-        tabService.selectedTab.subscribe(() => this.adjustElementSizes());
     }
 
     async ngOnInit(): Promise<void> {
@@ -61,6 +64,8 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             this.selectedFile.data) < 0) {
             await this.onEntrySelect(
                 this.getPreselectedEntry() ?? this.entries[0]);
+        } else {
+            this.buildPreviewedFiles();
         }
     }
 
@@ -84,6 +89,10 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         }
     }
 
+    public ngAfterViewChecked(): void {
+        this.calculatePreviewCount();
+    }
+
     /**
      * Called when a new entry is selected
      * @param {Selectable<File>} entry
@@ -96,15 +105,8 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             this.selectedFile = entry;
             await this.loadSelectedFile();
 
-            if (this.virtualScroll) {
-                clearTimeout(this.scrollTimeout);
-                this.scrollTimeout = setTimeout(
-                    () => this.scrollToSelection(),
-                    0
-                );  // we need to make sure the viewport has rendered
-            }
-
             this.fileSelect.emit(this.selectedFile.data);
+            this.buildPreviewedFiles();
         }
     }
 
@@ -151,13 +153,6 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         }
     }
 
-    public adjustElementSizes(): void {
-        if (this.virtualScroll) {
-            this.virtualScroll.checkViewportSize();
-            this.scrollToSelection();
-        }
-    }
-
     public focus() {
         this.inner.nativeElement.focus();
     }
@@ -181,8 +176,8 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         }
     }
 
-    public trackByFileId(index: number, item: Selectable<File>) {
-        return item.data.id;
+    public trackByFileId(index: number, item?: Selectable<File>) {
+        return item?.data.id;
     }
 
     public onFileStatusChange(): void {
@@ -199,21 +194,22 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
         }
     }
 
-    private scrollToSelection(): void {
-        if (this.selectedFile) {
-            const selectedIndex = this.entries.indexOf(this.selectedFile);
-            const viewportSize = this.virtualScroll.getViewportSize();
-            const indexAdjustment = (viewportSize / 260) / 2; // adjustment to have the selected item centered
-            this.virtualScroll.scrollToIndex(
-                Math.max(selectedIndex - indexAdjustment, 0), "smooth");
+    public calculatePreviewCount() {
+        if (this.stripContainer && this.stripContainer.nativeElement) {
+            const width = Math.abs(this.stripContainer.nativeElement.clientWidth);
+            const height = Math.abs(this.stripContainer.nativeElement.clientHeight);
 
-            if (selectedIndex > indexAdjustment) {
-                this.virtualScroll.scrollToOffset(
-                    this.virtualScroll.measureScrollOffset("left") + 130,
-                    "smooth"
-                );
+            const count = Math.floor(Math.floor(width / height) / 2) * 2 + 1;
+
+            if (count != this.previewStripCount) {
+                this.previewStripCount = count;
+                this.buildPreviewedFiles();
             }
         }
+    }
+
+    public onResize(): void {
+        this.changeDetector.markForCheck();
     }
 
     private getPreselectedEntry(): Selectable<File> | undefined {
@@ -234,5 +230,27 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit {
             this.escapeCount++;
             setTimeout(() => this.escapeCount--, 500);
         }
+    }
+
+    private buildPreviewedFiles() {
+        if (!this.selectedFile) {
+            if (this.entries) {
+                this.onEntrySelect(this.entries[0]).catch(console.error);
+            }
+            return;
+        }
+        const selectedIndex = this.entries.indexOf(this.selectedFile!);
+        const previewCountLR = Math.floor(this.previewStripCount / 2);
+        const previewedEntries = [];
+
+        for (let i = selectedIndex - previewCountLR; i <= selectedIndex + previewCountLR; i++) {
+            if (i >= 0 && i < this.entries.length) {
+                previewedEntries.push(this.entries[i]);
+            } else {
+                previewedEntries.push(undefined);
+            }
+        }
+        this.previewedEntries = previewedEntries;
+        this.changeDetector.markForCheck();
     }
 }

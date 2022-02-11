@@ -1,7 +1,7 @@
 <div #inner
      (keyDownEvent)="handleKeydownEvent($event)"
      (keyUpEvent)="handleKeyupEvent($event)"
-     (window:resize)="this.calculateColumnCount()"
+     (window:resize)="this.onResize()"
      appInputReceiver
      class="file-grid-inner">
     <cdk-virtual-scroll-viewport #virtualScrollGrid class="file-scroll" itemSize="260" maxBufferPx="2000"
