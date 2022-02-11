@@ -12,6 +12,7 @@ $primary-darker-20: darken($primary, 20%);
 $primary-darker-30: darken($primary, 30%);
 
 $accent: mat.get-color-from-palette($accent-pallette, 'text');
+$accent-darker-10: darken($accent, 10%);
 $accent-lighter-10: lighten($accent, 10%);
 
 $warn: mat.get-color-from-palette($warn-palette);

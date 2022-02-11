@@ -2,52 +2,100 @@
 
 :host {
     position: absolute;
+    opacity: 0;
+    transition-duration: 0.5s;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &[attach='left'] {
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 4em;
+    }
+
+    &[attach='right'] {
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 4em;
+    }
+
+    &[attach='top'] {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 4em;
+    }
+
+    &[attach='bottom'] {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4em;
+    }
 
     &[attach='left'], &[attach='top'][align='start'], &[attach='bottom'][align='start'] {
-        left: 0;
+        .flap-button {
+            left: 0;
+        }
     }
 
     &[attach='right'], &[attach='top'][align='end'], &[attach='bottom'][align='end'] {
-        right: 0;
+        .flap-button {
+            right: 0;
+        }
     }
 
     &[attach='top'], &[attach='left'][align='start'], &[attach='right'][align='start'] {
-        top: 0;
+        .flap-button {
+            top: 0;
+        }
     }
 
     &[attach='bottom'], &[attach='left'][align='end'], &[attach='right'][align='end'] {
-        bottom: 0;
+        .flap-button {
+            bottom: 0;
+        }
     }
 
     &[attach='left'][align='center'], &[attach='right'][align='center'] {
-        top: 50%;
-        transform: translate(0, -50%);
+        .flap-button {
+            top: 50%;
+            transform: translate(0, -50%);
+        }
     }
 
     &[attach='top'][align='center'], &[attach='bottom'][align='center'] {
-        left: 50%;
-        transform: translate(-50%, 0);
+        .flap-button {
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
     }
 }
 
 .flap-button {
+    position: absolute;
     display: flex;
-    opacity: 0.5;
-    background: $background-lighter-10;
+    opacity: 0.7;
+    background: $accent-darker-10;
     text-align: center;
     transition-duration: 0.1s;
+
+    &:hover {
+        background: $accent;
+        opacity: 0.9;
+        cursor: pointer;
+        transition: 0.5s;
+    }
 
     ::ng-deep ng-icon {
         margin: auto;
     }
-
-    &:hover {
-        background: $background-lighter-10;
-        opacity: 0.9;
-        cursor: pointer;
-        transition: 0.7s;
-    }
 }
+
 
 .flap-top, .flap-bottom {
     height: 1.5em;
@@ -69,42 +117,44 @@
     height: 10em;
 }
 
+$flap-border-radius: 2em;
+
 .flap-start.flap-left, .flap-start.flap-top {
-    border-bottom-right-radius: 1em;
+    border-bottom-right-radius: $flap-border-radius;
 }
 
 .flap-start.flap-right, .flap-end.flap-top {
-    border-bottom-left-radius: 1em;
+    border-bottom-left-radius: $flap-border-radius;
 }
 
 .flap-end.flap-left, .flap-start.flap-bottom {
-    border-top-right-radius: 1em;
+    border-top-right-radius: $flap-border-radius;
 }
 
 .flap-end.flap-right, .flap-end.flap-bottom {
-    border-top-left-radius: 1em;
+    border-top-left-radius: $flap-border-radius;
 }
 
 .flap-center {
 
     &.flap-left {
-        border-top-right-radius: 1em;
-        border-bottom-right-radius: 1em;
+        border-top-right-radius: $flap-border-radius;
+        border-bottom-right-radius: $flap-border-radius;
     }
 
     &.flap-right {
-        border-top-left-radius: 1em;
-        border-bottom-left-radius: 1em;
+        border-top-left-radius: $flap-border-radius;
+        border-bottom-left-radius: $flap-border-radius;
     }
 
     &.flap-top {
-        border-bottom-right-radius: 1em;
-        border-bottom-left-radius: 1em;
+        border-bottom-right-radius: $flap-border-radius;
+        border-bottom-left-radius: $flap-border-radius;
     }
 
     &.flap-bottom {
-        border-top-right-radius: 1em;
-        border-top-left-radius: 1em;
+        border-top-right-radius: $flap-border-radius;
+        border-top-left-radius: $flap-border-radius;
     }
 }
 

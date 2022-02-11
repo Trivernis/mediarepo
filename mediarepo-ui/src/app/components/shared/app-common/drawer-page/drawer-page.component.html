@@ -5,7 +5,7 @@
     <mat-drawer-content>
         <ng-content select="app-drawer-page-content"></ng-content>
 
-        <app-flap-button (click)="this.toggleDrawer()" align="start" attach="left">
+        <app-flap-button (appClick)="this.toggleDrawer()" align="center" attach="left">
             <ng-icon *ngIf="!this.drawerOpened" name="mat-chevron-right"></ng-icon>
             <ng-icon *ngIf="this.drawerOpened" name="mat-chevron-left"></ng-icon>
         </app-flap-button>

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
 
 export type Attachment = "top" | "bottom" | "left" | "right";
 export type Alignment = "start" | "center" | "end";
@@ -13,6 +13,7 @@ export class FlapButtonComponent {
 
     @Input() attach: Attachment = "top";
     @Input() align: Alignment = "center";
+    @Output() appClick = new EventEmitter<MouseEvent>();
 
     constructor() {
     }
