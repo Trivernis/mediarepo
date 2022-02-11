@@ -23,6 +23,7 @@ import {DrawerPageContentComponent} from "./drawer-page/drawer-page-content/draw
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
 import {FlapButtonComponent} from "./flap-button/flap-button.component";
+import {MiddleCenteredComponent} from "./middle-centered/middle-centered.component";
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import {FlapButtonComponent} from "./flap-button/flap-button.component";
         DrawerPageSideComponent,
         DrawerPageContentComponent,
         FlapButtonComponent,
+        MiddleCenteredComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -54,6 +56,7 @@ import {FlapButtonComponent} from "./flap-button/flap-button.component";
         DrawerPageSideComponent,
         DrawerPageContentComponent,
         FlapButtonComponent,
+        MiddleCenteredComponent,
     ],
     imports: [
         CommonModule,

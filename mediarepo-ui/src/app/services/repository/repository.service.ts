@@ -16,6 +16,7 @@ export class RepositoryService {
     repositories = new BehaviorSubject<Repository[]>([]);
     public selectedRepository = new BehaviorSubject<Repository | undefined>(
         undefined);
+    public metadata = new BehaviorSubject<RepositoryMetadata | undefined>(undefined);
 
     constructor(private errorBroker: LoggingService) {
         this.registerListener().catch(err => console.error(err));
@@ -68,6 +69,7 @@ export class RepositoryService {
                 console.warn(err);
             }
         }
+        this.metadata.next(undefined);
         await MediarepoApi.selectRepository({ name: repo.name });
     }
 
@@ -163,7 +165,9 @@ export class RepositoryService {
      * @returns {Promise<RepositoryMetadata>}
      */
     public async getRepositoryMetadata(): Promise<RepositoryMetadata> {
-        return MediarepoApi.getRepositoryMetadata();
+        const metadata = await MediarepoApi.getRepositoryMetadata();
+        this.metadata.next(metadata);
+        return metadata;
     }
 
     /**

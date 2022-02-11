@@ -1,6 +1,9 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../../api/models/File";
 import {TabState} from "../../../models/TabState";
+import {RepositoryMetadata} from "../../../../api/api-types/repo";
+import {RepositoryService} from "../../../services/repository/repository.service";
+import {TabCategory} from "../../../models/TabCategory";
 
 @Component({
     selector: "app-files-tab",
@@ -14,8 +17,12 @@ export class FilesTabComponent implements OnInit {
     files: File[] = [];
     contentLoading = false;
     selectedFiles: File[] = [];
+    public metadata?: RepositoryMetadata;
 
-    constructor() {
+    constructor(
+        repoService: RepositoryService,
+    ) {
+        repoService.metadata.subscribe(m => this.metadata = m);
     }
 
     async ngOnInit() {
@@ -49,5 +56,9 @@ export class FilesTabComponent implements OnInit {
                 await this.state.findFiles();
                 break;
         }
+    }
+
+    public onImportFiles(): void {
+        this.state.category = TabCategory.Import;
     }
 }
