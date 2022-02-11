@@ -68,7 +68,7 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
         this.workId = this.schedulingService.addWork(
             LOADING_WORK_KEY,
             async () => {
-                await this.schedulingService.delay(1);
+                await this.schedulingService.delay(0);
                 this.loading = false;
                 this.changeDetector.markForCheck();
             }
