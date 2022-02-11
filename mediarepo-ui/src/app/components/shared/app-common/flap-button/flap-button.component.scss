@@ -2,39 +2,44 @@
 
 :host {
     position: absolute;
-    opacity: 0;
     transition-duration: 0.5s;
 
     &:hover {
-        opacity: 1;
+        & > .flap-top, & > .flap-bottom {
+            height: 1.5em;
+        }
+
+        & > .flap-left, & > .flap-right {
+            width: 1.5em;
+        }
+    }
+
+    &[attach='left'], &[attach='right'] {
+        top: 0;
+        height: 100%;
+        width: 4em;
+    }
+
+    &[attach='top'], &[attach='bottom'] {
+        left: 0;
+        width: 100%;
+        height: 4em;
     }
 
     &[attach='left'] {
-        top: 0;
         left: 0;
-        height: 100%;
-        width: 4em;
     }
 
     &[attach='right'] {
-        top: 0;
         right: 0;
-        height: 100%;
-        width: 4em;
     }
 
     &[attach='top'] {
-        left: 0;
         top: 0;
-        width: 100%;
-        height: 4em;
     }
 
     &[attach='bottom'] {
-        left: 0;
         bottom: 0;
-        width: 100%;
-        height: 4em;
     }
 
     &[attach='left'], &[attach='top'][align='start'], &[attach='bottom'][align='start'] {
@@ -83,6 +88,7 @@
     background: $accent-darker-10;
     text-align: center;
     transition-duration: 0.1s;
+    overflow: hidden;
 
     &:hover {
         background: $accent;
@@ -98,21 +104,21 @@
 
 
 .flap-top, .flap-bottom {
-    height: 1.5em;
     width: 4em;
+    height: 2px;
 }
 
-.flap-top:hover, .flap-bottom:hover {
+.flap-button.flap-top:hover, .flap-button.flap-bottom:hover {
     width: 10em;
     height: 2em;
 }
 
 .flap-left, .flap-right {
+    width: 2px;
     height: 4em;
-    width: 1.5em;
 }
 
-.flap-left:hover, .flap-right:hover {
+.flap-button.flap-left:hover, .flap-button.flap-right:hover {
     width: 2em;
     height: 10em;
 }
