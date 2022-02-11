@@ -37,30 +37,3 @@ mat-drawer-container {
         margin-top: -0.5em;
     }
 }
-
-.drawer-open-button-float {
-    position: absolute;
-    display: flex;
-    top: 0;
-    left: 0;
-    height: 4em;
-    width: 1.5em;
-    border-bottom-right-radius: 1em;
-    opacity: 0.5;
-    background: $background-lighter-10;
-    text-align: center;
-    transition-duration: 0.1s;
-
-    ng-icon {
-        margin: auto;
-    }
-}
-
-.drawer-open-button-float:hover {
-    background: $background-lighter-10;
-    opacity: 0.9;
-    cursor: pointer;
-    transition: 0.7s;
-    width: 2em;
-    height: 10em;
-}

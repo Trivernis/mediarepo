@@ -22,6 +22,7 @@ import {DrawerPageSideComponent} from "./drawer-page/drawer-page-side/drawer-pag
 import {DrawerPageContentComponent} from "./drawer-page/drawer-page-content/drawer-page-content.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
+import { FlapButtonComponent } from './flap-button/flap-button.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import {MatRippleModule} from "@angular/material/core";
         DrawerPageComponent,
         DrawerPageSideComponent,
         DrawerPageContentComponent,
+        FlapButtonComponent,
     ],
     exports: [
         ConfirmDialogComponent,

@@ -1,0 +1,111 @@
+@import "src/colors";
+
+:host {
+    position: absolute;
+
+    &[attach='left'], &[attach='top'][align='start'], &[attach='bottom'][align='start'] {
+        left: 0;
+    }
+
+    &[attach='right'], &[attach='top'][align='end'], &[attach='bottom'][align='end'] {
+        right: 0;
+    }
+
+    &[attach='top'], &[attach='left'][align='start'], &[attach='right'][align='start'] {
+        top: 0;
+    }
+
+    &[attach='bottom'], &[attach='left'][align='end'], &[attach='right'][align='end'] {
+        bottom: 0;
+    }
+
+    &[attach='left'][align='center'], &[attach='right'][align='center'] {
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+
+    &[attach='top'][align='center'], &[attach='bottom'][align='center'] {
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+}
+
+.flap-button {
+    display: flex;
+    opacity: 0.5;
+    background: $background-lighter-10;
+    text-align: center;
+    transition-duration: 0.1s;
+
+    ::ng-deep ng-icon {
+        margin: auto;
+    }
+
+    &:hover {
+        background: $background-lighter-10;
+        opacity: 0.9;
+        cursor: pointer;
+        transition: 0.7s;
+    }
+}
+
+.flap-top, .flap-bottom {
+    height: 1.5em;
+    width: 4em;
+}
+
+.flap-top:hover, .flap-bottom:hover {
+    width: 10em;
+    height: 2em;
+}
+
+.flap-left, .flap-right {
+    height: 4em;
+    width: 1.5em;
+}
+
+.flap-left:hover, .flap-right:hover {
+    width: 2em;
+    height: 10em;
+}
+
+.flap-start.flap-left, .flap-start.flap-top {
+    border-bottom-right-radius: 1em;
+}
+
+.flap-start.flap-right, .flap-end.flap-top {
+    border-bottom-left-radius: 1em;
+}
+
+.flap-end.flap-left, .flap-start.flap-bottom {
+    border-top-right-radius: 1em;
+}
+
+.flap-end.flap-right, .flap-end.flap-bottom {
+    border-top-left-radius: 1em;
+}
+
+.flap-center {
+
+    &.flap-left {
+        border-top-right-radius: 1em;
+        border-bottom-right-radius: 1em;
+    }
+
+    &.flap-right {
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+    }
+
+    &.flap-top {
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+    }
+
+    &.flap-bottom {
+        border-top-right-radius: 1em;
+        border-top-left-radius: 1em;
+    }
+}
+
+
