@@ -45,7 +45,7 @@ export class CoreComponent {
         this.stateService.state.subscribe(state => {
             this.appState = state;
             if (this.appState.tabs.value.length === 0) {
-                this.addTab();
+                this.addEmptyTab();
             } else {
                 this.tabGroup.selectedIndex = 1;
             }
@@ -58,7 +58,7 @@ export class CoreComponent {
                 }
 
                 if (this.tabs.length === 0) {
-                    this.addTab();
+                    this.addEmptyTab();
                 }
             });
         });
@@ -76,19 +76,7 @@ export class CoreComponent {
         }
     }
 
-    public addFilesTab(): void {
-        this.appState.addTab(TabCategory.Files);
-        this.tabGroup.selectedIndex = this.tabs.length;
-        this.newTab = false;
-    }
-
-    public addImportTab(): void {
-        this.appState.addTab(TabCategory.Import);
-        this.tabGroup.selectedIndex = this.tabs.length;
-        this.newTab = false;
-    }
-
-    public addTab(): void {
+    public addEmptyTab(): void {
         if (this.tabGroup) {
             this.newTab = true;
             this.tabGroup.selectedIndex = this.tabs.length + 1;
@@ -118,5 +106,11 @@ export class CoreComponent {
 
     public trackByTabId(index: number, item: TabState) {
         return item.uuid;
+    }
+
+    public addTab(category: TabCategory): void {
+        this.appState.addTab(category);
+        this.tabGroup.selectedIndex = this.tabs.length;
+        this.newTab = false;
     }
 }

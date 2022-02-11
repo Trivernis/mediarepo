@@ -19,15 +19,11 @@
             </ng-template>
         </mat-tab>
         <mat-tab *ngIf="this.newTab" label="New Tab">
-            <div class="new-tab-content">
-                Select the tab type
-                <button (click)="this.addFilesTab()" color="primary" mat-flat-button>Files</button>
-                <button (click)="this.addImportTab()" color="primary" mat-flat-button>Import</button>
-            </div>
+            <app-empty-tab (tabCategorySelect)="this.addTab($event)"></app-empty-tab>
         </mat-tab>
         <mat-tab *ngIf="this.selectedRepository" disabled>
             <ng-template mat-tab-label>
-                <button (click)="this.addTab()" class="new-tab-button" mat-icon-button>
+                <button (click)="this.addEmptyTab()" class="new-tab-button" mat-icon-button>
                     <ng-icon name="mat-plus"></ng-icon>
                 </button>
             </ng-template>
