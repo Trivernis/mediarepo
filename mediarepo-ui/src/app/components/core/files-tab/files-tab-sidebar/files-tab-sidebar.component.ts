@@ -5,7 +5,7 @@ import {File} from "../../../../../api/models/File";
 import {FileSearchComponent} from "../../../shared/sidebar/file-search/file-search.component";
 import {RepositoryService} from "../../../../services/repository/repository.service";
 import {TagEditComponent} from "../../../shared/sidebar/tag-edit/tag-edit.component";
-import {TabState} from "../../../../models/TabState";
+import {FilesTabState} from "../../../../models/state/FilesTabState";
 
 @Component({
     selector: "app-files-tab-sidebar",
@@ -14,7 +14,7 @@ import {TabState} from "../../../../models/TabState";
 })
 export class FilesTabSidebarComponent implements OnInit, OnChanges {
 
-    @Input() state!: TabState;
+    @Input() state!: FilesTabState;
     @Input() selectedFiles: File[] = [];
     @Output() searchStartEvent = new EventEmitter<void>();
     @Output() searchEndEvent = new EventEmitter<void>();

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../../api/models/File";
-import {TabState} from "../../../models/TabState";
+import {ImportTabState} from "../../../models/state/ImportTabState";
 
 @Component({
     selector: "app-import-tab",
@@ -10,7 +10,7 @@ import {TabState} from "../../../models/TabState";
 })
 export class ImportTabComponent implements OnInit {
 
-    @Input() state!: TabState;
+    @Input() state!: ImportTabState;
 
     public files: File[] = [];
     public selectedFiles: File[] = [];

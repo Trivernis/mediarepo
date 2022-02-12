@@ -4,10 +4,10 @@ import {RepositoryService} from "../../services/repository/repository.service";
 import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
 import {TabService} from "../../services/tab/tab.service";
-import {TabCategory} from "../../models/TabCategory";
-import {TabState} from "../../models/TabState";
-import {AppState} from "../../models/AppState";
+import {TabCategory} from "../../models/state/TabCategory";
+import {AppState} from "../../models/state/AppState";
 import {StateService} from "../../services/state/state.service";
+import {TabState} from "../../models/state/TabState";
 
 @Component({
     selector: "app-core",

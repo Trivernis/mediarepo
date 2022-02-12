@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Output} from "@angular/core";
-import {TabCategory} from "../../../models/TabCategory";
+import {TabCategory} from "../../../models/state/TabCategory";
 
 type TabCategoryName = "files" | "import";
 

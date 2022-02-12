@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../../api/models/File";
-import {TabState} from "../../../models/TabState";
+import {FilesTabState} from "../../../models/state/FilesTabState";
 import {RepositoryMetadata} from "../../../../api/api-types/repo";
 import {RepositoryService} from "../../../services/repository/repository.service";
-import {TabCategory} from "../../../models/TabCategory";
+import {TabCategory} from "../../../models/state/TabCategory";
 
 @Component({
     selector: "app-files-tab",
@@ -12,7 +12,7 @@ import {TabCategory} from "../../../models/TabCategory";
 })
 export class FilesTabComponent implements OnInit {
 
-    @Input() state!: TabState;
+    @Input() state!: FilesTabState;
 
     files: File[] = [];
     contentLoading = false;
