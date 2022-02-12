@@ -1,4 +1,4 @@
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, skip} from "rxjs";
 import {TabCategory} from "./TabCategory";
 import {File} from "../../../api/models/File";
 import {SortKey} from "../../../api/models/SortKey";
@@ -89,9 +89,13 @@ export class FilesTabState extends TabState implements SaveState<FilesTabSaveSta
     }
 
     private subscribe() {
-        this.filters.pipe(debounceTime(500))
+        this.filters
+            .pipe(skip(1))
+            .pipe(debounceTime(500))
             .subscribe(async () => await this.findFiles());
-        this.sortingPreset.pipe(debounceTime(100))
+        this.sortingPreset
+            .pipe(skip(1))
+            .pipe(debounceTime(100))
             .subscribe(async () => await this.findFiles());
     }
 }
