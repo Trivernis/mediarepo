@@ -10,3 +10,6 @@ pub enum ApiError {
     #[error("The servers api version (version {server:?}) is incompatible with the api client {client:?}")]
     VersionMismatch { server: String, client: String },
 }
+
+unsafe impl Send for ApiError {}
+unsafe impl Sync for ApiError {}

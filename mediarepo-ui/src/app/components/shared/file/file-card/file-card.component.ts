@@ -39,13 +39,13 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
 
     async ngOnInit() {
         this.cachedId = this.entry.data.id;
-        this.setImageDelayed();
+        this.loading = true;
     }
 
     async ngOnChanges(changes: SimpleChanges) {
         if (changes["entry"] && (this.cachedId === undefined || this.entry.data.id !== this.cachedId)) {
             this.cachedId = this.entry.data.id;
-            this.setImageDelayed();
+            this.loading = true;
         }
         if (changes["fileChanged"]) {
             this.fileChanged.subscribe(() => this.changeDetector.markForCheck());

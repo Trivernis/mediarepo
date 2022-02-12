@@ -4,9 +4,11 @@ import {
     Component,
     DoCheck,
     ElementRef,
+    EventEmitter,
     Input,
     OnDestroy,
     OnInit,
+    Output,
     ViewChild
 } from "@angular/core";
 import {SafeResourceUrl} from "@angular/platform-browser";
@@ -23,11 +25,17 @@ export class ContentAwareImageComponent implements OnInit, DoCheck, OnDestroy {
     @Input() maximizeWidth: boolean = true;
     @Input() borderRadius: string | undefined;
     @Input() decoding: "async" | "sync" | "auto" = "auto";
-    @ViewChild("image") image?: ElementRef<HTMLImageElement>;
+    @Input() maxRetry = 3;
+    @Input() retryDelay = 200;
+    @ViewChild("image") imageElement?: ElementRef<HTMLImageElement>;
     @ViewChild("imageContainer") imageContainer?: ElementRef<HTMLDivElement>;
+    @Output() appLoadEnd = new EventEmitter<void>();
+    @Output() appLoadError = new EventEmitter<void>();
+
     scaleWidth = false;
     private previousHeight = 0;
     private previousWidth = 0;
+    private retryCount = 0;
     private readonly checkInterval?: number;
 
     constructor(private changeDetector: ChangeDetectorRef) {
@@ -35,8 +43,8 @@ export class ContentAwareImageComponent implements OnInit, DoCheck, OnDestroy {
     }
 
     public ngOnInit(): void {
-        if (this.image) {
-            this.image.nativeElement.decoding = this.decoding;
+        if (this.imageElement) {
+            this.imageElement.nativeElement.decoding = this.decoding;
             this.changeDetector.detach();
         }
     }
@@ -50,9 +58,14 @@ export class ContentAwareImageComponent implements OnInit, DoCheck, OnDestroy {
     }
 
     public checkSize(): void {
-        if (this.image?.nativeElement && this.imageContainer?.nativeElement) {
-            this.adjustSize(this.image.nativeElement, this.imageContainer.nativeElement);
+        if (this.imageElement?.nativeElement && this.imageContainer?.nativeElement) {
+            this.adjustSize(this.imageElement.nativeElement, this.imageContainer.nativeElement);
         }
+    }
+
+    public onImageLoad(image: HTMLImageElement, imageContainer: HTMLDivElement): void {
+        this.adjustSize(image, imageContainer);
+        this.appLoadEnd.emit();
     }
 
     /**
@@ -75,6 +88,19 @@ export class ContentAwareImageComponent implements OnInit, DoCheck, OnDestroy {
                 this.scaleWidth = scaleWidth;
                 this.changeDetector.detectChanges();
             }
+        }
+    }
+
+    public onImageLoadError(error: ErrorEvent, image: HTMLImageElement): void {
+        const imageSrc = image.src;
+
+        if (this.retryCount < this.maxRetry) {
+            this.retryCount++;
+            setTimeout(() => {
+                image.src = imageSrc;
+            }, this.retryDelay * this.retryCount);
+        } else {
+            this.appLoadError.emit();
         }
     }
 }

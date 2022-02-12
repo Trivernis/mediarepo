@@ -4,8 +4,10 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    EventEmitter,
     Input,
     OnChanges,
+    Output,
     SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../../api/models/File";
@@ -24,10 +26,12 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterVi
 
     @Input() file!: File;
     @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
+    @Output() loadEnd = new EventEmitter<void>();
 
     public thumbUrl: SafeResourceUrl | undefined;
     public fileType!: string;
     public thumbnailSupported: boolean = false;
+    public displayError = false;
 
     private supportedThumbnailTypes = ["image", "video"];
     private previousStatus = "imported";
@@ -55,10 +59,16 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterVi
             );
             this.fileType = this.getFileType();
             this.thumbnailSupported = this.getThumbnailSupported();
+            this.displayError = false;
         }
         if (changes["fileChanged"]) {
             this.fileChanged.subscribe(() => this.changeDetector.markForCheck());
         }
+    }
+
+    public onImageLoadError(): void {
+        this.loadEnd.emit();
+        this.displayError = true;
     }
 
     private getThumbnailSupported(): boolean {

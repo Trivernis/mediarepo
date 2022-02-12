@@ -4,6 +4,8 @@ use tauri::{AppHandle, Builder, Invoke, Manager, Runtime};
 use state::ApiState;
 
 use crate::tauri_plugin::state::{AppState, BufferState};
+use futures::future;
+use std::mem;
 use std::thread;
 use std::time::Duration;
 
@@ -97,12 +99,35 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
         app.manage(buffer_state.clone());
 
         let repo_state = AppState::load()?;
+        let background_tasks = repo_state.background_tasks();
         app.manage(repo_state);
 
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(10));
             buffer_state.clear_expired();
             buffer_state.trim_to_size(MAX_BUFFER_SIZE);
+        });
+        thread::spawn(move || {
+            tokio::runtime::Builder::new_current_thread()
+                .thread_name("background_tasks")
+                .enable_time()
+                .build()
+                .expect("failed to build background task runtime")
+                .block_on(async move {
+                    tracing::debug!("background task listener ready");
+                    loop {
+                        let tasks = mem::take(&mut *background_tasks.lock().await);
+
+                        if tasks.len() > 0 {
+                            tracing::debug!("executing {} async background tasks", tasks.len());
+                            future::join_all(tasks.into_iter().map(|t| t.exec())).await;
+                            tracing::debug!("background tasks executed");
+                        } else {
+                            tokio::time::sleep(Duration::from_millis(100)).await;
+                        }
+                    }
+                });
+            tracing::error!("background task executor exited!");
         });
 
         Ok(())

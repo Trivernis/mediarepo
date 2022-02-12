@@ -4,8 +4,10 @@
     <app-middle-centered *ngIf="this.loading">
         <div class="loading-indicator"></div>
     </app-middle-centered>
-    <app-file-thumbnail *ngIf="!this.loading"
-                        [fileChanged]="this.fileChanged"
-                        [file]="this.entry.data"
-                        class="entry-image"></app-file-thumbnail>
+    <app-file-thumbnail
+        (loadEnd)="this.loading = false"
+        [class.hidden]="this.loading"
+        [fileChanged]="this.fileChanged"
+        [file]="this.entry.data"
+        class="entry-image"></app-file-thumbnail>
 </div>

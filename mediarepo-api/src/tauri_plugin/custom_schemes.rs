@@ -1,5 +1,6 @@
+use crate::client_api::ApiClient;
 use crate::tauri_plugin::error::{PluginError, PluginResult};
-use crate::tauri_plugin::state::{ApiState, BufferState};
+use crate::tauri_plugin::state::{ApiState, AppState, AsyncTask, BufferState};
 use crate::types::identifier::FileIdentifier;
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -89,6 +90,7 @@ async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Re
 async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Response> {
     let api_state = app.state::<ApiState>();
     let buf_state = app.state::<BufferState>();
+    let app_state = app.state::<AppState>();
 
     let url = Url::parse(request.uri())?;
     let hash = url
@@ -116,26 +118,50 @@ async fn thumb_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Resu
             .mimetype(&buffer.mime)
             .body(buffer.buf)
     } else {
-        tracing::debug!("Fetching content from daemon");
+        tracing::debug!("Content not loaded. Singnaling retry.");
         let api = api_state.api().await?;
+        let buf_state = buf_state.inner().clone();
+
+        app_state
+            .add_async_task(build_fetch_thumbnail_task(
+                buf_state,
+                api,
+                hash.to_string(),
+                request.uri().to_string(),
+                width,
+                height,
+            ))
+            .await;
+
+        ResponseBuilder::new()
+            .mimetype("text/plain")
+            .status(301)
+            .header("Retry-After", "1")
+            .body("Content loading. Retry in 1s.".as_bytes().to_vec())
+    }
+}
+
+fn build_fetch_thumbnail_task(
+    buf_state: BufferState,
+    api: ApiClient,
+    hash: String,
+    request_uri: String,
+    width: u32,
+    height: u32,
+) -> AsyncTask {
+    AsyncTask::new(async move {
+        tracing::debug!("Fetching content from daemon");
         let (thumb, bytes) = api
             .file
             .get_thumbnail_of_size(
-                FileIdentifier::CD(hash.to_string()),
+                FileIdentifier::CD(hash),
                 ((height as f32 * 0.5) as u32, (width as f32 * 0.5) as u32),
                 ((height as f32 * 1.5) as u32, (width as f32 * 1.5) as u32),
             )
             .await?;
         tracing::debug!("Received {} content bytes", bytes.len());
-        buf_state.add_entry(
-            request.uri().to_string(),
-            thumb.mime_type.clone(),
-            bytes.clone(),
-        );
+        buf_state.add_entry(request_uri, thumb.mime_type.clone(), bytes.clone());
 
-        ResponseBuilder::new()
-            .mimetype(&thumb.mime_type)
-            .status(200)
-            .body(bytes)
-    }
+        Ok(())
+    })
 }

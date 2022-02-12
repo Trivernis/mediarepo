@@ -1,12 +1,16 @@
 use std::collections::HashMap;
+use std::fmt::{Debug, Formatter};
+use std::future::Future;
 use std::mem;
 use std::ops::Deref;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
 use parking_lot::Mutex;
 use parking_lot::RwLock as ParkingRwLock;
 use tauri::async_runtime::RwLock;
+use tokio::sync::Mutex as TokioMutex;
 use tokio::time::Instant;
 
 use crate::client_api::ApiClient;
@@ -169,6 +173,7 @@ pub struct AppState {
     pub active_repo: Arc<RwLock<Option<Repository>>>,
     pub settings: Arc<RwLock<Settings>>,
     pub running_daemons: Arc<RwLock<HashMap<String, DaemonCli>>>,
+    pub background_tasks: Arc<TokioMutex<Vec<AsyncTask>>>,
 }
 
 impl AppState {
@@ -180,6 +185,7 @@ impl AppState {
             active_repo: Default::default(),
             settings: Arc::new(RwLock::new(settings)),
             running_daemons: Default::default(),
+            background_tasks: Default::default(),
         };
 
         Ok(state)
@@ -218,4 +224,37 @@ impl AppState {
 
         Ok(())
     }
+
+    pub async fn add_async_task(&self, task: AsyncTask) {
+        self.background_tasks.lock().await.push(task);
+    }
+
+    pub fn background_tasks(&self) -> Arc<TokioMutex<Vec<AsyncTask>>> {
+        self.background_tasks.clone()
+    }
 }
+
+pub struct AsyncTask {
+    inner: Pin<Box<dyn Future<Output = PluginResult<()>>>>,
+}
+
+impl Debug for AsyncTask {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        "AsyncTask".fmt(f)
+    }
+}
+
+impl AsyncTask {
+    pub fn new<F: 'static + Future<Output = PluginResult<()>>>(inner: F) -> Self {
+        Self {
+            inner: Box::pin(inner),
+        }
+    }
+
+    pub async fn exec(self) -> PluginResult<()> {
+        self.inner.await
+    }
+}
+
+unsafe impl Send for AsyncTask {}
+unsafe impl Sync for AsyncTask {}
