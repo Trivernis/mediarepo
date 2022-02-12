@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use "@angular/material" as mat;
-@use 'src/app/app.component-theme' as app;
 
 @include mat.core();
 
@@ -25,5 +24,4 @@ $warn-palette: map.get($color-config, 'warn');
 
 
 @include mat.all-component-themes($theme);
-@include app.theme($theme);
 

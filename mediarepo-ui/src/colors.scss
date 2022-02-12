@@ -22,11 +22,17 @@ $warn-chill: #fcd349;
 $text: #FFF;
 $text-darker-10: darken($text, 10%);
 
-$background: darken(#424242, 5%);
+$background: darken(#373a46, 10%);
 $background-darker-05: darken($background, 5%);
 $background-darker-10: darken($background, 10%);
 $background-lighter-05: lighten($background, 5%);
 $background-lighter-10: lighten($background, 10%);
+$background-lighter-15: lighten($background, 15%);
 
 // specifics
 $tag-namespace: $accent-lighter-10;
+
+
+// fonts
+$typography-config: mat.get-typography-config($theme);
+$font-family: mat.font-family($typography-config);

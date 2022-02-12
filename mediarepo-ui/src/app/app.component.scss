@@ -1,5 +1,16 @@
 @import "src/colors";
 
+:host, ::ng-deep body {
+    font-family: $font-family;
+    background-color: $background;
+    color: white
+}
+
+::ng-deep .warn {
+    background-color: $warn;
+    color: white
+}
+
 ::ng-deep .mat-button-wrapper > ng-icon {
     font-size: 26px;
 }
@@ -16,3 +27,4 @@
     background-color: $warn;
     color: $text;
 }
+

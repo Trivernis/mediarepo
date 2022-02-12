@@ -14,15 +14,49 @@
 }
 
 .mat-dialog-container {
-    background: $background;
+    background: $background-lighter-05;
 }
 
 .mat-drawer {
-    background: $background;
+    background: $background !important;
 }
 
 .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
     background: $background;
+}
+
+.mat-form-field-flex {
+    background: $background-lighter-05;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+    background: $background-lighter-05;
+}
+
+.mat-autocomplete-panel, mat-option, .mat-menu-panel {
+    background: $background-lighter-05;
+}
+
+button .mat-flat-button {
+    background: $background-lighter-05;
+}
+
+mat-option {
+    &.mat-selected {
+        background: $background-lighter-10 !important;
+    }
+
+    &:hover {
+        background: darken($background-lighter-10, 1%) !important;
+    }
+}
+
+mat-toolbar.mat-toolbar {
+    background: $background-darker-05;
+}
+
+.mat-card {
+    background: $background-lighter-10;
 }
 
 // scrollbar

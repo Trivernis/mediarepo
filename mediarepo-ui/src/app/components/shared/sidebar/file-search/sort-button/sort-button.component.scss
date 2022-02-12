@@ -6,4 +6,8 @@
     background-color: $background-lighter-10;
     text-overflow: ellipsis;
     overflow: hidden;
+
+    &:hover {
+        background-color: $background-lighter-15;
+    }
 }

@@ -85,22 +85,22 @@
     cursor: pointer;
     user-select: none;
     font-size: 1.2em;
-    transition-duration: 0.1s;
+    transition-duration: 0.2s;
     width: 100%;
     background-color: $background-lighter-05;
+
+    &:hover {
+        background-color: $background-lighter-10;
+    }
+
+    &:active {
+        cursor: pointer;
+        background-color: $background;
+    }
 
     app-tag-item {
         margin: auto auto auto 0.25em;
     }
-}
-
-.selectable-tag:hover {
-    background-color: $background-lighter-10;
-}
-
-.selectable-tag:active {
-    cursor: pointer;
-    background-color: $background;
 }
 
 cdk-virtual-scroll-viewport {
@@ -143,6 +143,11 @@ mat-divider {
 .tag-input-item {
     background-color: $background-lighter-10;
     border-radius: 1em;
+    transition-duration: 0.2s;
+
+    &:hover {
+        background-color: $background-lighter-15;
+    }
 }
 
 mat-form-field:focus {
