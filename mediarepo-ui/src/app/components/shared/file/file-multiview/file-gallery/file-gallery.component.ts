@@ -45,6 +45,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit, A
     public fileContentUrl: SafeResourceUrl | undefined;
     public fileChanged = new BehaviorSubject<void>(undefined);
 
+    public selectedIndex = 0;
     public imageViewHeightPercent = 80;
     public previewStripVisible = true;
     public previewedEntries: (Selectable<File> | undefined)[] = [];
@@ -103,6 +104,7 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit, A
             this.selectedFile?.unselect();
             entry.select();
             this.selectedFile = entry;
+            this.selectedIndex = this.entries.indexOf(entry);
             await this.loadSelectedFile();
 
             this.fileSelect.emit(this.selectedFile.data);

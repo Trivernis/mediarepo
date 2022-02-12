@@ -12,6 +12,8 @@
         <app-content-viewer (contextmenu)="this.selectedFile && fileContextMenu.onContextMenu($event, [this.selectedFile!.data])"
                             *ngIf="this.selectedFile"
                             [file]="this.selectedFile!.data"></app-content-viewer>
+        <div class="display-metadata">
+            <span>{{this.selectedIndex + 1}} of {{this.entries.length}}</span></div>
         <app-flap-button (appClick)="this.togglePreviewStrip()" align="center" attach="bottom">
             <ng-icon *ngIf="previewStripVisible" name="mat-expand-more"></ng-icon>
             <ng-icon *ngIf="!previewStripVisible" name="mat-expand-less"></ng-icon>

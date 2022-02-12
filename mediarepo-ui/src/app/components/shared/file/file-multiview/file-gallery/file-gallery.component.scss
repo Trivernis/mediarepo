@@ -92,3 +92,14 @@ app-content-viewer {
         margin: auto;
     }
 }
+
+.display-metadata {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    span {
+        margin: 0.5em;
+        color: $text-darker-10;
+    }
+}
