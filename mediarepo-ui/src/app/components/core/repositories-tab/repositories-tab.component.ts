@@ -119,7 +119,9 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             "Migrating content descriptors to new format...");
         await this.jobService.runJob("MigrateContentDescriptors");
         dialogContext.message.next("Calculating repository sizes...");
-        await this.jobService.runJob("CalculateSizes");
+        await this.jobService.runJob("CalculateSizes", false);
+        dialogContext.message.next("Generating missing thumbnails...");
+        await this.jobService.runJob("GenerateThumbnails");
         dialogContext.message.next("Finished repository startup");
     }
 
@@ -128,7 +130,7 @@ export class RepositoriesTabComponent implements OnInit, AfterViewInit {
             "Opening repository...");
         let dialog = this.dialog.open(BusyDialogComponent, {
             data: {
-                title: `Opening repository ${repository.name}`,
+                title: `Opening repository '${repository.name}'`,
                 message: dialogMessage,
                 allowCancel: true,
             }, disableClose: true,

@@ -1,6 +1,6 @@
 {
     "name": "mediarepo-ui",
-    "version": "0.13.4",
+    "version": "1.0.0-rc.1",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",

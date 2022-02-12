@@ -4,7 +4,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::{namespace, tag};
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{Condition, ConnectionTrait, DatabaseTransaction};
+use sea_orm::{Condition, DatabaseTransaction, TransactionTrait};
 use std::collections::HashMap;
 use std::iter::FromIterator;
 

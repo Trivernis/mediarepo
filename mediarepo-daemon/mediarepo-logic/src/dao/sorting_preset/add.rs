@@ -5,8 +5,8 @@ use mediarepo_database::entities::{sort_key, sorting_preset, sorting_preset_key}
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
-    Condition, ConnectionTrait, DatabaseTransaction, DbBackend, FromQueryResult, JoinType,
-    QuerySelect, Statement,
+    Condition, DatabaseTransaction, DbBackend, FromQueryResult, JoinType, QuerySelect, Statement,
+    TransactionTrait,
 };
 
 #[allow(unused_imports)]

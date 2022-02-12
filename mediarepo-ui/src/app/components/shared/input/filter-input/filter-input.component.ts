@@ -6,6 +6,7 @@ import {FilterExpression, FilterQuery} from "../../../../../api/api-types/files"
 import {debounceTime, map, startWith} from "rxjs/operators";
 import {compareSearchResults} from "../../../../utils/compare-utils";
 import {FilterQueryBuilder} from "../../../../../api/models/FilterQueryBuilder";
+import {normalizeTag} from "../../../../utils/tag-utils";
 
 type AutocompleteEntry = {
     value: string,
@@ -122,11 +123,11 @@ export class FilterInputComponent implements OnChanges {
     }
 
     private filterAutosuggestFilters(filterValue: string): AutocompleteEntry[] {
-        const queryParts = filterValue.split(/\s+or\s+/gi);
+        const queryParts = filterValue.toLowerCase().split(/\s+or\s+/gi);
         const latestQuery = queryParts[queryParts.length - 1];
         const trimmedValue = latestQuery.trim();
         let isNegation = trimmedValue.startsWith("-");
-        const cleanValue = trimmedValue.replace(/^-/, "");
+        const cleanValue = normalizeTag(trimmedValue.replace(/^-/, ""));
         const autosuggestTags = this.tagsForAutocomplete.filter(t => t.includes(cleanValue)).map(t => isNegation ? "-" + t : t);
         let propertyQuerySuggestions: string[] = [];
 

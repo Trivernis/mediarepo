@@ -153,8 +153,11 @@ impl FileApi {
     /// Permanently deletes a file from the disk and database
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn delete_file(&self, file_id: FileIdentifier) -> ApiResult<()> {
-        self.emit_and_get("delete_file", file_id, Some(Duration::from_secs(10)))
-            .await
+        self.emit("delete_file", file_id)
+            .await_reply()
+            .await?;
+
+        Ok(())
     }
 
     /// Returns a list of all thumbnails of the file
@@ -198,7 +201,7 @@ impl FileApi {
     /// Deletes all thumbnails of a file to regenerate them when requested
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn delete_thumbnails(&self, file_id: FileIdentifier) -> ApiResult<()> {
-        self.emit("delete_thumbnails", file_id).await?;
+        self.emit("delete_thumbnails", file_id).await_reply().await?;
 
         Ok(())
     }

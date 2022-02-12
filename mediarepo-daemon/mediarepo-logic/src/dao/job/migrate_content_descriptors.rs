@@ -6,7 +6,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor;
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::Set;
-use sea_orm::ConnectionTrait;
+use sea_orm::TransactionTrait;
 
 impl JobDao {
     #[tracing::instrument(level = "debug", skip(self))]

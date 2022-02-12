@@ -10,7 +10,7 @@ export class JobService {
     constructor() {
     }
 
-    public async runJob(jobType: JobType): Promise<void> {
-        return MediarepoApi.runJob({ jobType });
+    public async runJob(jobType: JobType, sync: boolean = true): Promise<void> {
+        return MediarepoApi.runJob({ jobType, sync });
     }
 }

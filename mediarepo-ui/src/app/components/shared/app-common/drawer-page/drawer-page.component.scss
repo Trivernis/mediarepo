@@ -1,0 +1,39 @@
+@import "src/colors";
+
+mat-drawer {
+    height: 100%;
+    width: 25%;
+    overflow: hidden;
+}
+
+mat-drawer-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+}
+
+mat-drawer-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.drawer-side-inner {
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin: 0;
+}
+
+.drawer-side-top-bar {
+    background: $background;
+}
+
+.collapse-button {
+    height: 2em;
+    float: right;
+
+    ng-icon {
+        margin-top: -0.5em;
+    }
+}

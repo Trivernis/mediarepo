@@ -1,3 +1,13 @@
+@import "src/colors";
+
+:host {
+    display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
 .busy-indicator-overlay {
     position: absolute;
     top: 0;
@@ -5,12 +15,16 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    display: flex;
+    display: block;
     z-index: 998;
 
     mat-progress-spinner {
         z-index: 999;
-        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
     }
 }
 
@@ -26,9 +40,80 @@ hidden {
     display: none;
 }
 
-::ng-deep app-busy-indicator {
-    width: 100%;
-    height: 100%;
-    position: relative;
+
+.loading-indicator-pulse-outer {
+    display: flex;
+    background-color: $primary;
+    animation-name: pulse-outer;
+    animation-duration: 2.5s;
+    border-radius: 1em;
+    width: 2em;
+    height: 2em;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+.loading-indicator-pulse-inner {
     display: block;
+    margin: auto;
+    background-color: $primary-lighter-10;
+    animation-name: pulse-inner;
+    animation-duration: 2.5s;
+    border-radius: 0.5em;
+    width: 1em;
+    height: 1em;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes pulse-outer {
+    2% {
+        border-radius: 1em;
+        width: 2em;
+        height: 2em;
+    }
+
+    48% {
+        border-radius: 2em;
+        width: 4em;
+        height: 4em;
+    }
+
+    52% {
+        border-radius: 2em;
+        width: 4em;
+        height: 4em;
+    }
+
+    98% {
+        border-radius: 1em;
+        width: 2em;
+        height: 2em;
+    }
+}
+
+@keyframes pulse-inner {
+    15% {
+        border-radius: 0.5em;
+        width: 1em;
+        height: 1em;
+    }
+
+    55% {
+        border-radius: 1.75em;
+        width: 2.5em;
+        height: 2.5em;
+    }
+
+    65% {
+        border-radius: 1.75em;
+        width: 2.5em;
+        height: 2.5em;
+    }
+
+    100% {
+        border-radius: 0.5em;
+        width: 1em;
+        height: 1em;
+    }
 }

@@ -1,5 +1,7 @@
+@import "src/colors";
+
 .selectable.selected {
-    background-color: #5c5c5c;
+    background-color: $background-lighter-10;
 }
 
 body {

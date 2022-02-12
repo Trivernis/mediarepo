@@ -1,20 +1,20 @@
-import {Component, EventEmitter, Output} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
 import {ImportService} from "../../../../../services/import/import.service";
 import {LoggingService} from "../../../../../services/logging/logging.service";
 import {AddFileOptions} from "../../../../../models/AddFileOptions";
-import {File} from "../../../../../../api/models/File";
 import {DialogFilter} from "@tauri-apps/api/dialog";
 import {FileOsMetadata} from "../../../../../../api/api-types/files";
+import {ImportTabState} from "../../../../../models/state/ImportTabState";
 
 @Component({
     selector: "app-filesystem-import",
     templateUrl: "./filesystem-import.component.html",
-    styleUrls: ["./filesystem-import.component.scss"]
+    styleUrls: ["./filesystem-import.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilesystemImportComponent {
+export class FilesystemImportComponent implements OnInit {
 
-    @Output() fileImported = new EventEmitter<File>();
-    @Output() importFinished = new EventEmitter<void>();
+    @Input() state!: ImportTabState;
 
     public fileCount: number = 0;
     public files: FileOsMetadata[] = [];
@@ -35,24 +35,49 @@ export class FilesystemImportComponent {
     public resolving = false;
     public importing = false;
     public importingProgress = 0;
+    public importingProgressTotal = 0;
 
-    constructor(private errorBroker: LoggingService, private importService: ImportService) {
+    constructor(
+        private changeDetector: ChangeDetectorRef,
+        private errorBroker: LoggingService,
+        private importService: ImportService
+    ) {
+    }
+
+    public ngOnInit(): void {
+        this.state.selectedPaths.subscribe(paths => {
+            this.files = paths;
+            this.fileCount = paths.length;
+        });
+        this.state.importing.subscribe(importing => {
+            this.importing = importing;
+            this.changeDetector.markForCheck();
+        });
+        this.state.importedCount.subscribe(count => {
+            this.importingProgressTotal = count;
+        });
+        this.state.importingProgress.subscribe(prog => {
+            this.importingProgress = prog;
+            this.changeDetector.markForCheck();
+        });
     }
 
     public async setSelectedPaths(paths: string[]) {
+        this.changeDetector.markForCheck();
         this.resolving = true;
         try {
-            this.files = await this.importService.resolvePathsToFiles(paths);
-            this.fileCount = this.files.length;
+            const selectedPaths = await this.importService.resolvePathsToFiles(paths);
+            this.state.selectedPaths.next(selectedPaths);
         } catch (err: any) {
             console.log(err);
             this.errorBroker.error(err);
         }
         this.resolving = false;
+        this.changeDetector.markForCheck();
     }
 
     public async import() {
-        this.importing = true;
+        this.state.importing.next(true);
 
         this.importingProgress = 0;
         let count = 0;
@@ -63,16 +88,17 @@ export class FilesystemImportComponent {
                     file,
                     this.importOptions
                 );
-                this.fileImported.emit(resultFile);
+                this.state.addImportedFile(resultFile);
             } catch (err: any) {
                 console.log(err);
                 this.errorBroker.error(err);
             }
             count++;
-            this.importingProgress = (count / this.fileCount) * 100;
+            this.state.importedCount.next(count);
+            this.state.importingProgress.next((count / this.fileCount) * 100);
         }
 
-        this.importing = false;
-        this.importFinished.emit();
+        this.state.importing.next(false);
+        this.state.selectedPaths.next([]);
     }
 }

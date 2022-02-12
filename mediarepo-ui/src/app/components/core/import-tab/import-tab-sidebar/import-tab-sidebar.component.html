@@ -1,8 +1,8 @@
 <div class="import-tab-inner">
     <mat-tab-group headerPosition="below">
         <mat-tab label="Import">
-            <app-file-import (fileImported)="fileImported.emit($event)"
-                             (importFinished)="importFinished.emit($event)"></app-file-import>
+            <app-file-import
+                [state]="this.state"></app-file-import>
         </mat-tab>
         <mat-tab *ngIf="selectedFiles.length > 0" label="Edit Tags">
             <app-tag-edit [files]="selectedFiles"></app-tag-edit>

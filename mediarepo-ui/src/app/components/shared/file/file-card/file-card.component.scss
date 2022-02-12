@@ -1,21 +1,35 @@
-mat-card {
-    height: calc(100% - 32px);
-    width: calc(100% - 32px);
-    user-select: none;
+@import "src/colors";
+
+:host {
+    display: block;
+    overflow: hidden;
+    border-radius: 5px;
     cursor: pointer;
+    user-select: none;
+    position: relative;
 }
 
-mat-card-content {
+.file-card-inner {
+    background-color: $background-lighter-05;
     height: 100%;
     width: 100%;
-}
+    margin: 0;
+    display: flex;
+    position: relative;
 
-app-busy-indicator {
-    height: 100%;
-    width: 100%;
+    &.selected {
+        background-color: $primary-darker-10;
+    }
 }
 
 .entry-image {
-    width: 100%;
-    height: 100%;
+    margin: 10px;
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    display: flex;
+}
+
+
+.hidden {
+    display: none;
 }

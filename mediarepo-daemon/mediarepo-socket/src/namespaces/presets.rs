@@ -23,7 +23,7 @@ impl NamespaceProvider for PresetsNamespace {
 
 impl PresetsNamespace {
     #[tracing::instrument(skip_all)]
-    pub async fn all_sorting_presets(ctx: &Context, _: Event) -> IPCResult<()> {
+    pub async fn all_sorting_presets(ctx: &Context, _: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let sorting_presets: Vec<SortingPreset> = repo
             .sorting_preset()
@@ -32,14 +32,12 @@ impl PresetsNamespace {
             .into_iter()
             .map(SortingPreset::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "all_sorting_presets", sorting_presets)
-            .await?;
 
-        Ok(())
+        ctx.response(sorting_presets)
     }
 
     #[tracing::instrument(skip_all)]
-    pub async fn add_sorting_preset(ctx: &Context, event: Event) -> IPCResult<()> {
+    pub async fn add_sorting_preset(ctx: &Context, event: Event) -> IPCResult<Response> {
         let keys = event
             .payload::<Vec<SortKey>>()?
             .into_iter()
@@ -50,25 +48,17 @@ impl PresetsNamespace {
             .sorting_preset()
             .add(AddSortingPresetDto { keys })
             .await?;
-        ctx.emit_to(
-            Self::name(),
-            "add_sorting_preset",
-            SortingPreset::from_model(preset),
-        )
-        .await?;
 
-        Ok(())
+        ctx.response(SortingPreset::from_model(preset))
     }
 
     #[tracing::instrument(skip_all)]
-    pub async fn delete_sorting_preset(ctx: &Context, event: Event) -> IPCResult<()> {
+    pub async fn delete_sorting_preset(ctx: &Context, event: Event) -> IPCResult<Response> {
         let id = event.payload::<i32>()?;
         let repo = get_repo_from_context(ctx).await;
         repo.sorting_preset().delete(id).await?;
-        ctx.emit_to(Self::name(), "delete_sorting_preset", ())
-            .await?;
 
-        Ok(())
+        Ok(Response::empty())
     }
 }
 

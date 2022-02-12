@@ -96,18 +96,17 @@ fn get_builder<L: AsyncStreamProtocolListener>(address: L::AddressType) -> IPCBu
 }
 
 #[tracing::instrument(skip_all)]
-async fn info(ctx: &Context, _: Event) -> IPCResult<()> {
+async fn info(ctx: &Context, _: Event) -> IPCResult<Response> {
     let response = InfoResponse::new(
         env!("CARGO_PKG_NAME").to_string(),
         env!("CARGO_PKG_VERSION").to_string(),
     );
-    ctx.emit("info", response).await?;
 
-    Ok(())
+    ctx.response(response)
 }
 
 #[tracing::instrument(skip_all)]
-async fn shutdown(ctx: &Context, _: Event) -> IPCResult<()> {
+async fn shutdown(ctx: &Context, _: Event) -> IPCResult<Response> {
     ctx.clone().stop().await?;
     {
         let data = ctx.data.read().await;
@@ -115,7 +114,6 @@ async fn shutdown(ctx: &Context, _: Event) -> IPCResult<()> {
         subsystem.request_shutdown();
         subsystem.on_shutdown_requested().await;
     }
-    ctx.emit("shutdown", ()).await?;
 
-    Ok(())
+    Ok(Response::empty())
 }

@@ -1,10 +1,11 @@
-import {Component, Input} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Input} from "@angular/core";
 import {Tag} from "../../../../../api/models/Tag";
 
 @Component({
     selector: "app-tag-item",
     templateUrl: "./tag-item.component.html",
-    styleUrls: ["./tag-item.component.scss"]
+    styleUrls: ["./tag-item.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TagItemComponent {
 

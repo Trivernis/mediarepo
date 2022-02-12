@@ -54,7 +54,7 @@ impl NamespaceProvider for FilesNamespace {
 impl FilesNamespace {
     /// Returns a list of all files
     #[tracing::instrument(skip_all)]
-    async fn all_files(ctx: &Context, _event: Event) -> IPCResult<()> {
+    async fn all_files(ctx: &Context, _event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let files = repo.file().all().await?;
 
@@ -63,26 +63,23 @@ impl FilesNamespace {
             .map(FileBasicDataResponse::from_model)
             .collect();
 
-        ctx.emit_to(Self::name(), "all_files", responses).await?;
-
-        Ok(())
+        ctx.response(responses)
     }
 
     /// Returns a file by id
     #[tracing::instrument(skip_all)]
-    async fn get_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn get_file(ctx: &Context, event: Event) -> IPCResult<Response> {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
         let response = FileBasicDataResponse::from_model(file);
-        ctx.emit_to(Self::name(), "get_file", response).await?;
 
-        Ok(())
+        ctx.response(response)
     }
 
     /// Returns metadata for a given file
     #[tracing::instrument(skip_all)]
-    async fn get_file_metadata(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn get_file_metadata(ctx: &Context, event: Event) -> IPCResult<Response> {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
@@ -97,19 +94,12 @@ impl FilesNamespace {
                 .ok_or_else(|| RepoError::from("file metadata not found"))?
         };
 
-        ctx.emit_to(
-            Self::name(),
-            "get_file_metadata",
-            FileMetadataResponse::from_model(metadata),
-        )
-        .await?;
-
-        Ok(())
+        ctx.response(FileMetadataResponse::from_model(metadata))
     }
 
     /// Returns a list of files by identifier
     #[tracing::instrument(skip_all)]
-    async fn get_files(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn get_files(ctx: &Context, event: Event) -> IPCResult<Response> {
         let ids = event.payload::<Vec<FileIdentifier>>()?;
         let repo = get_repo_from_context(ctx).await;
         let mut responses = Vec::new();
@@ -121,14 +111,13 @@ impl FilesNamespace {
                     .map(FileBasicDataResponse::from_model)?,
             );
         }
-        ctx.emit_to(Self::name(), "get_files", responses).await?;
 
-        Ok(())
+        ctx.response(responses)
     }
 
     /// Searches for files by tags
     #[tracing::instrument(skip_all)]
-    async fn find_files(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn find_files(ctx: &Context, event: Event) -> IPCResult<Response> {
         let req = event.payload::<FindFilesRequest>()?;
         let repo = get_repo_from_context(ctx).await;
 
@@ -139,13 +128,13 @@ impl FilesNamespace {
             .into_iter()
             .map(FileBasicDataResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "find_files", responses).await?;
-        Ok(())
+
+        ctx.response(responses)
     }
 
     /// Adds a file to the repository
     #[tracing::instrument(skip_all)]
-    async fn add_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn add_file(ctx: &Context, event: Event) -> IPCResult<Response> {
         let (request, bytes) = event
             .payload::<TandemPayload<AddFileRequestHeader, BytePayload>>()?
             .into_inner();
@@ -184,18 +173,11 @@ impl FilesNamespace {
             .upsert_mappings(vec![file.cd_id()], tag_ids)
             .await?;
 
-        ctx.emit_to(
-            Self::name(),
-            "add_file",
-            FileBasicDataResponse::from_model(file),
-        )
-        .await?;
-
-        Ok(())
+        ctx.response(FileBasicDataResponse::from_model(file))
     }
 
     #[tracing::instrument(skip_all)]
-    async fn update_status(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn update_status(ctx: &Context, event: Event) -> IPCResult<Response> {
         let request = event.payload::<UpdateFileStatusRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let mut file = file_by_identifier(request.file_id, &repo).await?;
@@ -207,46 +189,35 @@ impl FilesNamespace {
                 ..Default::default()
             })
             .await?;
-        ctx.emit_to(
-            Self::name(),
-            "update_file_status",
-            FileBasicDataResponse::from_model(file),
-        )
-        .await?;
 
-        Ok(())
+        ctx.response(FileBasicDataResponse::from_model(file))
     }
 
     /// Reads the binary contents of a file
     #[tracing::instrument(skip_all)]
-    async fn read_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn read_file(ctx: &Context, event: Event) -> IPCResult<Response> {
         let request = event.payload::<ReadFileRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(request.id, &repo).await?;
         let bytes = repo.file().get_bytes(file.cd()).await?;
 
-        ctx.emit_to(Self::name(), "read_file", BytePayload::new(bytes))
-            .await?;
-
-        Ok(())
+        ctx.response(BytePayload::new(bytes))
     }
 
     /// Deletes a file
     #[tracing::instrument(skip_all)]
-    async fn delete_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn delete_file(ctx: &Context, event: Event) -> IPCResult<Response> {
         let id = event.payload::<FileIdentifier>()?;
         let repo = get_repo_from_context(ctx).await;
         let file = file_by_identifier(id, &repo).await?;
         repo.file().delete(file).await?;
 
-        ctx.emit_to(Self::name(), "delete_file", ()).await?;
-
-        Ok(())
+        Ok(Response::empty())
     }
 
     /// Returns a list of available thumbnails of a file
     #[tracing::instrument(skip_all)]
-    async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn thumbnails(ctx: &Context, event: Event) -> IPCResult<Response> {
         let request = event.payload::<GetFileThumbnailsRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
@@ -260,7 +231,7 @@ impl FilesNamespace {
             let file = file_by_identifier(request.id, &repo).await?;
             thumbnails = repo
                 .file()
-                .create_thumbnails(file, vec![ThumbnailSize::Medium])
+                .create_thumbnails(&file, vec![ThumbnailSize::Medium])
                 .await?;
             tracing::debug!("Thumbnails for file created.");
         }
@@ -269,15 +240,13 @@ impl FilesNamespace {
             .into_iter()
             .map(ThumbnailMetadataResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "get_thumbnails", thumb_responses)
-            .await?;
 
-        Ok(())
+        ctx.response(thumb_responses)
     }
 
     /// Returns a thumbnail that is within the range of the requested sizes
     #[tracing::instrument(skip_all)]
-    async fn get_thumbnail_of_size(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn get_thumbnail_of_size(ctx: &Context, event: Event) -> IPCResult<Response> {
         let request = event.payload::<GetFileThumbnailOfSizeRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let file_cd = cd_by_identifier(request.id.clone(), &repo).await?;
@@ -302,7 +271,7 @@ impl FilesNamespace {
             let middle_size = ((max_size.0 + min_size.0) / 2, (max_size.1 + min_size.1) / 2);
             let thumbnail = repo
                 .file()
-                .create_thumbnails(file, vec![ThumbnailSize::Custom(middle_size)])
+                .create_thumbnails(&file, vec![ThumbnailSize::Custom(middle_size)])
                 .await?;
 
             thumbnail
@@ -314,19 +283,13 @@ impl FilesNamespace {
         thumbnail.get_reader().await?.read_to_end(&mut buf).await?;
         let byte_payload = BytePayload::new(buf);
         let thumb_payload = ThumbnailMetadataResponse::from_model(thumbnail);
-        ctx.emit_to(
-            Self::name(),
-            "get_thumbnail_of_size",
-            TandemPayload::new(thumb_payload, byte_payload),
-        )
-        .await?;
 
-        Ok(())
+        ctx.response(TandemPayload::new(thumb_payload, byte_payload))
     }
 
     /// Updates the name of a file
     #[tracing::instrument(skip_all)]
-    async fn update_file_name(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn update_file_name(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<UpdateFileNameRequest>()?;
         let file = file_by_identifier(request.file_id, &repo).await?;
@@ -340,19 +303,12 @@ impl FilesNamespace {
             })
             .await?;
 
-        ctx.emit_to(
-            Self::name(),
-            "update_file_name",
-            FileMetadataResponse::from_model(metadata),
-        )
-        .await?;
-
-        Ok(())
+        ctx.response(FileMetadataResponse::from_model(metadata))
     }
 
     /// Deletes all thumbnails of a file
     #[tracing::instrument(skip_all)]
-    async fn delete_thumbnails(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn delete_thumbnails(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let id = event.payload::<FileIdentifier>()?;
         let file = file_by_identifier(id, &repo).await?;
@@ -362,6 +318,6 @@ impl FilesNamespace {
             thumb.delete().await?;
         }
 
-        Ok(())
+        Ok(Response::empty())
     }
 }

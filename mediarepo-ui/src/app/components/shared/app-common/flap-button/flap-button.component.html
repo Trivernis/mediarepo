@@ -1,0 +1,5 @@
+<div (click)="this.appClick.emit($event)"
+     [className]="'flap-' + this.attach + ' flap-' + this.align +  ' flap-button'"
+     matRipple>
+    <ng-content></ng-content>
+</div>

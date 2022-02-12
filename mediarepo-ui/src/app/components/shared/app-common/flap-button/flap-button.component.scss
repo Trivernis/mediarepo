@@ -1,0 +1,167 @@
+@import "src/colors";
+
+:host {
+    position: absolute;
+    transition-duration: 0.5s;
+
+    &:hover {
+        & > .flap-top, & > .flap-bottom {
+            height: 1.5em;
+        }
+
+        & > .flap-left, & > .flap-right {
+            width: 1.5em;
+        }
+    }
+
+    &[attach='left'], &[attach='right'] {
+        top: calc(50% - 5em);
+        height: 10em;
+        width: 2.5em;
+    }
+
+    &[attach='top'], &[attach='bottom'] {
+        left: calc(50% - 5em);
+        width: 10em;
+        height: 2.5em;
+    }
+
+    &[attach='left'] {
+        left: 0;
+    }
+
+    &[attach='right'] {
+        right: 0;
+    }
+
+    &[attach='top'] {
+        top: 0;
+    }
+
+    &[attach='bottom'] {
+        bottom: 0;
+    }
+
+    &[attach='left'], &[attach='top'][align='start'], &[attach='bottom'][align='start'] {
+        .flap-button {
+            left: 0;
+        }
+    }
+
+    &[attach='right'], &[attach='top'][align='end'], &[attach='bottom'][align='end'] {
+        .flap-button {
+            right: 0;
+        }
+    }
+
+    &[attach='top'], &[attach='left'][align='start'], &[attach='right'][align='start'] {
+        .flap-button {
+            top: 0;
+        }
+    }
+
+    &[attach='bottom'], &[attach='left'][align='end'], &[attach='right'][align='end'] {
+        .flap-button {
+            bottom: 0;
+        }
+    }
+
+    &[attach='left'][align='center'], &[attach='right'][align='center'] {
+        .flap-button {
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+    }
+
+    &[attach='top'][align='center'], &[attach='bottom'][align='center'] {
+        .flap-button {
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+    }
+}
+
+.flap-button {
+    position: absolute;
+    display: flex;
+    opacity: 0.7;
+    background: $accent-darker-10;
+    text-align: center;
+    transition-duration: 0.1s;
+    overflow: hidden;
+
+    &:hover {
+        background: $accent;
+        opacity: 0.9;
+        cursor: pointer;
+        transition: 0.5s;
+    }
+
+    ::ng-deep ng-icon {
+        margin: auto;
+    }
+}
+
+
+.flap-top, .flap-bottom {
+    width: 4em;
+    height: 2px;
+}
+
+.flap-button.flap-top:hover, .flap-button.flap-bottom:hover {
+    width: 10em;
+    height: 2em;
+}
+
+.flap-left, .flap-right {
+    width: 2px;
+    height: 4em;
+}
+
+.flap-button.flap-left:hover, .flap-button.flap-right:hover {
+    width: 2em;
+    height: 10em;
+}
+
+$flap-border-radius: 2em;
+
+.flap-start.flap-left, .flap-start.flap-top {
+    border-bottom-right-radius: $flap-border-radius;
+}
+
+.flap-start.flap-right, .flap-end.flap-top {
+    border-bottom-left-radius: $flap-border-radius;
+}
+
+.flap-end.flap-left, .flap-start.flap-bottom {
+    border-top-right-radius: $flap-border-radius;
+}
+
+.flap-end.flap-right, .flap-end.flap-bottom {
+    border-top-left-radius: $flap-border-radius;
+}
+
+.flap-center {
+
+    &.flap-left {
+        border-top-right-radius: $flap-border-radius;
+        border-bottom-right-radius: $flap-border-radius;
+    }
+
+    &.flap-right {
+        border-top-left-radius: $flap-border-radius;
+        border-bottom-left-radius: $flap-border-radius;
+    }
+
+    &.flap-top {
+        border-bottom-right-radius: $flap-border-radius;
+        border-bottom-left-radius: $flap-border-radius;
+    }
+
+    &.flap-bottom {
+        border-top-right-radius: $flap-border-radius;
+        border-top-left-radius: $flap-border-radius;
+    }
+}
+
+

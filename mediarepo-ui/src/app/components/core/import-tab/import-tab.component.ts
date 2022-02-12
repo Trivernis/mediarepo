@@ -1,48 +1,27 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
 import {File} from "../../../../api/models/File";
-import {TabState} from "../../../models/TabState";
+import {ImportTabState} from "../../../models/state/ImportTabState";
 
 @Component({
     selector: "app-import-tab",
     templateUrl: "./import-tab.component.html",
-    styleUrls: ["./import-tab.component.scss"]
+    styleUrls: ["./import-tab.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportTabComponent implements OnInit {
 
-    @Input() state!: TabState;
+    @Input() state!: ImportTabState;
 
     public files: File[] = [];
     public selectedFiles: File[] = [];
 
-    private newFiles: File[] = [];
-
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
     }
 
     public ngOnInit(): void {
         this.state.files.subscribe(files => files ? this.files = files : undefined);
     }
 
-    /**
-     * Adds an imported file to the list of imported files
-     * @param {File} file
-     * @returns {Promise<void>}
-     */
-    public async addFileFromImport(file: File) {
-        this.newFiles.push(file);
-        if (this.newFiles.length % 50 === 0) {  // refresh every 50 pictures
-            this.refreshFileView();
-        }
-    }
-
-    /**
-     * Refreshes the file view
-     * @returns {Promise<void>}
-     */
-    public refreshFileView() {
-        this.state.files.next([...this.state.files.value, ...this.newFiles]);
-        this.newFiles = [];
-    }
 
     public onFileSelect(files: File[]) {
         this.selectedFiles = files;

@@ -4,10 +4,10 @@ import {RepositoryService} from "../../services/repository/repository.service";
 import {MatTabChangeEvent, MatTabGroup} from "@angular/material/tabs";
 import {TagService} from "../../services/tag/tag.service";
 import {TabService} from "../../services/tab/tab.service";
-import {TabCategory} from "../../models/TabCategory";
-import {TabState} from "../../models/TabState";
-import {AppState} from "../../models/AppState";
+import {TabCategory} from "../../models/state/TabCategory";
+import {AppState} from "../../models/state/AppState";
 import {StateService} from "../../services/state/state.service";
+import {TabState} from "../../models/state/TabState";
 
 @Component({
     selector: "app-core",
@@ -45,7 +45,7 @@ export class CoreComponent {
         this.stateService.state.subscribe(state => {
             this.appState = state;
             if (this.appState.tabs.value.length === 0) {
-                this.addTab();
+                this.addEmptyTab();
             } else {
                 this.tabGroup.selectedIndex = 1;
             }
@@ -58,7 +58,7 @@ export class CoreComponent {
                 }
 
                 if (this.tabs.length === 0) {
-                    this.addTab();
+                    this.addEmptyTab();
                 }
             });
         });
@@ -76,19 +76,7 @@ export class CoreComponent {
         }
     }
 
-    public addFilesTab(): void {
-        this.appState.addTab(TabCategory.Files);
-        this.tabGroup.selectedIndex = this.tabs.length;
-        this.newTab = false;
-    }
-
-    public addImportTab(): void {
-        this.appState.addTab(TabCategory.Import);
-        this.tabGroup.selectedIndex = this.tabs.length;
-        this.newTab = false;
-    }
-
-    public addTab(): void {
+    public addEmptyTab(): void {
         if (this.tabGroup) {
             this.newTab = true;
             this.tabGroup.selectedIndex = this.tabs.length + 1;
@@ -118,5 +106,11 @@ export class CoreComponent {
 
     public trackByTabId(index: number, item: TabState) {
         return item.uuid;
+    }
+
+    public addTab(category: TabCategory): void {
+        this.appState.addTab(category);
+        this.tabGroup.selectedIndex = this.tabs.length;
+        this.newTab = false;
     }
 }

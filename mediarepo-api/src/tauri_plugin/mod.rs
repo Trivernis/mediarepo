@@ -7,6 +7,7 @@ use crate::tauri_plugin::state::{AppState, BufferState};
 use std::thread;
 use std::time::Duration;
 
+mod background_tasks;
 pub(crate) mod commands;
 pub mod custom_schemes;
 pub mod error;
@@ -14,9 +15,10 @@ mod settings;
 mod state;
 mod utils;
 
+use crate::tauri_plugin::background_tasks::{start_background_task_runtime, TaskContext};
 use commands::*;
 
-const MAX_BUFFER_SIZE: usize = 2 * 1024 * 1024 * 1024;
+const MAX_BUFFER_SIZE: usize = 2 * 1024 * 1024 * 1024; // 2GiB
 
 pub fn register_plugin<R: Runtime>(builder: Builder<R>) -> Builder<R> {
     let repo_plugin = MediarepoPlugin::new();
@@ -98,6 +100,10 @@ impl<R: Runtime> Plugin<R> for MediarepoPlugin<R> {
 
         let repo_state = AppState::load()?;
         app.manage(repo_state);
+
+        let task_context = TaskContext::new();
+        start_background_task_runtime(task_context.clone());
+        app.manage(task_context);
 
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(10));

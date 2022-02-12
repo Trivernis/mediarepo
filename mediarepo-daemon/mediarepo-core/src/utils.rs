@@ -9,6 +9,7 @@ use crate::error::RepoResult;
 /// Parses a normalized tag into its two components of namespace and tag
 pub fn parse_namespace_and_tag(norm_tag: String) -> (Option<String>, String) {
     norm_tag
+        .to_lowercase()
         .split_once(':')
         .map(|(n, t)| (Some(n.trim().to_string()), t.trim().to_string()))
         .unwrap_or((None, norm_tag.trim().to_string()))
@@ -49,10 +50,7 @@ pub async fn get_folder_size(path: PathBuf) -> RepoResult<u64> {
     let futures = all_files.into_iter().map(|f| read_file_size(f));
     let results = future::join_all(futures).await;
 
-    let size = results
-        .into_iter()
-        .filter_map(|r| r.ok())
-        .fold(0u64, |acc, val| acc + val);
+    let size = results.into_iter().filter_map(|r| r.ok()).sum();
 
     Ok(size)
 }

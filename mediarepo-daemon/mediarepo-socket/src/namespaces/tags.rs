@@ -39,7 +39,7 @@ impl NamespaceProvider for TagsNamespace {
 impl TagsNamespace {
     /// Returns a list of all tags in the database
     #[tracing::instrument(skip_all)]
-    async fn all_tags(ctx: &Context, _event: Event) -> IPCResult<()> {
+    async fn all_tags(ctx: &Context, _event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let tags: Vec<TagResponse> = repo
             .tag()
@@ -48,14 +48,13 @@ impl TagsNamespace {
             .into_iter()
             .map(TagResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "all_tags", tags).await?;
 
-        Ok(())
+        ctx.response(tags)
     }
 
     /// Returns a list of all namespaces from the database
     #[tracing::instrument(skip_all)]
-    async fn all_namespaces(ctx: &Context, _event: Event) -> IPCResult<()> {
+    async fn all_namespaces(ctx: &Context, _event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let namespaces: Vec<NamespaceResponse> = repo
             .tag()
@@ -64,30 +63,25 @@ impl TagsNamespace {
             .into_iter()
             .map(NamespaceResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "all_namespaces", namespaces)
-            .await?;
 
-        Ok(())
+        ctx.response(namespaces)
     }
 
     /// Returns all tags for a single file
     #[tracing::instrument(skip_all)]
-    async fn tags_for_file(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn tags_for_file(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<GetFileTagsRequest>()?;
         let file = file_by_identifier(request.id, &repo).await?;
         let tags = repo.tag().tags_for_cd(file.cd_id()).await?;
         let responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from_model).collect();
 
-        ctx.emit_to(Self::name(), "tags_for_file", responses)
-            .await?;
-
-        Ok(())
+        ctx.response(responses)
     }
 
     /// Returns all tags for a given list of file hashes
     #[tracing::instrument(skip_all)]
-    async fn tags_for_files(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn tags_for_files(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<GetFilesTagsRequest>()?;
         let tag_responses: Vec<TagResponse> = repo
@@ -103,15 +97,13 @@ impl TagsNamespace {
             .into_iter()
             .map(TagResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "tags_for_files", tag_responses)
-            .await?;
 
-        Ok(())
+        ctx.response(tag_responses)
     }
 
     /// Returns a map of content descriptors to assigned tags
     #[tracing::instrument(skip_all)]
-    async fn tag_cd_map_for_files(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn tag_cd_map_for_files(ctx: &Context, event: Event) -> IPCResult<Response> {
         let request = event.payload::<GetFileTagMapRequest>()?;
         let repo = get_repo_from_context(ctx).await;
         let cds = request
@@ -136,14 +128,12 @@ impl TagsNamespace {
             })
             .collect::<HashMap<String, Vec<TagResponse>>>();
 
-        ctx.emit_to(Self::name(), "file_tag_map", mappings).await?;
-
-        Ok(())
+        ctx.response(mappings)
     }
 
     /// Creates all tags given as input or returns the existing tags
     #[tracing::instrument(skip_all)]
-    async fn create_tags(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn create_tags(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let tags = event.payload::<Vec<String>>()?;
         let created_tags = repo
@@ -160,15 +150,14 @@ impl TagsNamespace {
             .into_iter()
             .map(TagResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "create_tags", responses).await?;
 
-        Ok(())
+        ctx.response(responses)
     }
 
     /// Changes tags of a file
     /// it removes the tags from the removed list and adds the one from the add list
     #[tracing::instrument(skip_all)]
-    async fn change_file_tags(ctx: &Context, event: Event) -> IPCResult<()> {
+    async fn change_file_tags(ctx: &Context, event: Event) -> IPCResult<Response> {
         let repo = get_repo_from_context(ctx).await;
         let request = event.payload::<ChangeFileTagsRequest>()?;
         let file = file_by_identifier(request.file_id, &repo).await?;
@@ -191,9 +180,7 @@ impl TagsNamespace {
             .into_iter()
             .map(TagResponse::from_model)
             .collect();
-        ctx.emit_to(Self::name(), "change_file_tags", responses)
-            .await?;
 
-        Ok(())
+        ctx.response(responses)
     }
 }

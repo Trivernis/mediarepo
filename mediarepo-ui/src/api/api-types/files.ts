@@ -68,9 +68,10 @@ export type FileMetadata = {
     file_id: number,
     name?: string,
     comment?: string,
-    creation_time: Date,
-    change_time: Date,
-    import_time: Date,
+    creation_time: string,
+    change_time: string,
+    import_time: string,
+    size: number,
 };
 
 export type FileOsMetadata = {

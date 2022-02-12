@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.28.1"
+version = "0.31.0"
 edition = "2018"
 license = "gpl-3"
 
@@ -15,12 +15,12 @@ serde_json = { version = "1.0.78", optional = true }
 directories = { version = "4.0.1", optional = true }
 mime_guess = { version = "2.0.3", optional = true }
 serde_piecewise_default = "0.2.0"
-futures = { version = "0.3.19", optional = true }
+futures = { version = "0.3.21", optional = true }
 url = { version = "2.2.2", optional = true }
 pathsearch = { version = "0.2.0", optional = true }
 
 [dependencies.bromine]
-version = "0.17.1"
+version = "0.18.1"
 optional = true
 features = ["serialize_bincode"]
 

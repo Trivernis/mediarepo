@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.13.4"
+version = "1.0.0-rc.1"
 description = "The UI for the mediarepo media management tool"
 authors = ["you"]
 license = ""

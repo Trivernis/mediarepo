@@ -1,4 +1,5 @@
 import {FileStatus, FilterExpression, FilterQuery, PropertyQuery, ValueComparator} from "../api-types/files";
+import {normalizeTag} from "../../app/utils/tag-utils";
 
 export type Comparator = "Less" | "Equal" | "Greater" | "Between";
 export type PropertyType =
@@ -14,7 +15,7 @@ export type PropertyType =
 export class FilterQueryBuilder {
 
     public static tag(tag: string, negate: boolean): FilterQuery {
-        return { Tag: { tag, negate } };
+        return { Tag: { tag: normalizeTag(tag), negate } };
     }
 
     public static status(status: FileStatus): FilterQuery {
@@ -74,7 +75,7 @@ export class FilterQueryBuilder {
     }
 
     public static buildFilterFromString(filterStr: string): FilterQuery | undefined {
-        filterStr = filterStr.trim();
+        filterStr = filterStr.trim().toLowerCase();
 
         if (filterStr.startsWith(".")) {
             const cleanFilter = filterStr.replace(/^\./, "");

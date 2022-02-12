@@ -10,7 +10,14 @@
     <div (cdkDragMoved)="this.onDragMoved($event)"
          [cdkDragFreeDragPosition]="this.imagePosition" cdkDrag class="image-drag-container">
         <div [style]="{scale: this.imageZoom}" class="image-scale-container">
-            <app-content-aware-image [imageSrc]="this.imageUrl" decoding="sync"></app-content-aware-image>
+            <app-busy-indicator [busy]="this.loading" indicatorType="pulse">
+                <app-content-aware-image (appLoadEnd)="this.loading = false" (appLoadError)="this.loading = false"
+                                         [class.hidden]="this.loading"
+                                         [imageSrc]="this.imageUrl"
+                                         [maxRetry]="3"
+                                         [retryDelay]="500"
+                                         decoding="sync"></app-content-aware-image>
+            </app-busy-indicator>
         </div>
     </div>
 </div>

@@ -10,6 +10,7 @@ pub struct RunJobRequest {
 pub enum JobType {
     MigrateContentDescriptors,
     CalculateSizes,
+    GenerateThumbnails,
     CheckIntegrity,
     Vacuum,
 }

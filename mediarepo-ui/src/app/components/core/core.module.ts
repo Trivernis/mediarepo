@@ -39,6 +39,7 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {
     RepositoryDetailsViewComponent
 } from "./repositories-tab/repository-details-view/repository-details-view.component";
+import { EmptyTabComponent } from './empty-tab/empty-tab.component';
 
 
 @NgModule({
@@ -52,6 +53,7 @@ import {
         RepositoryCardComponent,
         DownloadDaemonDialogComponent,
         RepositoryDetailsViewComponent,
+        EmptyTabComponent,
     ],
     exports: [
         CoreComponent,

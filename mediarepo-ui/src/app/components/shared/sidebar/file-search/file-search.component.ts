@@ -15,7 +15,7 @@ import {LoggingService} from "../../../../services/logging/logging.service";
 import {FilterDialogComponent} from "./filter-dialog/filter-dialog.component";
 import {Tag} from "../../../../../api/models/Tag";
 import {clipboard} from "@tauri-apps/api";
-import {TabState} from "../../../../models/TabState";
+import {FilesTabState} from "../../../../models/state/FilesTabState";
 import {FilterQueryBuilder} from "../../../../../api/models/FilterQueryBuilder";
 import {SearchFilters} from "../../../../../api/models/SearchFilters";
 import {FileStatus, FilterExpression,} from "../../../../../api/api-types/files";
@@ -37,7 +37,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
 
     @Input() availableTags: Tag[] = [];
     @Input() contextTags: Tag[] = [];
-    @Input() state!: TabState;
+    @Input() state!: FilesTabState;
     @Input() tagsLoading = false;
 
     @Output() searchStartEvent = new EventEmitter<void>();
@@ -53,8 +53,10 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public displayImported = true;
     public displayArchived = true;
     public displayDeleted = false;
+    public searchDuration = 0;
 
     private needsScroll = false;
+    private searchStart = Date.now();
 
     constructor(
         private logger: LoggingService,
@@ -69,6 +71,13 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
             this.assignDisplayedFilters();
         });
         this.state.sortingPreset.subscribe(s => this.sortingPreset = s);
+        this.state.loading.subscribe(l => {
+            if (l) {
+                this.searchStart = Date.now();
+            } else {
+                this.searchDuration = Math.round((Date.now() - this.searchStart) / 100) / 10;
+            }
+        });
         this.applyStatusFromFilters();
         this.needsScroll = true;
         this.assignDisplayedFilters();

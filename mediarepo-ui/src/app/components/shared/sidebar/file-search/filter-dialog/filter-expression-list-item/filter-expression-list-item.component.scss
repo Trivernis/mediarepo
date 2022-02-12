@@ -1,8 +1,10 @@
+@import "src/colors";
+
 mat-list {
     height: 100%;
     width: 100%;
     display: block;
-    background-color: #353535;
+    background-color: $background;
     padding: 0;
     border-radius: 0.25em;
 }
@@ -22,7 +24,7 @@ mat-list-item.or-filter-list-item {
 }
 
 .selected {
-    background-color: #5c5c5c;
+    background-color: $background-lighter-10;
 }
 
 app-selectable {
@@ -31,5 +33,5 @@ app-selectable {
 }
 
 .or-combinator {
-    color: #7dff70;
+    color: $accent-lighter-10;
 }

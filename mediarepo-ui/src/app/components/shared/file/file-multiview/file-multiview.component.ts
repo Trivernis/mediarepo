@@ -6,7 +6,7 @@ import {FileActionBaseComponent} from "../../app-base/file-action-base/file-acti
 import {MatDialog} from "@angular/material/dialog";
 import {LoggingService} from "../../../../services/logging/logging.service";
 import {FileService} from "../../../../services/file/file.service";
-import {TabState} from "../../../../models/TabState";
+import {FilesTabState} from "../../../../models/state/FilesTabState";
 
 @Component({
     selector: "app-file-multiview",
@@ -17,7 +17,7 @@ export class FileMultiviewComponent extends FileActionBaseComponent implements A
 
     @Input() files!: File[];
     @Input() mode: "grid" | "gallery" = "grid";
-    @Input() tabState!: TabState;
+    @Input() tabState!: FilesTabState;
 
     @Output() fileOpenEvent = new EventEmitter<File>();
     @Output() fileSelectEvent = new EventEmitter<File[]>();

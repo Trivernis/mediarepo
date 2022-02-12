@@ -78,7 +78,7 @@ export class FileService {
      */
     public buildThumbnailUrl(file: File, height: number, width: number): SafeResourceUrl {
         return this.sanitizer.bypassSecurityTrustResourceUrl(
-            `thumb://${file.cd}?width=${250}&height=${250}`);
+            `thumb://${file.cd}?width=${height}&height=${width}`);
     }
 
     /**

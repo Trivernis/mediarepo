@@ -1,0 +1,31 @@
+@import "src/colors";
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    background: radial-gradient(circle, $background-darker-05 80%, $primary 200%);
+}
+
+.button-container {
+    height: 6em;
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+button {
+    padding: 0.5em 1em;
+    font-size: 1.5em;
+    margin: 1em;
+    border-radius: 0.5em;
+    transition-duration: 0.25s;
+
+    &:hover {
+        scale: 1.25;
+    }
+
+    &:active {
+        scale: 1;
+    }
+}

@@ -1,12 +1,15 @@
-<mat-drawer-container (keyDownEvent)="this.onKeydown($event)" appInputReceiver autosize>
-    <mat-drawer disableClose mode="side" opened>
+<app-drawer-page (keyDownEvent)="this.onKeydown($event)" appInputReceiver>
+    <app-drawer-page-side>
         <app-files-tab-sidebar (searchEndEvent)="this.contentLoading = false;"
                                (searchStartEvent)="this.contentLoading = true;"
                                [selectedFiles]="this.selectedFiles"
                                [state]="this.state"></app-files-tab-sidebar>
-    </mat-drawer>
-    <mat-drawer-content>
-        <app-busy-indicator [blurBackground]="true" [busy]="contentLoading" [darkenBackground]="true">
+    </app-drawer-page-side>
+    <app-drawer-page-content>
+        <app-busy-indicator *ngIf="!this.metadata || this.metadata.file_count > 0"
+                            [blurBackground]="true"
+                            [busy]="contentLoading"
+                            [darkenBackground]="true">
             <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)"
                                 (modeChangeEvent)="state.mode.next($event)"
                                 [files]="this.files"
@@ -14,5 +17,9 @@
                                 [preselectedFile]="this.getStateSelectedFile()"
                                 [tabState]="this.state"></app-file-multiview>
         </app-busy-indicator>
-    </mat-drawer-content>
-</mat-drawer-container>
+        <app-middle-centered *ngIf="this.metadata && this.metadata.file_count === 0" class="import-prompt">
+            <div><h1>There are no files in this repository.</h1></div>
+            <button (click)="this.onImportFiles()" color="primary" mat-flat-button>Import files</button>
+        </app-middle-centered>
+    </app-drawer-page-content>
+</app-drawer-page>

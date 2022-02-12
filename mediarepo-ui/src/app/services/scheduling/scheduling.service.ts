@@ -50,7 +50,7 @@ export class SchedulingService {
                     }
                 }
             }
-            await this.delay(1);
+            await this.delay(0);
         }
     }
 }

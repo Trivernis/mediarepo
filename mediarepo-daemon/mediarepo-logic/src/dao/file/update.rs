@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::{Set, Unchanged};
-use sea_orm::{ConnectionTrait, NotSet};
+use sea_orm::{NotSet, TransactionTrait};
 
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::fs::thumbnail_store::Dimensions;
@@ -58,7 +58,7 @@ impl FileDao {
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn create_thumbnails<I: IntoIterator<Item = ThumbnailSize> + Debug>(
         &self,
-        file: FileDto,
+        file: &FileDto,
         sizes: I,
     ) -> RepoResult<Vec<ThumbnailDto>> {
         let bytes = self.get_bytes(file.cd()).await?;

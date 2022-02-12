@@ -2,15 +2,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
     EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
     Output,
-    SimpleChanges,
-    ViewChild
+    SimpleChanges
 } from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {Selectable} from "../../../../models/Selectable";
@@ -26,7 +24,7 @@ const LOADING_WORK_KEY = "FILE_THUMBNAIL_LOADING";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
-    @ViewChild("card") card!: ElementRef;
+
     @Input() public entry!: Selectable<File>;
     @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
     @Output() clickEvent = new EventEmitter<FileCardComponent>();
@@ -41,13 +39,13 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
 
     async ngOnInit() {
         this.cachedId = this.entry.data.id;
-        this.setImageDelayed();
+        this.loading = true;
     }
 
     async ngOnChanges(changes: SimpleChanges) {
         if (changes["entry"] && (this.cachedId === undefined || this.entry.data.id !== this.cachedId)) {
             this.cachedId = this.entry.data.id;
-            this.setImageDelayed();
+            this.loading = true;
         }
         if (changes["fileChanged"]) {
             this.fileChanged.subscribe(() => this.changeDetector.markForCheck());
@@ -60,6 +58,11 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
+    public onClick(): void {
+        console.debug(this.entry.data.id);
+        this.clickEvent.emit(this);
+    }
+
     private setImageDelayed() {
         if (this.workId) {
             this.schedulingService.cancelWork(LOADING_WORK_KEY, this.workId);
@@ -68,7 +71,7 @@ export class FileCardComponent implements OnInit, OnChanges, OnDestroy {
         this.workId = this.schedulingService.addWork(
             LOADING_WORK_KEY,
             async () => {
-                await this.schedulingService.delay(1);
+                await this.schedulingService.delay(0);
                 this.loading = false;
                 this.changeDetector.markForCheck();
             }

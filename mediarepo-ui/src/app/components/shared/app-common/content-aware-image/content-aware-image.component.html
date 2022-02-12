@@ -1,5 +1,6 @@
 <div #imageContainer (window:resize)="this.adjustSize(image, imageContainer)" class="image-container">
-    <img #image (load)="this.adjustSize(image, imageContainer)" [class.scale-height]="(!scaleWidth) && maximizeHeight"
-         [class.scale-width]="scaleWidth && maximizeWidth" [src]="this.imageSrc"
+    <img #image (error)="this.onImageLoadError($event, image)" (load)="this.onImageLoad(image, imageContainer)"
+         [class.scale-height]="(!scaleWidth) && maximizeHeight" [class.scale-width]="scaleWidth && maximizeWidth"
+         [src]="this.imageSrc"
          [style]="{borderRadius: this.borderRadius}" alt="">
 </div>

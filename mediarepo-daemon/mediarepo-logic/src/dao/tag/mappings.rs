@@ -1,6 +1,6 @@
-use sea_orm::{ConnectionTrait, DatabaseTransaction};
-use sea_orm::ActiveValue::Set;
 use sea_orm::prelude::*;
+use sea_orm::ActiveValue::Set;
+use sea_orm::{DatabaseTransaction, TransactionTrait};
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::content_descriptor_tag;
@@ -28,11 +28,13 @@ impl TagDao {
             })
             .collect();
 
-        content_descriptor_tag::Entity::insert_many(active_models)
-            .exec(&trx)
-            .await?;
+        if !active_models.is_empty() {
+            content_descriptor_tag::Entity::insert_many(active_models)
+                .exec(&trx)
+                .await?;
 
-        trx.commit().await?;
+            trx.commit().await?;
+        }
 
         Ok(())
     }
@@ -60,7 +62,7 @@ async fn get_existing_mappings(
         .all(trx)
         .await?
         .into_iter()
-        .map(|model: content_descriptor_tag::Model| (model.tag_id, model.cd_id))
+        .map(|model: content_descriptor_tag::Model| (model.cd_id, model.tag_id))
         .collect();
     Ok(existing_mappings)
 }

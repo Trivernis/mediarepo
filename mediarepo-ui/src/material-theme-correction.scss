@@ -1,0 +1,78 @@
+@import "colors";
+
+.mat-form-field.mat-focused .mat-form-field-label {
+    color: $primary-lighter-30;
+}
+
+.mat-input-element {
+    caret-color: $primary-lighter-20;
+}
+
+.mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple) {
+    background: rgba(255, 255, 255, 0.05);
+    color: $primary-lighter-20;
+}
+
+.mat-dialog-container {
+    background: $background-lighter-05;
+}
+
+.mat-drawer {
+    background: $background !important;
+}
+
+.mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
+    background: $background;
+}
+
+.mat-form-field-flex {
+    background: $background-lighter-05;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+    background: $background-lighter-05;
+}
+
+.mat-autocomplete-panel, mat-option, .mat-menu-panel {
+    background: $background-lighter-05;
+}
+
+button .mat-flat-button {
+    background: $background-lighter-05;
+}
+
+mat-option {
+    &.mat-selected {
+        background: $background-lighter-10 !important;
+    }
+
+    &:hover {
+        background: darken($background-lighter-10, 1%) !important;
+    }
+}
+
+mat-toolbar.mat-toolbar {
+    background: $background-darker-05;
+}
+
+.mat-card {
+    background: $background-lighter-10;
+}
+
+// scrollbar
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+    background: $background-darker-05;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $primary-darker-10;
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: $primary;
+    border-radius: 5px;
+}

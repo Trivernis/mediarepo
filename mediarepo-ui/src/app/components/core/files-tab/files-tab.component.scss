@@ -2,24 +2,6 @@ mat-selection-list {
     height: 100%;
 }
 
-mat-drawer {
-    height: 100%;
-    width: 25%;
-    overflow: hidden;
-}
-
-mat-drawer-content {
-    overflow-x: hidden;
-    overflow-y: auto;
-    height: 100%;
-}
-
-mat-drawer-container {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
-
 app-file-multiview {
     padding: 0;
     height: 100%;
@@ -41,5 +23,13 @@ app-file-multiview {
     mat-progress-spinner {
         z-index: 999;
         margin: auto;
+    }
+}
+
+.import-prompt {
+    button {
+        font-size: 1.5em;
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
     }
 }
