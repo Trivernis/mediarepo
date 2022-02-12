@@ -50,10 +50,7 @@ pub async fn get_folder_size(path: PathBuf) -> RepoResult<u64> {
     let futures = all_files.into_iter().map(|f| read_file_size(f));
     let results = future::join_all(futures).await;
 
-    let size = results
-        .into_iter()
-        .filter_map(|r| r.ok())
-        .fold(0u64, |acc, val| acc + val);
+    let size = results.into_iter().filter_map(|r| r.ok()).sum();
 
     Ok(size)
 }
