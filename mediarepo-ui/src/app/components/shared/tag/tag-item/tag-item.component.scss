@@ -1,11 +1,18 @@
 @import "src/colors";
 
+:host {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+}
+
 .tag-item-wrapper {
-    display: inline;
     width: 100%;
     padding: 0.25em;
-    word-break: break-all;
     text-overflow: ellipsis;
+    word-break: keep-all;
+    overflow: hidden;
+    margin: auto;
 }
 
 .tag-item-namespace {

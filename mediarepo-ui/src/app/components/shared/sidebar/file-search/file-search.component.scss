@@ -87,6 +87,7 @@
     font-size: 1.2em;
     transition-duration: 0.1s;
     width: 100%;
+    background-color: $background-lighter-05;
 
     app-tag-item {
         margin: auto auto auto 0.25em;
@@ -94,12 +95,12 @@
 }
 
 .selectable-tag:hover {
-    background-color: $background-lighter-05;
+    background-color: $background-lighter-10;
 }
 
 .selectable-tag:active {
     cursor: pointer;
-    background-color: $background-lighter-10;
+    background-color: $background;
 }
 
 cdk-virtual-scroll-viewport {
