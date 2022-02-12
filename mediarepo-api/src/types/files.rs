@@ -58,6 +58,7 @@ pub struct FileMetadataResponse {
     pub creation_time: NaiveDateTime,
     pub change_time: NaiveDateTime,
     pub import_time: NaiveDateTime,
+    pub size: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

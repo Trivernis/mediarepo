@@ -23,6 +23,7 @@ impl FromModel<FileMetadataDto> for FileMetadataResponse {
             creation_time: model.creation_time().to_owned(),
             change_time: model.change_time().to_owned(),
             import_time: model.import_time().to_owned(),
+            size: model.size() as u64,
         }
     }
 }

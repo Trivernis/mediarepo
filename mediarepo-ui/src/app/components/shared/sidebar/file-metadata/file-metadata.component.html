@@ -12,12 +12,17 @@
                                              attributeName="Name"></app-editable-metadata-entry>
                 <app-metadata-entry attributeName="Content Descriptor (CD)">{{file.cd}}</app-metadata-entry>
                 <app-metadata-entry attributeName="Mime Type">{{file.mimeType}}</app-metadata-entry>
-                <app-metadata-entry *ngIf="fileMetadata"
-                                    attributeName="Imported at">{{fileMetadata.import_time.toLocaleString()}}</app-metadata-entry>
-                <app-metadata-entry *ngIf="fileMetadata"
-                                    attributeName="Created at">{{fileMetadata.creation_time.toLocaleString()}}</app-metadata-entry>
-                <app-metadata-entry *ngIf="fileMetadata"
-                                    attributeName="Changed at">{{fileMetadata.change_time.toLocaleString()}}</app-metadata-entry>
+                <ng-container *ngIf="fileMetadata">
+                    <app-metadata-entry
+                        attributeName="Size">{{fileMetadata.size | formatBytes}}</app-metadata-entry>
+                    <app-metadata-entry
+                        attributeName="Imported at">{{fileMetadata.import_time | date: 'dd.MM.yy HH:mm:ss' }}</app-metadata-entry>
+                    <app-metadata-entry
+                        attributeName="Created at">{{fileMetadata.creation_time | date: 'dd.MM.yy HH:mm:ss'}}</app-metadata-entry>
+                    <app-metadata-entry
+                        attributeName="Changed at">{{fileMetadata.change_time | date: 'dd.MM.yy HH:mm:ss'}}</app-metadata-entry>
+                </ng-container>
+
             </div>
         </div>
     </app-busy-indicator>

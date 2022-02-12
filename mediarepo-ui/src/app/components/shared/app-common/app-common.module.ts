@@ -24,6 +24,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MatRippleModule} from "@angular/material/core";
 import {FlapButtonComponent} from "./flap-button/flap-button.component";
 import {MiddleCenteredComponent} from "./middle-centered/middle-centered.component";
+import {FormatBytesPipe} from "./pipes/format-bytes.pipe";
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import {MiddleCenteredComponent} from "./middle-centered/middle-centered.compone
         DrawerPageContentComponent,
         FlapButtonComponent,
         MiddleCenteredComponent,
+        FormatBytesPipe,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -57,6 +59,7 @@ import {MiddleCenteredComponent} from "./middle-centered/middle-centered.compone
         DrawerPageContentComponent,
         FlapButtonComponent,
         MiddleCenteredComponent,
+        FormatBytesPipe,
     ],
     imports: [
         CommonModule,
