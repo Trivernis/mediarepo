@@ -22,15 +22,6 @@ export class ImportTabComponent implements OnInit {
         this.state.files.subscribe(files => files ? this.files = files : undefined);
     }
 
-    /**
-     * Adds an imported file to the list of imported files
-     * @param {File} file
-     * @returns {Promise<void>}
-     */
-    public async addFileFromImport(file: File) {
-        this.state.files.next([...this.state.files.value, file]);
-        this.changeDetector.markForCheck();
-    }
 
     public onFileSelect(files: File[]) {
         this.selectedFiles = files;
@@ -49,9 +40,5 @@ export class ImportTabComponent implements OnInit {
         } else {
             return undefined;
         }
-    }
-
-    public refreshFileView(): void {
-        this.changeDetector.markForCheck();
     }
 }

@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from "@angular/core";
-import {File} from "../../../../../api/models/File";
+import {ChangeDetectionStrategy, Component, Input} from "@angular/core";
+import {ImportTabState} from "../../../../models/state/ImportTabState";
 
 @Component({
     selector: "app-file-import",
@@ -9,8 +9,7 @@ import {File} from "../../../../../api/models/File";
 })
 export class FileImportComponent {
 
-    @Output() fileImported = new EventEmitter<File>();
-    @Output() importFinished = new EventEmitter<void>();
+    @Input() state!: ImportTabState;
 
     constructor() {
     }

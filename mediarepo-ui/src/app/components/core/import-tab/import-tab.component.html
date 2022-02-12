@@ -1,8 +1,8 @@
 <app-drawer-page>
     <app-drawer-page-side>
-        <app-import-tab-sidebar (fileImported)="this.addFileFromImport($event)"
-                                (importFinished)="this.refreshFileView()"
-                                [selectedFiles]="selectedFiles"></app-import-tab-sidebar>
+        <app-import-tab-sidebar
+            [selectedFiles]="selectedFiles"
+            [state]="this.state"></app-import-tab-sidebar>
     </app-drawer-page-side>
     <app-drawer-page-content>
         <app-file-multiview (fileSelectEvent)="this.onFileSelect($event)"

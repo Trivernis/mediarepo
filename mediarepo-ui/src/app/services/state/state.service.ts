@@ -79,6 +79,7 @@ export class StateService {
             tabs.forEach((tab) => this.subscribeToTab(tab));
             this.stateChange.next();
         });
+        state.selectedTab.subscribe(() => this.stateChange.next());
     }
 
     private subscribeToTab(tab: TabState) {
