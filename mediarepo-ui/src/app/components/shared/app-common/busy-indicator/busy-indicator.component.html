@@ -1,5 +1,14 @@
 <ng-content></ng-content>
 <div *ngIf="this.busy" [class.blur]="this.blurBackground" [class.darken]="this.darkenBackground"
      class="busy-indicator-overlay">
-    <mat-progress-spinner *ngIf="this.busy" [mode]="mode" [value]="value" color="primary"></mat-progress-spinner>
+    <mat-progress-spinner *ngIf="indicatorType === 'spinner' && this.busy"
+                          [mode]="mode"
+                          [value]="value"
+                          color="primary"></mat-progress-spinner>
+
+    <app-middle-centered *ngIf="indicatorType === 'pulse' && this.busy">
+        <div class="loading-indicator-pulse-outer">
+            <div class="loading-indicator-pulse-inner"></div>
+        </div>
+    </app-middle-centered>
 </div>

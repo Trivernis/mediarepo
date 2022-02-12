@@ -29,43 +29,6 @@
     display: flex;
 }
 
-.loading-indicator {
-    display: block;
-    background-color: $primary;
-    animation-name: pulse;
-    animation-duration: 3s;
-    border-radius: 1em;
-    width: 2em;
-    height: 2em;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-}
-
-@keyframes pulse {
-    2% {
-        border-radius: 1em;
-        width: 2em;
-        height: 2em;
-    }
-
-    48% {
-        border-radius: 2em;
-        width: 4em;
-        height: 4em;
-    }
-
-    52% {
-        border-radius: 2em;
-        width: 4em;
-        height: 4em;
-    }
-
-    98% {
-        border-radius: 1em;
-        width: 2em;
-        height: 2em;
-    }
-}
 
 .hidden {
     display: none;

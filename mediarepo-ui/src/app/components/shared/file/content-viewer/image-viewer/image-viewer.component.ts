@@ -13,12 +13,15 @@ export class ImageViewerComponent implements OnChanges {
     public imagePosition = { x: 0, y: 0 };
     public mouseInImageView = false;
 
+    public loading = true;
+
     constructor() {
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes["imageUrl"]) {
             this.resetImage();
+            this.loading = true;
         }
     }
 

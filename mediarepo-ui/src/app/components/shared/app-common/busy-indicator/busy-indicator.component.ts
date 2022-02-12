@@ -12,6 +12,7 @@ export class BusyIndicatorComponent implements OnChanges {
     @Input() blurBackground: boolean = false;
     @Input() darkenBackground: boolean = false;
     @Input() mode: ProgressSpinnerMode = "indeterminate";
+    @Input() indicatorType: "spinner" | "pulse" = "spinner";
     @Input() value: number | undefined;
 
     constructor(private changeDetector: ChangeDetectorRef) {

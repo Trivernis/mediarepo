@@ -1,7 +1,7 @@
 <app-content-aware-image (appLoadEnd)="this.loadEnd.emit()" (appLoadError)="this.onImageLoadError()"
                          *ngIf="this.thumbnailSupported && this.thumbUrl"
                          [imageSrc]="this.thumbUrl"
-                         [maxRetry]="5" [retryDelay]="250"
+                         [maxRetry]="5" [retryDelay]="100"
                          borderRadius="0.25em"></app-content-aware-image>
 <div *ngIf="this.thumbnailSupported && this.thumbUrl" class="file-icon-overlay">
     <ng-icon *ngIf="fileType === 'video'" name="mat-movie"></ng-icon>
