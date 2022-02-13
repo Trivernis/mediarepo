@@ -1,4 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from "@angular/core";
+import {
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewChild
+} from "@angular/core";
 import {Tag} from "../../../../../api/models/Tag";
 import {TagService} from "../../../../services/tag/tag.service";
 import {File} from "../../../../../api/models/File";
@@ -29,7 +39,11 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
     public tagsOfSelection: Tag[] = [];
     public tagsLoading = false;
 
-    constructor(private repoService: RepositoryService, private tagService: TagService) {
+    constructor(
+        private changeDetector: ChangeDetectorRef,
+        private repoService: RepositoryService,
+        private tagService: TagService
+    ) {
         this.repoService.selectedRepository.subscribe(
             async (repo) => repo && this.fileSearch && await this.fileSearch.searchForFiles());
         this.tagService.tags.subscribe(t => this.allTags = t);
@@ -77,6 +91,10 @@ export class FilesTabSidebarComponent implements OnInit, OnChanges {
                 .localeCompare(b.getNormalizedOutput()));
         this.tags = this.tagsOfSelection;
         this.tagsLoading = false;
+    }
+
+    public onTabChange(): void {
+        this.changeDetector.markForCheck();
     }
 
     private async refreshFileSelection() {

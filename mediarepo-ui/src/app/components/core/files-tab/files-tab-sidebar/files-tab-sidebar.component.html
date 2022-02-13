@@ -1,5 +1,5 @@
 <div class="sidebar-inner">
-    <mat-tab-group headerPosition="below">
+    <mat-tab-group (selectedTabChange)="this.onTabChange()" headerPosition="below">
         <mat-tab label="Search">
             <app-file-search (searchEndEvent)="this.onDisplayedFilesChange(); this.searchEndEvent.emit($event);"
                              (searchStartEvent)="this.searchStartEvent.emit($event)"

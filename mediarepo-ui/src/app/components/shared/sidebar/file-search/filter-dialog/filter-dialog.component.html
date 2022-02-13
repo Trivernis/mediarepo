@@ -19,8 +19,8 @@
                       class="filter-input"></app-filter-input>
 </div>
 <div class="dialog-actions" mat-dialog-actions>
-    <button (click)="confirmFilter()" color="primary" mat-flat-button>Filter</button>
     <button (click)="cancelFilter()" color="accent" mat-stroked-button>Cancel</button>
+    <button (click)="confirmFilter()" color="primary" mat-flat-button>Filter</button>
 </div>
 <app-context-menu #contextMenu>
     <button (click)="this.removeSelectedFilters()" mat-menu-item>Remove</button>
