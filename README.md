@@ -2,9 +2,8 @@
 mediarepo
 </h1>
 <p align="center">
-<img src="https://github.com/Trivernis/mediarepo/raw/main/mediarepo-ui/src-tauri/icons/64x64.png"/>
+<img src="https://github.com/Trivernis/mediarepo/raw/main/mediarepo-ui/src-tauri/icons/64x64.png?raw=true"/>
 </p>
-<h3 align="center" style="color:red">mediarepo is a work in progress</h3>
 <p align="center">
     <a href="https://github.com/Trivernis/mediarepo/actions/workflows/build.yml">
         <img src="https://img.shields.io/github/workflow/status/trivernis/mediarepo/Build%20and%20test?style=for-the-badge">
@@ -20,21 +19,50 @@ mediarepo
 
 - - -
 
-Mediarepo is a tool for managing media files.
+> Mediarepo is a tool for managing media files.
 It works similar to image boards (boorus) as it allows one to assign tags to media entries and
-search for entries by using those tags. It is inspired by [hydrus](https://github.com/hydrusnetwork/hydrus/) with the goal to provide a good looking and fast
-way to organize all kinds of media.
+search for entries by using those tags.
+
+![](https://mediarepo.trivernis.dev/assets/images/screenshot-1.png)
+
+## Features
+
+### Implemented
+
+- management of multiple repositories
+- running repository daemons on startup or in the background
+- importing files from the file system
+- assigning tags to files
+- searching for files using tags and properties
+- sorting files by properties and tag namespaces
+
+### Planned
+
+- tag aliases and implications
+- file collections
+- importing files from URLs
+- tag lookup using SauceNao and IQDB
+- synchronisation between clients
 
 ## Installation
 
 In order to use mediarepo, the mediarepo daemon and UI application need to be installed.
 Both can be downloaded from the [Releases](https://github.com/Trivernis/mediarepo/releases) page or the AUR.
 
+Arch Linux:
 ```sh
 yay -S mediarepo-daemon mediarepo
 ```
 
 When installing manually the `mediarepo-daemon` binary needs to be accessible in the `PATH` variable.
+
+
+## Building
+
+### Prerequisites
+
+You need to have a working rust toolchain (e.g. via [rustup](https://rustup.rs/)) and  [node.js](https://nodejs.org) installed.
+For building the UI the required tauri build tooling needs to be installed as well. Please follow [their documentation](https://tauri.studio/docs/getting-started/prerequisites) for setup information.
 
 ## Usage and Further Information
 
