@@ -3,7 +3,7 @@
         <h1>File Metadata</h1>
         <mat-divider></mat-divider>
     </div>
-    <app-busy-indicator [blurBackground]="true" [darkenBackground]="false">
+    <app-busy-indicator [blurBackground]="true" [busy]="this.loading" [darkenBackground]="false">
         <div class="file-metadata-entries-scroll-container">
             <div class="file-metadata-entries">
                 <app-editable-metadata-entry (valueChangeEvent)="this.saveFileName($event)"
@@ -22,7 +22,6 @@
                     <app-metadata-entry
                         attributeName="Changed at">{{fileMetadata.change_time | date: 'dd.MM.yy HH:mm:ss'}}</app-metadata-entry>
                 </ng-container>
-
             </div>
         </div>
     </app-busy-indicator>

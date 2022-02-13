@@ -1,8 +1,15 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from "@angular/core";
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges
+} from "@angular/core";
 import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileMetadata} from "../../../../../api/api-types/files";
-import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
 
 @Component({
     selector: "app-file-metadata",
@@ -14,32 +21,34 @@ export class FileMetadataComponent implements OnInit, OnChanges {
 
     @Input() file!: File;
     public fileMetadata: FileMetadata | undefined;
+    public loading: boolean = false;
 
-    @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
-
-    constructor(private fileService: FileService) {
+    constructor(private changeDetector: ChangeDetectorRef, private fileService: FileService) {
     }
 
     public async ngOnInit() {
-        await this.busyIndicator.wrapAsyncOperation(async () => {
-            this.fileMetadata = await this.fileService.getFileMetadata(this.file.id);
-        });
+        this.loading = true;
+        this.fileMetadata = await this.fileService.getFileMetadata(this.file.id);
+        this.changeDetector.markForCheck();
+        this.loading = false;
     }
 
     public async ngOnChanges(changes: SimpleChanges) {
         if (changes["file"] && (!this.fileMetadata || this.fileMetadata.file_id != this.file.id)) {
-            await this.busyIndicator.wrapAsyncOperation(async () => {
-                this.fileMetadata = await this.fileService.getFileMetadata(this.file.id);
-            });
+            this.loading = true;
+            this.fileMetadata = await this.fileService.getFileMetadata(this.file.id);
+            this.changeDetector.markForCheck();
+            this.loading = false;
         }
     }
 
     public async saveFileName(name: string) {
-        await this.busyIndicator.wrapAsyncOperation(async () => {
-            const newFile = await this.fileService.updateFileName(this.file.id, name);
-            if (this.fileMetadata) {
-                this.fileMetadata.name = newFile.name;
-            }
-        });
+        this.loading = true;
+        const newFile = await this.fileService.updateFileName(this.file.id, name);
+        if (this.fileMetadata) {
+            this.fileMetadata.name = newFile.name;
+            this.changeDetector.markForCheck();
+        }
+        this.loading = false;
     }
 }
