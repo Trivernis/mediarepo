@@ -81,6 +81,7 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, Afte
                 file => new Selectable<File>(file, false));
             this.refreshFileSelections();
             this.setPartitionedGridEntries();
+            this.scrollToSelection();
         }
     }
 
@@ -246,7 +247,19 @@ export class FileGridComponent implements OnChanges, OnInit, AfterViewInit, Afte
                         selectedEntry.select();
                         this.selectedEntries.push(selectedEntry);
                     }
+                    this.changeDetector.markForCheck();
                 }
+            }, 0);
+        }
+    }
+
+    private scrollToSelection() {
+        const selected = this.selectedEntries[0];
+        if (this.virtualScroll && selected) {
+            const index = Math.floor(this.gridEntries.indexOf(selected) / this.columns);
+            setTimeout(() => {
+                this.virtualScroll.scrollToIndex(index);
+                this.changeDetector.markForCheck();
             }, 0);
         }
     }
