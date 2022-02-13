@@ -23,14 +23,13 @@
     opacity: 0.5;
     padding: 1em 0.5em;
     transition-duration: 0.2s;
-}
 
-.zoom-slider:hover {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 1em;
+    &:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 1em;
+    }
 }
-
 
 .image-full-view-inner {
     height: 100%;
@@ -41,4 +40,9 @@
 
 .hidden {
     display: none;
+}
+
+.reset-image-zoom-button {
+    height: 3em;
+    margin: auto
 }
