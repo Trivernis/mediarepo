@@ -51,7 +51,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Build Daemon
-        run: cargo build --release --no-default-features
+        run: cargo build --release --no-default-features --verbose
 
       - uses: vimtor/action-zip@v1
         with:
@@ -124,7 +124,7 @@ jobs:
             DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
       - name: Build project
-        run: cargo tauri build
+        run: cargo tauri build --verbose
 
       - uses: vimtor/action-zip@v1
         with:
