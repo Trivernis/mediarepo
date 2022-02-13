@@ -1,0 +1,39 @@
+# compiled output
+out
+
+# IDEs and editors
+mediarepo-api/.idea
+mediarepo-daemon/.idea
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# other
+*.zip
+.vscode
+
+# ui
+mediarepo-ui/.angular
+mediarepo-ui/.idea
+mediarepo-ui/dist
+mediarepo-ui/node_modules
+mediarepo-ui/src-tauri/target
+
+# daemon
+mediarepo-daemon/.idea
+mediarepo-daemon/target
+mediarepo-daemon/*.svg
+mediarepo-daemon/*.folded
+
+# api
+mediarepo-api/.idea
+mediarepo-api/target

@@ -51,7 +51,7 @@ Both can be downloaded from the [Releases](https://github.com/Trivernis/mediarep
 
 Arch Linux:
 ```sh
-yay -S mediarepo-daemon mediarepo
+$ yay -S mediarepo-daemon mediarepo
 ```
 
 When installing manually the `mediarepo-daemon` binary needs to be accessible in the `PATH` variable.
@@ -63,6 +63,28 @@ When installing manually the `mediarepo-daemon` binary needs to be accessible in
 
 You need to have a working rust toolchain (e.g. via [rustup](https://rustup.rs/)) and  [node.js](https://nodejs.org) installed.
 For building the UI the required tauri build tooling needs to be installed as well. Please follow [their documentation](https://tauri.studio/docs/getting-started/prerequisites) for setup information.
+You also need to have a working `make` installation on your system.
+
+### Building mediarepo
+
+After all required dependencies are installed and tools are accessible in the `PATH`, you can build the project like follows:
+
+All Componens:
+```sh
+$ make build
+```
+
+Daemon only:
+```sh
+$ make build_daemon
+```
+
+UI only:
+```sh
+$ make build_ui
+```
+
+After building the `out` directory contains all the built binaries and bundles.
 
 ## Usage and Further Information
 
