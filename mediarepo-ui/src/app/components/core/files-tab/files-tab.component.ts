@@ -4,6 +4,7 @@ import {FilesTabState} from "../../../models/state/FilesTabState";
 import {RepositoryMetadata} from "../../../../api/api-types/repo";
 import {RepositoryService} from "../../../services/repository/repository.service";
 import {TabCategory} from "../../../models/state/TabCategory";
+import {take} from "rxjs";
 
 @Component({
     selector: "app-files-tab",
@@ -19,6 +20,8 @@ export class FilesTabComponent implements OnInit {
     selectedFiles: File[] = [];
     public metadata?: RepositoryMetadata;
 
+    private preselectedCd?: string;
+
     constructor(
         repoService: RepositoryService,
     ) {
@@ -28,6 +31,12 @@ export class FilesTabComponent implements OnInit {
     async ngOnInit() {
         this.state.files.subscribe(files => this.files = files);
         this.state.loading.subscribe(loading => this.contentLoading = loading);
+        this.state.files.pipe(take(2)).subscribe(async files => {
+            await this.handlePreselection(this.preselectedCd, files);
+        });
+        this.state.selectedCD.pipe(take(2)).subscribe(async (cd) => {
+            await this.handlePreselection(cd, this.files);
+        });
     }
 
     async onFileSelect(files: File[]) {
@@ -37,7 +46,6 @@ export class FilesTabComponent implements OnInit {
         } else {
             this.state.selectedCD.next(undefined);
         }
-        console.debug(this.selectedFiles);
     }
 
     public getStateSelectedFile(): File | undefined {
@@ -60,5 +68,20 @@ export class FilesTabComponent implements OnInit {
 
     public onImportFiles(): void {
         this.state.category = TabCategory.Import;
+    }
+
+    private async handlePreselection(cd: string | undefined, files: File[]) {
+        console.log(cd, files);
+        this.preselectedCd = cd;
+
+        if (cd && files.length > 0) {
+            const file = files.find(f => f.cd === cd);
+
+            if (file) {
+                console.debug("firing select");
+                this.preselectedCd = undefined;
+                await this.onFileSelect([file]);
+            }
+        }
     }
 }

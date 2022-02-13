@@ -52,8 +52,8 @@ export class FilesTabState extends TabState implements SaveState<FilesTabSaveSta
         this.filters = new BehaviorSubject(new SearchFilters(state.filters ?? []));
         this.sortingPreset = new BehaviorSubject(new SortingPreset(state.sortingPreset));
         this.mode = new BehaviorSubject(state.mode ?? "grid");
-        this.selectedCD = new BehaviorSubject(state.selectedCd);
         this.files = new BehaviorSubject((state.files ?? []).map(mapNew(File)));
+        this.selectedCD = new BehaviorSubject(state.selectedCd);
         this.subscribe();
     }
 
