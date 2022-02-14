@@ -63,25 +63,27 @@ When installing manually the `mediarepo-daemon` binary needs to be accessible in
 
 You need to have a working rust toolchain (e.g. via [rustup](https://rustup.rs/)) and  [node.js](https://nodejs.org) installed.
 For building the UI the required tauri build tooling needs to be installed as well. Please follow [their documentation](https://tauri.studio/docs/getting-started/prerequisites) for setup information.
-You also need to have a working `make` installation on your system.
+You also need to have a working [python](https://www.python.org/) installation on your system.
 
 ### Building mediarepo
 
 After all required dependencies are installed and tools are accessible in the `PATH`, you can build the project like follows:
 
+> Note: On some systems you need to use the `python3` command instead of `python`.
+
 All Componens:
 ```sh
-$ make build
+$ python build.py build
 ```
 
 Daemon only:
 ```sh
-$ make build_daemon
+$ python build.py build --daemon
 ```
 
 UI only:
 ```sh
-$ make build_ui
+$ python build.py build --ui
 ```
 
 After building the `out` directory contains all the built binaries and bundles.

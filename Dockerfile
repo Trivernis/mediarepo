@@ -6,7 +6,7 @@ WORKDIR /usr/src
 COPY mediarepo-api ./mediarepo-api
 COPY mediarepo-daemon ./mediarepo-daemon
 COPY mediarepo-ui ./mediarepo-ui
-COPY Makefile .
+COPY build.py .
 
 RUN apt-get update
 RUN apt-get install -y \
@@ -24,22 +24,17 @@ RUN apt-get install -y \
     libavcodec-dev \
     libavfilter-dev \
     libavdevice-dev \
-    libavresample-dev \
-    libpostproc-dev  \
     clang \
     nodejs \
     npm \
     libsoup2.4-dev \
     libwebkit2gtk-4.0-dev \
-    file
+    file \
+    python
 
 RUN apt remove cmdtest -y
-RUN npm install -g yarn
 
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN install_packages make
-
-RUN make build_daemon
-RUN make build_ui
+RUN python3 build.py build
