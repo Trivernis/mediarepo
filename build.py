@@ -6,6 +6,7 @@ import subprocess
 tauri_cli_version = '1.0.0-rc.5'
 build_output = 'out'
 verbose = False
+ffmpeg = False
 
 windows = os.name == 'nt'
 
@@ -71,7 +72,11 @@ def yarn(cmd: str, dir: str = None):
 def build_daemon():
     '''Builds daemon'''
     cargo('fetch', 'mediarepo-daemon')
-    cargo('build --release --frozen', 'mediarepo-daemon')
+
+    if not ffmpeg:
+        cargo('build --release --frozen --no-default-features', 'mediarepo-daemon')
+    else:
+        cargo('build --release --frozen', 'mediarepo-daemon')
 
     if windows:
         store_artifact('mediarepo-daemon/target/release/mediarepo-daemon.exe')
@@ -102,11 +107,14 @@ def check_daemon():
 
 def check_ui():
     '''Checks dependencies for UI'''
+
+    if not windows:
+        check_exec('wget')
+        check_exec('curl')
+        check_exec('file')
+
     check_exec('clang')
     check_exec('cargo')
-    check_exec('wget')
-    check_exec('curl')
-    check_exec('file')
     check_exec('node')
     check_exec('npm')
     check_yarn()
@@ -165,6 +173,8 @@ def parse_args():
         '--verbose', action='store_true', help='Verbose build')
     build_parser.add_argument(
         '--output', action='store', help='Build output directory')
+    build_parser.add_argument(
+        '--ffmpeg', action='store_true', help='Build with ffmpeg')
 
     subparsers.add_parser('clean')
     args = parser.parse_args()
@@ -180,6 +190,9 @@ def main():
 
         global verbose
         verbose = opts.verbose
+
+        global ffmpeg
+        ffmpeg = opts.ffmpeg
 
         if opts.daemon:
             build(True, False)

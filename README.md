@@ -73,13 +73,15 @@ After all required dependencies are installed and tools are accessible in the `P
 
 All Componens:
 ```sh
-$ ./build.py build
+$ ./build.py build --ffmpeg
 ```
 
 Daemon only:
 ```sh
-$ ./build.py build --daemon
+$ ./build.py build --daemon --ffmpeg
 ```
+
+If you don't want to build with ffmpeg support omit the `--ffmpeg` flag.
 
 UI only:
 ```sh
