@@ -9,6 +9,9 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 })
 export class ImageViewerComponent implements OnChanges {
     @Input() imageUrl!: SafeResourceUrl | string;
+    @Input() maxZoom = 10;
+    @Input() minZoom = 0.5;
+
     public imageZoom = 1;
     public imagePosition = { x: 0, y: 0 };
     public mouseInImageView = false;
@@ -52,13 +55,13 @@ export class ImageViewerComponent implements OnChanges {
 
             if (delta > 0) {
                 this.imageZoom += 0.2;
-                if (this.imageZoom > 4) {
-                    this.imageZoom = 4;
+                if (this.imageZoom > this.maxZoom) {
+                    this.imageZoom = this.maxZoom;
                 }
             } else if (delta < 0) {
                 this.imageZoom -= 0.2;
-                if (this.imageZoom < 0.5) {
-                    this.imageZoom = 0.5;
+                if (this.imageZoom < this.minZoom) {
+                    this.imageZoom = this.minZoom;
                 }
             }
         }

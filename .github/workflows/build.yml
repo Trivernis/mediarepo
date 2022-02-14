@@ -48,13 +48,13 @@ jobs:
             DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
       - name: Build
-        run: cargo build
+        run: cargo build --verbose
 
       - name: Build API
-        run: cargo build --features=client-api
+        run: cargo build --features=client-api --verbose
 
       - name: Build Plugin
-        run: cargo build --features=tauri-plugin
+        run: cargo build --features=tauri-plugin --verbose
 
       - name: Test
         run: cargo test --all-features
@@ -63,11 +63,6 @@ jobs:
     
     # to run fewer steps in parallel
     needs: build-api
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: mediarepo-daemon
 
     strategy:
       fail-fast: false
@@ -90,8 +85,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '^3.7'
+
       - name: Build
-        run: cargo build --release --no-default-features
+        run: python build.py build --daemon --verbose
 
       - name: Upload artifacts
         if: ${{ !env.ACT }}
@@ -99,17 +99,12 @@ jobs:
         with:
           name: mediarepo-daemon-${{ runner.os }}
           path: |
-            target/release/mediarepo-daemon*
+            out/*
 
   build-ui:
 
     # to run fewer steps in parallel
     needs: build-api
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: mediarepo-ui
 
     runs-on: ${{ matrix.os }}
 
@@ -142,17 +137,10 @@ jobs:
       with:
         node-version: 16
 
-    - name: Install Tauri
-      run: cargo install tauri-cli --git https://github.com/tauri-apps/tauri
-
-    - name: Install Angular CLI
-      run: npm install -g @angular/cli
-
-    - name: Install yarn
-      run: npm install -g yarn
-
-    - name: Install dependencies
-      run: yarn install
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '^3.7'
 
     - name: Install OS-specific dependencies
       uses: knicknic/os-specific-run@v1.0.3
@@ -162,7 +150,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
     - name: Build project
-      run: cargo tauri build
+      run: python build.py build --ui --verbose
 
     - name: Upload artifacts
       if: ${{ !env.ACT }}
@@ -170,5 +158,4 @@ jobs:
       with:
         name: mediarepo-ui-${{ runner.os }}-release
         path: |
-          src-tauri/target/release/bundle
-          src-tauri/target/release/mediarepo-ui*
+          out/*

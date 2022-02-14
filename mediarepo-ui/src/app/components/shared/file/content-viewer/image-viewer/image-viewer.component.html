@@ -1,9 +1,9 @@
 <div (mouseenter)="this.mouseInImageView = true" (mouseleave)="this.mouseInImageView = false"
      class="image-full-view-inner">
     <div class="zoom-slider">
-        <mat-slider (input)="this.imageZoom=$event.value ?? 1" [value]="this.imageZoom" max="4"
-                    min="0.5" step="0.1" vertical></mat-slider>
-        <button (click)="this.resetImage()" mat-icon-button>
+        <mat-slider (input)="this.imageZoom=$event.value ?? 1" [max]="this.maxZoom" [min]="this.minZoom"
+                    [value]="this.imageZoom" step="0.1" vertical></mat-slider>
+        <button (click)="this.resetImage()" class="reset-image-zoom-button" mat-icon-button>
             <ng-icon name="mat-refresh"></ng-icon>
         </button>
     </div>

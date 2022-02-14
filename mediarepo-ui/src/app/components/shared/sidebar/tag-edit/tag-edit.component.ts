@@ -1,6 +1,7 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -36,6 +37,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
     private fileTags: { [key: number]: Tag[] } = {};
 
     constructor(
+        private changeDetector: ChangeDetectorRef,
         private logger: LoggingService,
         private tagService: TagService,
     ) {
@@ -63,6 +65,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
                 tagInstance = (await this.tagService.createTags([tag]))[0];
                 this.allTags.push(tagInstance);
             }
+            this.changeDetector.markForCheck();
             switch (this.editMode) {
                 case "Toggle":
                     await this.toggleTag(tagInstance);
@@ -102,6 +105,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
             if (index >= 0) {
                 this.tagScroll.scrollToIndex(index);
             }
+            this.changeDetector.markForCheck();
         });
         this.tagEditEvent.emit(this);
     }
@@ -123,6 +127,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
             }
             await this.tagService.loadTags();
             await this.tagService.loadNamespaces();
+            this.changeDetector.markForCheck();
         });
         this.tagEditEvent.emit(this);
     }
@@ -169,6 +174,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
         this.tags = tags.sort(
             (a, b) => a.getNormalizedOutput()
                 .localeCompare(b.getNormalizedOutput()));
+        this.changeDetector.markForCheck();
     }
 
     private async wrapAsyncOperation<T>(cb: () => Promise<T>): Promise<T | undefined> {

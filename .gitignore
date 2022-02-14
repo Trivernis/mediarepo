@@ -3,6 +3,7 @@
 /tmp
 /out-tsc
 /target
+/out
 
 # IDEs and editors
 mediarepo-api/.idea
@@ -30,3 +31,4 @@ Thumbs.db
 
 # other
 *.zip
+.vscode
