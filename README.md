@@ -69,21 +69,21 @@ You also need to have a working [python](https://www.python.org/) installation o
 
 After all required dependencies are installed and tools are accessible in the `PATH`, you can build the project like follows:
 
-> Note: On some systems you need to use the `python3` command instead of `python`.
+> Note: You might need to make the `build.py` file executable with `chmod +x build.py`.
 
 All Componens:
 ```sh
-$ python build.py build
+$ ./build.py build
 ```
 
 Daemon only:
 ```sh
-$ python build.py build --daemon
+$ ./build.py build --daemon
 ```
 
 UI only:
 ```sh
-$ python build.py build --ui
+$ ./build.py build --ui
 ```
 
 After building the `out` directory contains all the built binaries and bundles.
