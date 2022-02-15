@@ -2,15 +2,15 @@
 import shutil as shut
 import os
 from lib import *
-import json
 from clean import clean
-from check import check_daemon_depends, check_ui_depends
+from check import check, check_daemon_tooling, check_ui_tooling
+from typing import List
 
 
 build_output = 'out'
 verbose = False
 ffmpeg = False
-install_deps = False
+install_tooling = False
 
 windows = os.name == 'nt'
 
@@ -18,18 +18,18 @@ windows = os.name == 'nt'
 def main():
     opts = parse_args()
 
-    global install_deps
+    global install_tooling
     global build_output
     global verbose
     global ffmpeg
-    global install_deps
+    global install_tooling
 
     build_output = opts.output if opts.output else build_output
     verbose = opts.verbose
     ffmpeg = opts.ffmpeg
-    install_deps = opts.install_deps
+    install_tooling = opts.install_tooling
 
-    build(opts.component)
+    build(opts.component, opts.bundles)
 
 
 def parse_args():
@@ -39,30 +39,34 @@ def parse_args():
         'component', type=str, nargs='?', default='all', choices=['daemon', 'ui', 'all'])
     parser.add_argument(
         '--verbose', action='store_true', help='Verbose build')
-    parser.add_argument('--install-deps', action='store_true',
-                        help='Install dependencies')
     parser.add_argument(
         '--output', action='store', help='Build output directory')
     parser.add_argument(
         '--ffmpeg', action='store_true', help='Build with ffmpeg')
+    parser.add_argument('--install-tooling',
+                        action='store_true', help='Install tooling')
+    parser.add_argument('--bundles', nargs='+',
+                        help='UI bundles to build')
 
     args = parser.parse_args()
     return args
 
 
-def build(component: str):
+def build(component: str, bundles: List[str] = None):
     '''Builds the selected component'''
     clean()
     create_output_dir()
 
-    if component == 'daemon' or component == 'all':
-        check_daemon_depends()
+    if component == 'all':
+        check(install_tooling)
         build_daemon()
-    elif component == 'ui' or component == 'all':
-        check_ui_depends(install_deps)
-        build_ui()
-    else:
-        raise Exception('Unknown component: {}'.format(component))
+        build_ui(bundles)
+    elif component == 'daemon':
+        check_daemon_tooling(install_tooling)
+        build_daemon()
+    elif component == 'ui':
+        check_ui_tooling()
+        build_ui(bundles)
 
     print('Build complete')
 
@@ -82,10 +86,14 @@ def build_daemon():
         store_artifact('mediarepo-daemon/target/release/mediarepo-daemon')
 
 
-def build_ui():
+def build_ui(bundles: List[str] = None):
     '''Builds UI'''
     yarn('install', 'mediarepo-ui')
-    cargo('tauri build', 'mediarepo-ui')
+
+    if bundles is not None:
+        cargo('tauri build --bundles ' + ' '.join(bundles), 'mediarepo-ui')
+    else:
+        cargo('tauri build ', 'mediarepo-ui')
 
     if windows:
         store_artifact(

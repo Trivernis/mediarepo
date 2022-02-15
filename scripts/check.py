@@ -10,31 +10,31 @@ windows = os.name == 'nt'
 
 def main():
     opts = parse_args()
-    check(opts.install_deps)
+    check(opts.install)
 
 
 def parse_args():
     '''Parses command line arguments'''
     args = argparse.ArgumentParser(description='Build mediarepo')
-    args.add_argument('--install-deps', action='store_true',
-                      help='Install dependencies that can be installed automatically')
+    args.add_argument('--install', action='store_true',
+                      help='Install tools that can be installed automatically')
     return args.parse_args()
 
 
-def check(install_deps: bool = False):
+def check(install_tooling: bool = False):
     '''Checks dependencies'''
-    check_daemon_depends()
-    check_ui_depends(install_deps)
+    check_daemon_tooling()
+    check_ui_tooling(install_tooling)
     print('All checks passed')
 
 
-def check_daemon_depends():
+def check_daemon_tooling():
     '''Checks dependencies for daemon'''
     check_exec('clang')
     check_exec('cargo')
 
 
-def check_ui_depends(install_deps: bool = False):
+def check_ui_tooling(install_tooling: bool = False):
     '''Checks dependencies for UI'''
 
     if not windows:
@@ -46,10 +46,10 @@ def check_ui_depends(install_deps: bool = False):
     check_exec('cargo')
     check_exec('node')
     check_exec('npm')
-    check_yarn(install_deps)
-    check_ng(install_deps)
+    check_yarn(install_tooling)
+    check_ng(install_tooling)
 
-    if install_deps:
+    if install_tooling:
         install_tauri_cli(tauri_cli_version)
 
 

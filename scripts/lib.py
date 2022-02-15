@@ -21,7 +21,7 @@ def check_yarn(install: bool = False):
     if the install flag is set'''
     if not check_exec('yarn'):
         if install:
-            npm('install yarn')
+            npm('install -g yarn')
         else:
             raise Exception('yarn not found')
 
