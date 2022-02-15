@@ -69,23 +69,32 @@ You also need to have a working [python](https://www.python.org/) installation o
 
 After all required dependencies are installed and tools are accessible in the `PATH`, you can build the project like follows:
 
-> Note: You might need to make the `build.py` file executable with `chmod +x build.py`.
+Check (and install) required tooling:
+```sh
+$ ./scripts/check.py --install
+```
+> Note: this only installs tools that are installable via cargo or npm
 
 All Componens:
 ```sh
-$ ./build.py build --ffmpeg
+$ ./scripts/build.py all --ffmpeg
 ```
 
 Daemon only:
 ```sh
-$ ./build.py build --daemon --ffmpeg
+$ ./scripts/build.py daemon --ffmpeg
 ```
 
 If you don't want to build with ffmpeg support omit the `--ffmpeg` flag.
 
 UI only:
 ```sh
-$ ./build.py build --ui
+$ ./scripts/build.py ui
+```
+
+Clean the output directory:
+```sh
+$ ./scripts/clean.py
 ```
 
 After building the `out` directory contains all the built binaries and bundles.

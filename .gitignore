@@ -4,6 +4,7 @@
 /out-tsc
 /target
 /out
+__pycache__
 
 # IDEs and editors
 mediarepo-api/.idea
