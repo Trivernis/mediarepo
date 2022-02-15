@@ -62,10 +62,10 @@ def build(component: str, bundles: List[str] = None):
         build_daemon()
         build_ui(bundles)
     elif component == 'daemon':
-        check_daemon_tooling(install_tooling)
+        check_daemon_tooling()
         build_daemon()
     elif component == 'ui':
-        check_ui_tooling()
+        check_ui_tooling(install_tooling)
         build_ui(bundles)
 
     print('Build complete')
@@ -116,7 +116,7 @@ def store_artifact(path: str):
     if os.path.isdir(path):
         shut.copytree(path, os.path.join(
             build_output, os.path.basename(path)), dirs_exist_ok=True)
-    else:
+    elif os.path.isfile(path):
         shut.copy(path, build_output)
 
 
