@@ -1,1 +1,46 @@
-theme: jekyll-theme-cayman
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you: 
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: mediarepo
+email: me@trivernis.net
+description: >- # this means to ignore newlines until "baseurl:"
+  Mediarepo is a tool for managing media files. It works similar to image boards
+  (boorus) as it allows one to assign tags to media entries and search for entries by using those tags.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  Trivernis
+badges:
+  - img: https://img.shields.io/github/v/release/trivernis/mediarepo?include_prereleases&style=for-the-badge
+    href: https://github.com/Trivernis/mediarepo/releases
+  - img: https://img.shields.io/aur/version/mediarepo?style=for-the-badge
+    href: https://aur.archlinux.org/packages/mediarepo
+  - img: https://img.shields.io/github/workflow/status/trivernis/mediarepo/Build%20and%20test?style=for-the-badge
+    href: https://github.com/Trivernis/mediarepo/actions/workflows/build.yml
+  - img: https://img.shields.io/aur/license/mediarepo?style=for-the-badge
+    href: https://github.com/Trivernis/mediarepo/blob/main/LICENSE
+
+# Build settings
+plugins:
+  - jekyll-feed
+
+collections:
+  docs:
+    output: true
+    sort_by: sort_key
