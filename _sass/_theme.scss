@@ -6,6 +6,7 @@ $magenta: #ff00f2;
 $magenta-small: rgb(236, 0, 205);
 $white: rgb(255, 255, 255);
 $white-text:  rgb(238, 238, 238);
+$code: #ffc3ef;
 
 // Config
 $color-background: $black-alt!default;
@@ -14,7 +15,7 @@ $color-foreground: $white !default;
 $color-title: $white !default;
 $color-body-text: $white !default;
 $color-text-accent: $magenta !default;
-$color-code: $magenta-small !default;
+$color-code: $code !default;
 $color-nav-link: $magenta !default;
 $color-primary-link: $magenta !default;
 
