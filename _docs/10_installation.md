@@ -49,5 +49,3 @@ installing it the manual way (not everyone uses arch tho). All you need to insta
 is the `mediarepo` package for the client and the `mediarepo-daemon` package for
 the daemon. As both applications are installed in `/usr/bin` the client should be
 able to find the daemon executable automatically.
-
-
