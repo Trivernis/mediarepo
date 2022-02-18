@@ -1,0 +1,42 @@
+.repository-container {
+    margin: 1em;
+    display: block;
+    width: 600px;
+    float: left;
+}
+
+.repo-page-content {
+    margin: 0 10%;
+    height: calc(100% - 2em);
+}
+
+.add-repo-tools {
+    height: 5em;
+    display: flex;
+    flex-direction: row-reverse;
+
+    button {
+        margin: 1em;
+    }
+}
+
+.repository-list {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 5em);
+}
+
+app-repository-card {
+    display: block;
+    position: relative;
+}
+
+
+.add-repository-prompt {
+    button {
+        font-size: 1.5em;
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
+    }
+}

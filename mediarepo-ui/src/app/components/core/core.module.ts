@@ -40,6 +40,7 @@ import {
     RepositoryDetailsViewComponent
 } from "./repositories-tab/repository-details-view/repository-details-view.component";
 import { EmptyTabComponent } from './empty-tab/empty-tab.component';
+import { RepositoryOverviewComponent } from './repositories-tab/repository-overview/repository-overview.component';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import { EmptyTabComponent } from './empty-tab/empty-tab.component';
         DownloadDaemonDialogComponent,
         RepositoryDetailsViewComponent,
         EmptyTabComponent,
+        RepositoryOverviewComponent,
     ],
     exports: [
         CoreComponent,
