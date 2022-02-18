@@ -40,3 +40,22 @@ app-repository-card {
         border-radius: 0.5em;
     }
 }
+
+mat-toolbar {
+    position: relative;
+    overflow: hidden;
+
+    .add-repo-button {
+        margin: 0 auto 0 0;
+    }
+
+    .about-button {
+        margin: 0 0 0 auto;
+    }
+
+    .page-title {
+        position: absolute;
+        width: calc(100% - 32px);
+        text-align: center;
+    }
+}

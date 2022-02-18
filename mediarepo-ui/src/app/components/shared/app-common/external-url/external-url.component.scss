@@ -1,0 +1,15 @@
+@import "src/colors";
+
+.highlight {
+    cursor: pointer;
+    color: $primary-lighter-20;
+    text-decoration: underline;
+
+    &:hover {
+        color: $primary-lighter-30;
+    }
+
+    &:active {
+        color: $accent;
+    }
+}

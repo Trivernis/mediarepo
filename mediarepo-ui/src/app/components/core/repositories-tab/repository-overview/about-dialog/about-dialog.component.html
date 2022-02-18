@@ -1,0 +1,24 @@
+<h1 class="title" mat-dialog-title>
+    About mediarepo
+</h1>
+<div class="content" mat-dialog-content>
+    <app-metadata-entry attributeName="Version" display="line">
+        {{version | async}}
+    </app-metadata-entry>
+    <app-metadata-entry attributeName="Tauri Version" display="line">
+        {{tauriVersion | async}}
+    </app-metadata-entry>
+    <br>
+    <mat-divider></mat-divider>
+    <h2>Built with</h2>
+    <div class="lib-list">
+        <b *ngFor="let lib of usedLibs">
+            <app-external-url [href]="lib[1]">{{lib[0]}}</app-external-url>
+        </b>
+    </div>
+</div>
+<div class="actions" mat-dialog-actions>
+    <button (click)="this.dialogRef.close(true)" color="primary" mat-stroked-button>
+        Close
+    </button>
+</div>

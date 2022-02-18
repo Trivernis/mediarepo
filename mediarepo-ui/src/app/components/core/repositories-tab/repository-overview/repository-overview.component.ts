@@ -11,6 +11,7 @@ import {
 import {BehaviorSubject} from "rxjs";
 import {BusyDialogComponent} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
 import {DownloadDaemonDialogComponent} from "../download-daemon-dialog/download-daemon-dialog.component";
+import {AboutDialogComponent} from "./about-dialog/about-dialog.component";
 
 type BusyDialogContext = { message: BehaviorSubject<string>, dialog: MatDialogRef<BusyDialogComponent> };
 
@@ -92,6 +93,13 @@ export class RepositoryOverviewComponent implements OnInit, AfterViewInit {
         } else {
             await this.startDaemonAndSelectRepository(repository);
         }
+    }
+
+    public openAboutDialog(): void {
+        this.dialog.open(AboutDialogComponent, {
+            minWidth: "30%",
+            minHeight: "50%",
+        });
     }
 
     private async forceCloseRepository() {
