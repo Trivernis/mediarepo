@@ -1,5 +1,8 @@
 # compiled output
 out
+__pycache__
+target
+dist
 
 # IDEs and editors
 mediarepo-api/.idea

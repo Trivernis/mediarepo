@@ -1,8 +1,29 @@
 .metadata-entry-inner {
     width: 100%;
     display: flex;
-    flex-direction: column;
+
+    &.display-line {
+        display: flex;
+        flex-direction: row;
+
+        .metadata-attribute, .metadata-value {
+            width: 50%;
+        }
+
+        .metadata-attribute {
+            text-align: right;
+        }
+
+        .metadata-value {
+            text-align: left;
+        }
+    }
+
+    &.display-multiline {
+        flex-direction: column;
+    }
 }
+
 
 .metadata-attribute {
     opacity: 0.8;
@@ -15,3 +36,4 @@
     word-break: break-all;
     user-select: text;
 }
+

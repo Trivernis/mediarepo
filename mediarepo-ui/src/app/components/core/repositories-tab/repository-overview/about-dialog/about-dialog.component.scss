@@ -1,0 +1,20 @@
+.title {
+    text-align: center;
+}
+
+.actions {
+    display: block;
+
+    button {
+        float: right;
+    }
+}
+
+.content {
+    text-align: center;
+}
+
+.lib-list {
+    display: flex;
+    flex-direction: column;
+}

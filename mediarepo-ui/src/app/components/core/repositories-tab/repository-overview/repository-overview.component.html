@@ -1,0 +1,18 @@
+<mat-toolbar>
+    <h1 class="page-title">All Repositories</h1>
+    <button (click)="openAddRepositoryDialog()" class="add-repo-button" color="primary" mat-flat-button>Add Repository
+    </button>
+    <button (click)="openAboutDialog()" class="about-button" mat-stroked-button>About</button>
+</mat-toolbar>
+<div class="repo-page-content">
+    <div class="repository-list">
+        <div *ngFor="let repository of repositories" class="repository-container">
+            <app-repository-card (openEvent)="this.onOpenRepository($event)"
+                                 [repository]="repository"></app-repository-card>
+        </div>
+        <app-middle-centered *ngIf="this.repositories.length === 0" class="add-repository-prompt">
+            <h1>There are no repositories yet. You can create a repository or add an existing one.</h1>
+            <button (click)="this.openAddRepositoryDialog()" color="primary" mat-flat-button>Add Repository</button>
+        </app-middle-centered>
+    </div>
+</div>

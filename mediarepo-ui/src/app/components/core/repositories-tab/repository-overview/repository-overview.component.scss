@@ -1,0 +1,63 @@
+.repository-container {
+    padding: 1em;
+    margin: auto;
+    display: block;
+    width: calc(600px - 2em);
+    float: left;
+    
+    app-repository-card {
+        display: block;
+        position: relative;
+    }
+}
+
+.repo-page-content {
+    margin: 0 10%;
+    height: calc(100% - 2em);
+}
+
+.add-repo-tools {
+    height: 5em;
+    display: flex;
+    flex-direction: row-reverse;
+
+    button {
+        margin: 1em;
+    }
+}
+
+.repository-list {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 5em);
+}
+
+
+.add-repository-prompt {
+    button {
+        font-size: 1.5em;
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
+    }
+}
+
+mat-toolbar {
+    position: relative;
+    overflow: hidden;
+
+    .add-repo-button {
+        margin: 0 auto 0 0;
+    }
+
+    .about-button {
+        margin: 0 0 0 auto;
+    }
+
+    .page-title {
+        position: absolute;
+        width: calc(100% - 32px);
+        text-align: center;
+    }
+}

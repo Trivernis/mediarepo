@@ -6,7 +6,7 @@ WORKDIR /usr/src
 COPY mediarepo-api ./mediarepo-api
 COPY mediarepo-daemon ./mediarepo-daemon
 COPY mediarepo-ui ./mediarepo-ui
-COPY build.py .
+COPY scripts ./scripts
 
 RUN apt-get update
 RUN apt-get install -y \
@@ -37,4 +37,6 @@ RUN apt remove cmdtest -y
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN python3 build.py build
+RUN python3 scripts/clean.py
+RUN python3 scripts/check.py --install
+RUN python3 scripts/build.py all --verbose --ffmpeg

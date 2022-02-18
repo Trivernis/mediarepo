@@ -51,7 +51,7 @@ jobs:
           python-version: '^3.7'
 
       - name: Build Daemon
-        run: python build.py build --daemon --verbose
+        run: python scripts/build.py daemon --verbose --install-tooling
 
       - uses: vimtor/action-zip@v1
         with:
@@ -113,7 +113,7 @@ jobs:
             DEBIAN_FRONTEND=noninteractive sudo apt-get install libwebkit2gtk-4.0-dev libgtk-3-dev libappindicator3-dev  -y
 
       - name: Build project
-        run: python build.py build --ui --verbose
+        run: python scripts/build.py ui --verbose --install-tooling
 
       - uses: vimtor/action-zip@v1
         with:

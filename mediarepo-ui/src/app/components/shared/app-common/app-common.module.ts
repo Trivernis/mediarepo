@@ -25,6 +25,7 @@ import {MatRippleModule} from "@angular/material/core";
 import {FlapButtonComponent} from "./flap-button/flap-button.component";
 import {MiddleCenteredComponent} from "./middle-centered/middle-centered.component";
 import {FormatBytesPipe} from "./pipes/format-bytes.pipe";
+import {ExternalUrlComponent} from "./external-url/external-url.component";
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import {FormatBytesPipe} from "./pipes/format-bytes.pipe";
         FlapButtonComponent,
         MiddleCenteredComponent,
         FormatBytesPipe,
+        ExternalUrlComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -60,6 +62,7 @@ import {FormatBytesPipe} from "./pipes/format-bytes.pipe";
         FlapButtonComponent,
         MiddleCenteredComponent,
         FormatBytesPipe,
+        ExternalUrlComponent,
     ],
     imports: [
         CommonModule,

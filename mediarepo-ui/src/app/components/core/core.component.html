@@ -1,7 +1,7 @@
 <div id="content">
     <mat-tab-group #tabGroup (selectedTabChange)="this.onTabSelectionChange($event)" animationDuration="0"
                    class="main-tab-group">
-        <mat-tab [label]="this.selectedRepository? 'RepositoryData' : 'Repositories'">
+        <mat-tab [label]="this.selectedRepository? 'Repository' : 'Repositories'">
             <app-repositories-tab></app-repositories-tab>
         </mat-tab>
         <mat-tab *ngFor="let tab of tabs; trackBy: trackByTabId">
