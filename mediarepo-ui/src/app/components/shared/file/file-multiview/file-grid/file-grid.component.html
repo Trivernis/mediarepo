@@ -8,12 +8,15 @@
                                  minBufferPx="500">
         <div *cdkVirtualFor="let rowEntry of partitionedGridEntries; trackBy: trackByFileRowId">
             <div class="file-row">
-                <app-file-card
-                    (clickEvent)="setSelectedFile($event.entry)"
-                    (contextmenu)="this.selectEntryWhenNotSelected(gridEntry); fileContextMenu.onContextMenu($event, this.getSelectedFiles())"
-                    (dblClickEvent)="fileOpen.emit($event.entry.data)"
-                    *ngFor="let gridEntry of rowEntry; trackBy: trackByFileId"
-                    [entry]="gridEntry" [fileChanged]="this.fileChanged"></app-file-card>
+                <ng-container *ngFor="let gridEntry of rowEntry; trackBy: trackByFileId">
+                    <app-file-card
+                        (clickEvent)="setSelectedFile($event.entry)"
+                        (contextmenu)="this.selectEntryWhenNotSelected(gridEntry); fileContextMenu.onContextMenu($event, this.getSelectedFiles())"
+                        (dblClickEvent)="fileOpen.emit($event.entry.data)"
+                        *ngIf="gridEntry"
+                        [entry]="gridEntry" [fileChanged]="this.fileChanged"></app-file-card>
+                    <div *ngIf="!gridEntry" class="empty-grid-entry"></div>
+                </ng-container>
             </div>
         </div>
     </cdk-virtual-scroll-viewport>
