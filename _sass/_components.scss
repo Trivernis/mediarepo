@@ -138,3 +138,13 @@ code {
   }
 
 }
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  @media (min-width: $breakpoint-lg) {
+    margin-bottom: 0;
+  }
+}
