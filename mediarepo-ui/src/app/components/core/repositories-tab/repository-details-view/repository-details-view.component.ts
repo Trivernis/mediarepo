@@ -5,6 +5,7 @@ import {RepositoryMetadata} from "../../../../models/RepositoryMetadata";
 import {BehaviorSubject} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {BusyDialogComponent} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
+import {Dataset} from "../../../shared/app-common/chart/chart.component";
 
 @Component({
     selector: "app-repository-details-view",
@@ -19,9 +20,14 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
     public fileFolderSize = new BehaviorSubject<string | undefined>(undefined);
     public thumbFolderSize = new BehaviorSubject<string | undefined>(undefined);
     public databaseFileSize = new BehaviorSubject<string | undefined>(undefined);
+    public chartData?: Dataset[];
+    public chartLabels = ["Files", "Thumbnails", "Database"];
     private refreshMetadataInterval?: number;
 
-    constructor(private repoService: RepositoryService, public dialog: MatDialog) {
+    constructor(
+        private repoService: RepositoryService,
+        public dialog: MatDialog
+    ) {
     }
 
     public async ngOnInit() {
@@ -63,6 +69,11 @@ export class RepositoryDetailsViewComponent implements OnInit, OnChanges, OnDest
         this.thumbFolderSize.next(this.formatByteSize(thumbSize.size));
         const databaseSize = await this.repoService.getSize("DatabaseFile");
         this.databaseFileSize.next(this.formatByteSize(databaseSize.size));
+        this.chartData = [
+            {
+                data: [fileSize.size, thumbSize.size, databaseSize.size],
+            },
+        ];
     }
 
     public formatByteSize(size: number): string {

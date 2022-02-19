@@ -77,15 +77,13 @@ $ ./scripts/check.py --install
 
 All Componens:
 ```sh
-$ ./scripts/build.py all --ffmpeg
+$ ./scripts/build.py all
 ```
 
 Daemon only:
 ```sh
-$ ./scripts/build.py daemon --ffmpeg
+$ ./scripts/build.py daemon
 ```
-
-If you don't want to build with ffmpeg support omit the `--ffmpeg` flag.
 
 UI only:
 ```sh

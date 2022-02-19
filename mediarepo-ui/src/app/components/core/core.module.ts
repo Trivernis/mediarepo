@@ -89,7 +89,7 @@ import {AboutDialogComponent} from "./repositories-tab/repository-overview/about
         MatInputModule,
         TagModule,
         RepositoryModule,
-        MatToolbarModule,
+        MatToolbarModule
     ]
 })
 export class CoreModule {

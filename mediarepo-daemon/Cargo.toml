@@ -4,7 +4,7 @@ default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "m
 
 [package]
 name = "mediarepo-daemon"
-version = "1.0.0-rc.3"
+version = "1.0.0-rc.4"
 edition = "2018"
 license = "gpl-3"
 repository = "https://github.com/Trivernis/mediarepo-daemon"
@@ -16,7 +16,7 @@ name = "mediarepo-daemon"
 path = "src/main.rs"
 
 [dependencies]
-tracing = "0.1.30"
+tracing = "0.1.31"
 toml = "0.5.8"
 structopt = "0.3.26"
 glob = "0.3.0"
@@ -25,7 +25,7 @@ tracing-appender = "0.2.0"
 tracing-log = "0.1.2"
 rolling-file = "0.1.0"
 num-integer = "0.1.44"
-console-subscriber = "0.1.1"
+console-subscriber = "0.1.3"
 log = "0.4.14"
 
 [dependencies.mediarepo-core]
@@ -38,13 +38,9 @@ path = "mediarepo-logic"
 path = "./mediarepo-socket"
 
 [dependencies.tokio]
-version = "1.16.1"
+version = "1.17.0"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]
-version= "0.3.8"
+version= "0.3.9"
 features = ["env-filter", "ansi", "json"]
-
-[features]
-default = ["ffmpeg"]
-ffmpeg = ["mediarepo-core/ffmpeg", "mediarepo-logic/ffmpeg"]

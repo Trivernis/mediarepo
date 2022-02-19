@@ -8,7 +8,7 @@ workspace = ".."
 
 [dependencies]
 serde = "1.0.136"
-tracing = "0.1.30"
+tracing = "0.1.31"
 compare = "0.1.0"
 port_check = "0.1.5"
 rayon = "1.5.1"
@@ -23,7 +23,7 @@ path = "../mediarepo-database"
 path = "../mediarepo-logic"
 
 [dependencies.tokio]
-version = "1.16.1"
+version = "1.17.0"
 features = ["net"]
 
 [dependencies.chrono]

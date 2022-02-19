@@ -19,11 +19,6 @@ RUN apt-get install -y \
     curl \
     wget \
     pkg-config \
-    libavutil-dev \
-    libavformat-dev \
-    libavcodec-dev \
-    libavfilter-dev \
-    libavdevice-dev \
     clang \
     nodejs \
     npm \
@@ -39,4 +34,4 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN python3 scripts/clean.py
 RUN python3 scripts/check.py --install
-RUN python3 scripts/build.py all --verbose --ffmpeg
+RUN python3 scripts/build.py all --verbose

@@ -1,6 +1,4 @@
-<div *ngIf="!this.selectedRepository">
-    <app-repository-overview></app-repository-overview>
-</div>
-<div *ngIf="this.selectedRepository" class="repo-details">
-    <app-repository-details-view [repository]="this.selectedRepository"></app-repository-details-view>
-</div>
+<app-repository-overview *ngIf="!this.selectedRepository"></app-repository-overview>
+<app-repository-details-view *ngIf="this.selectedRepository"
+                             [repository]="this.selectedRepository"></app-repository-details-view>
+
