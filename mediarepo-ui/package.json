@@ -28,6 +28,7 @@
         "@ng-icons/feather-icons": "^13.2.1",
         "@ng-icons/material-icons": "^13.2.1",
         "@tauri-apps/api": "^1.0.0-beta.8",
+        "chart.js": "^3.7.1",
         "primeicons": "^5.0.0",
         "primeng": "^13.0.4",
         "rxjs": "~7.5.2",

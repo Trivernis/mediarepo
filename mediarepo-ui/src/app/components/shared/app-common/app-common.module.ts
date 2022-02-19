@@ -26,6 +26,8 @@ import {FlapButtonComponent} from "./flap-button/flap-button.component";
 import {MiddleCenteredComponent} from "./middle-centered/middle-centered.component";
 import {FormatBytesPipe} from "./pipes/format-bytes.pipe";
 import {ExternalUrlComponent} from "./external-url/external-url.component";
+import {ChartComponent} from "./chart/chart.component";
+import {ChartModule} from "primeng/chart";
 
 
 @NgModule({
@@ -46,6 +48,7 @@ import {ExternalUrlComponent} from "./external-url/external-url.component";
         MiddleCenteredComponent,
         FormatBytesPipe,
         ExternalUrlComponent,
+        ChartComponent,
     ],
     exports: [
         ConfirmDialogComponent,
@@ -63,6 +66,7 @@ import {ExternalUrlComponent} from "./external-url/external-url.component";
         MiddleCenteredComponent,
         FormatBytesPipe,
         ExternalUrlComponent,
+        ChartComponent,
     ],
     imports: [
         CommonModule,
@@ -74,7 +78,8 @@ import {ExternalUrlComponent} from "./external-url/external-url.component";
         MatProgressBarModule,
         MatSidenavModule,
         FlexLayoutModule,
-        MatRippleModule
+        MatRippleModule,
+        ChartModule
     ]
 })
 export class AppCommonModule {

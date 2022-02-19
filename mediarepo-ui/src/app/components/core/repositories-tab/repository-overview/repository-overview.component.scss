@@ -1,10 +1,17 @@
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+}
+
 .repository-container {
     padding: 1em;
     margin: auto;
     display: block;
     width: calc(600px - 2em);
     float: left;
-    
+
     app-repository-card {
         display: block;
         position: relative;
@@ -31,7 +38,8 @@
     flex-wrap: wrap;
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100% - 5em);
+    max-height: calc(100% - 2em);
+    padding-bottom: 2em;
 }
 
 

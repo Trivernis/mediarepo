@@ -1,3 +1,10 @@
+@import "src/colors";
+
+:host {
+    height: 100%;
+    width: 100%;
+}
+
 .repository-name {
     text-align: center;
     align-self: center;
@@ -12,16 +19,38 @@
     padding: 1em 1em 1em 3em;
     overflow-y: auto;
     user-select: none;
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-top: 4em;
+    margin-left: 2em;
+    display: flex;
 
     app-metadata-entry {
         margin-bottom: 0.5em;
         display: block;
     }
+
+    .stats-container {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+.repository-charts {
+    margin-top: 4em;
+    margin-right: 2em;
+    height: 100%;
+    display: block;
 }
 
 .details-content {
     height: calc(100% - 64px);
     overflow: hidden;
+    width: 75%;
+    margin: auto;
+    background: $background-lighter-05;
+}
+
+.size-chart {
+    min-height: 50%;
+    max-width: 500px;
+    margin: auto;
 }
