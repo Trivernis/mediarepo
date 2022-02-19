@@ -25,17 +25,17 @@ pub struct Settings {
 
 impl Settings {
     pub fn read(root: &PathBuf) -> RepoResult<Self> {
-        let mut settings = Config::default();
-        settings
-            .merge(config::File::from_str(
+        let settings = Config::builder()
+            .add_source(config::File::from_str(
                 &*Settings::default().to_toml_string()?,
                 FileFormat::Toml,
-            ))?
-            .merge(config::File::from(root.join("repo")))?
-            .merge(config::Environment::with_prefix("MEDIAREPO").separator("."))?;
+            ))
+            .add_source(config::File::from(root.join("repo")))
+            .add_source(config::Environment::with_prefix("MEDIAREPO").separator("."))
+            .build()?;
         tracing::debug!("Settings are: {:#?}", settings);
 
-        Ok(settings.try_into::<Settings>()?)
+        Ok(settings.try_deserialize()?)
     }
 
     /// Parses settings from a string
@@ -50,16 +50,16 @@ impl Settings {
             .map(|p| p.to_string_lossy().to_string())
             .unwrap_or_else(|| String::from("./"));
 
-        let mut settings = Config::default();
-        settings
-            .merge(config::File::from_str(
+        let settings = Config::builder()
+            .add_source(config::File::from_str(
                 &*settings_main.to_toml_string()?,
                 FileFormat::Toml,
-            ))?
-            .merge(config::Environment::with_prefix("MEDIAREPO"))?;
+            ))
+            .add_source(config::Environment::with_prefix("MEDIAREPO"))
+            .build()?;
         tracing::debug!("Settings are: {:#?}", settings);
 
-        Ok(settings.try_into::<Settings>()?)
+        Ok(settings.try_deserialize()?)
     }
 
     /// Converts the settings into a toml string

@@ -9,7 +9,6 @@ from typing import List
 
 build_output = 'out'
 verbose = False
-ffmpeg = False
 install_tooling = False
 
 windows = os.name == 'nt'
@@ -21,12 +20,10 @@ def main():
     global install_tooling
     global build_output
     global verbose
-    global ffmpeg
     global install_tooling
 
     build_output = opts.output if opts.output else build_output
     verbose = opts.verbose
-    ffmpeg = opts.ffmpeg
     install_tooling = opts.install_tooling
 
     build(opts.component, opts.bundles)
@@ -41,8 +38,6 @@ def parse_args():
         '--verbose', action='store_true', help='Verbose build')
     parser.add_argument(
         '--output', action='store', help='Build output directory')
-    parser.add_argument(
-        '--ffmpeg', action='store_true', help='Build with ffmpeg')
     parser.add_argument('--install-tooling',
                         action='store_true', help='Install tooling')
     parser.add_argument('--bundles', nargs='+',
@@ -74,11 +69,7 @@ def build(component: str, bundles: List[str] = None):
 def build_daemon():
     '''Builds daemon'''
     cargo('fetch', 'mediarepo-daemon')
-
-    if not ffmpeg:
-        cargo('build --release --frozen --no-default-features', 'mediarepo-daemon')
-    else:
-        cargo('build --release --frozen', 'mediarepo-daemon')
+    cargo('build --release --frozen', 'mediarepo-daemon')
 
     if windows:
         store_artifact('mediarepo-daemon/target/release/mediarepo-daemon.exe')
