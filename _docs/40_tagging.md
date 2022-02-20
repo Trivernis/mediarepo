@@ -2,7 +2,6 @@
 layout: doc
 title: Tagging
 sort_index: 40
-draft: false
 ---
 
 The main feature of mediarepo is associating tags with files. 

@@ -19,6 +19,7 @@ kramdown:
   syntax_highlighter: rouge
   line_numbers: true
 
+
 badges:
   - img: https://img.shields.io/github/v/release/trivernis/mediarepo?include_prereleases&style=for-the-badge
     href: https://github.com/Trivernis/mediarepo/releases
