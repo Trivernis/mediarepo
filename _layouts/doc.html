@@ -8,11 +8,20 @@ layout: default
         page.date | date: "%b %-d, %Y" }}</time></p>
   </div>
 
-  <div class="prose" itemprop="articleBody">
+  <div class="prose doc-body" itemprop="articleBody">
     {{ content }}
   </div>
-
 </article>
+
+<div class="navigation">
+  {% for doc in site.docs %}
+  {% if doc.draft == false %}
+  <h3 class="{% if doc.url == page.url %}selected{% endif %}">
+      <a href="{{ doc.url | prepend: site.baseurl }}">{{ doc.title }}</a>
+  </h3>
+  {% endif %}
+  {% endfor %}
+</div>
 
 <div class="container mx-auto px-2 py-2 clearfix">
   {% include previous-next_docs.html %}

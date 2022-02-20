@@ -161,3 +161,22 @@ code {
     font-size: 5em;
   }
 }
+
+.navigation {
+  display: none;
+
+  @media (min-width: 90em) {
+    display: block;
+    position: fixed;
+    word-break: break-all;
+    top: 50px;
+    left: 1em;
+    width: 12em;
+    padding-right: 1em;
+    border-right: $color-border 1px solid;
+  }
+
+  .selected {
+    color: $color-text-accent;
+  }
+}
