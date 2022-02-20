@@ -13,7 +13,7 @@
     <ng-icon *ngIf="fileType === 'audio'" name="mat-audiotrack"></ng-icon>
     <ng-icon *ngIf="fileType === 'text'" name="mat-description"></ng-icon>
 </div>
-<div *ngIf="file.status !== 'Archived'" class="file-status-icon">
-    <ng-icon *ngIf="file.status === 'Deleted'" name="mat-auto-delete"></ng-icon>
-    <ng-icon *ngIf="file.status === 'Imported'" name="mat-fiber-new"></ng-icon>
+<div *ngIf="(file.status | async) !== 'Archived'" class="file-status-icon">
+    <ng-icon *ngIf="(file.status | async) === 'Deleted'" name="mat-auto-delete"></ng-icon>
+    <ng-icon *ngIf="(file.status | async) === 'Imported'" name="mat-fiber-new"></ng-icon>
 </div>

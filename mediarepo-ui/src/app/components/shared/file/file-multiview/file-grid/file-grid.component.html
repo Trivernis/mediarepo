@@ -14,7 +14,7 @@
                         (contextmenu)="this.selectEntryWhenNotSelected(gridEntry); fileContextMenu.onContextMenu($event, this.getSelectedFiles())"
                         (dblClickEvent)="fileOpen.emit($event.entry.data)"
                         *ngIf="gridEntry"
-                        [entry]="gridEntry" [fileChanged]="this.fileChanged"></app-file-card>
+                        [entry]="gridEntry"></app-file-card>
                     <div *ngIf="!gridEntry" class="empty-grid-entry"></div>
                 </ng-container>
             </div>
@@ -23,8 +23,7 @@
 
 </div>
 <app-file-context-menu #fileContextMenu
-                       (fileDeleted)="this.fileDeleted.emit($event)"
-                       (fileStatusChange)="this.onFileStatusChange()">
+                       (fileDeleted)="this.fileDeleted.emit($event)">
     <button (click)="this.fileOpen.emit(fileContextMenu.files[0])"
             *ngIf="fileContextMenu.files.length === 1"
             content-before=""

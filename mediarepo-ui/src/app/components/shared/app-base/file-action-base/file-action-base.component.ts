@@ -56,7 +56,7 @@ export class FileActionBaseComponent {
             if (changeConfirmed) {
                 await this.errorBroker.try(async () => {
                     const newFile = await this.fileService.updateFileStatus(files[0].id, status);
-                    files[0].status = newFile.status;
+                    files[0].setStatus(newFile.getStatus());
                 });
             }
         } else {
@@ -72,7 +72,7 @@ export class FileActionBaseComponent {
                     files,
                     (file) => this.errorBroker.try(async () => {
                         const newFile = await this.fileService.updateFileStatus(file.id, status);
-                        file.status = newFile.status;
+                        file.setStatus(newFile.getStatus());
                     })
                 );
             }

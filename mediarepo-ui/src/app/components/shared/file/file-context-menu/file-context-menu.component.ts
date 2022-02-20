@@ -60,11 +60,11 @@ export class FileContextMenuComponent extends FileActionBaseComponent implements
         this.actionDelete = this.actionArchive = this.actionImported = this.actionRestore = false;
 
         for (const file of this.files) {
-            this.actionDeletePermantently &&= file.status === "Deleted";
-            this.actionDelete ||= file.status !== "Deleted";
-            this.actionArchive ||= file.status !== "Archived" && file.status !== "Deleted";
-            this.actionImported ||= file.status !== "Imported" && file.status !== "Deleted";
-            this.actionRestore ||= file.status === "Deleted";
+            this.actionDeletePermantently &&= file.getStatus() === "Deleted";
+            this.actionDelete ||= file.getStatus() !== "Deleted";
+            this.actionArchive ||= file.getStatus() !== "Archived" && file.getStatus() !== "Deleted";
+            this.actionImported ||= file.getStatus() !== "Imported" && file.getStatus() !== "Deleted";
+            this.actionRestore ||= file.getStatus() === "Deleted";
         }
     }
 }
