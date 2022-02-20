@@ -21,7 +21,7 @@ and as a single executable. Depending on your system configuration
 you can use the executable directly or need to use one of the bundles.
 I haven't really tested that so you have to figure it out yourself.
 
-The daemon application only comes a a single executable as it only requires
+The daemon application only comes as a single executable as it only requires
 minimal external dependencies which should be installed on most systems.
 You can use the daemon manually to initialize and host a repository or you
 can use the client to do the initialization and daemon startup for you.
