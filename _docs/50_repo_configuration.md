@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: Repository Configuration
-sort_key: 1
+sort_index: 50
 draft: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: Adding Files
-sort_key: 30
+sort_index: 30
 ---
 
 When opening a repository (by clicking on the *Open* button) you're immediately prompted with

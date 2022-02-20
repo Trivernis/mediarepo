@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: Repositories
-sort_key: 20
+sort_index: 20
 ---
 
 When opening mediarepo you will be greeted by an (empty) overview of configured repositories.

@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: Installation
-sort_key: 10
+sort_index: 10
 ---
 
 ## Manual installation
