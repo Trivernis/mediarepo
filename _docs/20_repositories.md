@@ -23,7 +23,7 @@ After that you can save the configuration by clicking on *Save*.
 When choosing the *Remote* type you have to specify the IP address and port of the remote repository. 
 You can check connection to make sure the entered address is correct.
 Remote repositories are repositories that have a daemon running with TCP enabled and a fixed port.
-You can read more about configuring daemons and repositories [here](50_repo_configuration).
+You can read more about configuring daemons and repositories [here](90_repo_configuration).
 
 After adding a repository it should appear in the repository overview.
 
