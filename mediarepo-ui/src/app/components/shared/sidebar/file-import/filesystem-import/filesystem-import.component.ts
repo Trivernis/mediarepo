@@ -6,6 +6,12 @@ import {DialogFilter} from "@tauri-apps/api/dialog";
 import {FileOsMetadata} from "../../../../../../api/api-types/files";
 import {ImportTabState} from "../../../../../models/state/ImportTabState";
 
+const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "bmp", "gif"];
+const VIDEO_EXTENSIONS = ["mp4", "mkv", "wmv", "avi", "webm"];
+const AUDIO_EXTENSIONS = ["mp3", "ogg", "wav", "flac", "aac"];
+const DOCUMENT_EXTENSIONS = ["pdf", "doc", "docx", "odf"];
+const TEXT_EXTENSIONS = ["txt", "md"];
+
 @Component({
     selector: "app-filesystem-import",
     templateUrl: "./filesystem-import.component.html",
@@ -20,14 +26,11 @@ export class FilesystemImportComponent implements OnInit {
     public files: FileOsMetadata[] = [];
     public importOptions = new AddFileOptions();
     public filters: DialogFilter[] = [
-        {
-            name: "Images",
-            extensions: ["png", "jpg", "jpeg", "webp", "bmp", "gif"]
-        },
-        { name: "Videos", extensions: ["mp4", "mkv", "wmv", "avi", "webm"] },
-        { name: "Audio", extensions: ["mp3", "ogg", "wav", "flac", "aac"] },
-        { name: "Documents", extensions: ["pdf", "doc", "docx", "odf"] },
-        { name: "Text", extensions: ["txt", "md"] },
+        { name: "Images", extensions: [...IMAGE_EXTENSIONS, ...IMAGE_EXTENSIONS.map(e => e.toUpperCase())] },
+        { name: "Videos", extensions: [...VIDEO_EXTENSIONS, ...VIDEO_EXTENSIONS.map(e => e.toUpperCase())] },
+        { name: "Audio", extensions: [...AUDIO_EXTENSIONS, ...AUDIO_EXTENSIONS.map(e => e.toUpperCase())] },
+        { name: "Documents", extensions: [...DOCUMENT_EXTENSIONS, ...DOCUMENT_EXTENSIONS.map(e => e.toUpperCase())] },
+        { name: "Text", extensions: [...TEXT_EXTENSIONS, ...TEXT_EXTENSIONS.map(e => e.toUpperCase())] },
         { name: "All", extensions: ["*"] }
     ];
 
