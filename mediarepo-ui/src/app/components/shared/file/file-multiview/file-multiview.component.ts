@@ -71,7 +71,7 @@ export class FileMultiviewComponent extends FileActionBaseComponent implements A
         let deletePermanently = true;
 
         for (const file of files) {
-            deletePermanently &&= file.status === "Deleted";
+            deletePermanently &&= file.getStatus() === "Deleted";
         }
 
         if (deletePermanently) {

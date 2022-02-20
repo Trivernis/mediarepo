@@ -19,7 +19,6 @@ import {SafeResourceUrl} from "@angular/platform-browser";
 import {Selectable} from "../../../../../models/Selectable";
 import {TabService} from "../../../../../services/tab/tab.service";
 import {Key} from "w3c-keys";
-import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: "app-file-gallery",
@@ -43,7 +42,6 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit, A
     public entries: Selectable<File>[] = [];
     public selectedFile: Selectable<File> | undefined;
     public fileContentUrl: SafeResourceUrl | undefined;
-    public fileChanged = new BehaviorSubject<void>(undefined);
 
     public selectedIndex = 0;
     public imageViewHeightPercent = 80;
@@ -180,10 +178,6 @@ export class FileGalleryComponent implements OnChanges, OnInit, AfterViewInit, A
 
     public trackByFileId(index: number, item?: Selectable<File>) {
         return item?.data.id;
-    }
-
-    public onFileStatusChange(): void {
-        this.fileChanged.next();
     }
 
     public togglePreviewStrip(): void {

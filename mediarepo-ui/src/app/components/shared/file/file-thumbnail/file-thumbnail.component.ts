@@ -1,5 +1,4 @@
 import {
-    AfterViewChecked,
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -14,7 +13,6 @@ import {File} from "../../../../../api/models/File";
 import {FileService} from "../../../../services/file/file.service";
 import {FileHelper} from "../../../../services/file/file.helper";
 import {SafeResourceUrl} from "@angular/platform-browser";
-import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: "app-file-thumbnail",
@@ -22,10 +20,9 @@ import {BehaviorSubject} from "rxjs";
     styleUrls: ["./file-thumbnail.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterViewChecked {
+export class FileThumbnailComponent implements OnChanges, AfterViewInit {
 
     @Input() file!: File;
-    @Input() public fileChanged: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
     @Output() loadEnd = new EventEmitter<void>();
 
     public thumbUrl: SafeResourceUrl | undefined;
@@ -34,7 +31,6 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterVi
     public displayError = false;
 
     private supportedThumbnailTypes = ["image", "video"];
-    private previousStatus = "imported";
 
     constructor(private changeDetector: ChangeDetectorRef, private fileService: FileService) {
     }
@@ -42,13 +38,6 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterVi
     public async ngAfterViewInit() {
         if (this.thumbnailSupported) {
             this.thumbUrl = this.fileService.buildThumbnailUrl(this.file, 250, 250);
-        }
-    }
-
-    public ngAfterViewChecked(): void {
-        if (this.file && this.file.status != this.previousStatus) {
-            this.previousStatus = this.file.status;
-            this.changeDetector.markForCheck();
         }
     }
 
@@ -60,9 +49,6 @@ export class FileThumbnailComponent implements OnChanges, AfterViewInit, AfterVi
             this.fileType = this.getFileType();
             this.thumbnailSupported = this.getThumbnailSupported();
             this.displayError = false;
-        }
-        if (changes["fileChanged"]) {
-            this.fileChanged.subscribe(() => this.changeDetector.markForCheck());
         }
     }
 

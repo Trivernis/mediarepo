@@ -18,7 +18,7 @@
     <div class="tag-input" fxFlex="200px">
         <div class="tag-input-field">
             <app-tag-input (tagAdded)="this.editTag($event)" [allowInvalid]="true"
-                           [availableTags]="this.allTags"></app-tag-input>
+                           [availableTags]="(this.allTags | async) ?? []"></app-tag-input>
             <button class="add-tag-button" mat-icon-button>
                 <ng-icon *ngIf="editMode === 'Toggle'" name="mat-change-circle"></ng-icon>
                 <ng-icon *ngIf="editMode === 'Add'" name="mat-add-circle"></ng-icon>

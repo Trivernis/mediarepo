@@ -28,9 +28,9 @@ export type PropertyQuery = PropertyQueryStatus
 
 export type PropertyQueryStatus = { Status: FileStatus };
 export type PropertyQueryFileSize = { FileSize: ValueComparator<number> };
-export type PropertyQueryImportedTime = { ImportedTime: ValueComparator<Date> };
-export type PropertyQueryChangedTime = { ChangedTime: ValueComparator<Date> };
-export type PropertyQueryCreatedTime = { CreatedTime: ValueComparator<Date> };
+export type PropertyQueryImportedTime = { ImportedTime: ValueComparator<string> };
+export type PropertyQueryChangedTime = { ChangedTime: ValueComparator<string> };
+export type PropertyQueryCreatedTime = { CreatedTime: ValueComparator<string> };
 export type PropertyQueryTagCount = { TagCount: ValueComparator<number> };
 export type PropertyQueryCd = { Cd: string };
 export type PropertyQueryId = { Id: number };

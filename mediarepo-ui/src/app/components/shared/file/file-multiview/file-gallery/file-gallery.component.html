@@ -24,11 +24,10 @@
         <div #previewStripContainer class="file-preview-strip-container">
             <div *ngFor="let entry of this.previewedEntries; trackBy: trackByFileId" class="file-item">
                 <app-file-card (clickEvent)="onEntrySelect($event.entry)" *ngIf="entry"
-                               [entry]="entry" [fileChanged]="this.fileChanged"></app-file-card>
+                               [entry]="entry"></app-file-card>
             </div>
         </div>
     </div>
 </div>
 <app-file-context-menu #fileContextMenu
-                       (fileDeleted)="this.fileDeleted.emit($event)"
-                       (fileStatusChange)="this.onFileStatusChange()"></app-file-context-menu>
+                       (fileDeleted)="this.fileDeleted.emit($event)"></app-file-context-menu>

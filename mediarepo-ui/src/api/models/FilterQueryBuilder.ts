@@ -29,21 +29,21 @@ export class FilterQueryBuilder {
 
     public static importedTime(date: Date, comparator: Comparator, max_date: Date): FilterQuery {
         return filterQuery({
-            ImportedTime: valuesToCompareEnum(date, comparator,
-                max_date
+            ImportedTime: valuesToCompareEnum(formatDate(date)!!, comparator,
+                formatDate(max_date)
             )
         });
     }
 
     public static changedTime(date: Date, comparator: Comparator, max_date: Date): FilterQuery {
         return filterQuery({
-            ChangedTime: valuesToCompareEnum(date, comparator, max_date)
+            ChangedTime: valuesToCompareEnum(formatDate(date)!!, comparator, formatDate(max_date))
         });
     }
 
     public static createdTime(date: Date, comparator: Comparator, max_date: Date): FilterQuery {
         return filterQuery({
-            CreatedTime: valuesToCompareEnum(date, comparator, max_date)
+            CreatedTime: valuesToCompareEnum(formatDate(date)!!, comparator, formatDate(max_date))
         });
     }
 
@@ -150,6 +150,7 @@ export class FilterQueryBuilder {
                     }
                     break;
                 case "ImportedTime":
+                    console.debug(propertyName, rawComparator, compareValue);
                     value = this.parsePropertyValue(compareValue, parseDate);
                     if (value != undefined) {
                         return this.importedTime(value[0], comparator, value[1]);
@@ -263,7 +264,7 @@ function filterQuery(propertyQuery: PropertyQuery): FilterQuery {
     return { Property: propertyQuery };
 }
 
-function valuesToCompareEnum<T>(min_value: T, comparator: Comparator, max_value?: T): ValueComparator<T> {
+function valuesToCompareEnum<T>(min_value: T, comparator: Comparator, max_value: T | undefined): ValueComparator<T> {
     switch (comparator) {
         case "Less":
             return { Less: min_value };
@@ -299,9 +300,9 @@ function parseByteSize(value: string): number | undefined {
     if (number) {
         for (const key of Object.keys(valueMappings)) {
             if (checkUnit(key)) {
-                console.log("key", key, "valueMapping", valueMappings[key]);
+                console.debug("key", key, "valueMapping", valueMappings[key]);
                 number *= valueMappings[key];
-                console.log("number", number);
+                console.debug("number", number);
                 break;
             }
         }
@@ -311,7 +312,7 @@ function parseByteSize(value: string): number | undefined {
 }
 
 function parseDate(value: string): Date | undefined {
-    const date = Date.parse(value);
+    const date = Date.parse(value.toUpperCase());
 
     if (isNaN(date)) {
         return undefined;
@@ -330,4 +331,14 @@ function parseStatus(value: string): FileStatus | undefined {
         default:
             return undefined;
     }
+}
+
+function formatDate(date?: Date): string | undefined {
+    if (date) {
+        const pad = (s: number) => s.toString().padStart(2, "0");
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(
+            date.getMinutes())}:${pad(
+            date.getSeconds())}`;
+    }
+    return;
 }

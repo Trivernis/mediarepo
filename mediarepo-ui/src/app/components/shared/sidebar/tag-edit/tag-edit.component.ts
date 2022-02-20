@@ -16,6 +16,7 @@ import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {TagService} from "../../../../services/tag/tag.service";
 import {LoggingService} from "../../../../services/logging/logging.service";
 import {BusyIndicatorComponent} from "../../app-common/busy-indicator/busy-indicator.component";
+import {Observable} from "rxjs";
 
 @Component({
     selector: "app-tag-edit",
@@ -32,7 +33,7 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
     @ViewChild(BusyIndicatorComponent) busyIndicator!: BusyIndicatorComponent;
 
     public tags: Tag[] = [];
-    public allTags: Tag[] = [];
+    public allTags: Observable<Tag[]>;
     public editMode: string = "Toggle";
     private fileTags: { [key: number]: Tag[] } = {};
 
@@ -41,10 +42,10 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
         private logger: LoggingService,
         private tagService: TagService,
     ) {
+        this.allTags = tagService.tags.asObservable();
     }
 
     async ngAfterViewInit() {
-        this.tagService.tags.subscribe(tags => this.allTags = tags);
         await this.tagService.loadTags();
         await this.tagService.loadNamespaces();
         await this.loadFileTags();
@@ -58,12 +59,12 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
 
     public async editTag(tag: string): Promise<void> {
         if (tag.length > 0) {
-            let tagInstance = this.allTags.find(
+            let tagInstance = this.tagService.tags.value.find(
                 t => t.getNormalizedOutput() === tag);
 
             if (!tagInstance) {
                 tagInstance = (await this.tagService.createTags([tag]))[0];
-                this.allTags.push(tagInstance);
+                this.tagService.tags.next([...this.tagService.tags.value, tagInstance]);
             }
             this.changeDetector.markForCheck();
             switch (this.editMode) {
@@ -95,11 +96,13 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
                     file.id,
                     addedTags, removedTags
                 );
+
                 if (addedTags.length > 0) {
                     await this.tagService.loadTags();
-                    await this.tagService.loadNamespaces();
                 }
             }
+            await this.tagService.loadTags();
+            await this.tagService.loadNamespaces();
             this.mapFileTagsToTagList();
             const index = this.tags.indexOf(tag);
             if (index >= 0) {
@@ -142,6 +145,8 @@ export class TagEditComponent implements AfterViewInit, OnChanges {
                     );
                 }
             }
+            await this.tagService.loadTags();
+            await this.tagService.loadNamespaces();
             this.mapFileTagsToTagList();
         });
         this.tagEditEvent.emit(this);

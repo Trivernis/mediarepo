@@ -5,7 +5,6 @@
         <app-file-thumbnail
             (loadEnd)="this.loading = false"
             [class.hidden]="this.loading"
-            [fileChanged]="this.fileChanged"
             [file]="this.entry.data"
             class="entry-image"></app-file-thumbnail>
     </app-busy-indicator>
