@@ -127,6 +127,7 @@ export class FileSearchComponent implements AfterViewChecked, OnInit {
     public async removeAllSearchTags() {
         this.filters = new SearchFilters([]);
         this.state.setTagFilters(this.filters);
+        this.updateStatusFilters();
     }
 
     public async removeFilterExpression(expr: FilterExpression) {
