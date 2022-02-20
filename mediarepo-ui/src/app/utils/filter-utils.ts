@@ -40,19 +40,19 @@ export function propertyQueryToStringParts(propertyQuery: PropertyQuery): [strin
         return [
             "ImportedTime",
             getComparator(propertyQuery.ImportedTime),
-            getValue(propertyQuery.ImportedTime).toISOString()
+            getValue(propertyQuery.ImportedTime)
         ];
     } else if ("ChangedTime" in propertyQuery) {
         return [
             "ChangedTime",
             getComparator(propertyQuery.ChangedTime),
-            getValue(propertyQuery.ChangedTime).toISOString()
+            getValue(propertyQuery.ChangedTime)
         ];
     } else if ("CreatedTime" in propertyQuery) {
         return [
             "CreatedTime",
             getComparator(propertyQuery.CreatedTime),
-            getValue(propertyQuery.CreatedTime).toISOString()
+            getValue(propertyQuery.CreatedTime)
         ];
     } else if ("TagCount" in propertyQuery) {
         return [
