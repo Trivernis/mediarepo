@@ -42,5 +42,5 @@ version = "1.17.0"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]
-version= "0.3.9"
+version = "0.3.9"
 features = ["env-filter", "ansi", "json"]
