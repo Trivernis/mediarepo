@@ -1,0 +1,27 @@
+[package]
+name = "mediarepo-worker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-trait = "0.1.52"
+
+[dependencies.mediarepo-core]
+path = "../mediarepo-core"
+
+[dependencies.mediarepo-logic]
+path = "../mediarepo-logic"
+
+[dependencies.tokio]
+version = "1.17.0"
+features = []
+
+[dependencies.chrono]
+version = "0.4.19"
+features = ["serde"]
+
+[dependencies.serde]
+version = "1.0.136"
+features = ["derive"]

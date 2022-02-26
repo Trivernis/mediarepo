@@ -12,7 +12,7 @@ pub struct Model {
     pub interval: Option<i64>,
 }
 
-#[derive(Clone, Debug, PartialEq, EnumIter, DeriveActiveEnum)]
+#[derive(Clone, Copy, Debug, PartialEq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "u32", db_type = "Integer")]
 pub enum JobType {
     #[sea_orm(num_value = 10)]

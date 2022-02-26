@@ -1,3 +1,4 @@
+pub use bincode;
 pub use futures;
 pub use itertools;
 pub use mediarepo_api;

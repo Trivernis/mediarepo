@@ -1294,6 +1294,7 @@ name = "mediarepo-core"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "bincode",
  "config",
  "data-encoding",
  "futures 0.3.21",
@@ -1324,6 +1325,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-logic",
  "mediarepo-socket",
+ "mediarepo-worker",
  "num-integer",
  "rolling-file",
  "structopt",
@@ -1379,6 +1381,18 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-futures",
+]
+
+[[package]]
+name = "mediarepo-worker"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "mediarepo-core",
+ "mediarepo-logic",
+ "serde",
+ "tokio",
 ]
 
 [[package]]
