@@ -2,6 +2,7 @@ use chrono::NaiveDateTime;
 use mediarepo_database::entities::job;
 use mediarepo_database::entities::job::JobType;
 
+#[derive(Clone, Debug)]
 pub struct JobDto {
     model: job::Model,
 }

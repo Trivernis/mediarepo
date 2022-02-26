@@ -16,6 +16,10 @@ pub struct StateData {
 }
 
 impl StateData {
+    pub fn job_id(&self) -> i64 {
+        self.job_id
+    }
+
     /// Loads the state from the database
     pub async fn load(job_dao: JobDao, job_id: i64) -> RepoResult<Self> {
         let states = job_dao.states_for_job_id(job_id).await?;

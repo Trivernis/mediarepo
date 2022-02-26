@@ -1,16 +1,15 @@
+use crate::progress::JobProgressUpdate;
 use crate::state_data::StateData;
 use async_trait::async_trait;
 use mediarepo_core::error::RepoResult;
 use mediarepo_logic::dao::repo::Repo;
-use mediarepo_logic::dto::JobDto;
+use tokio::sync::mpsc::Sender;
 
 #[async_trait]
 pub trait ScheduledJob {
-    fn new(dto: JobDto) -> Self;
-
     async fn set_state(&self, state: StateData) -> RepoResult<()>;
 
-    async fn run(&self, repo: Repo) -> RepoResult<()>;
+    async fn run(&self, sender: &mut Sender<JobProgressUpdate>, repo: Repo) -> RepoResult<()>;
 
     fn execution_state(&self) -> JobExecutionState;
 }
