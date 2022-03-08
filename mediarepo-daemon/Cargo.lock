@@ -1390,6 +1390,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "mediarepo-core",
+ "mediarepo-database",
  "mediarepo-logic",
  "serde",
  "tokio",

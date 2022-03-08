@@ -1,11 +1,13 @@
-use crate::jobs::{JobExecutionState, ScheduledJob};
+use crate::execution_state::JobExecutionState;
+use crate::jobs::{ScheduledJob, VacuumJob};
 use crate::jobs_table::JobsTable;
-use crate::progress::JobProgressUpdate;
+use crate::progress::{JobProgressUpdate, ProgressSender};
 use crate::state_data::StateData;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::futures::select;
 use mediarepo_core::settings::LogLevel::Debug;
 use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
+use mediarepo_database::entities::job::JobType;
 use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dao::DaoProvider;
 use mediarepo_logic::dto::JobDto;
@@ -90,9 +92,11 @@ impl Scheduler {
                 progress.set_state(JobExecutionState::Running);
                 let _ = sender.send(progress.clone()).await;
 
-                if let Err(e) = scheduled_job.run(&mut sender, repo).await {
+                let progress_sender = ProgressSender::new(progress.id(), sender);
+                if let Err(e) = scheduled_job.run(&progress_sender, repo).await {
                     tracing::error!("error occurred during job execution: {}", e);
                 }
+                let sender = progress_sender.inner;
                 progress.set_state(JobExecutionState::Finished);
                 let _ = sender.send(progress).await;
             });
@@ -160,5 +164,19 @@ impl Scheduler {
 }
 
 fn create_job(dto: JobDto) -> Box<dyn ScheduledJob + Send + Sync> {
-    todo!("implement")
+    match dto.job_type() {
+        JobType::MigrateCDs => {
+            todo!()
+        }
+        JobType::CalculateSizes => {
+            todo!()
+        }
+        JobType::GenerateThumbs => {
+            todo!()
+        }
+        JobType::CheckIntegrity => {
+            todo!()
+        }
+        JobType::Vacuum => Box::new(VacuumJob),
+    }
 }

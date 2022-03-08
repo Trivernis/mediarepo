@@ -1,4 +1,5 @@
-use crate::jobs::JobExecutionState;
+use crate::execution_state::{ExecutionStateSynchronizer, JobExecutionState, RunningHandle};
+use tokio::sync::mpsc::Sender;
 
 #[derive(Clone, Debug)]
 pub struct JobProgressUpdate {
@@ -44,5 +45,34 @@ impl JobProgressUpdate {
 
     pub fn set_total(&mut self, total: u64) {
         self.total = Some(total)
+    }
+}
+
+pub struct ProgressSender {
+    job_id: i64,
+    execution_state_sync: ExecutionStateSynchronizer,
+    pub inner: Sender<JobProgressUpdate>,
+}
+
+impl ProgressSender {
+    pub fn new(job_id: i64, sender: Sender<JobProgressUpdate>) -> Self {
+        Self {
+            job_id,
+            inner: sender,
+            execution_state_sync: ExecutionStateSynchronizer::default(),
+        }
+    }
+
+    pub fn send_progress(&self, progress: u64, total: u64) {
+        let _ = self.inner.send(JobProgressUpdate {
+            id: self.job_id,
+            state: JobExecutionState::Running,
+            progress: Some(progress),
+            total: Some(total),
+        });
+    }
+
+    pub fn send_progress_percent(&self, percent: f64) {
+        self.send_progress((percent * 100.0) as u64, 100);
     }
 }

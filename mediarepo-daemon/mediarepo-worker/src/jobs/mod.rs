@@ -1,4 +1,9 @@
-use crate::progress::JobProgressUpdate;
+mod vacuum;
+
+pub use vacuum::*;
+
+use crate::execution_state::JobExecutionState;
+use crate::progress::{JobProgressUpdate, ProgressSender};
 use crate::state_data::StateData;
 use async_trait::async_trait;
 use mediarepo_core::error::RepoResult;
@@ -9,14 +14,5 @@ use tokio::sync::mpsc::Sender;
 pub trait ScheduledJob {
     async fn set_state(&self, state: StateData) -> RepoResult<()>;
 
-    async fn run(&self, sender: &mut Sender<JobProgressUpdate>, repo: Repo) -> RepoResult<()>;
-
-    fn execution_state(&self) -> JobExecutionState;
-}
-
-#[derive(Clone, Copy, Debug, Ord, PartialOrd, Eq, PartialEq)]
-pub enum JobExecutionState {
-    Scheduled,
-    Running,
-    Finished,
+    async fn run(&self, sender: &ProgressSender, repo: Repo) -> RepoResult<()>;
 }
