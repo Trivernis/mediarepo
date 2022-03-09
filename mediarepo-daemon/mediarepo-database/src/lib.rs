@@ -13,7 +13,8 @@ pub async fn get_database<S: AsRef<str>>(uri: S) -> RepoDatabaseResult<DatabaseC
     migrate(uri.as_ref()).await?;
     let mut opt = ConnectOptions::new(uri.as_ref().to_string());
     opt.connect_timeout(Duration::from_secs(10))
-        .idle_timeout(Duration::from_secs(10));
+        .idle_timeout(Duration::from_secs(10))
+        .sqlx_logging(false);
 
     let conn = Database::connect(opt).await?;
 

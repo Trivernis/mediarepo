@@ -79,6 +79,7 @@ async fn main() -> RepoResult<()> {
         SubCommand::Start => start_server(opt, settings).await,
     };
 
+    opentelemetry::global::shutdown_tracer_provider();
     match result {
         Ok(_) => Ok(()),
         Err(e) => {

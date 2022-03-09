@@ -2,6 +2,8 @@ use std::fs;
 use std::path::PathBuf;
 
 use console_subscriber::ConsoleLayer;
+use opentelemetry::sdk::Resource;
+use opentelemetry::{sdk, KeyValue};
 use rolling_file::RollingConditionBasic;
 use tracing::Level;
 use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
@@ -37,6 +39,10 @@ pub fn init_tracing(repo_path: &PathBuf, log_cfg: &LoggingSettings) -> Vec<DropG
     add_bromine_layer(log_cfg, &log_path, &mut guards, &mut layer_list);
     add_app_log_layer(log_cfg, &log_path, &mut guards, &mut layer_list);
 
+    if log_cfg.telemetry {
+        add_telemetry_layer(log_cfg, &mut layer_list);
+    }
+
     let tokio_console_enabled = std::env::var("TOKIO_CONSOLE")
         .map(|v| v.eq_ignore_ascii_case("true"))
         .unwrap_or(false);
@@ -54,6 +60,39 @@ pub fn init_tracing(repo_path: &PathBuf, log_cfg: &LoggingSettings) -> Vec<DropG
 fn add_tokio_console_layer(layer_list: &mut DynLayerList<Registry>) {
     let console_layer = ConsoleLayer::builder().with_default_env().spawn();
     layer_list.add(console_layer);
+}
+
+fn add_telemetry_layer(log_cfg: &LoggingSettings, layer_list: &mut DynLayerList<Registry>) {
+    match opentelemetry_jaeger::new_pipeline()
+        .with_agent_endpoint(&log_cfg.telemetry_endpoint)
+        .with_trace_config(
+            sdk::trace::Config::default()
+                .with_resource(Resource::new(vec![KeyValue::new(
+                    "service.name",
+                    "mediarepo-daemon",
+                )]))
+                .with_max_attributes_per_span(1),
+        )
+        .with_instrumentation_library_tags(false)
+        .with_service_name("mediarepo-daemon")
+        .install_batch(opentelemetry::runtime::Tokio)
+    {
+        Ok(tracer) => {
+            let telemetry_layer = tracing_opentelemetry::layer()
+                .with_tracer(tracer)
+                .with_filter(
+                    filter::Targets::new()
+                        .with_target("tokio", Level::INFO)
+                        .with_target("h2", Level::INFO)
+                        .with_target("sqlx", Level::ERROR)
+                        .with_target("sea_orm", Level::INFO),
+                );
+            layer_list.add(telemetry_layer);
+        }
+        Err(e) => {
+            eprintln!("Failed to initialize telemetry tracing: {}", e);
+        }
+    }
 }
 
 fn add_app_log_layer(
