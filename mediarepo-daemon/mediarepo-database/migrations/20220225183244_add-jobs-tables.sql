@@ -7,8 +7,9 @@ CREATE TABLE jobs (
 );
 
 CREATE TABLE job_states (
-    job_id INTEGER FOREIGN KEY REFERENCES jobs (id),
+    job_id INTEGER,
     key VARCHAR(128) NOT NULL DEFAULT 'default',
     value BLOB,
-    PRIMARY KEY (job_id, key)
+    PRIMARY KEY (job_id, key),
+    FOREIGN KEY (job_id) REFERENCES jobs (id)
 );
