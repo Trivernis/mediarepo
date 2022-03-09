@@ -5,8 +5,6 @@ use std::time::Duration;
 use structopt::StructOpt;
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
-use tokio::runtime;
-use tokio::runtime::Runtime;
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::drop_file::DropFile;
@@ -49,7 +47,8 @@ enum SubCommand {
     Start,
 }
 
-fn main() -> RepoResult<()> {
+#[tokio::main]
+async fn main() -> RepoResult<()> {
     let mut opt: Opt = Opt::from_args();
     opt.repo = env::current_dir().unwrap().join(opt.repo);
 
@@ -66,7 +65,7 @@ fn main() -> RepoResult<()> {
     } else {
         Settings::default()
     };
-    clean_old_connection_files(&opt.repo)?;
+    clean_old_connection_files(&opt.repo).await?;
 
     let mut guards = Vec::new();
     if opt.profile {
@@ -76,8 +75,8 @@ fn main() -> RepoResult<()> {
     }
 
     let result = match opt.cmd.clone() {
-        SubCommand::Init { force } => get_single_thread_runtime().block_on(init(opt, force)),
-        SubCommand::Start => get_multi_thread_runtime().block_on(start_server(opt, settings)),
+        SubCommand::Init { force } => init(opt, force).await,
+        SubCommand::Start => start_server(opt, settings).await,
     };
 
     match result {
@@ -88,23 +87,6 @@ fn main() -> RepoResult<()> {
             Err(e)
         }
     }
-}
-
-fn get_single_thread_runtime() -> Runtime {
-    log::info!("Using current thread runtime");
-    runtime::Builder::new_current_thread()
-        .enable_all()
-        .max_blocking_threads(1)
-        .build()
-        .unwrap()
-}
-
-fn get_multi_thread_runtime() -> Runtime {
-    log::info!("Using multi thread runtime");
-    runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .unwrap()
 }
 
 async fn init_repo(opt: &Opt, paths: &PathSettings) -> RepoResult<Repo> {
@@ -244,14 +226,14 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     Ok(())
 }
 
-fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
+async fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
     let paths = ["repo.tcp", "repo.sock"];
 
     for path in paths {
         let path = root.join(path);
 
         if path.exists() {
-            std::fs::remove_file(&path)?;
+            tokio::fs::remove_file(&path).await?;
         }
     }
 
