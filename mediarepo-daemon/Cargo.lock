@@ -1311,6 +1311,7 @@ dependencies = [
  "tokio-graceful-shutdown",
  "toml",
  "tracing",
+ "tracing-subscriber",
  "typemap_rev",
 ]
 
