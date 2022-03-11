@@ -21,6 +21,7 @@ tracing = "0.1.31"
 data-encoding = "2.3.2"
 tokio-graceful-shutdown = "0.4.3"
 thumbnailer = "0.4.0"
+tracing-subscriber = "0.3.9"
 
 [dependencies.sea-orm]
 version = "0.6.0"
