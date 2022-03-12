@@ -25,7 +25,7 @@ impl JobDispatcher {
         }
     }
 
-    pub async fn dispatch<T: 'static + Job>(&self, job: T) -> Arc<RwLock<T::JobStatus>> {
+    pub async fn dispatch<T: 'static + Job>(&self, job: T) -> Arc<RwLock<T::JobState>> {
         self._dispatch(job, None).await
     }
 
@@ -33,7 +33,7 @@ impl JobDispatcher {
         &self,
         job: T,
         interval: Duration,
-    ) -> Arc<RwLock<T::JobStatus>> {
+    ) -> Arc<RwLock<T::JobState>> {
         self._dispatch(job, Some(interval)).await
     }
 
@@ -42,8 +42,8 @@ impl JobDispatcher {
         &self,
         job: T,
         interval: Option<Duration>,
-    ) -> Arc<RwLock<T::JobStatus>> {
-        let status = job.status();
+    ) -> Arc<RwLock<T::JobState>> {
+        let status = job.state();
         self.add_status::<JobTypeKey<T>>(status.clone()).await;
 
         let subsystem = unsafe {
@@ -61,14 +61,14 @@ impl JobDispatcher {
                 let job_2 = job.clone();
                 let result = tokio::select! {
                     _ = subsystem.on_shutdown_requested() => {
-                        job_2.save_status(repo.job()).await
+                        job_2.save_state(repo.job()).await
                     }
                     r = job.run(repo.clone()) => {
 
                         if let Err(e) = r {
                             Err(e)
                         } else {
-                            job.save_status(repo.job()).await
+                            job.save_state(repo.job()).await
                         }
                     }
                 };

@@ -22,6 +22,9 @@ path = "../mediarepo-database"
 [dependencies.mediarepo-logic]
 path = "../mediarepo-logic"
 
+[dependencies.mediarepo-worker]
+path = "../mediarepo-worker"
+
 [dependencies.tokio]
 version = "1.17.0"
 features = ["net"]

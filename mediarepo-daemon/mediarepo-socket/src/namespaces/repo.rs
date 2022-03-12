@@ -8,7 +8,7 @@ use mediarepo_core::mediarepo_api::types::repo::{
 };
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 
-use crate::utils::{calculate_size, get_repo_from_context};
+use crate::utils::get_repo_from_context;
 
 pub struct RepoNamespace;
 
@@ -56,7 +56,7 @@ impl RepoNamespace {
         let size = if let Some(size) = size_cache.get(&size_type) {
             *size
         } else {
-            calculate_size(&size_type, ctx).await?
+            0
         };
 
         ctx.response(SizeMetadata { size, size_type })

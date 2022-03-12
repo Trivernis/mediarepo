@@ -8,6 +8,7 @@ use tokio::sync::oneshot::channel;
 
 pub mod job_dispatcher;
 pub mod jobs;
+pub mod status_utils;
 
 pub async fn start(top_level: Toplevel, repo: Repo) -> (Toplevel, JobDispatcher) {
     let (tx, rx) = channel();

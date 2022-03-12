@@ -1383,6 +1383,7 @@ dependencies = [
  "mediarepo-core",
  "mediarepo-database",
  "mediarepo-logic",
+ "mediarepo-worker",
  "port_check",
  "rayon",
  "serde",
