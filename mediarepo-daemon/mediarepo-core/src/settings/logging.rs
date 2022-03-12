@@ -1,11 +1,15 @@
 use serde::{Deserialize, Serialize};
 use tracing::Level;
 
+const DEFAULT_TELEMETRY_ENDPOINT: &str = "telemetry.trivernis.net:6831";
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct LoggingSettings {
     pub level: LogLevel,
     pub trace_sql: bool,
     pub trace_api_calls: bool,
+    pub telemetry: bool,
+    pub telemetry_endpoint: String,
 }
 
 impl Default for LoggingSettings {
@@ -14,6 +18,8 @@ impl Default for LoggingSettings {
             level: LogLevel::Info,
             trace_sql: false,
             trace_api_calls: false,
+            telemetry: false,
+            telemetry_endpoint: String::from(DEFAULT_TELEMETRY_ENDPOINT),
         }
     }
 }
