@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
-use typemap_rev::TypeMapKey;
-
 use crate::dao::repo::Repo;
+use mediarepo_core::typemap_rev::TypeMapKey;
 
 pub struct RepoKey;
 

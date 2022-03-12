@@ -1,29 +1,32 @@
-use crate::execution_state::{ExecutionStateSynchronizer, JobExecutionState};
-use crate::jobs::ScheduledJob;
-use crate::progress::{JobProgressUpdate, ProgressSender};
-use crate::state_data::StateData;
+use crate::jobs::{EmptyStatus, Job};
 use async_trait::async_trait;
 use mediarepo_core::error::RepoResult;
+use mediarepo_logic::dao::job::JobDao;
 use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dao::DaoProvider;
 use std::sync::Arc;
-use tokio::sync::mpsc::Sender;
 use tokio::sync::RwLock;
 
 #[derive(Default, Clone)]
 pub struct VacuumJob;
 
 #[async_trait]
-impl ScheduledJob for VacuumJob {
-    async fn set_state(&self, _: StateData) -> RepoResult<()> {
+impl Job for VacuumJob {
+    type JobStatus = ();
+
+    fn status(&self) -> Arc<RwLock<Self::JobStatus>> {
+        EmptyStatus::default()
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn run(&self, repo: Arc<Repo>) -> RepoResult<()> {
+        repo.job().vacuum().await?;
+
         Ok(())
     }
 
-    async fn run(&self, sender: &ProgressSender, repo: Repo) -> RepoResult<()> {
-        sender.send_progress_percent(0.0);
-        repo.job().vacuum().await?;
-        sender.send_progress_percent(1.0);
-
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn save_status(&self, _: JobDao) -> RepoResult<()> {
         Ok(())
     }
 }

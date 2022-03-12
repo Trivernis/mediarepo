@@ -2,15 +2,16 @@ use crate::dao::job::JobDao;
 use crate::dto::{JobStateDto, UpsertJobStateDto};
 use mediarepo_core::error::RepoResult;
 use mediarepo_database::entities::job_state;
+use mediarepo_database::entities::job_state::JobType;
 use sea_orm::prelude::*;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{Condition, TransactionTrait};
 
 impl JobDao {
     /// Returns all job states for a given job id
-    pub async fn states_for_job_id(&self, job_id: i64) -> RepoResult<Vec<JobStateDto>> {
+    pub async fn states_for_job_type(&self, job_type: JobType) -> RepoResult<Vec<JobStateDto>> {
         let states = job_state::Entity::find()
-            .filter(job_state::Column::JobId.eq(job_id))
+            .filter(job_state::Column::JobType.eq(job_type))
             .all(&self.ctx.db)
             .await?
             .into_iter()
@@ -40,11 +41,7 @@ impl JobDao {
 fn build_state_filters(states: &Vec<UpsertJobStateDto>) -> Condition {
     states
         .iter()
-        .map(|s| {
-            Condition::all()
-                .add(job_state::Column::JobId.eq(s.job_id))
-                .add(job_state::Column::Key.eq(s.key.to_owned()))
-        })
+        .map(|s| Condition::all().add(job_state::Column::JobType.eq(s.job_type)))
         .fold(Condition::any(), |acc, cond| acc.add(cond))
 }
 
@@ -52,8 +49,7 @@ fn build_active_state_models(states: Vec<UpsertJobStateDto>) -> Vec<job_state::A
     states
         .into_iter()
         .map(|s| job_state::ActiveModel {
-            job_id: Set(s.job_id),
-            key: Set(s.key),
+            job_type: Set(s.job_type),
             value: Set(s.value),
         })
         .collect()

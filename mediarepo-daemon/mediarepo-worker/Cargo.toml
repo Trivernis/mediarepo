@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 async-trait = "0.1.52"
-tracing = "0.1.31"
+tracing = "0.1.32"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"

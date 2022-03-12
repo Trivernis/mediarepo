@@ -1,4 +1,5 @@
 use mediarepo_database::entities::job_state;
+use mediarepo_database::entities::job_state::JobType;
 
 #[derive(Clone, Debug)]
 pub struct JobStateDto {
@@ -10,12 +11,8 @@ impl JobStateDto {
         Self { model }
     }
 
-    pub fn job_id(&self) -> i64 {
-        self.model.job_id
-    }
-
-    pub fn key(&self) -> &String {
-        &self.model.key
+    pub fn job_type(&self) -> JobType {
+        self.model.job_type
     }
 
     pub fn value(&self) -> &[u8] {
@@ -29,7 +26,6 @@ impl JobStateDto {
 
 #[derive(Clone, Debug)]
 pub struct UpsertJobStateDto {
-    pub job_id: i64,
-    pub key: String,
+    pub job_type: JobType,
     pub value: Vec<u8>,
 }

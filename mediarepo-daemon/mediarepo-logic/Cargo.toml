@@ -8,11 +8,10 @@ workspace = ".."
 
 [dependencies]
 chrono = "0.4.19"
-typemap_rev = "0.1.5"
 serde = "1.0.136"
 mime_guess = "2.0.4"
 mime = "0.3.16"
-tracing = "0.1.31"
+tracing = "0.1.32"
 async-trait = "0.1.52"
 
 [dependencies.mediarepo-core]
