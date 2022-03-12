@@ -3,6 +3,7 @@ use crate::jobs::VacuumJob;
 use mediarepo_core::error::RepoError;
 use mediarepo_core::tokio_graceful_shutdown::Toplevel;
 use mediarepo_logic::dao::repo::Repo;
+use std::time::Duration;
 use tokio::sync::oneshot::channel;
 
 pub mod job_dispatcher;
@@ -15,7 +16,9 @@ pub async fn start(top_level: Toplevel, repo: Repo) -> (Toplevel, JobDispatcher)
         let dispatcher = JobDispatcher::new(subsystem, repo);
         tx.send(dispatcher.clone())
             .map_err(|_| RepoError::from("failed to send dispatcher"))?;
-        dispatcher.dispatch(VacuumJob::default()).await;
+        dispatcher
+            .dispatch_periodically(VacuumJob::default(), Duration::from_secs(60 * 30))
+            .await;
 
         Ok(())
     });

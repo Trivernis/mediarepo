@@ -5,7 +5,9 @@ use mediarepo_logic::dao::repo::Repo;
 use mediarepo_logic::dao::DaoProvider;
 use std::cell::UnsafeCell;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::sync::RwLock;
+use tokio::time::Instant;
 
 #[derive(Clone)]
 pub struct JobDispatcher {
@@ -23,8 +25,24 @@ impl JobDispatcher {
         }
     }
 
-    #[tracing::instrument(level = "debug", skip_all)]
     pub async fn dispatch<T: 'static + Job>(&self, job: T) -> Arc<RwLock<T::JobStatus>> {
+        self._dispatch(job, None).await
+    }
+
+    pub async fn dispatch_periodically<T: 'static + Job>(
+        &self,
+        job: T,
+        interval: Duration,
+    ) -> Arc<RwLock<T::JobStatus>> {
+        self._dispatch(job, Some(interval)).await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn _dispatch<T: 'static + Job>(
+        &self,
+        job: T,
+        interval: Option<Duration>,
+    ) -> Arc<RwLock<T::JobStatus>> {
         let status = job.status();
         self.add_status::<JobTypeKey<T>>(status.clone()).await;
 
@@ -37,23 +55,35 @@ impl JobDispatcher {
 
         let repo = self.repo.clone();
 
-        subsystem.start("worker-job", |subsystem| async move {
-            let job_2 = job.clone();
-            let result = tokio::select! {
-                _ = subsystem.on_shutdown_requested() => {
-                    job_2.save_status(repo.job()).await
-                }
-                r = job.run(repo.clone()) => {
-
-                    if let Err(e) = r {
-                        Err(e)
-                    } else {
-                        job.save_status(repo.job()).await
+        subsystem.start("worker-job", move |subsystem| async move {
+            loop {
+                let start = Instant::now();
+                let job_2 = job.clone();
+                let result = tokio::select! {
+                    _ = subsystem.on_shutdown_requested() => {
+                        job_2.save_status(repo.job()).await
                     }
+                    r = job.run(repo.clone()) => {
+
+                        if let Err(e) = r {
+                            Err(e)
+                        } else {
+                            job.save_status(repo.job()).await
+                        }
+                    }
+                };
+                if let Err(e) = result {
+                    tracing::error!("job failed with error: {}", e);
                 }
-            };
-            if let Err(e) = result {
-                tracing::error!("job failed with error: {}", e);
+                if let Some(interval) = interval {
+                    let sleep_duration = interval - start.elapsed();
+                    tokio::select! {
+                        _  =  tokio::time::sleep(sleep_duration) => {},
+                        _ = subsystem.on_shutdown_requested() => {break}
+                    }
+                } else {
+                    break;
+                }
             }
 
             Ok(())
