@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use tokio::fs;
 
+use crate::TypeMap;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::mediarepo_api::types::repo::{
     FrontendState, RepositoryMetadata, SizeMetadata, SizeType,

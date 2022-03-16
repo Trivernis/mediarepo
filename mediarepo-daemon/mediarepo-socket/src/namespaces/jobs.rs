@@ -1,3 +1,4 @@
+use crate::TypeMap;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};

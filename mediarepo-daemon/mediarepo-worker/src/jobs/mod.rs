@@ -8,7 +8,7 @@ pub use vacuum::*;
 
 use async_trait::async_trait;
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::typemap_rev::TypeMapKey;
+use mediarepo_core::trait_bound_typemap::TypeMapKey;
 use mediarepo_logic::dao::job::JobDao;
 use mediarepo_logic::dao::repo::Repo;
 use tokio::sync::RwLock;

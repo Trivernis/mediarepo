@@ -1,7 +1,7 @@
+use mediarepo_core::trait_bound_typemap::TypeMapKey;
 use std::sync::Arc;
 
 use crate::dao::repo::Repo;
-use mediarepo_core::typemap_rev::TypeMapKey;
 
 pub struct RepoKey;
 

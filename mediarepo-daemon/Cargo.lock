@@ -81,9 +81,9 @@ checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 
 [[package]]
 name = "async-recursion"
-version = "0.3.2"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7d78656ba01f1b93024b7c3a0467f1608e4be67d725749fdcd7d2c7678fd7a2"
+checksum = "2cda8f4bcc10624c4e85bc66b3f452cca98cfa5ca002dc83a16aad2367641bea"
 dependencies = [
  "proc-macro2 1.0.36",
  "quote 1.0.15",
@@ -270,8 +270,9 @@ dependencies = [
 
 [[package]]
 name = "bromine"
-version = "0.18.3"
-source = "git+https://github.com/Trivernis/bromine#c2728a44ead210e1535bce5fc2d3979530700b96"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a05cd0cd5646e705df88816dcc36eaf4e21b940cea66f1e027970cd58e3dc897"
 dependencies = [
  "async-trait",
  "bincode",
@@ -283,7 +284,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
- "typemap_rev",
+ "trait-bound-typemap",
 ]
 
 [[package]]
@@ -1318,7 +1319,7 @@ dependencies = [
  "toml",
  "tracing",
  "tracing-subscriber",
- "typemap_rev",
+ "trait-bound-typemap",
 ]
 
 [[package]]
@@ -1484,6 +1485,12 @@ checksum = "b9f1c5b025cda876f66ef43a113f91ebc9f4ccef34843000e0adf6ebbab84e21"
 dependencies = [
  "winapi",
 ]
+
+[[package]]
+name = "multi-trait-object"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a54c9ed2b86c7927b63e7d51f8d7ed4e1f8513c8672828ca1a850ff9d32ab1c"
 
 [[package]]
 name = "multibase"
@@ -2871,16 +2878,16 @@ dependencies = [
 
 [[package]]
 name = "tokio-graceful-shutdown"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d08ebea7dc6b22273290d8ece2ca448f979f836e38ba629b650595c64204b4f2"
+checksum = "4f21c36e43c82d5f32302aff8ac9efb79e10db9538b0940ef69cce38a01614ae"
 dependencies = [
  "anyhow",
  "async-recursion",
  "futures 0.3.21",
  "log",
  "tokio",
- "tokio-util 0.6.9",
+ "tokio-util 0.7.0",
 ]
 
 [[package]]
@@ -3160,15 +3167,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "trait-bound-typemap"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3631df5ba73c0e41b1aa337df3bcca7f15219f042f8fec1100857bc1eb60c767"
+dependencies = [
+ "multi-trait-object",
+]
+
+[[package]]
 name = "try-lock"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
-
-[[package]]
-name = "typemap_rev"
-version = "0.1.5"
-source = "git+https://github.com/Trivernis/typemap_rev?rev=750c67bffe8024d2a47725daa473f068ad653fc4#750c67bffe8024d2a47725daa473f068ad653fc4"
 
 [[package]]
 name = "typenum"

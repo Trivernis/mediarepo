@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use crate::TypeMap;
 use mediarepo_core::bromine::ipc::context::Context;
 use mediarepo_core::content_descriptor::decode_content_descriptor;
 use mediarepo_core::error::{RepoError, RepoResult};

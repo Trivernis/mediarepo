@@ -8,8 +8,8 @@ use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::{PortSetting, Settings};
 use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
+use mediarepo_core::trait_bound_typemap::{SendSyncTypeMap, TypeMap};
 use mediarepo_core::type_keys::{SizeMetadataKey, SubsystemKey};
-use mediarepo_core::type_list::TypeList;
 
 mod from_model;
 mod namespaces;
@@ -19,7 +19,7 @@ mod utils;
 pub fn start_tcp_server(
     subsystem: SubsystemHandle,
     settings: Settings,
-    shared_data: TypeList,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<(String, JoinHandle<()>)> {
     let port = match &settings.server.tcp.port {
         PortSetting::Fixed(p) => {
@@ -56,7 +56,7 @@ pub fn start_tcp_server(
 pub fn create_unix_socket(
     subsystem: SubsystemHandle,
     path: std::path::PathBuf,
-    shared_data: TypeList,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<JoinHandle<()>> {
     use std::fs;
     use tokio::net::UnixListener;
