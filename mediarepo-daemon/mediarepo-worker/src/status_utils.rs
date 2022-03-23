@@ -17,6 +17,11 @@ impl SimpleProgress {
         Self { total, current: 0 }
     }
 
+    /// Sets the total count
+    pub fn set_total(&mut self, total: u64) {
+        self.total = total;
+    }
+
     /// Increments the current progress by 1
     pub fn tick(&mut self) {
         self.current += 1;

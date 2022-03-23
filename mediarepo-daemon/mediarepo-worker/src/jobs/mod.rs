@@ -1,7 +1,9 @@
 mod calculate_sizes;
+mod generate_missing_thumbnails;
 mod vacuum;
 
 pub use calculate_sizes::*;
+pub use generate_missing_thumbnails::*;
 use std::marker::PhantomData;
 use std::sync::Arc;
 pub use vacuum::*;

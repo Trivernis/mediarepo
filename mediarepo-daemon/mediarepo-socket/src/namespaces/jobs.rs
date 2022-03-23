@@ -4,7 +4,7 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 use mediarepo_logic::dao::DaoProvider;
-use mediarepo_worker::jobs::{CalculateSizesJob, VacuumJob};
+use mediarepo_worker::jobs::{CalculateSizesJob, GenerateMissingThumbsJob, VacuumJob};
 
 use crate::utils::{get_job_dispatcher_from_context, get_repo_from_context};
 
@@ -41,7 +41,11 @@ impl JobsNamespace {
             JobType::Vacuum => {
                 dispatcher.dispatch(VacuumJob::default()).await;
             }
-            JobType::GenerateThumbnails => job_dao.generate_missing_thumbnails().await?,
+            JobType::GenerateThumbnails => {
+                dispatcher
+                    .dispatch(GenerateMissingThumbsJob::default())
+                    .await;
+            }
         }
 
         Ok(Response::empty())
