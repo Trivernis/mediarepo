@@ -1,9 +1,11 @@
+pub use bincode;
 pub use futures;
 pub use itertools;
 pub use mediarepo_api;
 pub use mediarepo_api::bromine;
 pub use thumbnailer;
 pub use tokio_graceful_shutdown;
+pub use trait_bound_typemap;
 
 pub mod content_descriptor;
 pub mod context;

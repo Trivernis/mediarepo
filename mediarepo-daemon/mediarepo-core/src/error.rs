@@ -43,6 +43,9 @@ pub enum RepoError {
 
     #[error("the database file is corrupted {0}")]
     Corrupted(String),
+
+    #[error("bincode de-/serialization failed {0}")]
+    Bincode(#[from] bincode::Error),
 }
 
 #[derive(Error, Debug)]

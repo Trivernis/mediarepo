@@ -1,31 +1,31 @@
 [package]
-name = "mediarepo-logic"
+name = "mediarepo-worker"
 version = "0.1.0"
-edition = "2018"
-workspace = ".."
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.19"
-serde = "1.0.136"
-mime_guess = "2.0.4"
-mime = "0.3.16"
-tracing = "0.1.32"
 async-trait = "0.1.52"
+tracing = "0.1.32"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
 
+[dependencies.mediarepo-logic]
+path = "../mediarepo-logic"
+
 [dependencies.mediarepo-database]
 path = "../mediarepo-database"
 
-[dependencies.sea-orm]
-version = "0.6.0"
-features = ["runtime-tokio-native-tls", "macros"]
-default-features = false
-
 [dependencies.tokio]
 version = "1.17.0"
-features = ["fs", "io-std", "io-util"]
+features = ["macros"]
 
+[dependencies.chrono]
+version = "0.4.19"
+features = ["serde"]
+
+[dependencies.serde]
+version = "1.0.136"
+features = ["derive"]

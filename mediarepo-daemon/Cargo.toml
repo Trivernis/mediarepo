@@ -1,6 +1,6 @@
 [workspace]
-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
-default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
+members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
+default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
 
 [package]
 name = "mediarepo-daemon"
@@ -16,12 +16,12 @@ name = "mediarepo-daemon"
 path = "src/main.rs"
 
 [dependencies]
-tracing = "0.1.31"
+tracing = "0.1.32"
 toml = "0.5.8"
 structopt = "0.3.26"
 glob = "0.3.0"
 tracing-flame = "0.2.0"
-tracing-appender = "0.2.0"
+tracing-appender = "0.2.1"
 tracing-log = "0.1.2"
 rolling-file = "0.1.0"
 num-integer = "0.1.44"
@@ -39,6 +39,9 @@ path = "mediarepo-logic"
 
 [dependencies.mediarepo-socket]
 path = "./mediarepo-socket"
+
+[dependencies.mediarepo-worker]
+path = "./mediarepo-worker"
 
 [dependencies.tokio]
 version = "1.17.0"

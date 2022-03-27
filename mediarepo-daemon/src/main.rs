@@ -1,5 +1,7 @@
 use std::env;
+use std::iter::FromIterator;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use structopt::StructOpt;
@@ -10,8 +12,12 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::drop_file::DropFile;
 use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
+use mediarepo_core::trait_bound_typemap::{CloneSendSyncTypeMap, SendSyncTypeMap, TypeMap};
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::type_keys::RepoKey;
 use mediarepo_socket::start_tcp_server;
+use mediarepo_worker::job_dispatcher::DispatcherKey;
 
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 
@@ -99,18 +105,28 @@ async fn init_repo(opt: &Opt, paths: &PathSettings) -> RepoResult<Repo> {
 /// Starts the server
 async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     let repo = init_repo(&opt, &settings.paths).await?;
-    let mut top_level = Toplevel::new();
+    let (mut top_level, dispatcher) = mediarepo_worker::start(Toplevel::new(), repo.clone()).await;
+
+    let mut shared_data = CloneSendSyncTypeMap::new();
+    shared_data.insert::<RepoKey>(Arc::new(repo));
+    shared_data.insert::<SettingsKey>(settings.clone());
+    shared_data.insert::<RepoPathKey>(opt.repo.clone());
+    shared_data.insert::<DispatcherKey>(dispatcher);
 
     #[cfg(unix)]
     {
         if settings.server.unix_socket.enabled {
-            let settings = settings.clone();
             let repo_path = opt.repo.clone();
-            let repo = repo.clone();
+            let shared_data = shared_data.clone();
 
             top_level = top_level.start("mediarepo-unix-socket", |subsystem| {
                 Box::pin(async move {
-                    start_and_await_unix_socket(subsystem, repo_path, settings, repo).await?;
+                    start_and_await_unix_socket(
+                        subsystem,
+                        repo_path,
+                        SendSyncTypeMap::from_iter(shared_data),
+                    )
+                    .await?;
                     Ok(())
                 })
             })
@@ -120,7 +136,13 @@ async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     if settings.server.tcp.enabled {
         top_level = top_level.start("mediarepo-tcp", move |subsystem| {
             Box::pin(async move {
-                start_and_await_tcp_server(subsystem, opt.repo, settings, repo).await?;
+                start_and_await_tcp_server(
+                    subsystem,
+                    opt.repo,
+                    settings,
+                    SendSyncTypeMap::from_iter(shared_data),
+                )
+                .await?;
 
                 Ok(())
             })
@@ -147,9 +169,9 @@ async fn start_and_await_tcp_server(
     subsystem: SubsystemHandle,
     repo_path: PathBuf,
     settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<()> {
-    let (address, handle) = start_tcp_server(subsystem.clone(), repo_path.clone(), settings, repo)?;
+    let (address, handle) = start_tcp_server(subsystem.clone(), settings, shared_data)?;
     let (mut file, _guard) = DropFile::new(repo_path.join("repo.tcp")).await?;
     file.write_all(&address.into_bytes()).await?;
 
@@ -172,17 +194,10 @@ async fn start_and_await_tcp_server(
 async fn start_and_await_unix_socket(
     subsystem: SubsystemHandle,
     repo_path: PathBuf,
-    settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<()> {
     let socket_path = repo_path.join("repo.sock");
-    let handle = mediarepo_socket::create_unix_socket(
-        subsystem.clone(),
-        socket_path,
-        repo_path.clone(),
-        settings,
-        repo,
-    )?;
+    let handle = mediarepo_socket::create_unix_socket(subsystem.clone(), socket_path, shared_data)?;
     let _guard = DropFile::from_path(repo_path.join("repo.sock"));
 
     tokio::select! {

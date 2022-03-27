@@ -1,6 +1,4 @@
 use std::net::SocketAddr;
-use std::path::PathBuf;
-use std::sync::Arc;
 
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
@@ -10,20 +8,18 @@ use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
 use mediarepo_core::settings::{PortSetting, Settings};
 use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
-use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey, SubsystemKey};
-use mediarepo_logic::dao::repo::Repo;
-use mediarepo_logic::type_keys::RepoKey;
+use mediarepo_core::trait_bound_typemap::{SendSyncTypeMap, TypeMap};
+use mediarepo_core::type_keys::{SizeMetadataKey, SubsystemKey};
 
 mod from_model;
 mod namespaces;
 mod utils;
 
-#[tracing::instrument(skip(subsystem, settings, repo))]
+#[tracing::instrument(skip_all)]
 pub fn start_tcp_server(
     subsystem: SubsystemHandle,
-    repo_path: PathBuf,
     settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<(String, JoinHandle<()>)> {
     let port = match &settings.server.tcp.port {
         PortSetting::Fixed(p) => {
@@ -45,9 +41,7 @@ pub fn start_tcp_server(
         .spawn(async move {
             get_builder::<TcpListener>(address)
                 .insert::<SubsystemKey>(subsystem)
-                .insert::<RepoKey>(Arc::new(repo))
-                .insert::<SettingsKey>(settings)
-                .insert::<RepoPathKey>(repo_path)
+                .insert_all(shared_data)
                 .insert::<SizeMetadataKey>(Default::default())
                 .build_server()
                 .await
@@ -58,13 +52,11 @@ pub fn start_tcp_server(
 }
 
 #[cfg(unix)]
-#[tracing::instrument(skip(subsystem, settings, repo))]
+#[tracing::instrument(skip_all)]
 pub fn create_unix_socket(
     subsystem: SubsystemHandle,
     path: std::path::PathBuf,
-    repo_path: PathBuf,
-    settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<JoinHandle<()>> {
     use std::fs;
     use tokio::net::UnixListener;
@@ -77,9 +69,7 @@ pub fn create_unix_socket(
         .spawn(async move {
             get_builder::<UnixListener>(path)
                 .insert::<SubsystemKey>(subsystem)
-                .insert::<RepoKey>(Arc::new(repo))
-                .insert::<SettingsKey>(settings)
-                .insert::<RepoPathKey>(repo_path)
+                .insert_all(shared_data)
                 .insert::<SizeMetadataKey>(Default::default())
                 .build_server()
                 .await
