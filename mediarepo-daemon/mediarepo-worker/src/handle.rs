@@ -1,5 +1,4 @@
 use mediarepo_core::error::{RepoError, RepoResult};
-use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use tokio::sync::broadcast::{Receiver, Sender};
@@ -8,7 +7,7 @@ use tokio::sync::RwLock;
 pub struct JobHandle<T: Send + Sync, R: Send + Sync> {
     status: Arc<RwLock<T>>,
     state: Arc<RwLock<JobState>>,
-    result_receiver: CloneableReceiver<Arc<RwLock<RepoResult<R>>>>,
+    result_receiver: CloneableReceiver<Arc<RwLock<Option<RepoResult<R>>>>>,
 }
 
 impl<T: Send + Sync, R: Send + Sync> Clone for JobHandle<T, R> {
@@ -25,7 +24,7 @@ impl<T: Send + Sync, R: Send + Sync> JobHandle<T, R> {
     pub fn new(
         status: Arc<RwLock<T>>,
         state: Arc<RwLock<JobState>>,
-        result_receiver: CloneableReceiver<Arc<RwLock<RepoResult<R>>>>,
+        result_receiver: CloneableReceiver<Arc<RwLock<Option<RepoResult<R>>>>>,
     ) -> Self {
         Self {
             status,
@@ -42,17 +41,17 @@ impl<T: Send + Sync, R: Send + Sync> JobHandle<T, R> {
         &self.status
     }
 
-    pub async fn result(&mut self) -> Arc<RwLock<RepoResult<R>>> {
+    pub async fn result(&mut self) -> Arc<RwLock<Option<RepoResult<R>>>> {
         match self.result_receiver.recv().await {
             Ok(v) => v,
-            Err(e) => Arc::new(RwLock::new(Err(RepoError::from(&*e.to_string())))),
+            Err(e) => Arc::new(RwLock::new(Some(Err(RepoError::from(&*e.to_string()))))),
         }
     }
 
-    pub async fn try_result(&mut self) -> RepoResult<R> {
+    pub async fn take_result(&mut self) -> Option<RepoResult<R>> {
         let shared_result = self.result().await;
         let mut result = shared_result.write().await;
-        mem::replace(&mut *result, Err(RepoError::from("result taken")))
+        result.take()
     }
 }
 

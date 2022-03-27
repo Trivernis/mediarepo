@@ -2,7 +2,7 @@ use sea_orm::prelude::*;
 use sea_orm::TryFromU64;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "namespaces")]
+#[sea_orm(table_name = "job_states")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub job_type: JobType,

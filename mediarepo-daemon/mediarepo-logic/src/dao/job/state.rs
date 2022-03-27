@@ -9,16 +9,18 @@ use sea_orm::{Condition, TransactionTrait};
 
 impl JobDao {
     /// Returns all job states for a given job id
-    pub async fn states_for_job_type(&self, job_type: JobType) -> RepoResult<Vec<JobStateDto>> {
-        let states = job_state::Entity::find()
+    pub async fn state_for_job_type(&self, job_type: JobType) -> RepoResult<Option<JobStateDto>> {
+        let state = job_state::Entity::find()
             .filter(job_state::Column::JobType.eq(job_type))
-            .all(&self.ctx.db)
+            .one(&self.ctx.db)
             .await?
-            .into_iter()
-            .map(JobStateDto::new)
-            .collect();
+            .map(JobStateDto::new);
 
-        Ok(states)
+        Ok(state)
+    }
+
+    pub async fn upsert_state(&self, state: UpsertJobStateDto) -> RepoResult<()> {
+        self.upsert_multiple_states(vec![state]).await
     }
 
     pub async fn upsert_multiple_states(&self, states: Vec<UpsertJobStateDto>) -> RepoResult<()> {

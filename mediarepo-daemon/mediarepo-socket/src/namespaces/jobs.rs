@@ -3,13 +3,13 @@ use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
-use mediarepo_logic::dao::DaoProvider;
+use mediarepo_worker::handle::JobState;
 use mediarepo_worker::job_dispatcher::JobDispatcher;
 use mediarepo_worker::jobs::{
-    CalculateSizesJob, CheckIntegrityJob, GenerateMissingThumbsJob, Job, VacuumJob,
+    CalculateSizesJob, CheckIntegrityJob, GenerateMissingThumbsJob, Job, MigrateCDsJob, VacuumJob,
 };
 
-use crate::utils::{get_job_dispatcher_from_context, get_repo_from_context};
+use crate::utils::get_job_dispatcher_from_context;
 
 pub struct JobsNamespace;
 
@@ -29,7 +29,6 @@ impl JobsNamespace {
     #[tracing::instrument(skip_all)]
     pub async fn run_job(ctx: &Context, event: Event) -> IPCResult<Response> {
         let run_request = event.payload::<RunJobRequest>()?;
-        let job_dao = get_repo_from_context(ctx).await.job();
         let dispatcher = get_job_dispatcher_from_context(ctx).await;
 
         if !run_request.sync {
@@ -38,7 +37,9 @@ impl JobsNamespace {
         }
 
         match run_request.job_type {
-            JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
+            JobType::MigrateContentDescriptors => {
+                dispatch_job(&dispatcher, MigrateCDsJob::default(), run_request.sync).await?
+            }
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
             JobType::CheckIntegrity => {
                 dispatch_job(&dispatcher, CheckIntegrityJob::default(), run_request.sync).await?
@@ -65,9 +66,19 @@ async fn dispatch_job<J: 'static + Job>(
     job: J,
     sync: bool,
 ) -> RepoResult<()> {
-    let mut handle = dispatcher.dispatch(job).await;
+    let mut handle = if let Some(handle) = dispatcher.get_handle::<J>().await {
+        if handle.state().await == JobState::Running {
+            handle
+        } else {
+            dispatcher.dispatch(job).await
+        }
+    } else {
+        dispatcher.dispatch(job).await
+    };
     if sync {
-        handle.try_result().await?;
+        if let Some(result) = handle.take_result().await {
+            result?;
+        }
     }
     Ok(())
 }

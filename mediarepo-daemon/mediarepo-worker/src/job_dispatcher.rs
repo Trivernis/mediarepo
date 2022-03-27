@@ -57,7 +57,7 @@ impl JobDispatcher {
             });
         let receiver = CloneableReceiver::new(sender.clone());
         let handle = JobHandle::new(status.clone(), state.clone(), receiver);
-        self.add_handle::<JobTypeKey<T>>(handle.clone()).await;
+        self.add_handle::<T>(handle.clone()).await;
 
         let repo = self.repo.clone();
 
@@ -70,6 +70,9 @@ impl JobDispatcher {
                         let mut state = state.write().await;
                         *state = JobState::Running;
                     }
+                    if let Err(e) = job.load_state(repo.job()).await {
+                        tracing::error!("failed to load the jobs state: {}", e);
+                    }
                     let result = tokio::select! {
                         _ = subsystem.on_shutdown_requested() => {
                             job_2.save_state(repo.job()).await
@@ -78,7 +81,7 @@ impl JobDispatcher {
                             match r {
                                 Err(e) => Err(e),
                                 Ok(v) => {
-                                    let _ = sender.send(Arc::new(RwLock::new(Ok(v))));
+                                    let _ = sender.send(Arc::new(RwLock::new(Some(Ok(v)))));
                                     job.save_state(repo.job()).await
                                 }
                             }
@@ -86,6 +89,7 @@ impl JobDispatcher {
                     };
                     if let Err(e) = result {
                         tracing::error!("job failed with error: {}", e);
+                        let _ = sender.send(Arc::new(RwLock::new(Some(Err(e)))));
                     }
                     if let Some(interval) = interval {
                         {
@@ -111,12 +115,15 @@ impl JobDispatcher {
     }
 
     #[inline]
-    async fn add_handle<T: TypeMapKey>(&self, status: T::Value)
-    where
-        <T as TypeMapKey>::Value: Send + Sync,
-    {
+    async fn add_handle<T: 'static + Job>(&self, handle: JobHandle<T::JobStatus, T::Result>) {
         let mut status_map = self.job_handle_map.write().await;
-        status_map.insert::<T>(status);
+        status_map.insert::<JobTypeKey<T>>(handle);
+    }
+
+    #[inline]
+    pub async fn get_handle<T: 'static + Job>(&self) -> Option<JobHandle<T::JobStatus, T::Result>> {
+        let map = self.job_handle_map.read().await;
+        map.get::<JobTypeKey<T>>().cloned()
     }
 }
 

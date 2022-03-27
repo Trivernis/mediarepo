@@ -1,5 +1,5 @@
 use crate::job_dispatcher::JobDispatcher;
-use crate::jobs::{CheckIntegrityJob, VacuumJob};
+use crate::jobs::{CheckIntegrityJob, MigrateCDsJob, VacuumJob};
 use mediarepo_core::error::RepoError;
 use mediarepo_core::tokio_graceful_shutdown::Toplevel;
 use mediarepo_logic::dao::repo::Repo;
@@ -27,6 +27,7 @@ pub async fn start(top_level: Toplevel, repo: Repo) -> (Toplevel, JobDispatcher)
                 Duration::from_secs(60 * 60 * 24),
             )
             .await;
+        dispatcher.dispatch(MigrateCDsJob::default()).await;
 
         Ok(())
     });
