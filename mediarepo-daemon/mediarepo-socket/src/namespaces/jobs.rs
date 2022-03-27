@@ -4,7 +4,10 @@ use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
 use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
 use mediarepo_logic::dao::DaoProvider;
-use mediarepo_worker::jobs::{CalculateSizesJob, GenerateMissingThumbsJob, VacuumJob};
+use mediarepo_worker::job_dispatcher::JobDispatcher;
+use mediarepo_worker::jobs::{
+    CalculateSizesJob, CheckIntegrityJob, GenerateMissingThumbsJob, Job, VacuumJob,
+};
 
 use crate::utils::{get_job_dispatcher_from_context, get_repo_from_context};
 
@@ -37,25 +40,36 @@ impl JobsNamespace {
         match run_request.job_type {
             JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
-            JobType::CheckIntegrity => job_dao.check_integrity().await?,
+            JobType::CheckIntegrity => {
+                dispatch_job(&dispatcher, CheckIntegrityJob::default(), run_request.sync).await?
+            }
             JobType::Vacuum => {
-                let mut handle = dispatcher.dispatch(VacuumJob::default()).await;
-                if run_request.sync {
-                    handle.try_result().await?;
-                }
+                dispatch_job(&dispatcher, VacuumJob::default(), run_request.sync).await?
             }
             JobType::GenerateThumbnails => {
-                let mut handle = dispatcher
-                    .dispatch(GenerateMissingThumbsJob::default())
-                    .await;
-                if run_request.sync {
-                    handle.try_result().await?;
-                }
+                dispatch_job(
+                    &dispatcher,
+                    GenerateMissingThumbsJob::default(),
+                    run_request.sync,
+                )
+                .await?
             }
         }
 
         Ok(Response::empty())
     }
+}
+
+async fn dispatch_job<J: 'static + Job>(
+    dispatcher: &JobDispatcher,
+    job: J,
+    sync: bool,
+) -> RepoResult<()> {
+    let mut handle = dispatcher.dispatch(job).await;
+    if sync {
+        handle.try_result().await?;
+    }
+    Ok(())
 }
 
 async fn calculate_all_sizes(ctx: &Context) -> RepoResult<()> {
