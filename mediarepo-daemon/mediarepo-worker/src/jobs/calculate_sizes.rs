@@ -40,9 +40,10 @@ impl CalculateSizesJob {
 
 #[async_trait]
 impl Job for CalculateSizesJob {
-    type JobState = CalculateSizesState;
+    type JobStatus = CalculateSizesState;
+    type Result = ();
 
-    fn state(&self) -> Arc<RwLock<Self::JobState>> {
+    fn status(&self) -> Arc<RwLock<Self::JobStatus>> {
         self.state.clone()
     }
 

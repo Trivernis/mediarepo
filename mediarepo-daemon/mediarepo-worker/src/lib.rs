@@ -6,6 +6,7 @@ use mediarepo_logic::dao::repo::Repo;
 use std::time::Duration;
 use tokio::sync::oneshot::channel;
 
+pub mod handle;
 pub mod job_dispatcher;
 pub mod jobs;
 pub mod status_utils;

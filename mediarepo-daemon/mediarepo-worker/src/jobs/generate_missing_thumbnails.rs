@@ -15,9 +15,10 @@ pub struct GenerateMissingThumbsJob {
 
 #[async_trait]
 impl Job for GenerateMissingThumbsJob {
-    type JobState = SimpleProgress;
+    type JobStatus = SimpleProgress;
+    type Result = ();
 
-    fn state(&self) -> Arc<RwLock<Self::JobState>> {
+    fn status(&self) -> Arc<RwLock<Self::JobStatus>> {
         self.state.clone()
     }
 

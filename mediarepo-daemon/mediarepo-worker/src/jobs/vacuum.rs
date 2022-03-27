@@ -11,9 +11,10 @@ pub struct VacuumJob;
 
 #[async_trait]
 impl Job for VacuumJob {
-    type JobState = ();
+    type JobStatus = ();
+    type Result = ();
 
-    fn state(&self) -> Arc<RwLock<Self::JobState>> {
+    fn status(&self) -> Arc<RwLock<Self::JobStatus>> {
         EmptyStatus::default()
     }
 

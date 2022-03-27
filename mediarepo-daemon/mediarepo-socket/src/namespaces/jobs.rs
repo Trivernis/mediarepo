@@ -39,12 +39,18 @@ impl JobsNamespace {
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
             JobType::CheckIntegrity => job_dao.check_integrity().await?,
             JobType::Vacuum => {
-                dispatcher.dispatch(VacuumJob::default()).await;
+                let mut handle = dispatcher.dispatch(VacuumJob::default()).await;
+                if run_request.sync {
+                    handle.try_result().await?;
+                }
             }
             JobType::GenerateThumbnails => {
-                dispatcher
+                let mut handle = dispatcher
                     .dispatch(GenerateMissingThumbsJob::default())
                     .await;
+                if run_request.sync {
+                    handle.try_result().await?;
+                }
             }
         }
 
@@ -62,10 +68,10 @@ async fn calculate_all_sizes(ctx: &Context) -> RepoResult<()> {
     };
     let job = CalculateSizesJob::new(repo_path, settings);
     let dispatcher = get_job_dispatcher_from_context(ctx).await;
-    let state = dispatcher.dispatch(job).await;
+    let handle = dispatcher.dispatch(job).await;
     let mut rx = {
-        let state = state.read().await;
-        state.sizes_channel.subscribe()
+        let status = handle.status().read().await;
+        status.sizes_channel.subscribe()
     };
 
     while let Ok((size_type, size)) = rx.recv().await {
