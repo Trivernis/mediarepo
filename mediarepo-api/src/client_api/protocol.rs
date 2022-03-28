@@ -1,6 +1,8 @@
 use async_trait::async_trait;
 use bromine::error::Result;
+use bromine::prelude::encrypted::{EncryptedStream, EncryptionOptions};
 use bromine::prelude::IPCResult;
+use bromine::protocol::encrypted::EncryptedListener;
 use bromine::protocol::*;
 use std::io::Error;
 use std::net::ToSocketAddrs;
@@ -9,12 +11,11 @@ use std::task::{Context, Poll};
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 use tokio::net::{TcpListener, TcpStream};
 
-#[derive(Debug)]
 pub enum ApiProtocolListener {
     #[cfg(unix)]
     UnixSocket(tokio::net::UnixListener),
 
-    Tcp(TcpListener),
+    Tcp(EncryptedListener<TcpListener>),
 }
 
 unsafe impl Send for ApiProtocolListener {}
@@ -25,12 +26,14 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
     type AddressType = String;
     type RemoteAddressType = String;
     type Stream = ApiProtocolStream;
+    type ListenerOptions = ();
 
     #[tracing::instrument]
-    async fn protocol_bind(address: Self::AddressType) -> Result<Self> {
+    async fn protocol_bind(address: Self::AddressType, _: Self::ListenerOptions) -> Result<Self> {
         if let Some(addr) = address.to_socket_addrs().ok().and_then(|mut a| a.next()) {
-            let listener = TcpListener::bind(addr).await?;
-            tracing::info!("Connecting via TCP");
+            let listener =
+                EncryptedListener::protocol_bind(addr, EncryptionOptions::default()).await?;
+            tracing::info!("Connecting via encrypted TCP");
 
             Ok(Self::Tcp(listener))
         } else {
@@ -67,19 +70,18 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
                 ))
             }
             ApiProtocolListener::Tcp(listener) => {
-                let (stream, addr) = listener.accept().await?;
+                let (stream, addr) = listener.protocol_accept().await?;
                 Ok((ApiProtocolStream::Tcp(stream), addr.to_string()))
             }
         }
     }
 }
 
-#[derive(Debug)]
 pub enum ApiProtocolStream {
     #[cfg(unix)]
     UnixSocket(tokio::net::UnixStream),
 
-    Tcp(TcpStream),
+    Tcp(EncryptedStream<TcpStream>),
 }
 
 unsafe impl Send for ApiProtocolStream {}
@@ -97,7 +99,7 @@ impl AsyncProtocolStreamSplit for ApiProtocolStream {
                 (Box::new(read), Box::new(write))
             }
             ApiProtocolStream::Tcp(stream) => {
-                let (read, write) = stream.into_split();
+                let (read, write) = stream.protocol_into_split();
                 (Box::new(read), Box::new(write))
             }
         }
@@ -107,10 +109,15 @@ impl AsyncProtocolStreamSplit for ApiProtocolStream {
 #[async_trait]
 impl AsyncProtocolStream for ApiProtocolStream {
     type AddressType = String;
+    type StreamOptions = ();
 
-    async fn protocol_connect(address: Self::AddressType) -> IPCResult<Self> {
+    async fn protocol_connect(
+        address: Self::AddressType,
+        _: Self::StreamOptions,
+    ) -> IPCResult<Self> {
         if let Some(addr) = address.to_socket_addrs().ok().and_then(|mut a| a.next()) {
-            let stream = TcpStream::connect(addr).await?;
+            let stream =
+                EncryptedStream::protocol_connect(addr, EncryptionOptions::default()).await?;
             Ok(Self::Tcp(stream))
         } else {
             #[cfg(unix)]

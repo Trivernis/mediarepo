@@ -14,23 +14,24 @@ pub mod status_utils;
 pub async fn start(top_level: Toplevel, repo: Repo) -> (Toplevel, JobDispatcher) {
     let (tx, rx) = channel();
 
-    let top_level = top_level.start("mediarepo-worker", |subsystem| async move {
-        let dispatcher = JobDispatcher::new(subsystem, repo);
-        tx.send(dispatcher.clone())
-            .map_err(|_| RepoError::from("failed to send dispatcher"))?;
-        dispatcher
-            .dispatch_periodically(VacuumJob::default(), Duration::from_secs(60 * 30))
-            .await;
-        dispatcher
-            .dispatch_periodically(
-                CheckIntegrityJob::default(),
-                Duration::from_secs(60 * 60 * 24),
-            )
-            .await;
-        dispatcher.dispatch(MigrateCDsJob::default()).await;
+    let top_level =
+        top_level.start::<RepoError, _, _>("mediarepo-worker", |subsystem| async move {
+            let dispatcher = JobDispatcher::new(subsystem, repo);
+            tx.send(dispatcher.clone())
+                .map_err(|_| RepoError::from("failed to send dispatcher"))?;
+            dispatcher
+                .dispatch_periodically(VacuumJob::default(), Duration::from_secs(60 * 30))
+                .await;
+            dispatcher
+                .dispatch_periodically(
+                    CheckIntegrityJob::default(),
+                    Duration::from_secs(60 * 60 * 24),
+                )
+                .await;
+            dispatcher.dispatch(MigrateCDsJob::default()).await;
 
-        Ok(())
-    });
+            Ok(())
+        });
     let receiver = rx
         .await
         .expect("failed to create background job dispatcher");

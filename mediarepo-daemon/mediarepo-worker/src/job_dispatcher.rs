@@ -1,5 +1,6 @@
 use crate::handle::{CloneableReceiver, JobHandle, JobState};
 use crate::jobs::{Job, JobTypeKey};
+use mediarepo_core::error::RepoError;
 use mediarepo_core::tokio_graceful_shutdown::SubsystemHandle;
 use mediarepo_core::trait_bound_typemap::{SendSyncTypeMap, TypeMap, TypeMapKey};
 use mediarepo_logic::dao::repo::Repo;
@@ -48,11 +49,12 @@ impl JobDispatcher {
         let state = Arc::new(RwLock::new(JobState::Queued));
         let (sender, mut receiver) = channel(1);
         self.subsystem
-            .start("channel-consumer", move |subsystem| async move {
+            .start::<RepoError, _, _>("channel-consumer", move |subsystem| async move {
                 tokio::select! {
                     _ = receiver.recv() => (),
                     _ = subsystem.on_shutdown_requested() => (),
                 }
+
                 Ok(())
             });
         let receiver = CloneableReceiver::new(sender.clone());
@@ -62,7 +64,7 @@ impl JobDispatcher {
         let repo = self.repo.clone();
 
         self.subsystem
-            .start("worker-job", move |subsystem| async move {
+            .start::<RepoError, _, _>("worker-job", move |subsystem| async move {
                 loop {
                     let start = Instant::now();
                     let job_2 = job.clone();

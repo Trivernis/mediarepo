@@ -12,7 +12,7 @@ serde = "1.0.136"
 mime_guess = "2.0.4"
 mime = "0.3.16"
 tracing = "0.1.32"
-async-trait = "0.1.52"
+async-trait = "0.1.53"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
@@ -21,7 +21,7 @@ path = "../mediarepo-core"
 path = "../mediarepo-database"
 
 [dependencies.sea-orm]
-version = "0.6.0"
+version = "0.7.1"
 features = ["runtime-tokio-native-tls", "macros"]
 default-features = false
 

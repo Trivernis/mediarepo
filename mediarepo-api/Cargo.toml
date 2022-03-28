@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.31.0"
+version = "0.32.0"
 edition = "2018"
 license = "gpl-3"
 
@@ -9,7 +9,7 @@ license = "gpl-3"
 [dependencies]
 tracing = "0.1.32"
 thiserror = "1.0.30"
-async-trait = { version = "0.1.52", optional = true }
+async-trait = { version = "0.1.53", optional = true }
 parking_lot = { version = "0.12.0", optional = true }
 serde_json = { version = "1.0.79", optional = true }
 directories = { version = "4.0.1", optional = true }
@@ -20,9 +20,9 @@ url = { version = "2.2.2", optional = true }
 pathsearch = { version = "0.2.0", optional = true }
 
 [dependencies.bromine]
-version = "0.19.0"
+version = "0.20.1"
 optional = true
-features = ["serialize_bincode"]
+features = ["serialize_bincode", "encryption_layer"]
 
 [dependencies.serde]
 version = "1.0.136"

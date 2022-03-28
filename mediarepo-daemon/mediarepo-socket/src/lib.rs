@@ -3,6 +3,7 @@ use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 
+use crate::encrypted::EncryptedListener;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
@@ -39,7 +40,7 @@ pub fn start_tcp_server(
     let join_handle = tokio::task::Builder::new()
         .name("mediarepo_tcp::listen")
         .spawn(async move {
-            get_builder::<TcpListener>(address)
+            get_builder::<EncryptedListener<TcpListener>>(address)
                 .insert::<SubsystemKey>(subsystem)
                 .insert_all(shared_data)
                 .insert::<SizeMetadataKey>(Default::default())

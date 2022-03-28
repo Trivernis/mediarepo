@@ -127,7 +127,7 @@ async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
                         SendSyncTypeMap::from_iter(shared_data),
                     )
                     .await?;
-                    Ok(())
+                    RepoResult::Ok(())
                 })
             })
         }
@@ -144,7 +144,7 @@ async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
                 )
                 .await?;
 
-                Ok(())
+                RepoResult::Ok(())
             })
         })
     }
