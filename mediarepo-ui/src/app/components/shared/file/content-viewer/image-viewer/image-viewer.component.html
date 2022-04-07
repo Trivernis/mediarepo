@@ -14,7 +14,7 @@
                 <app-content-aware-image (appLoadEnd)="this.loading = false" (appLoadError)="this.loading = false"
                                          [class.hidden]="this.loading"
                                          [imageSrc]="this.imageUrl"
-                                         [maxRetry]="3"
+                                         [maxRetry]="10"
                                          [retryDelay]="500"
                                          decoding="sync"></app-content-aware-image>
             </app-busy-indicator>
