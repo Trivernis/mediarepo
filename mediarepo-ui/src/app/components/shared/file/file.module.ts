@@ -25,7 +25,7 @@ import {
     MatImage,
     MatMovie,
     MatRefresh
-} from "@ng-icons/material-icons";
+} from "@ng-icons/material-icons/baseline";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {MatButtonModule} from "@angular/material/button";
 import {MatMenuModule} from "@angular/material/menu";

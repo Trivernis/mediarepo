@@ -7,7 +7,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {NgIconsModule} from "@ng-icons/core";
-import {MatFolder, MatInsertDriveFile} from "@ng-icons/material-icons";
+import {MatFolder, MatInsertDriveFile} from "@ng-icons/material-icons/baseline";
 import {MatButtonModule} from "@angular/material/button";
 import {FlexModule} from "@angular/flex-layout";
 import {FilterInputComponent} from "./filter-input/filter-input.component";
