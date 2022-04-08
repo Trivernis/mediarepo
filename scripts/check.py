@@ -4,7 +4,7 @@ import argparse
 import os
 
 
-tauri_cli_version = '1.0.0-rc.5'
+tauri_cli_version = '1.0.0-rc.8'
 windows = os.name == 'nt'
 
 

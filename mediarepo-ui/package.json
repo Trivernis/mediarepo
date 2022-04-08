@@ -1,6 +1,6 @@
 {
     "name": "mediarepo-ui",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
@@ -45,7 +45,7 @@
         "@angular-eslint/template-parser": "^13.2.0",
         "@angular/cli": "~13.3.2",
         "@angular/compiler-cli": "~13.3.2",
-        "@tauri-apps/cli": "^1.0.0-rc.7",
+        "@tauri-apps/cli": "^1.0.0-rc.8",
         "@types/file-saver": "^2.0.4",
         "@types/jasmine": "~4.0.2",
         "@types/node": "^17.0.23",

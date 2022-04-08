@@ -99,7 +99,7 @@ After building the `out` directory contains all the built binaries and bundles.
 
 ### Test Builds
 
-For test builds the `Dockerfile` in this repository can be used. This way no build dependencies need to be installed on the system. The dockerfile doesn't provide any artifacts and can only be used for validation.
+For test builds the `Containerfile` in this repository can be used. This way no build dependencies need to be installed on the system. The Containerfile doesn't provide any artifacts and can only be used for validation.
 
 ## Usage and Further Information
 
