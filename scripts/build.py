@@ -69,7 +69,10 @@ def build(component: str, bundles: List[str] = None):
 def build_daemon():
     '''Builds daemon'''
     cargo('fetch', 'mediarepo-daemon')
-    cargo('build --release --frozen', 'mediarepo-daemon')
+    additional_flags = ''
+    if verbose:
+        additional_flags = '--verbose'
+    cargo('build --release --frozen ' + additional_flags, 'mediarepo-daemon')
 
     if windows:
         store_artifact('mediarepo-daemon/target/release/mediarepo-daemon.exe')
@@ -81,10 +84,15 @@ def build_ui(bundles: List[str] = None):
     '''Builds UI'''
     yarn('install', 'mediarepo-ui')
 
+    additional_flags = ''
+
+    if verbose:
+        additional_flags = '--verbose'
+
     if bundles is not None:
-        cargo('tauri build --bundles ' + ' '.join(bundles), 'mediarepo-ui')
+        cargo('tauri build --bundles ' + ' '.join(bundles) + ' ' + additional_flags, 'mediarepo-ui')
     else:
-        cargo('tauri build ', 'mediarepo-ui')
+        cargo('tauri build ' + additional_flags, 'mediarepo-ui')
 
     if windows:
         store_artifact(
