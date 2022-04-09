@@ -12,7 +12,7 @@ import {
     MatFilterAlt,
     MatRemove,
     MatRemoveCircle,
-} from "@ng-icons/material-icons";
+} from "@ng-icons/material-icons/baseline";
 import {MatRippleModule} from "@angular/material/core";
 import {MatButtonModule} from "@angular/material/button";
 import {InputModule} from "../input/input.module";

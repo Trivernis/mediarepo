@@ -1,11 +1,15 @@
+use crate::TypeMap;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::mediarepo_api::types::jobs::{JobType, RunJobRequest};
-use mediarepo_core::mediarepo_api::types::repo::SizeType;
-use mediarepo_core::type_keys::SizeMetadataKey;
-use mediarepo_logic::dao::DaoProvider;
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey, SizeMetadataKey};
+use mediarepo_worker::handle::JobState;
+use mediarepo_worker::job_dispatcher::JobDispatcher;
+use mediarepo_worker::jobs::{
+    CalculateSizesJob, CheckIntegrityJob, GenerateMissingThumbsJob, Job, MigrateCDsJob, VacuumJob,
+};
 
-use crate::utils::{calculate_size, get_repo_from_context};
+use crate::utils::get_job_dispatcher_from_context;
 
 pub struct JobsNamespace;
 
@@ -25,7 +29,7 @@ impl JobsNamespace {
     #[tracing::instrument(skip_all)]
     pub async fn run_job(ctx: &Context, event: Event) -> IPCResult<Response> {
         let run_request = event.payload::<RunJobRequest>()?;
-        let job_dao = get_repo_from_context(ctx).await.job();
+        let dispatcher = get_job_dispatcher_from_context(ctx).await;
 
         if !run_request.sync {
             // early response to indicate that the job will be run
@@ -33,26 +37,69 @@ impl JobsNamespace {
         }
 
         match run_request.job_type {
-            JobType::MigrateContentDescriptors => job_dao.migrate_content_descriptors().await?,
+            JobType::MigrateContentDescriptors => {
+                dispatch_job(&dispatcher, MigrateCDsJob::default(), run_request.sync).await?
+            }
             JobType::CalculateSizes => calculate_all_sizes(ctx).await?,
-            JobType::CheckIntegrity => job_dao.check_integrity().await?,
-            JobType::Vacuum => job_dao.vacuum().await?,
-            JobType::GenerateThumbnails => job_dao.generate_missing_thumbnails().await?,
+            JobType::CheckIntegrity => {
+                dispatch_job(&dispatcher, CheckIntegrityJob::default(), run_request.sync).await?
+            }
+            JobType::Vacuum => {
+                dispatch_job(&dispatcher, VacuumJob::default(), run_request.sync).await?
+            }
+            JobType::GenerateThumbnails => {
+                dispatch_job(
+                    &dispatcher,
+                    GenerateMissingThumbsJob::default(),
+                    run_request.sync,
+                )
+                .await?
+            }
         }
 
         Ok(Response::empty())
     }
 }
 
+async fn dispatch_job<J: 'static + Job>(
+    dispatcher: &JobDispatcher,
+    job: J,
+    sync: bool,
+) -> RepoResult<()> {
+    let mut handle = if let Some(handle) = dispatcher.get_handle::<J>().await {
+        if handle.state().await == JobState::Running {
+            handle
+        } else {
+            dispatcher.dispatch(job).await
+        }
+    } else {
+        dispatcher.dispatch(job).await
+    };
+    if sync {
+        if let Some(result) = handle.take_result().await {
+            result?;
+        }
+    }
+    Ok(())
+}
+
 async fn calculate_all_sizes(ctx: &Context) -> RepoResult<()> {
-    let size_types = vec![
-        SizeType::Total,
-        SizeType::FileFolder,
-        SizeType::ThumbFolder,
-        SizeType::DatabaseFile,
-    ];
-    for size_type in size_types {
-        let size = calculate_size(&size_type, ctx).await?;
+    let (repo_path, settings) = {
+        let data = ctx.data.read().await;
+        (
+            data.get::<RepoPathKey>().unwrap().clone(),
+            data.get::<SettingsKey>().unwrap().clone(),
+        )
+    };
+    let job = CalculateSizesJob::new(repo_path, settings);
+    let dispatcher = get_job_dispatcher_from_context(ctx).await;
+    let handle = dispatcher.dispatch(job).await;
+    let mut rx = {
+        let status = handle.status().read().await;
+        status.sizes_channel.subscribe()
+    };
+
+    while let Ok((size_type, size)) = rx.recv().await {
         let mut data = ctx.data.write().await;
         let size_map = data.get_mut::<SizeMetadataKey>().unwrap();
         size_map.insert(size_type, size);

@@ -2,6 +2,7 @@ use crate::daemon_management::find_daemon_executable;
 use crate::tauri_plugin::commands::AppAccess;
 use crate::tauri_plugin::error::PluginResult;
 use crate::tauri_plugin::settings::save_settings;
+use bromine::prelude::encrypted::EncryptedListener;
 use bromine::prelude::{IPCError, IPCResult};
 use bromine::IPCBuilder;
 use std::io::ErrorKind;
@@ -53,7 +54,7 @@ pub async fn check_daemon_running(address: String) -> PluginResult<bool> {
 
 async fn try_connect_daemon(address: String) -> IPCResult<()> {
     let address = get_socket_address(address)?;
-    let ctx = IPCBuilder::<TcpListener>::new()
+    let ctx = IPCBuilder::<EncryptedListener<TcpListener>>::new()
         .address(address)
         .build_client()
         .await?;

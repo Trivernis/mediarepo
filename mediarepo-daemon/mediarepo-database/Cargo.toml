@@ -8,7 +8,7 @@ workspace = ".."
 
 [dependencies]
 chrono = "0.4.19"
-tracing = "0.1.31"
+tracing = "0.1.32"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
@@ -18,6 +18,6 @@ version = "0.5.11"
 features = ["migrate"]
 
 [dependencies.sea-orm]
-version = "0.6.0"
-features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"]
+version = "0.7.1"
+features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros"]
 default-features = false

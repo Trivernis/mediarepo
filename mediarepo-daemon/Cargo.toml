@@ -1,10 +1,10 @@
 [workspace]
-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
-default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "."]
+members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
+default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
 
 [package]
 name = "mediarepo-daemon"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2018"
 license = "gpl-3"
 repository = "https://github.com/Trivernis/mediarepo-daemon"
@@ -16,17 +16,20 @@ name = "mediarepo-daemon"
 path = "src/main.rs"
 
 [dependencies]
-tracing = "0.1.31"
+tracing = "0.1.32"
 toml = "0.5.8"
 structopt = "0.3.26"
 glob = "0.3.0"
 tracing-flame = "0.2.0"
-tracing-appender = "0.2.0"
+tracing-appender = "0.2.2"
 tracing-log = "0.1.2"
 rolling-file = "0.1.0"
 num-integer = "0.1.44"
 console-subscriber = "0.1.3"
-log = "0.4.14"
+log = "0.4.16"
+opentelemetry = { version = "0.17.0", features = ["rt-tokio"] }
+opentelemetry-jaeger = { version = "0.16.0", features = ["rt-tokio"] }
+tracing-opentelemetry = "0.17.2"
 
 [dependencies.mediarepo-core]
 path = "./mediarepo-core"
@@ -37,10 +40,13 @@ path = "mediarepo-logic"
 [dependencies.mediarepo-socket]
 path = "./mediarepo-socket"
 
+[dependencies.mediarepo-worker]
+path = "./mediarepo-worker"
+
 [dependencies.tokio]
 version = "1.17.0"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]
-version= "0.3.9"
+version = "0.3.9"
 features = ["env-filter", "ansi", "json"]

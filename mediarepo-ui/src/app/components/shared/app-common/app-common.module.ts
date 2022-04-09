@@ -4,7 +4,7 @@ import {BusyIndicatorComponent} from "./busy-indicator/busy-indicator.component"
 import {ContextMenuComponent} from "./context-menu/context-menu.component";
 import {CommonModule} from "@angular/common";
 import {NgIconsModule} from "@ng-icons/core";
-import {MatChevronLeft, MatChevronRight} from "@ng-icons/material-icons";
+import {MatChevronLeft, MatChevronRight} from "@ng-icons/material-icons/baseline";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatButtonModule} from "@angular/material/button";
 import {MatDialogModule} from "@angular/material/dialog";

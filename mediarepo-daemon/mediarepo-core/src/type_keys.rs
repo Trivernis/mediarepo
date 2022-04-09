@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use mediarepo_api::types::repo::SizeType;
 use tokio_graceful_shutdown::SubsystemHandle;
-use typemap_rev::TypeMapKey;
+use trait_bound_typemap::TypeMapKey;
 
 use crate::settings::Settings;
 

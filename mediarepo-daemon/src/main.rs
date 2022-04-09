@@ -1,19 +1,23 @@
 use std::env;
+use std::iter::FromIterator;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use structopt::StructOpt;
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
-use tokio::runtime;
-use tokio::runtime::Runtime;
 
 use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::drop_file::DropFile;
 use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
+use mediarepo_core::trait_bound_typemap::{CloneSendSyncTypeMap, SendSyncTypeMap, TypeMap};
+use mediarepo_core::type_keys::{RepoPathKey, SettingsKey};
 use mediarepo_logic::dao::repo::Repo;
+use mediarepo_logic::type_keys::RepoKey;
 use mediarepo_socket::start_tcp_server;
+use mediarepo_worker::job_dispatcher::DispatcherKey;
 
 use crate::utils::{create_paths_for_repo, get_repo, load_settings};
 
@@ -49,7 +53,8 @@ enum SubCommand {
     Start,
 }
 
-fn main() -> RepoResult<()> {
+#[tokio::main]
+async fn main() -> RepoResult<()> {
     let mut opt: Opt = Opt::from_args();
     opt.repo = env::current_dir().unwrap().join(opt.repo);
 
@@ -66,7 +71,7 @@ fn main() -> RepoResult<()> {
     } else {
         Settings::default()
     };
-    clean_old_connection_files(&opt.repo)?;
+    clean_old_connection_files(&opt.repo).await?;
 
     let mut guards = Vec::new();
     if opt.profile {
@@ -76,10 +81,11 @@ fn main() -> RepoResult<()> {
     }
 
     let result = match opt.cmd.clone() {
-        SubCommand::Init { force } => get_single_thread_runtime().block_on(init(opt, force)),
-        SubCommand::Start => get_multi_thread_runtime().block_on(start_server(opt, settings)),
+        SubCommand::Init { force } => init(opt, force).await,
+        SubCommand::Start => start_server(opt, settings).await,
     };
 
+    opentelemetry::global::shutdown_tracer_provider();
     match result {
         Ok(_) => Ok(()),
         Err(e) => {
@@ -88,23 +94,6 @@ fn main() -> RepoResult<()> {
             Err(e)
         }
     }
-}
-
-fn get_single_thread_runtime() -> Runtime {
-    log::info!("Using current thread runtime");
-    runtime::Builder::new_current_thread()
-        .enable_all()
-        .max_blocking_threads(1)
-        .build()
-        .unwrap()
-}
-
-fn get_multi_thread_runtime() -> Runtime {
-    log::info!("Using multi thread runtime");
-    runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .unwrap()
 }
 
 async fn init_repo(opt: &Opt, paths: &PathSettings) -> RepoResult<Repo> {
@@ -116,19 +105,29 @@ async fn init_repo(opt: &Opt, paths: &PathSettings) -> RepoResult<Repo> {
 /// Starts the server
 async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     let repo = init_repo(&opt, &settings.paths).await?;
-    let mut top_level = Toplevel::new();
+    let (mut top_level, dispatcher) = mediarepo_worker::start(Toplevel::new(), repo.clone()).await;
+
+    let mut shared_data = CloneSendSyncTypeMap::new();
+    shared_data.insert::<RepoKey>(Arc::new(repo));
+    shared_data.insert::<SettingsKey>(settings.clone());
+    shared_data.insert::<RepoPathKey>(opt.repo.clone());
+    shared_data.insert::<DispatcherKey>(dispatcher);
 
     #[cfg(unix)]
     {
         if settings.server.unix_socket.enabled {
-            let settings = settings.clone();
             let repo_path = opt.repo.clone();
-            let repo = repo.clone();
+            let shared_data = shared_data.clone();
 
             top_level = top_level.start("mediarepo-unix-socket", |subsystem| {
                 Box::pin(async move {
-                    start_and_await_unix_socket(subsystem, repo_path, settings, repo).await?;
-                    Ok(())
+                    start_and_await_unix_socket(
+                        subsystem,
+                        repo_path,
+                        SendSyncTypeMap::from_iter(shared_data),
+                    )
+                    .await?;
+                    RepoResult::Ok(())
                 })
             })
         }
@@ -137,9 +136,15 @@ async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     if settings.server.tcp.enabled {
         top_level = top_level.start("mediarepo-tcp", move |subsystem| {
             Box::pin(async move {
-                start_and_await_tcp_server(subsystem, opt.repo, settings, repo).await?;
+                start_and_await_tcp_server(
+                    subsystem,
+                    opt.repo,
+                    settings,
+                    SendSyncTypeMap::from_iter(shared_data),
+                )
+                .await?;
 
-                Ok(())
+                RepoResult::Ok(())
             })
         })
     }
@@ -164,9 +169,9 @@ async fn start_and_await_tcp_server(
     subsystem: SubsystemHandle,
     repo_path: PathBuf,
     settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<()> {
-    let (address, handle) = start_tcp_server(subsystem.clone(), repo_path.clone(), settings, repo)?;
+    let (address, handle) = start_tcp_server(subsystem.clone(), settings, shared_data)?;
     let (mut file, _guard) = DropFile::new(repo_path.join("repo.tcp")).await?;
     file.write_all(&address.into_bytes()).await?;
 
@@ -189,17 +194,10 @@ async fn start_and_await_tcp_server(
 async fn start_and_await_unix_socket(
     subsystem: SubsystemHandle,
     repo_path: PathBuf,
-    settings: Settings,
-    repo: Repo,
+    shared_data: SendSyncTypeMap,
 ) -> RepoResult<()> {
     let socket_path = repo_path.join("repo.sock");
-    let handle = mediarepo_socket::create_unix_socket(
-        subsystem.clone(),
-        socket_path,
-        repo_path.clone(),
-        settings,
-        repo,
-    )?;
+    let handle = mediarepo_socket::create_unix_socket(subsystem.clone(), socket_path, shared_data)?;
     let _guard = DropFile::from_path(repo_path.join("repo.sock"));
 
     tokio::select! {
@@ -244,14 +242,14 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     Ok(())
 }
 
-fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
+async fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
     let paths = ["repo.tcp", "repo.sock"];
 
     for path in paths {
         let path = root.join(path);
 
         if path.exists() {
-            std::fs::remove_file(&path)?;
+            tokio::fs::remove_file(&path).await?;
         }
     }
 
