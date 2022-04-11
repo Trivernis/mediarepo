@@ -1,7 +1,7 @@
 {
     "package": {
         "productName": "mediarepo-ui",
-        "version": "1.0.1"
+        "version": "1.0.2"
     },
     "build": {
         "distDir": "../dist/mediarepo-ui",
@@ -70,7 +70,7 @@
             }
         ],
         "security": {
-            "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self' once: thumb: content:"
+            "csp": null
         }
     }
 }
