@@ -19,7 +19,7 @@ thiserror = "1.0.30"
 typemap_rev = "0.1.5"
 
 [dependencies.tauri]
-version = "1.0.0-rc.4"
+version = "1.0.0-rc.6"
 features = ["dialog-all", "path-all", "shell-all"]
 
 [dependencies.tracing-subscriber]
