@@ -17,7 +17,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatDividerModule} from "@angular/material/divider";
 import {NgIconsModule} from "@ng-icons/core";
-import * as materialIcons from "@ng-icons/material-icons";
+import {MatPlus} from "@ng-icons/material-icons/baseline";
 import {MatMenuModule} from "@angular/material/menu";
 import {InputModule} from "../shared/input/input.module";
 import {SidebarModule} from "../shared/sidebar/sidebar.module";
@@ -72,7 +72,7 @@ import {AboutDialogComponent} from "./repositories-tab/repository-overview/about
         MatProgressBarModule,
         MatCheckboxModule,
         ScrollingModule,
-        NgIconsModule.withIcons({ ...materialIcons }),
+        NgIconsModule.withIcons({ MatPlus }),
         FlexModule,
         MatButtonModule,
         MatMenuModule,
