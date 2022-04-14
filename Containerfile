@@ -36,6 +36,9 @@ RUN python3 scripts/check.py --install
 FROM sources AS build_daemon
 WORKDIR /usr/src
 RUN python3 scripts/build.py daemon --verbose
+RUN mkdir ./test-repo
+RUN ./out/mediarepo-daemon --repo ./test-repo init
+
 
 FROM sources AS build_ui
 WORKDIR /usr/src

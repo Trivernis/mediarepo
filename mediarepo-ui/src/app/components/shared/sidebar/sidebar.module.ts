@@ -7,6 +7,7 @@ import {
     MatAddCircle,
     MatChangeCircle,
     MatDeleteSweep,
+    MatEdit,
     MatExpandLess,
     MatExpandMore,
     MatFilterAlt,
@@ -91,6 +92,7 @@ import {SortPresetItemComponent} from "./file-search/sort-preset-item/sort-prese
             MatFilterAlt,
             MatExpandMore,
             MatExpandLess,
+            MatEdit
         }),
         MatRippleModule,
         MatButtonModule,
