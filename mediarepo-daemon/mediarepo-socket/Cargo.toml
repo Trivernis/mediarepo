@@ -8,10 +8,10 @@ workspace = ".."
 
 [dependencies]
 serde = "1.0.136"
-tracing = "0.1.32"
+tracing = "0.1.33"
 compare = "0.1.0"
 port_check = "0.1.5"
-rayon = "1.5.1"
+rayon = "1.5.2"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
