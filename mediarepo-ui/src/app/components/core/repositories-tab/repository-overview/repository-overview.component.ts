@@ -118,9 +118,6 @@ export class RepositoryOverviewComponent implements OnInit, AfterViewInit {
         await this.jobService.runJob("CheckIntegrity");
         dialogContext.message.next("Running a vacuum on the database...");
         await this.jobService.runJob("Vacuum");
-        dialogContext.message.next(
-            "Migrating content descriptors to new format...");
-        await this.jobService.runJob("MigrateContentDescriptors");
         dialogContext.message.next("Calculating repository sizes...");
         await this.jobService.runJob("CalculateSizes", false);
         dialogContext.message.next("Generating missing thumbnails...");
