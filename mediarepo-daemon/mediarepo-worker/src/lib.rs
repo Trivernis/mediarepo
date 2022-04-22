@@ -20,9 +20,6 @@ pub async fn start(top_level: Toplevel, repo: Repo) -> (Toplevel, JobDispatcher)
             tx.send(dispatcher.clone())
                 .map_err(|_| RepoError::from("failed to send dispatcher"))?;
             dispatcher
-                .dispatch_periodically(VacuumJob::default(), Duration::from_secs(60 * 30))
-                .await;
-            dispatcher
                 .dispatch_periodically(
                     CheckIntegrityJob::default(),
                     Duration::from_secs(60 * 60 * 24),

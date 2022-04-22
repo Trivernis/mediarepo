@@ -116,12 +116,10 @@ export class RepositoryOverviewComponent implements OnInit, AfterViewInit {
     private async runRepositoryStartupTasks(dialogContext: BusyDialogContext): Promise<void> {
         dialogContext.message.next("Checking integrity...");
         await this.jobService.runJob("CheckIntegrity");
-        dialogContext.message.next("Running a vacuum on the database...");
-        await this.jobService.runJob("Vacuum");
-        dialogContext.message.next("Calculating repository sizes...");
-        await this.jobService.runJob("CalculateSizes", false);
         dialogContext.message.next("Generating missing thumbnails...");
         await this.jobService.runJob("GenerateThumbnails");
+        dialogContext.message.next("Calculating repository sizes...");
+        await this.jobService.runJob("CalculateSizes", false);
         dialogContext.message.next("Finished repository startup");
     }
 
