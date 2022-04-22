@@ -1,5 +1,5 @@
 use crate::job_dispatcher::JobDispatcher;
-use crate::jobs::{CheckIntegrityJob, MigrateCDsJob, VacuumJob};
+use crate::jobs::{CheckIntegrityJob, MigrateCDsJob};
 use mediarepo_core::error::RepoError;
 use mediarepo_core::tokio_graceful_shutdown::Toplevel;
 use mediarepo_logic::dao::repo::Repo;

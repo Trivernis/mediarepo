@@ -176,7 +176,7 @@ fn adjust_for_dir(ordering: Ordering, direction: &SortDirection) -> Ordering {
     }
 }
 
-fn compare_tag_lists(list_a: &Vec<String>, list_b: &Vec<String>) -> Ordering {
+fn compare_tag_lists(list_a: &[String], list_b: &[String]) -> Ordering {
     let first_diff = list_a.iter().zip(list_b.iter()).find(|(a, b)| *a != *b);
     if let Some(diff) = first_diff {
         if let (Some(num_a), Some(num_b)) = (diff.0.parse::<f32>().ok(), diff.1.parse::<f32>().ok())

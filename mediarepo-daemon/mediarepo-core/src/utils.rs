@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use futures::future;
 use tokio::fs::{self, OpenOptions};
@@ -16,7 +16,7 @@ pub fn parse_namespace_and_tag(norm_tag: String) -> (Option<String>, String) {
 }
 
 /// Parses all tags from a file
-pub async fn parse_tags_file(path: PathBuf) -> RepoResult<Vec<(Option<String>, String)>> {
+pub async fn parse_tags_file(path: &Path) -> RepoResult<Vec<(Option<String>, String)>> {
     let file = OpenOptions::new().read(true).open(path).await?;
     let mut lines = BufReader::new(file).lines();
     let mut tags = Vec::new();

@@ -6,7 +6,7 @@ use mediarepo_core::mediarepo_api::types::repo::SizeType;
 use mediarepo_core::settings::Settings;
 use mediarepo_core::utils::get_folder_size;
 use mediarepo_logic::dao::repo::Repo;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::fs;
 use tokio::sync::broadcast::{self, Sender};
@@ -72,11 +72,11 @@ impl Job for CalculateSizesJob {
 async fn calculate_size(
     size_type: &SizeType,
     repo: &Repo,
-    repo_path: &PathBuf,
+    repo_path: &Path,
     settings: &Settings,
 ) -> RepoResult<u64> {
     let size = match &size_type {
-        SizeType::Total => get_folder_size(repo_path.clone()).await?,
+        SizeType::Total => get_folder_size(repo_path.to_path_buf()).await?,
         SizeType::FileFolder => repo.get_main_store_size().await?,
         SizeType::ThumbFolder => repo.get_thumb_store_size().await?,
         SizeType::DatabaseFile => {
