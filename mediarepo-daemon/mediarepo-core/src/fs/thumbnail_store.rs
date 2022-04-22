@@ -71,7 +71,7 @@ impl ThumbnailStore {
             let name = file_name.to_string_lossy();
 
             let (height, width) = name
-                .split_once("-")
+                .split_once('-')
                 .and_then(|(height, width)| {
                     Some((height.parse::<u32>().ok()?, width.parse::<u32>().ok()?))
                 })

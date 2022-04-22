@@ -33,11 +33,7 @@ pub async fn file_by_identifier(identifier: FileIdentifier, repo: &Repo) -> Repo
 pub async fn cd_by_identifier(identifier: FileIdentifier, repo: &Repo) -> RepoResult<Vec<u8>> {
     match identifier {
         FileIdentifier::ID(id) => {
-            let file = repo
-                .file()
-                .by_id(id)
-                .await?
-                .ok_or_else(|| "Thumbnail not found")?;
+            let file = repo.file().by_id(id).await?.ok_or("Thumbnail not found")?;
             Ok(file.cd().to_owned())
         }
         FileIdentifier::CD(cd) => decode_content_descriptor(cd),

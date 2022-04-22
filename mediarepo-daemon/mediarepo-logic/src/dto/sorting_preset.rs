@@ -84,7 +84,7 @@ impl KeyType {
     }
 
     pub fn to_number(&self) -> i32 {
-        self.clone() as i32
+        *self as i32
     }
 }
 

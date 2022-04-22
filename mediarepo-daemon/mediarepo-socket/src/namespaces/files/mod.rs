@@ -151,7 +151,7 @@ impl FilesNamespace {
                 content: bytes,
                 mime_type: metadata
                     .mime_type
-                    .unwrap_or(String::from("application/octet-stream")),
+                    .unwrap_or_else(|| String::from("application/octet-stream")),
                 creation_time: metadata.creation_time,
                 change_time: metadata.change_time,
                 name: Some(metadata.name),

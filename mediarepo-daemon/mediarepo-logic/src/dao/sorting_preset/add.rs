@@ -122,7 +122,7 @@ async fn add_keys(
 
 async fn find_sort_keys(
     trx: &DatabaseTransaction,
-    keys: &Vec<AddSortKeyDto>,
+    keys: &[AddSortKeyDto],
 ) -> RepoResult<Vec<SortKeyDto>> {
     if keys.is_empty() {
         return Ok(vec![]);

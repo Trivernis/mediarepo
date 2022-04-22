@@ -45,11 +45,12 @@ fn name_query_to_condition(query: TagByNameQuery) -> Option<Condition> {
     let TagByNameQuery { namespace, name } = query;
     let mut condition = Condition::all();
 
+    #[allow(clippy::question_mark)]
     if !name.ends_with('*') {
         condition = condition.add(tag::Column::Name.eq(name))
     } else if name.len() > 1 {
         condition =
-            condition.add(tag::Column::Name.like(&*format!("{}%", name.trim_end_matches("*"))))
+            condition.add(tag::Column::Name.like(&*format!("{}%", name.trim_end_matches('*'))))
     } else if namespace.is_none() {
         return None;
     }

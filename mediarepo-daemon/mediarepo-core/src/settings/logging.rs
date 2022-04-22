@@ -34,6 +34,7 @@ pub enum LogLevel {
     Trace,
 }
 
+#[allow(clippy::from_over_into)]
 impl Into<Option<Level>> for LogLevel {
     fn into(self) -> Option<Level> {
         match self {

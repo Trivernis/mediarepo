@@ -77,14 +77,12 @@ fn create_cd_tag_map(
     )>,
     tag_id_map: HashMap<i64, TagDto>,
 ) -> HashMap<Vec<u8>, Vec<TagDto>> {
-    let cd_tag_map = tag_cd_entries
+    tag_cd_entries
         .into_iter()
         .filter_map(|(t, cd)| Some((cd?, tag_id_map.get(&t.tag_id)?.clone())))
         .sorted_by_key(|(cd, _)| cd.id)
         .group_by(|(cd, _)| cd.descriptor.to_owned())
         .into_iter()
         .map(|(key, group)| (key, group.map(|(_, t)| t).collect::<Vec<TagDto>>()))
-        .collect();
-
-    cd_tag_map
+        .collect::<HashMap<Vec<u8>, Vec<TagDto>>>()
 }

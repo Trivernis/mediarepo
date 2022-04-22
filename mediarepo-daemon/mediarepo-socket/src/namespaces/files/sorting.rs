@@ -71,7 +71,7 @@ async fn build_sort_context(
                 mime_type: file.mime_type().to_owned(),
                 namespaces: cid_nsp
                     .remove(&file.cd_id())
-                    .unwrap_or(HashMap::with_capacity(0)),
+                    .unwrap_or_else(|| HashMap::with_capacity(0)),
                 tag_count: cid_tag_counts.remove(&file.cd_id()).unwrap_or(0),
                 import_time: metadata.import_time().to_owned(),
                 create_time: metadata.import_time().to_owned(),
@@ -177,10 +177,7 @@ fn adjust_for_dir(ordering: Ordering, direction: &SortDirection) -> Ordering {
 }
 
 fn compare_tag_lists(list_a: &Vec<String>, list_b: &Vec<String>) -> Ordering {
-    let first_diff = list_a
-        .into_iter()
-        .zip(list_b.into_iter())
-        .find(|(a, b)| *a != *b);
+    let first_diff = list_a.iter().zip(list_b.iter()).find(|(a, b)| *a != *b);
     if let Some(diff) = first_diff {
         if let (Some(num_a), Some(num_b)) = (diff.0.parse::<f32>().ok(), diff.1.parse::<f32>().ok())
         {
