@@ -13,4 +13,8 @@ export class JobService {
     public async runJob(jobType: JobType, sync: boolean = true): Promise<void> {
         return MediarepoApi.runJob({ jobType, sync });
     }
+
+    public async isJobRunning(jobType: JobType): Promise<boolean> {
+        return MediarepoApi.isJobRunning({ jobType });
+    }
 }

@@ -30,7 +30,7 @@ pub async fn get_all_counts(db: &DatabaseConnection) -> RepoResult<Counts> {
     ))
     .one(db)
     .await?
-    .ok_or(RepoError::from("could not retrieve metadata from database"))?;
+    .ok_or_else(|| RepoError::from("could not retrieve metadata from database"))?;
 
     Ok(counts)
 }

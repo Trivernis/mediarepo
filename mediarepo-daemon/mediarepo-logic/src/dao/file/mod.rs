@@ -93,7 +93,7 @@ impl FileDao {
             .all(&self.ctx.db)
             .await?
             .into_iter()
-            .map(|m| FileMetadataDto::new(m))
+            .map(FileMetadataDto::new)
             .collect();
 
         Ok(metadata)

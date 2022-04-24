@@ -58,12 +58,12 @@ impl TagDao {
 
 async fn get_existing_mappings(
     trx: &DatabaseTransaction,
-    cd_ids: &Vec<i64>,
-    tag_ids: &Vec<i64>,
+    cd_ids: &[i64],
+    tag_ids: &[i64],
 ) -> RepoResult<Vec<(i64, i64)>> {
     let existing_mappings: Vec<(i64, i64)> = content_descriptor_tag::Entity::find()
-        .filter(content_descriptor_tag::Column::CdId.is_in(cd_ids.clone()))
-        .filter(content_descriptor_tag::Column::TagId.is_in(tag_ids.clone()))
+        .filter(content_descriptor_tag::Column::CdId.is_in(cd_ids.to_vec()))
+        .filter(content_descriptor_tag::Column::TagId.is_in(tag_ids.to_vec()))
         .all(trx)
         .await?
         .into_iter()

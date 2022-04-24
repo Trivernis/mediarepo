@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use config::{Config, FileFormat};
 use serde::{Deserialize, Serialize};
@@ -24,7 +24,7 @@ pub struct Settings {
 }
 
 impl Settings {
-    pub fn read(root: &PathBuf) -> RepoResult<Self> {
+    pub fn read(root: &Path) -> RepoResult<Self> {
         let settings = Config::builder()
             .add_source(config::File::from_str(
                 &*Settings::default().to_toml_string()?,
@@ -44,7 +44,7 @@ impl Settings {
         settings_main.server.tcp.enabled = true;
         settings_main.server.tcp.port = PortSetting::Range(settings_v1.port_range);
         settings_main.server.tcp.listen_address = settings_v1.listen_address;
-        settings_main.paths.thumbnail_directory = settings_v1.thumbnail_store.into();
+        settings_main.paths.thumbnail_directory = settings_v1.thumbnail_store;
         settings_main.paths.database_directory = PathBuf::from(settings_v1.database_path)
             .parent()
             .map(|p| p.to_string_lossy().to_string())
@@ -69,7 +69,7 @@ impl Settings {
         Ok(string)
     }
 
-    pub fn save(&self, root: &PathBuf) -> RepoResult<()> {
+    pub fn save(&self, root: &Path) -> RepoResult<()> {
         let string = toml::to_string_pretty(&self)?;
         fs::write(root.join("repo.toml"), string.into_bytes())?;
 

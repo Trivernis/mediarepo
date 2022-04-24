@@ -117,3 +117,7 @@ export type AddSortingPresetRequest = {
 export type DeleteSortingPresetRequest = {
     id: number
 };
+
+export type IsJobRunningRequest = {
+    jobType: JobType,
+}

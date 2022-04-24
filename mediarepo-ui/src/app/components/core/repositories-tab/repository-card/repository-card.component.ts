@@ -6,7 +6,7 @@ import {ConfirmDialogComponent} from "../../../shared/app-common/confirm-dialog/
 import {BusyIndicatorComponent} from "../../../shared/app-common/busy-indicator/busy-indicator.component";
 import {
     EditRepositoryDialogComponent
-} from "../../../shared/repository/repository/edit-repository-dialog/edit-repository-dialog.component";
+} from "../../../shared/repository/edit-repository-dialog/edit-repository-dialog.component";
 
 @Component({
     selector: "app-repository-card",

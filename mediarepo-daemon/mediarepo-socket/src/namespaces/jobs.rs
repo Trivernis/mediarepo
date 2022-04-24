@@ -20,8 +20,9 @@ impl NamespaceProvider for JobsNamespace {
 
     fn register(handler: &mut EventHandler) {
         events!(handler,
-            "run_job" => Self::run_job
-        )
+            "run_job" => Self::run_job,
+            "is_job_running" => Self::is_job_running
+        );
     }
 }
 
@@ -58,6 +59,26 @@ impl JobsNamespace {
         }
 
         Ok(Response::empty())
+    }
+
+    #[tracing::instrument(skip_all)]
+    pub async fn is_job_running(ctx: &Context, event: Event) -> IPCResult<Response> {
+        let job_type = event.payload::<JobType>()?;
+        let dispatcher = get_job_dispatcher_from_context(ctx).await;
+
+        let running = match job_type {
+            JobType::MigrateContentDescriptors => {
+                is_job_running::<MigrateCDsJob>(&dispatcher).await
+            }
+            JobType::CalculateSizes => is_job_running::<CalculateSizesJob>(&dispatcher).await,
+            JobType::GenerateThumbnails => {
+                is_job_running::<GenerateMissingThumbsJob>(&dispatcher).await
+            }
+            JobType::CheckIntegrity => is_job_running::<CheckIntegrityJob>(&dispatcher).await,
+            JobType::Vacuum => is_job_running::<VacuumJob>(&dispatcher).await,
+        };
+
+        Response::payload(ctx, running)
     }
 }
 
@@ -106,4 +127,13 @@ async fn calculate_all_sizes(ctx: &Context) -> RepoResult<()> {
     }
 
     Ok(())
+}
+
+async fn is_job_running<T: 'static + Job>(dispatcher: &JobDispatcher) -> bool {
+    if let Some(handle) = dispatcher.get_handle::<T>().await {
+        let state = handle.state().await;
+        state == JobState::Running
+    } else {
+        false
+    }
 }

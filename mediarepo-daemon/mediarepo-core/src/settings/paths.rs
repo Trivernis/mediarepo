@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -21,27 +21,27 @@ impl Default for PathSettings {
 
 impl PathSettings {
     #[inline]
-    pub fn database_dir(&self, root: &PathBuf) -> PathBuf {
+    pub fn database_dir(&self, root: &Path) -> PathBuf {
         root.join(&self.database_directory)
     }
 
     #[inline]
-    pub fn files_dir(&self, root: &PathBuf) -> PathBuf {
+    pub fn files_dir(&self, root: &Path) -> PathBuf {
         root.join(&self.files_directory)
     }
 
     #[inline]
-    pub fn thumbs_dir(&self, root: &PathBuf) -> PathBuf {
+    pub fn thumbs_dir(&self, root: &Path) -> PathBuf {
         root.join(&self.thumbnail_directory)
     }
 
     #[inline]
-    pub fn db_file_path(&self, root: &PathBuf) -> PathBuf {
+    pub fn db_file_path(&self, root: &Path) -> PathBuf {
         self.database_dir(root).join("repo.db")
     }
 
     #[inline]
-    pub fn frontend_state_file_path(&self, root: &PathBuf) -> PathBuf {
+    pub fn frontend_state_file_path(&self, root: &Path) -> PathBuf {
         self.database_dir(root).join("frontend-state.json")
     }
 }

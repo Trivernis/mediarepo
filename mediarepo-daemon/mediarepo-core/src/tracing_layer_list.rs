@@ -7,9 +7,15 @@ use tracing_subscriber::Layer;
 
 pub struct DynLayerList<S>(Vec<Box<dyn Layer<S> + Send + Sync + 'static>>);
 
+impl<S> Default for DynLayerList<S> {
+    fn default() -> Self {
+        Self(Vec::new())
+    }
+}
+
 impl<S> DynLayerList<S> {
     pub fn new() -> Self {
-        Self(Vec::new())
+        Self::default()
     }
 
     pub fn iter(&self) -> Iter<'_, Box<dyn Layer<S> + Send + Sync>> {

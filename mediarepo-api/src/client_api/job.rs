@@ -34,4 +34,10 @@ impl JobApi {
 
         Ok(())
     }
+
+    /// Checks if a particular job is already running
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn is_job_running(&self, job_type: JobType) -> ApiResult<bool> {
+        self.emit_and_get("is_job_running", job_type, None).await
+    }
 }

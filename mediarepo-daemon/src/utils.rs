@@ -1,14 +1,14 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use tokio::fs;
 
 use mediarepo_core::error::RepoResult;
-use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::settings::v1::SettingsV1;
+use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_logic::dao::repo::Repo;
 
 /// Loads the settings from a toml path
-pub fn load_settings(root_path: &PathBuf) -> RepoResult<Settings> {
+pub fn load_settings(root_path: &Path) -> RepoResult<Settings> {
     let contents = std::fs::read_to_string(root_path.join("repo.toml"))?;
 
     if let Ok(settings_v1) = SettingsV1::from_toml_string(&contents) {
@@ -21,7 +21,7 @@ pub fn load_settings(root_path: &PathBuf) -> RepoResult<Settings> {
     }
 }
 
-pub async fn get_repo(root_path: &PathBuf, path_settings: &PathSettings) -> RepoResult<Repo> {
+pub async fn get_repo(root_path: &Path, path_settings: &PathSettings) -> RepoResult<Repo> {
     Repo::connect(
         format!(
             "sqlite://{}",
@@ -33,7 +33,7 @@ pub async fn get_repo(root_path: &PathBuf, path_settings: &PathSettings) -> Repo
     .await
 }
 
-pub async fn create_paths_for_repo(root: &PathBuf, settings: &PathSettings) -> RepoResult<()> {
+pub async fn create_paths_for_repo(root: &Path, settings: &PathSettings) -> RepoResult<()> {
     if !root.exists() {
         fs::create_dir_all(&root).await?;
     }

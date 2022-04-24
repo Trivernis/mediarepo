@@ -75,23 +75,12 @@ pub struct AddFileDto {
     pub name: Option<String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct UpdateFileDto {
     pub id: i64,
     pub cd_id: Option<i64>,
     pub mime_type: Option<String>,
     pub status: Option<FileStatus>,
-}
-
-impl Default for UpdateFileDto {
-    fn default() -> Self {
-        Self {
-            id: 0,
-            cd_id: None,
-            mime_type: None,
-            status: None,
-        }
-    }
 }
 
 #[derive(Copy, Clone, Debug)]

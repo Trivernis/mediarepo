@@ -55,7 +55,7 @@ fn vec_to_query_list<D: Display>(input: Vec<D>) -> String {
     let mut entries = input
         .into_iter()
         .fold(String::new(), |acc, val| format!("{}{},", acc, val));
-    if entries.len() > 0 {
+    if !entries.is_empty() {
         entries.remove(entries.len() - 1);
     }
 

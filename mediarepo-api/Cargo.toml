@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.32.0"
+version = "0.32.1"
 edition = "2018"
 license = "gpl-3"
 

@@ -69,10 +69,10 @@ fn build_filters_from_expressions(
                     }
                 }
             };
-            if filters.len() > 0 {
-                Some(filters)
-            } else {
+            if filters.is_empty() {
                 None
+            } else {
+                Some(filters)
             }
         })
         .collect()
@@ -92,7 +92,7 @@ fn map_tag_query_to_filter(
     query: TagQuery,
     tag_id_map: &HashMap<String, i64>,
 ) -> Option<FilterProperty> {
-    if query.tag.ends_with("*") {
+    if query.tag.ends_with('*') {
         map_wildcard_tag_to_filter(query, tag_id_map)
     } else {
         map_tag_to_filter(query, tag_id_map)
@@ -103,7 +103,7 @@ fn map_wildcard_tag_to_filter(
     query: TagQuery,
     tag_id_map: &HashMap<String, i64>,
 ) -> Option<FilterProperty> {
-    let filter_tag = query.tag.trim_end_matches("*");
+    let filter_tag = query.tag.trim_end_matches('*');
     let relevant_ids = tag_id_map
         .iter()
         .filter_map(|(name, id)| {
@@ -115,15 +115,15 @@ fn map_wildcard_tag_to_filter(
         })
         .collect::<Vec<i64>>();
 
-    if relevant_ids.len() > 0 {
+    if relevant_ids.is_empty() {
+        None
+    } else {
         let comparator = if query.negate {
             IsNot(relevant_ids)
         } else {
             Is(relevant_ids)
         };
         Some(FilterProperty::TagWildcardIds(comparator))
-    } else {
-        None
     }
 }
 

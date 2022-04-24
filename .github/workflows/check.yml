@@ -36,7 +36,15 @@ jobs:
 
       - name: Check daemon
         working-directory: mediarepo-daemon
-        run: cargo check --no-default-features
+        run: cargo check
+
+      - name: Lint api
+        working-directory: mediarepo-api
+        run: cargo clippy -- -D warnings
+
+      - name: Lint daemon
+        working-directory: mediarepo-daemon
+        run: cargo clippy -- -D warnings
 
       - name: Install UI dependencies
         working-directory: mediarepo-ui

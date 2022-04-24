@@ -95,7 +95,7 @@ async fn get_frontend_state_path(ctx: &Context) -> IPCResult<PathBuf> {
     let data = ctx.data.read().await;
     let settings = data.get::<SettingsKey>().unwrap();
     let repo_path = data.get::<RepoPathKey>().unwrap();
-    let state_path = settings.paths.frontend_state_file_path(&repo_path);
+    let state_path = settings.paths.frontend_state_file_path(repo_path);
 
     Ok(state_path)
 }

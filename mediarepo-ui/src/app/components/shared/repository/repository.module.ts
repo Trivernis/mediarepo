@@ -11,17 +11,22 @@ import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgIconsModule} from "@ng-icons/core";
 import {MatFolder} from "@ng-icons/material-icons/baseline";
+import {RepositoryMaintenanceComponent} from "./repository-maintenance/repository-maintenance.component";
+import {MatCardModule} from "@angular/material/card";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 
 @NgModule({
     declarations: [
         AddRepositoryDialogComponent,
         EditRepositoryDialogComponent,
-        RepositoryFormComponent
+        RepositoryFormComponent,
+        RepositoryMaintenanceComponent
     ],
     exports: [
         AddRepositoryDialogComponent,
         EditRepositoryDialogComponent,
+        RepositoryMaintenanceComponent,
     ],
     imports: [
         CommonModule,
@@ -31,7 +36,9 @@ import {MatFolder} from "@ng-icons/material-icons/baseline";
         MatSelectModule,
         MatInputModule,
         ReactiveFormsModule,
-        NgIconsModule.withIcons({ MatFolder })
+        NgIconsModule.withIcons({ MatFolder }),
+        MatCardModule,
+        MatProgressBarModule
     ]
 })
 export class RepositoryModule {

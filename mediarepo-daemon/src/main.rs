@@ -1,6 +1,6 @@
 use std::env;
 use std::iter::FromIterator;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -55,6 +55,7 @@ enum SubCommand {
 
 #[tokio::main]
 async fn main() -> RepoResult<()> {
+    human_panic::setup_panic!();
     let mut opt: Opt = Opt::from_args();
     opt.repo = env::current_dir().unwrap().join(opt.repo);
 
@@ -242,7 +243,7 @@ async fn init(opt: Opt, force: bool) -> RepoResult<()> {
     Ok(())
 }
 
-async fn clean_old_connection_files(root: &PathBuf) -> RepoResult<()> {
+async fn clean_old_connection_files(root: &Path) -> RepoResult<()> {
     let paths = ["repo.tcp", "repo.sock"];
 
     for path in paths {

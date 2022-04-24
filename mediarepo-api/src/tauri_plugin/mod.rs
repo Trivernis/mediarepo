@@ -75,7 +75,8 @@ impl<R: Runtime> MediarepoPlugin<R> {
                 get_file_tag_map,
                 all_sorting_presets,
                 add_sorting_preset,
-                delete_sorting_preset
+                delete_sorting_preset,
+                is_job_running
             ]),
         }
     }

@@ -40,7 +40,7 @@ impl JobDao {
     }
 }
 
-fn build_state_filters(states: &Vec<UpsertJobStateDto>) -> Condition {
+fn build_state_filters(states: &[UpsertJobStateDto]) -> Condition {
     states
         .iter()
         .map(|s| Condition::all().add(job_state::Column::JobType.eq(s.job_type)))

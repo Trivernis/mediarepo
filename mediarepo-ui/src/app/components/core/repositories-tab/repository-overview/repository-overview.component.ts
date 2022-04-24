@@ -7,7 +7,7 @@ import {StateService} from "../../../../services/state/state.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {
     AddRepositoryDialogComponent
-} from "../../../shared/repository/repository/add-repository-dialog/add-repository-dialog.component";
+} from "../../../shared/repository/add-repository-dialog/add-repository-dialog.component";
 import {BehaviorSubject} from "rxjs";
 import {BusyDialogComponent} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
 import {DownloadDaemonDialogComponent} from "../download-daemon-dialog/download-daemon-dialog.component";
@@ -116,15 +116,10 @@ export class RepositoryOverviewComponent implements OnInit, AfterViewInit {
     private async runRepositoryStartupTasks(dialogContext: BusyDialogContext): Promise<void> {
         dialogContext.message.next("Checking integrity...");
         await this.jobService.runJob("CheckIntegrity");
-        dialogContext.message.next("Running a vacuum on the database...");
-        await this.jobService.runJob("Vacuum");
-        dialogContext.message.next(
-            "Migrating content descriptors to new format...");
-        await this.jobService.runJob("MigrateContentDescriptors");
-        dialogContext.message.next("Calculating repository sizes...");
-        await this.jobService.runJob("CalculateSizes", false);
         dialogContext.message.next("Generating missing thumbnails...");
         await this.jobService.runJob("GenerateThumbnails");
+        dialogContext.message.next("Calculating repository sizes...");
+        await this.jobService.runJob("CalculateSizes", false);
         dialogContext.message.next("Finished repository startup");
     }
 

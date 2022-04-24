@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::Path;
 
 use console_subscriber::ConsoleLayer;
 use opentelemetry::sdk::Resource;
@@ -24,7 +24,7 @@ use mediarepo_core::tracing_layer_list::DynLayerList;
 #[allow(dyn_drop)]
 pub type DropGuard = Box<dyn Drop>;
 
-pub fn init_tracing(repo_path: &PathBuf, log_cfg: &LoggingSettings) -> Vec<DropGuard> {
+pub fn init_tracing(repo_path: &Path, log_cfg: &LoggingSettings) -> Vec<DropGuard> {
     LogTracer::init().expect("failed to subscribe to log entries");
     let log_path = repo_path.join("logs");
     let mut guards = Vec::new();
@@ -97,11 +97,11 @@ fn add_telemetry_layer(log_cfg: &LoggingSettings, layer_list: &mut DynLayerList<
 
 fn add_app_log_layer(
     log_cfg: &LoggingSettings,
-    log_path: &PathBuf,
+    log_path: &Path,
     guards: &mut Vec<DropGuard>,
     layer_list: &mut DynLayerList<Registry>,
 ) {
-    let (app_log_writer, guard) = get_application_log_writer(&log_path);
+    let (app_log_writer, guard) = get_application_log_writer(log_path);
     guards.push(Box::new(guard) as DropGuard);
 
     let app_log_layer = fmt::layer()
@@ -115,11 +115,11 @@ fn add_app_log_layer(
 
 fn add_bromine_layer(
     log_cfg: &LoggingSettings,
-    log_path: &PathBuf,
+    log_path: &Path,
     guards: &mut Vec<DropGuard>,
     layer_list: &mut DynLayerList<Registry>,
 ) {
-    let (bromine_writer, guard) = get_bromine_log_writer(&log_path);
+    let (bromine_writer, guard) = get_bromine_log_writer(log_path);
     guards.push(Box::new(guard) as DropGuard);
 
     let bromine_layer = fmt::layer()
@@ -133,11 +133,11 @@ fn add_bromine_layer(
 
 fn add_sql_layer(
     log_cfg: &LoggingSettings,
-    log_path: &PathBuf,
+    log_path: &Path,
     guards: &mut Vec<DropGuard>,
     layer_list: &mut DynLayerList<Registry>,
 ) {
-    let (sql_writer, guard) = get_sql_log_writer(&log_path);
+    let (sql_writer, guard) = get_sql_log_writer(log_path);
     guards.push(Box::new(guard) as DropGuard);
 
     let sql_layer = fmt::layer()
@@ -161,18 +161,18 @@ fn add_stdout_layer(guards: &mut Vec<DropGuard>, layer_list: &mut DynLayerList<R
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .with_filter(
             std::env::var("RUST_LOG")
-                .unwrap_or(String::from("info,sqlx=warn"))
+                .unwrap_or_else(|_| String::from("info,sqlx=warn"))
                 .parse::<filter::Targets>()
-                .unwrap_or(
+                .unwrap_or_else(|_| {
                     filter::Targets::new()
                         .with_default(Level::INFO)
-                        .with_target("sqlx", Level::WARN),
-                ),
+                        .with_target("sqlx", Level::WARN)
+                }),
         );
     layer_list.add(stdout_layer);
 }
 
-fn get_sql_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) {
+fn get_sql_log_writer(log_path: &Path) -> (NonBlocking, WorkerGuard) {
     tracing_appender::non_blocking(
         rolling_file::BasicRollingFileAppender::new(
             log_path.join("sql.log"),
@@ -183,7 +183,7 @@ fn get_sql_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) {
     )
 }
 
-fn get_bromine_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) {
+fn get_bromine_log_writer(log_path: &Path) -> (NonBlocking, WorkerGuard) {
     tracing_appender::non_blocking(
         rolling_file::BasicRollingFileAppender::new(
             log_path.join("bromine.log"),
@@ -194,7 +194,7 @@ fn get_bromine_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) {
     )
 }
 
-fn get_application_log_writer(log_path: &PathBuf) -> (NonBlocking, WorkerGuard) {
+fn get_application_log_writer(log_path: &Path) -> (NonBlocking, WorkerGuard) {
     tracing_appender::non_blocking(
         rolling_file::BasicRollingFileAppender::new(
             log_path.join("repo.log"),

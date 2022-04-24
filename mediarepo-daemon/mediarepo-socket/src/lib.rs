@@ -30,8 +30,9 @@ pub fn start_tcp_server(
                 return Err(RepoError::PortUnavailable);
             }
         }
-        PortSetting::Range((l, r)) => port_check::free_local_port_in_range(*l, *r)
-            .ok_or_else(|| RepoError::PortUnavailable)?,
+        PortSetting::Range((l, r)) => {
+            port_check::free_local_port_in_range(*l, *r).ok_or(RepoError::PortUnavailable)?
+        }
     };
     let ip = settings.server.tcp.listen_address.to_owned();
     let address = SocketAddr::new(ip, port);

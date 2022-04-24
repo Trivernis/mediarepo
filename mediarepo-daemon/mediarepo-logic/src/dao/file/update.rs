@@ -22,8 +22,8 @@ impl FileDao {
         let trx = self.ctx.db.begin().await?;
         let model = file::ActiveModel {
             id: Set(update_dto.id),
-            cd_id: update_dto.cd_id.map(|v| Set(v)).unwrap_or(NotSet),
-            mime_type: update_dto.mime_type.map(|v| Set(v)).unwrap_or(NotSet),
+            cd_id: update_dto.cd_id.map(Set).unwrap_or(NotSet),
+            mime_type: update_dto.mime_type.map(Set).unwrap_or(NotSet),
             status: update_dto.status.map(|v| Set(v as i32)).unwrap_or(NotSet),
         };
         let file_model = model.update(&trx).await?;
@@ -62,8 +62,8 @@ impl FileDao {
         sizes: I,
     ) -> RepoResult<Vec<ThumbnailDto>> {
         let bytes = self.get_bytes(file.cd()).await?;
-        let mime_type = mime::Mime::from_str(file.mime_type())
-            .unwrap_or_else(|_| mime::APPLICATION_OCTET_STREAM);
+        let mime_type =
+            mime::Mime::from_str(file.mime_type()).unwrap_or(mime::APPLICATION_OCTET_STREAM);
         let thumbnails =
             thumbnailer::create_thumbnails(Cursor::new(bytes), mime_type.clone(), sizes)?;
         let mut dtos = Vec::new();
