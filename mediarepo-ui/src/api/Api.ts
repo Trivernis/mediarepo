@@ -19,6 +19,7 @@ import {
     GetSizeRequest,
     GetTagsForFilesRequest,
     InitRepositoryRequest,
+    IsJobRunningRequest,
     ReadFileRequest,
     RemoveRepositoryRequest,
     ResolvePathsToFilesRequest,
@@ -185,6 +186,10 @@ export class MediarepoApi {
 
     public static async runJob(request: RunJobRequest): Promise<void> {
         return this.invokePlugin(ApiFunction.RunJob, request);
+    }
+
+    public static async isJobRunning(request: IsJobRunningRequest): Promise<boolean> {
+        return this.invokePlugin(ApiFunction.IsJobRunning, request);
     }
 
     public static async getAllSortingPresets(): Promise<SortingPresetData[]> {
