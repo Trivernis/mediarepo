@@ -78,7 +78,7 @@ impl JobsNamespace {
             JobType::Vacuum => is_job_running::<VacuumJob>(&dispatcher).await,
         };
 
-        Response::payload(&ctx, running)
+        Response::payload(ctx, running)
     }
 }
 

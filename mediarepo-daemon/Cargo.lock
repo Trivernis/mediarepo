@@ -1462,7 +1462,7 @@ checksum = "73cbba799671b762df5a175adf59ce145165747bb891505c43d09aefbbf38beb"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.32.0"
+version = "0.32.1"
 dependencies = [
  "bromine",
  "chrono",

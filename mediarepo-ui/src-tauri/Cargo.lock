@@ -64,7 +64,7 @@ checksum = "4361135be9122e0870de935d7c439aef945b9f9ddd4199a553b5270b49c82a27"
 
 [[package]]
 name = "app"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "mediarepo-api",
  "serde",
@@ -1591,7 +1591,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "mediarepo-api"
-version = "0.32.0"
+version = "0.32.1"
 dependencies = [
  "async-trait",
  "bromine",
