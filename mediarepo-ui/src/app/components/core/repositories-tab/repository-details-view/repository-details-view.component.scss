@@ -31,14 +31,17 @@
     .stats-container {
         margin-left: auto;
         margin-right: auto;
+        display: block;
+        width: 50%;
     }
-}
 
-.repository-charts {
-    margin-top: 4em;
-    margin-right: 2em;
-    height: 100%;
-    display: block;
+    .repository-charts {
+        margin-top: 4em;
+        margin-right: 2em;
+        height: calc(100% - 4em);;
+        width: 50%;
+        display: block;
+    }
 }
 
 .details-content {
@@ -53,4 +56,8 @@
     min-height: 50%;
     max-width: 500px;
     margin: auto;
+}
+
+.repo-maintenance {
+    padding: 2em;
 }

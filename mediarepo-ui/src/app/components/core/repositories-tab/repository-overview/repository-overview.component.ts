@@ -7,7 +7,7 @@ import {StateService} from "../../../../services/state/state.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {
     AddRepositoryDialogComponent
-} from "../../../shared/repository/repository/add-repository-dialog/add-repository-dialog.component";
+} from "../../../shared/repository/add-repository-dialog/add-repository-dialog.component";
 import {BehaviorSubject} from "rxjs";
 import {BusyDialogComponent} from "../../../shared/app-common/busy-dialog/busy-dialog.component";
 import {DownloadDaemonDialogComponent} from "../download-daemon-dialog/download-daemon-dialog.component";

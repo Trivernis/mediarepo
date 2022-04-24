@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, Output} from "@angular/core";
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
-import {Repository} from "../../../../../../api/models/Repository";
-import {RepositoryService} from "../../../../../services/repository/repository.service";
+import {Repository} from "../../../../../api/models/Repository";
+import {RepositoryService} from "../../../../services/repository/repository.service";
 import {dialog} from "@tauri-apps/api";
 import {MatDialog} from "@angular/material/dialog";
 

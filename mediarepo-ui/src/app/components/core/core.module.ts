@@ -34,7 +34,7 @@ import {TagModule} from "../shared/tag/tag.module";
 import {
     DownloadDaemonDialogComponent
 } from "./repositories-tab/download-daemon-dialog/download-daemon-dialog.component";
-import {RepositoryModule} from "../shared/repository/repository/repository.module";
+import {RepositoryModule} from "../shared/repository/repository.module";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {
     RepositoryDetailsViewComponent

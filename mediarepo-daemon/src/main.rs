@@ -55,6 +55,7 @@ enum SubCommand {
 
 #[tokio::main]
 async fn main() -> RepoResult<()> {
+    human_panic::setup_panic!();
     let mut opt: Opt = Opt::from_args();
     opt.repo = env::current_dir().unwrap().join(opt.repo);
 

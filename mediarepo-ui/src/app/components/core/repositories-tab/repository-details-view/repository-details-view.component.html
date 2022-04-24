@@ -47,13 +47,16 @@
                 {{this.databaseFileSize | async}}
             </app-metadata-entry>
         </div>
+        <div class="repository-charts">
+            <app-chart *ngIf="this.chartData"
+                       [datasets]="this.chartData"
+                       [labels]="this.chartLabels"
+                       chartType="doughnut"
+                       class="size-chart"
+                       title="Sizes"></app-chart>
+        </div>
     </div>
-    <div class="repository-charts" fxFlex="50%">
-        <app-chart *ngIf="this.chartData"
-                   [datasets]="this.chartData"
-                   [labels]="this.chartLabels"
-                   chartType="doughnut"
-                   class="size-chart"
-                   title="Sizes"></app-chart>
+    <div fxFlex="50%">
+        <app-repository-maintenance class="repo-maintenance"></app-repository-maintenance>
     </div>
 </div>
