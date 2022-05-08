@@ -2,6 +2,7 @@ use std::fmt::{Debug, Formatter};
 
 use sea_orm::DbErr;
 use thiserror::Error;
+use tokio_graceful_shutdown::GracefulShutdownError;
 
 pub type RepoResult<T> = Result<T, RepoError>;
 pub type RepoDatabaseResult<T> = Result<T, RepoDatabaseError>;
@@ -46,6 +47,9 @@ pub enum RepoError {
 
     #[error("bincode de-/serialization failed {0}")]
     Bincode(#[from] bincode::Error),
+
+    #[error("graceful shutdown failed {0}")]
+    Shutdown(#[from] GracefulShutdownError),
 }
 
 #[derive(Error, Debug)]

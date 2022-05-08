@@ -8,13 +8,13 @@ workspace = ".."
 
 [dependencies]
 chrono = "0.4.19"
-tracing = "0.1.33"
+tracing = "0.1.34"
 
 [dependencies.mediarepo-core]
 path = "../mediarepo-core"
 
 [dependencies.sqlx]
-version = "0.5.11"
+version = "0.5.13"
 features = ["migrate"]
 
 [dependencies.sea-orm]

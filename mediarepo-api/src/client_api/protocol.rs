@@ -1,9 +1,10 @@
 use async_trait::async_trait;
 use bromine::error::Result;
-use bromine::prelude::encrypted::{EncryptedStream, EncryptionOptions};
+use bromine::prelude::encrypted::{EncryptedStream, EncryptionOptions, Keys};
 use bromine::prelude::IPCResult;
 use bromine::protocol::encrypted::EncryptedListener;
 use bromine::protocol::*;
+use bromine::utils::generate_secret;
 use std::io::Error;
 use std::net::ToSocketAddrs;
 use std::pin::Pin;
@@ -31,8 +32,18 @@ impl AsyncStreamProtocolListener for ApiProtocolListener {
     #[tracing::instrument]
     async fn protocol_bind(address: Self::AddressType, _: Self::ListenerOptions) -> Result<Self> {
         if let Some(addr) = address.to_socket_addrs().ok().and_then(|mut a| a.next()) {
-            let listener =
-                EncryptedListener::protocol_bind(addr, EncryptionOptions::default()).await?;
+            let listener = EncryptedListener::protocol_bind(
+                addr,
+                EncryptionOptions {
+                    keys: Keys {
+                        known_peers: vec![],
+                        secret: generate_secret(),
+                        allow_unknown: true,
+                    },
+                    ..Default::default()
+                },
+            )
+            .await?;
             tracing::info!("Connecting via encrypted TCP");
 
             Ok(Self::Tcp(listener))
@@ -116,8 +127,18 @@ impl AsyncProtocolStream for ApiProtocolStream {
         _: Self::StreamOptions,
     ) -> IPCResult<Self> {
         if let Some(addr) = address.to_socket_addrs().ok().and_then(|mut a| a.next()) {
-            let stream =
-                EncryptedStream::protocol_connect(addr, EncryptionOptions::default()).await?;
+            let stream = EncryptedStream::protocol_connect(
+                addr,
+                EncryptionOptions {
+                    keys: Keys {
+                        known_peers: vec![],
+                        secret: generate_secret(),
+                        allow_unknown: true,
+                    },
+                    ..Default::default()
+                },
+            )
+            .await?;
             Ok(Self::Tcp(stream))
         } else {
             #[cfg(unix)]

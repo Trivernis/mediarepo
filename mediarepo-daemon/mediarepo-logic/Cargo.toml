@@ -8,10 +8,10 @@ workspace = ".."
 
 [dependencies]
 chrono = "0.4.19"
-serde = "1.0.136"
+serde = "1.0.137"
 mime_guess = "2.0.4"
 mime = "0.3.16"
-tracing = "0.1.33"
+tracing = "0.1.34"
 async-trait = "0.1.53"
 
 [dependencies.mediarepo-core]
@@ -26,6 +26,6 @@ features = ["runtime-tokio-native-tls", "macros"]
 default-features = false
 
 [dependencies.tokio]
-version = "1.17.0"
+version = "1.18.1"
 features = ["fs", "io-std", "io-util"]
 

@@ -3,7 +3,10 @@ use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 
-use crate::encrypted::EncryptedListener;
+use crate::encrypted::{EncryptedListener, Keys};
+use crate::prelude::utils::generate_secret;
+use mediarepo_core::bromine::prelude::encrypted::EncryptionOptions;
+use mediarepo_core::bromine::prelude::tcp::TcpOptions;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
@@ -42,6 +45,14 @@ pub fn start_tcp_server(
         .name("mediarepo_tcp::listen")
         .spawn(async move {
             get_builder::<EncryptedListener<TcpListener>>(address)
+                .server_options(EncryptionOptions {
+                    keys: Keys {
+                        allow_unknown: true,
+                        known_peers: vec![],
+                        secret: generate_secret(),
+                    },
+                    ..Default::default()
+                })
                 .insert::<SubsystemKey>(subsystem)
                 .insert_all(shared_data)
                 .insert::<SizeMetadataKey>(Default::default())
