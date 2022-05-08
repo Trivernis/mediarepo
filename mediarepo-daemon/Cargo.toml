@@ -1,6 +1,5 @@
 [workspace]
-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
-default-members = ["mediarepo-core", "mediarepo-database", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
+members = ["mediarepo-core", "mediarepo-database", "mediarepo-database/migration", "mediarepo-logic", "mediarepo-socket", "mediarepo-worker", "."]
 
 [package]
 name = "mediarepo-daemon"
