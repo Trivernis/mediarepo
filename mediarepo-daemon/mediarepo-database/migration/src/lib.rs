@@ -1,6 +1,7 @@
 pub use sea_schema::migration::prelude::*;
 
 mod m20220101_000001_create_table;
+mod utils;
 
 pub struct Migrator;
 

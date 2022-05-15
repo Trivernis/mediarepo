@@ -1,5 +1,4 @@
-use crate::async_std::task::Task;
-use crate::sea_orm::tests_cfg::cake_filling::PrimaryKey;
+use crate::drop_tables;
 use sea_schema::migration::prelude::*;
 
 pub struct Migration;
@@ -19,12 +18,34 @@ impl MigrationTrait for Migration {
         manager.create_table(create_namespaces()).await?;
         manager.create_table(create_tags()).await?;
         manager.create_table(create_cd_tag_mappings()).await?;
+        manager.create_table(create_sources()).await?;
+        manager.create_table(create_cd_sources_mappings()).await?;
+        manager.create_table(create_sorting_presets()).await?;
+        manager.create_table(create_sort_keys()).await?;
+        manager.create_table(create_sorting_preset_key()).await?;
+        manager.create_table(create_job_states()).await?;
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        todo!()
+        drop_tables!(
+            manager,
+            ContentDescriptors::Table,
+            Files::Table,
+            FileMetadata::Table,
+            Namespaces::Table,
+            Tags::Table,
+            CdTagMappings::Table,
+            Sources::Table,
+            CdSourceMappings::Table,
+            SortingPresets::Table,
+            SortKeys::Table,
+            SortingPresetKeys::Table,
+            JobStates::Table
+        );
+
+        Ok(())
     }
 }
 
@@ -59,7 +80,8 @@ fn create_file_metadata() -> TableCreateStatement {
         .foreign_key(
             ForeignKey::create()
                 .from(FileMetadata::Table, FileMetadata::FileId)
-                .to(Files::Table, Files::Id),
+                .to(Files::Table, Files::Id)
+                .on_delete(ForeignKeyAction::Cascade),
         )
         .to_owned()
 }
@@ -90,7 +112,8 @@ fn create_files() -> TableCreateStatement {
         .foreign_key(
             ForeignKey::create()
                 .from(Files::Table, Files::CdId)
-                .to(ContentDescriptors::Table, ContentDescriptors::Id),
+                .to(ContentDescriptors::Table, ContentDescriptors::Id)
+                .on_delete(ForeignKeyAction::Cascade),
         )
         .index(Index::create().table(Files::Table).col(Files::CdId))
         .to_owned()
@@ -166,12 +189,14 @@ fn create_cd_tag_mappings() -> TableCreateStatement {
         .foreign_key(
             ForeignKey::create()
                 .from(CdTagMappings::Table, CdTagMappings::CdId)
-                .to(ContentDescriptors::Table, ContentDescriptors::Id),
+                .to(ContentDescriptors::Table, ContentDescriptors::Id)
+                .on_delete(ForeignKeyAction::Cascade),
         )
         .foreign_key(
             ForeignKey::create()
                 .from(CdTagMappings::Table, CdTagMappings::TagId)
-                .to(Tags::Table, Tags::Id),
+                .to(Tags::Table, Tags::Id)
+                .on_delete(ForeignKeyAction::Cascade),
         )
         .index(
             Index::create()
@@ -199,6 +224,157 @@ fn create_namespaces() -> TableCreateStatement {
                 .col(Namespaces::Name)
                 .full_text(),
         )
+        .to_owned()
+}
+
+fn create_sources() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(Sources::Table)
+        .col(
+            ColumnDef::new(Sources::Id)
+                .big_integer()
+                .primary_key()
+                .auto_increment(),
+        )
+        .col(ColumnDef::new(Sources::Url).string_len(512).not_null())
+        .index(
+            Index::create()
+                .unique()
+                .table(Sources::Table)
+                .col(Sources::Url)
+                .full_text(),
+        )
+        .to_owned()
+}
+
+fn create_cd_sources_mappings() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(CdSourceMappings::Table)
+        .col(
+            ColumnDef::new(CdSourceMappings::CdId)
+                .big_integer()
+                .not_null(),
+        )
+        .col(
+            ColumnDef::new(CdSourceMappings::SourceId)
+                .big_integer()
+                .not_null(),
+        )
+        .foreign_key(
+            ForeignKey::create()
+                .from(CdSourceMappings::Table, CdSourceMappings::CdId)
+                .to(ContentDescriptors::Table, ContentDescriptors::Id)
+                .on_delete(ForeignKeyAction::Cascade),
+        )
+        .foreign_key(
+            ForeignKey::create()
+                .from(CdSourceMappings::Table, CdSourceMappings::SourceId)
+                .to(Sources::Table, Sources::Id)
+                .on_delete(ForeignKeyAction::Cascade),
+        )
+        .primary_key(
+            Index::create()
+                .table(CdSourceMappings::Table)
+                .col(CdSourceMappings::CdId)
+                .col(CdSourceMappings::SourceId)
+                .full_text(),
+        )
+        .to_owned()
+}
+
+fn create_sorting_presets() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(SortingPresets::Table)
+        .col(
+            ColumnDef::new(SortingPresets::Id)
+                .big_integer()
+                .primary_key()
+                .auto_increment(),
+        )
+        .to_owned()
+}
+
+fn create_sort_keys() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(SortKeys::Table)
+        .col(
+            ColumnDef::new(SortKeys::Id)
+                .big_integer()
+                .primary_key()
+                .auto_increment(),
+        )
+        .col(
+            ColumnDef::new(SortKeys::KeyType)
+                .integer()
+                .not_null()
+                .default(0),
+        )
+        .col(
+            ColumnDef::new(SortKeys::Ascending)
+                .boolean()
+                .not_null()
+                .default(false),
+        )
+        .col(ColumnDef::new(SortKeys::Value).string_len(128))
+        .to_owned()
+}
+
+fn create_sorting_preset_key() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(SortingPresetKeys::Table)
+        .col(
+            ColumnDef::new(SortingPresetKeys::PresetId)
+                .big_integer()
+                .not_null(),
+        )
+        .col(
+            ColumnDef::new(SortingPresetKeys::KeyId)
+                .big_integer()
+                .not_null(),
+        )
+        .col(
+            ColumnDef::new(SortingPresetKeys::KeyIndex)
+                .integer()
+                .default(0)
+                .not_null(),
+        )
+        .primary_key(
+            Index::create()
+                .table(SortingPresetKeys::Table)
+                .col(SortingPresetKeys::PresetId)
+                .col(SortingPresetKeys::KeyId),
+        )
+        .foreign_key(
+            ForeignKey::create()
+                .from(SortingPresetKeys::Table, SortingPresetKeys::PresetId)
+                .to(SortingPresets::Table, SortingPresets::Id)
+                .on_delete(ForeignKeyAction::Cascade),
+        )
+        .foreign_key(
+            ForeignKey::create()
+                .from(SortingPresetKeys::Table, SortingPresetKeys::KeyId)
+                .to(SortKeys::Table, SortKeys::Id)
+                .on_delete(ForeignKeyAction::Cascade),
+        )
+        .to_owned()
+}
+
+fn create_job_states() -> TableCreateStatement {
+    Table::create()
+        .if_not_exists()
+        .table(JobStates::Table)
+        .col(
+            ColumnDef::new(JobStates::JobType)
+                .integer()
+                .primary_key()
+                .not_null(),
+        )
+        .col(ColumnDef::new(JobStates::Value).binary())
         .to_owned()
 }
 
@@ -260,14 +436,14 @@ enum Sources {
 }
 
 #[derive(Iden)]
-enum CdSourceMapping {
+enum CdSourceMappings {
     Table,
     CdId,
     SourceId,
 }
 
 #[derive(Iden)]
-enum SortingPreset {
+enum SortingPresets {
     Table,
     Id,
 }
@@ -275,13 +451,14 @@ enum SortingPreset {
 #[derive(Iden)]
 enum SortKeys {
     Table,
+    Id,
     KeyType,
     Ascending,
     Value,
 }
 
 #[derive(Iden)]
-enum SortingPresetKey {
+enum SortingPresetKeys {
     Table,
     PresetId,
     KeyId,
