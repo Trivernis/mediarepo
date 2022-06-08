@@ -1,5 +1,5 @@
 use crate::drop_tables;
-use sea_schema::migration::prelude::*;
+use sea_orm_migration::prelude::*;
 
 pub struct Migration;
 
@@ -24,6 +24,35 @@ impl MigrationTrait for Migration {
         manager.create_table(create_sort_keys()).await?;
         manager.create_table(create_sorting_preset_key()).await?;
         manager.create_table(create_job_states()).await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("index_files_cd_id")
+                    .table(Files::Table)
+                    .col(Files::CdId)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("index_tags_name")
+                    .table(Tags::Table)
+                    .col(Tags::Name)
+                    .full_text()
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("index_cd_tag_mappings_tag_id")
+                    .table(CdTagMappings::Table)
+                    .col(CdTagMappings::TagId)
+                    .to_owned(),
+            )
+            .await?;
 
         Ok(())
     }
@@ -115,7 +144,6 @@ fn create_files() -> TableCreateStatement {
                 .to(ContentDescriptors::Table, ContentDescriptors::Id)
                 .on_delete(ForeignKeyAction::Cascade),
         )
-        .index(Index::create().table(Files::Table).col(Files::CdId))
         .to_owned()
 }
 
@@ -156,12 +184,6 @@ fn create_tags() -> TableCreateStatement {
         )
         .index(
             Index::create()
-                .table(Tags::Table)
-                .col(Tags::Name)
-                .full_text(),
-        )
-        .index(
-            Index::create()
                 .unique()
                 .table(Tags::Table)
                 .col(Tags::NamespaceId)
@@ -197,11 +219,6 @@ fn create_cd_tag_mappings() -> TableCreateStatement {
                 .from(CdTagMappings::Table, CdTagMappings::TagId)
                 .to(Tags::Table, Tags::Id)
                 .on_delete(ForeignKeyAction::Cascade),
-        )
-        .index(
-            Index::create()
-                .table(CdTagMappings::Table)
-                .col(CdTagMappings::TagId),
         )
         .to_owned()
 }

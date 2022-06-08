@@ -6,7 +6,6 @@ use tokio::task::JoinHandle;
 use crate::encrypted::{EncryptedListener, Keys};
 use crate::prelude::utils::generate_secret;
 use mediarepo_core::bromine::prelude::encrypted::EncryptionOptions;
-use mediarepo_core::bromine::prelude::tcp::TcpOptions;
 use mediarepo_core::bromine::prelude::*;
 use mediarepo_core::error::{RepoError, RepoResult};
 use mediarepo_core::mediarepo_api::types::misc::InfoResponse;
