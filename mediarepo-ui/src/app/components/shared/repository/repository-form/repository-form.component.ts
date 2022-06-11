@@ -48,14 +48,14 @@ export class RepositoryFormComponent implements OnInit {
     public async checkRepositoryStatus() {
         this.onlineStatus = "Checking...";
         const address = this.formGroup.value.address;
-        const running = await this.repoService.checkDaemonRunning(address);
+        const running = await this.repoService.checkDaemonRunning(address!!);
         console.log(running);
         this.onlineStatus = running ? "Online" : "Offline";
     }
 
     public async checkLocalRepoExists() {
         this.localRepoExists = await this.repoService.checkLocalRepositoryExists(
-            this.formGroup.value.path);
+            this.formGroup.value.path!!);
     }
 
     public async openFolderDialog() {
@@ -63,7 +63,7 @@ export class RepositoryFormComponent implements OnInit {
             directory: true,
             multiple: false,
         });
-        this.formGroup.get("path")?.setValue(path);
+        this.formGroup.get("path")?.setValue(path as string);
         await this.checkLocalRepoExists();
     }
 

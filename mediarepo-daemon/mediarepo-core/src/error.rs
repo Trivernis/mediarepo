@@ -2,7 +2,7 @@ use std::fmt::{Debug, Formatter};
 
 use sea_orm::DbErr;
 use thiserror::Error;
-use tokio_graceful_shutdown::GracefulShutdownError;
+use tokio_graceful_shutdown::errors::GracefulShutdownError;
 
 pub type RepoResult<T> = Result<T, RepoError>;
 pub type RepoDatabaseResult<T> = Result<T, RepoDatabaseError>;

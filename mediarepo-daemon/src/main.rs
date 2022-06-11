@@ -8,7 +8,7 @@ use structopt::StructOpt;
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
 
-use mediarepo_core::error::{RepoError, RepoResult};
+use mediarepo_core::error::RepoResult;
 use mediarepo_core::fs::drop_file::DropFile;
 use mediarepo_core::settings::{PathSettings, Settings};
 use mediarepo_core::tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
@@ -151,7 +151,7 @@ async fn start_server(opt: Opt, settings: Settings) -> RepoResult<()> {
     }
     if let Err(e) = top_level
         .catch_signals()
-        .handle_shutdown_requests::<RepoError>(Duration::from_millis(1000))
+        .handle_shutdown_requests(Duration::from_millis(1000))
         .await
     {
         tracing::error!("an error occurred when running the servers {}", e);

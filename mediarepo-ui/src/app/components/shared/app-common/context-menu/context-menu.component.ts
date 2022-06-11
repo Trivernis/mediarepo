@@ -21,7 +21,7 @@ export class ContextMenuComponent {
         event.preventDefault();
         this.x = event.clientX + "px";
         this.y = event.clientY + "px";
-        this.menuTrigger.menu.focusFirstItem("mouse");
+        this.menuTrigger.menu?.focusFirstItem("mouse");
         this.menuTrigger.openMenu();
         this.changeDetector.markForCheck();
     }

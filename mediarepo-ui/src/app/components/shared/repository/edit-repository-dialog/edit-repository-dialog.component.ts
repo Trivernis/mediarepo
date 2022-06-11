@@ -29,13 +29,13 @@ export class EditRepositoryDialogComponent {
 
     public async checkLocalRepoExists() {
         this.repositoryForm.localRepoExists = await this.repoService.checkLocalRepositoryExists(
-            this.repositoryForm.formGroup.value.path);
+            this.repositoryForm.formGroup.value.path!!);
     }
 
     public async initLocalRepository() {
         const path = this.repositoryForm.formGroup.value.path;
         try {
-            await this.repoService.initRepository(path);
+            await this.repoService.initRepository(path!!);
         } catch (err: any) {
             this.errorBroker.error(err);
         }
@@ -55,10 +55,15 @@ export class EditRepositoryDialogComponent {
             if (name != this.originalName) {
                 await this.repoService.removeRepository(this.originalName);
             }
-            await this.repoService.addRepository(name, path, address,
+            await this.repoService.addRepository(name!!, path!!, address!!,
                 repositoryType === "local"
             );
-            this.selectedRepository.update({ name, local: repositoryType === "local", path, address });
+            this.selectedRepository.update({
+                name: name!!,
+                local: repositoryType === "local",
+                path: path!!,
+                address: address!!
+            });
 
             this.dialogRef.close();
         } catch (err: any) {
