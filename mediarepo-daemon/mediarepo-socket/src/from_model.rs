@@ -55,6 +55,7 @@ impl FromModel<TagDto> for TagResponse {
             id: model.id(),
             namespace: model.namespace().map(|n| n.name().to_owned()),
             name: model.name().to_owned(),
+            implied_by: None,
         }
     }
 }

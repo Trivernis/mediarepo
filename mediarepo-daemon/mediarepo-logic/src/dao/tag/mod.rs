@@ -14,6 +14,7 @@ use crate::dao_provider;
 use crate::dto::{NamespaceDto, TagDto};
 
 pub mod add;
+pub mod add_implication;
 pub mod all_for_cds_map;
 pub mod by_name;
 pub mod cdids_with_namespaced_tags;

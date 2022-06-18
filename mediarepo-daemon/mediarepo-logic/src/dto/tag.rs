@@ -1,5 +1,6 @@
 pub use mediarepo_database::entities::namespace;
 pub use mediarepo_database::entities::tag;
+pub use mediarepo_database::entities::tag_implication;
 
 use crate::dto::NamespaceDto;
 
@@ -60,3 +61,26 @@ impl AddTagDto {
         }
     }
 }
+
+pub struct TagImplicationDto {
+    model: tag_implication::Model,
+}
+
+impl TagImplicationDto {
+    pub fn tag_id(&self) -> i64 {
+        self.model.tag_id
+    }
+
+    pub fn implied_tag_id(&self) -> i64 {
+        self.model.implied_tag_id
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ModifyTagImplicationDto {
+    pub tag_id: i64,
+    pub implied_tag_id: i64,
+}
+
+pub type AddTagImplicationDto = ModifyTagImplicationDto;
+pub type DeleteTagImplicationDto = ModifyTagImplicationDto;

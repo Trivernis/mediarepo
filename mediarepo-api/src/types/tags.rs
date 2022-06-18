@@ -6,6 +6,7 @@ pub struct TagResponse {
     pub id: i64,
     pub namespace: Option<String>,
     pub name: String,
+    pub implied_by: Option<i64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -19,4 +20,20 @@ pub struct ChangeFileTagsRequest {
     pub file_id: FileIdentifier,
     pub removed_tags: Vec<i64>,
     pub added_tags: Vec<i64>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AddTagImplicationsRequest {
+    pub implications: TagImplication,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TagImplication {
+    pub tag_id: i64,
+    pub implied_tag_id: i64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RemoveTagImplicationsRequest {
+    pub implications: TagImplication,
 }
