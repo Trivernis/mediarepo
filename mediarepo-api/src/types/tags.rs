@@ -24,7 +24,7 @@ pub struct ChangeFileTagsRequest {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AddTagImplicationsRequest {
-    pub implications: TagImplication,
+    pub implications: Vec<TagImplication>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -34,6 +34,6 @@ pub struct TagImplication {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RemoveTagImplicationsRequest {
-    pub implications: TagImplication,
+pub struct DeleteTagImplicationsRequest {
+    pub implications: Vec<TagImplication>,
 }

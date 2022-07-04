@@ -7,11 +7,12 @@ use mediarepo_core::mediarepo_api::types::files::{
     GetFileTagMapRequest, GetFileTagsRequest, GetFilesTagsRequest,
 };
 use mediarepo_core::mediarepo_api::types::tags::{
-    ChangeFileTagsRequest, NamespaceResponse, TagResponse,
+    AddTagImplicationsRequest, ChangeFileTagsRequest, DeleteTagImplicationsRequest,
+    NamespaceResponse, TagResponse,
 };
 use mediarepo_core::utils::parse_namespace_and_tag;
 use mediarepo_logic::dao::DaoProvider;
-use mediarepo_logic::dto::AddTagDto;
+use mediarepo_logic::dto::{AddTagDto, AddTagImplicationDto, DeleteTagImplicationDto};
 
 use crate::from_model::FromModel;
 use crate::utils::{file_by_identifier, get_repo_from_context};
@@ -31,7 +32,9 @@ impl NamespaceProvider for TagsNamespace {
             "tags_for_files" => Self::tags_for_files,
             "file_tag_map" => Self::tag_cd_map_for_files,
             "create_tags" => Self::create_tags,
-            "change_file_tags" => Self::change_file_tags
+            "change_file_tags" => Self::change_file_tags,
+            "add_tag_implications" => Self::add_tag_implications,
+            "delete_tag_implications" => Self::delete_tag_implications
         );
     }
 }
@@ -182,5 +185,41 @@ impl TagsNamespace {
             .collect();
 
         ctx.response(responses)
+    }
+
+    /// Adds multiple tag implications
+    #[tracing::instrument(skip_all)]
+    async fn add_tag_implications(ctx: &Context, event: Event) -> IPCResult<Response> {
+        let repo = get_repo_from_context(ctx).await;
+        let request = event.payload::<AddTagImplicationsRequest>()?;
+        let add_dtos: Vec<AddTagImplicationDto> = request
+            .implications
+            .into_iter()
+            .map(|i| AddTagImplicationDto {
+                tag_id: i.tag_id,
+                implied_tag_id: i.implied_tag_id,
+            })
+            .collect();
+        repo.tag().add_implications(add_dtos).await?;
+
+        ctx.response(())
+    }
+
+    /// Deletes multiple tag implications
+    #[tracing::instrument(skip_all)]
+    async fn delete_tag_implications(ctx: &Context, event: Event) -> IPCResult<Response> {
+        let repo = get_repo_from_context(ctx).await;
+        let request = event.payload::<DeleteTagImplicationsRequest>()?;
+        let delete_dtos: Vec<DeleteTagImplicationDto> = request
+            .implications
+            .into_iter()
+            .map(|i| DeleteTagImplicationDto {
+                tag_id: i.tag_id,
+                implied_tag_id: i.implied_tag_id,
+            })
+            .collect();
+        repo.tag().delete_implications(delete_dtos).await?;
+
+        ctx.response(())
     }
 }

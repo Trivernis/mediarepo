@@ -1,12 +1,15 @@
-use std::collections::HashMap;
 use crate::client_api::error::ApiResult;
 use crate::client_api::IPCApi;
-use crate::types::files::{GetFileTagsRequest, GetFilesTagsRequest, GetFileTagMapRequest};
+use crate::types::files::{GetFileTagMapRequest, GetFileTagsRequest, GetFilesTagsRequest};
 use crate::types::identifier::FileIdentifier;
-use crate::types::tags::{ChangeFileTagsRequest, NamespaceResponse, TagResponse};
+use crate::types::tags::{
+    AddTagImplicationsRequest, ChangeFileTagsRequest, DeleteTagImplicationsRequest,
+    NamespaceResponse, TagImplication, TagResponse,
+};
 use async_trait::async_trait;
 use bromine::context::{PoolGuard, PooledContext};
 use bromine::ipc::context::Context;
+use std::collections::HashMap;
 use std::time::Duration;
 
 pub struct TagApi {
@@ -75,8 +78,16 @@ impl TagApi {
 
     /// Returns a map from files to assigned tags
     #[tracing::instrument(level = "debug", skip_all)]
-    pub async fn get_file_tag_map(&self, cds: Vec<String>) -> ApiResult<HashMap<String, Vec<TagResponse>>> {
-        self.emit_and_get("file_tag_map", GetFileTagMapRequest{cds}, Some(Duration::from_secs(10))).await
+    pub async fn get_file_tag_map(
+        &self,
+        cds: Vec<String>,
+    ) -> ApiResult<HashMap<String, Vec<TagResponse>>> {
+        self.emit_and_get(
+            "file_tag_map",
+            GetFileTagMapRequest { cds },
+            Some(Duration::from_secs(10)),
+        )
+        .await
     }
 
     /// Creates a new tag and returns the created tag object
@@ -102,6 +113,31 @@ impl TagApi {
                 removed_tags,
             },
             Some(Duration::from_secs(10)),
+        )
+        .await
+    }
+
+    /// Add implications for the given tags
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn add_tag_implications(&self, implications: Vec<TagImplication>) -> ApiResult<()> {
+        self.emit_and_get(
+            "add_tag_implications",
+            AddTagImplicationsRequest { implications },
+            None,
+        )
+        .await
+    }
+
+    /// Add implications for the given tags
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub async fn delete_tag_implications(
+        &self,
+        implications: Vec<TagImplication>,
+    ) -> ApiResult<()> {
+        self.emit_and_get(
+            "delete_tag_implications",
+            DeleteTagImplicationsRequest { implications },
+            None,
         )
         .await
     }
