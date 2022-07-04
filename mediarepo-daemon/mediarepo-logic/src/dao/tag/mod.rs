@@ -14,10 +14,11 @@ use crate::dao_provider;
 use crate::dto::{NamespaceDto, TagDto};
 
 pub mod add;
-pub mod add_implication;
+pub mod add_implications;
 pub mod all_for_cds_map;
 pub mod by_name;
 pub mod cdids_with_namespaced_tags;
+pub mod delete_implications;
 pub mod mappings;
 
 dao_provider!(TagDao);
