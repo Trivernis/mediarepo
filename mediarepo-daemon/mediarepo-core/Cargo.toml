@@ -34,7 +34,7 @@ default-features = false
 features = ["migrate"]
 
 [dependencies.tokio]
-version = "1.17.0"
+version = "1.21.2"
 features = ["fs", "io-util", "io-std"]
 
 [dependencies.config]

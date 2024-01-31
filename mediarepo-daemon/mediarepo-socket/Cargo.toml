@@ -26,8 +26,8 @@ path = "../mediarepo-logic"
 path = "../mediarepo-worker"
 
 [dependencies.tokio]
-version = "1.17.0"
-features = ["net"]
+version = "1.21.2"
+features = ["net", "rt", "tracing"]
 
 [dependencies.chrono]
 version = "0.4.19"

@@ -45,7 +45,7 @@ path = "./mediarepo-socket"
 path = "./mediarepo-worker"
 
 [dependencies.tokio]
-version = "1.17.0"
+version = "1.21.2"
 features = ["macros", "rt-multi-thread", "io-std", "io-util"]
 
 [dependencies.tracing-subscriber]

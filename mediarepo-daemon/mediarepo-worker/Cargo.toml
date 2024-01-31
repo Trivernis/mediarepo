@@ -19,7 +19,7 @@ path = "../mediarepo-logic"
 path = "../mediarepo-database"
 
 [dependencies.tokio]
-version = "1.17.0"
+version = "1.21.2"
 features = ["macros"]
 
 [dependencies.chrono]
