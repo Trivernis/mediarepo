@@ -1,66 +1,57 @@
 {
-    "root": true,
-    "ignorePatterns": [
-        "projects/**/*"
-    ],
-    "overrides": [
-        {
-            "files": [
-                "*.ts"
-            ],
-            "parserOptions": {
-                "project": [
-                    "tsconfig.json"
-                ],
-                "createDefaultProgram": true
-            },
-            "extends": [
-                "plugin:@angular-eslint/recommended",
-                "plugin:@angular-eslint/template/process-inline-templates"
-            ],
-            "rules": {
-                "@angular-eslint/directive-selector": [
-                    "error",
-                    {
-                        "type": "attribute",
-                        "prefix": "app",
-                        "style": "camelCase"
-                    }
-                ],
-                "@angular-eslint/component-selector": [
-                    "error",
-                    {
-                        "type": "element",
-                        "prefix": "app",
-                        "style": "kebab-case"
-                    }
-                ],
-                "quotes": [
-                    "warn",
-                    "double",
-                    {
-                        "avoidEscape": true
-                    }
-                ],
-                "indent": [
-                    "error",
-                    4,
-                    {
-                        "SwitchCase": 1
-                    }
-                ],
-                "no-unused-expressions": "warn",
-                "semi": "error"
-            }
-        },
-        {
-            "files": [
-                "*.html"
-            ],
-            "extends": [
-                "plugin:@angular-eslint/template/recommended"
-            ],
-            "rules": {}
-        }
-    ]
+	"root": true,
+	"ignorePatterns": ["projects/**/*"],
+	"overrides": [
+		{
+			"files": ["*.ts"],
+			"parserOptions": {
+				"project": ["tsconfig.json"],
+				"createDefaultProgram": true
+			},
+			"extends": [
+				"plugin:@angular-eslint/recommended",
+				"plugin:@angular-eslint/template/process-inline-templates"
+			],
+			"rules": {
+				"@angular-eslint/directive-selector": [
+					"error",
+					{
+						"type": "attribute",
+						"prefix": "app",
+						"style": "camelCase"
+					}
+				],
+				"@angular-eslint/component-selector": [
+					"error",
+					{
+						"type": "element",
+						"prefix": "app",
+						"style": "kebab-case"
+					}
+				],
+				"quotes": [
+					"warn",
+					"double",
+					{
+						"avoidEscape": true
+					}
+				],
+				"indent": [
+					"error",
+					4,
+					{
+						"SwitchCase": 1
+					}
+				],
+				"no-unused-expressions": "warn",
+				"no-extraneous-class": "off",
+				"semi": "error"
+			}
+		},
+		{
+			"files": ["*.html"],
+			"extends": ["plugin:@angular-eslint/template/recommended"],
+			"rules": {}
+		}
+	]
 }

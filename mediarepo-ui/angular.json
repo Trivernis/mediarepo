@@ -3,7 +3,8 @@
     "version": 1,
     "cli": {
         "packageManager": "yarn",
-        "defaultCollection": "@angular-eslint/schematics"
+        "defaultCollection": "@angular-eslint/schematics",
+        "analytics": "dc09bab7-b1ef-4661-8d46-1da5b61c8e44"
     },
     "newProjectRoot": "projects",
     "projects": {

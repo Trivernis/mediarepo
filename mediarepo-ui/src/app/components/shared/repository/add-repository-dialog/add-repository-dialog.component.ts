@@ -23,11 +23,11 @@ export class AddRepositoryDialogComponent {
 
     public async checkLocalRepoExists() {
         this.repositoryForm.localRepoExists = await this.repoService.checkLocalRepositoryExists(
-            this.repositoryForm.formGroup.value.path);
+            this.repositoryForm.formGroup.value.path as unknown as string);
     }
 
     public async initLocalRepository() {
-        const path = this.repositoryForm.formGroup.value.path;
+        const path = this.repositoryForm.formGroup.value.path as unknown as string;
         try {
             await this.repoService.initRepository(path);
         } catch (err: any) {
@@ -37,7 +37,7 @@ export class AddRepositoryDialogComponent {
     }
 
     public async addRepository() {
-        let { name, repositoryType, path, address } = this.repositoryForm.formGroup.value;
+        let { name, repositoryType, path, address } = this.repositoryForm.formGroup.value as unknown as any;
         path = repositoryType === "local" ? path : undefined;
         address = repositoryType === "remote" ? address : undefined;
         try {

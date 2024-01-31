@@ -1,22 +1,22 @@
 pub mod error;
 pub mod file;
 pub mod job;
+pub mod preset;
 pub mod protocol;
 pub mod repo;
 pub mod tag;
-pub mod preset;
 
 use crate::client_api::error::{ApiError, ApiResult};
 use crate::client_api::file::FileApi;
 use crate::client_api::job::JobApi;
+use crate::client_api::preset::PresetApi;
 use crate::client_api::repo::RepoApi;
 use crate::client_api::tag::TagApi;
 use crate::types::misc::{check_apis_compatible, get_api_version, InfoResponse};
 use async_trait::async_trait;
-use bromine::prelude::*;
 use bromine::prelude::emit_metadata::EmitMetadata;
+use bromine::prelude::*;
 use tokio::time::Duration;
-use crate::client_api::preset::PresetApi;
 
 #[async_trait]
 pub trait IPCApi {

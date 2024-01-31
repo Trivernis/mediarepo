@@ -57,7 +57,10 @@ fn once_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Resp
 #[tracing::instrument(level = "debug", skip_all)]
 async fn content_scheme<R: Runtime>(app: &AppHandle<R>, request: &Request) -> Result<Response> {
     let buf_state = app.state::<BufferState>();
-    let hash = request.uri().trim_start_matches("content://");
+    let hash = request
+        .uri()
+        .trim_start_matches("content://")
+        .trim_end_matches("/");
 
     if let Some(buffer) = buf_state.get_entry(hash) {
         tracing::debug!("Fetching content from cache");

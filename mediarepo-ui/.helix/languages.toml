@@ -1,0 +1,15 @@
+[language-server.biome]
+command = "biome"
+args = ["lsp-proxy"]
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server"]
+auto-format = true
+formatter = { command = "biome" , args = ["format", "--stdin-file-path=file.ts"] }
+
+[[language]]
+name = "javascript"
+language-servers = ["typescript-language-server", "biome"]
+auto-format = true
+formatter = { command = "biome" , args = ["format", "--stdin-file-path=file.js"] }

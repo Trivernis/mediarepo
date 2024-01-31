@@ -1,6 +1,6 @@
 [package]
 name = "mediarepo-api"
-version = "0.32.1"
+version = "0.33.0"
 edition = "2018"
 license = "gpl-3"
 
@@ -20,7 +20,7 @@ url = { version = "2.2.2", optional = true }
 pathsearch = { version = "0.2.0", optional = true }
 
 [dependencies.bromine]
-version = "0.20.1"
+version = "0.22.1"
 optional = true
 features = ["serialize_bincode", "encryption_layer"]
 
@@ -33,7 +33,7 @@ version = "0.4.19"
 features = ["serde"]
 
 [dependencies.tauri]
-version = "1.0.0-rc.4"
+version = "1.5.4"
 optional = true
 default-features = false
 features = []
