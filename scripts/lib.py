@@ -46,7 +46,10 @@ def check_exec(name: str) -> bool:
     if shut.which(name) is None:
         print('{} not found'.format(name))
         return False
-    exec('{} --version'.format(name))
+    if name is "ng":
+        exec('ng version')
+    else:
+        exec('{} --version'.format(name))
     return True
 
 
